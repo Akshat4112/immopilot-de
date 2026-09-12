@@ -34,6 +34,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 
 - [Product definition](docs/product-definition.md): approved scope, users and workflows
 - [German–English terminology standard](docs/terminology.md): canonical interface terms, definitions and locale formatting
+- [Grunderwerbsteuer rates](docs/grunderwerbsteuer-rates.md): verified rates, effective dates, legal basis and sources for all 16 Bundesländer
 
 ## Planned technology
 
