@@ -178,7 +178,7 @@ The quick flow must produce useful results without forcing the user to understan
 5. Add owner-occupier or rental-investment assumptions.
 6. Review detailed tables and charts.
 7. Compare up to three named scenarios.
-8. save locally, create a shareable link or export the report.
+8. Save locally, create a shareable link or export the report.
 
 ### Result hierarchy
 
