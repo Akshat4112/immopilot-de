@@ -30,7 +30,10 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 1. **Owner-occupiers** comparing rent, purchase costs, monthly financing and refinancing risk.
 2. **Rental investors** evaluating yield, cash flow, debt reduction, long-term outcomes and offer limits.
 
-See [Product definition](docs/product-definition.md) for the approved boundary, user profiles and workflows.
+## Product documentation
+
+- [Product definition](docs/product-definition.md): approved scope, users and workflows
+- [German–English terminology standard](docs/terminology.md): canonical interface terms, definitions and locale formatting
 
 ## Planned technology
 
