@@ -6,6 +6,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 const typescriptFiles = ['**/*.{ts,tsx}']
+const sourceAreaImports = (...areas) => areas.flatMap((area) => [`**/${area}`, `**/${area}/**`])
 
 export default defineConfig(
   {
@@ -58,15 +59,19 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: [
-                '**/app/**',
-                '**/components/**',
-                '**/config/**',
-                '**/features/**',
-                '**/i18n/**',
-                '**/storage/**',
-                '**/test/**',
-              ],
+              group: ['react', 'react/*', 'react-dom', 'react-dom/*'],
+              message: 'Domain modules must remain independent of React and other UI frameworks.',
+            },
+            {
+              group: sourceAreaImports(
+                'app',
+                'components',
+                'config',
+                'features',
+                'i18n',
+                'storage',
+                'test',
+              ),
               message:
                 'Domain modules must remain independent of application, UI, configuration, localization, storage, and test infrastructure.',
             },
@@ -83,7 +88,7 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: ['**/app/**', '**/features/**', '**/storage/**'],
+              group: sourceAreaImports('app', 'features', 'storage'),
               message:
                 'Shared components must not depend on the application shell, product features, or persistence.',
             },
@@ -100,7 +105,7 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: ['**/app/**', '**/components/**', '**/features/**'],
+              group: sourceAreaImports('app', 'components', 'features'),
               message: 'Infrastructure modules must not depend on the application shell or UI.',
             },
           ],
@@ -116,7 +121,7 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: ['**/app/**'],
+              group: sourceAreaImports('app'),
               message: 'Features must not depend on the application composition root.',
             },
           ],
