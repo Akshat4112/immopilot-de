@@ -2,7 +2,7 @@
 
 ImmoPilot DE is a planned client-side application for evaluating residential property purchases and financing decisions in the German market.
 
-> Status: product definition. The application is not yet released.
+> Status: foundation implementation. The application is not yet released.
 
 ## Version 1 scope
 
@@ -50,6 +50,29 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - Vitest and Playwright
 - GitHub Actions
 - GitHub Pages
+
+## Local development
+
+The foundation uses Node.js 24.19.0 and npm 11.9.0. With `nvm` installed, select the
+documented runtime and install the exact dependency graph from the lockfile:
+
+```bash
+nvm use
+npm ci
+npm run dev
+```
+
+Available foundation commands:
+
+```bash
+npm run typecheck
+npm run build
+npm run preview
+```
+
+`npm run build` performs strict TypeScript project compilation before creating the
+static `dist/` output. Linting, automated tests, application architecture and GitHub
+Pages base-path configuration are tracked as later foundation tasks.
 
 ## Deployment target
 
