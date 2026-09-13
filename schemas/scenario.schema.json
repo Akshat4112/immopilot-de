@@ -1,0 +1,685 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://akshat4112.github.io/immopilot-de/schemas/scenario.schema.json",
+  "title": "ImmoPilot DE saved scenario",
+  "description": "Versioned, self-contained input payload for deterministic Version 1 calculations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "documentType",
+    "schemaVersion",
+    "assumptionSetVersion",
+    "calculationSpecificationVersion",
+    "scenarioId",
+    "name",
+    "mode",
+    "locale",
+    "jurisdiction",
+    "currency",
+    "createdAt",
+    "updatedAt",
+    "property",
+    "acquisition",
+    "financing"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "documentType": {
+      "const": "scenario"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "assumptionSetVersion": {
+      "$ref": "#/$defs/assumptionSetVersion"
+    },
+    "calculationSpecificationVersion": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "mode": {
+      "enum": [
+        "owner-occupier",
+        "rental-investment"
+      ]
+    },
+    "locale": {
+      "enum": [
+        "de-DE",
+        "en-GB"
+      ]
+    },
+    "jurisdiction": {
+      "const": "DE"
+    },
+    "currency": {
+      "const": "EUR"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "property": {
+      "$ref": "#/$defs/property"
+    },
+    "acquisition": {
+      "$ref": "#/$defs/acquisition"
+    },
+    "financing": {
+      "$ref": "#/$defs/financing"
+    },
+    "ownerOccupier": {
+      "$ref": "#/$defs/ownerOccupier"
+    },
+    "rentalInvestment": {
+      "$ref": "#/$defs/rentalInvestment"
+    },
+    "offerAnalysis": {
+      "$ref": "#/$defs/offerAnalysis"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "owner-occupier"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "ownerOccupier"
+        ],
+        "not": {
+          "required": [
+            "rentalInvestment"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "rental-investment"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "rentalInvestment"
+        ],
+        "not": {
+          "required": [
+            "ownerOccupier"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "assumptionSetVersion": {
+      "type": "string",
+      "pattern": "^de-[0-9]{4}\\.(0[1-9]|1[0-2])(?:\\.[1-9][0-9]*)?$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "moneyCents": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "positiveMoneyCents": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "rateZeroToOne": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "rateZeroToBelowOne": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "positiveRate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "signedGrowthRate": {
+      "type": "number",
+      "exclusiveMinimum": -1
+    },
+    "stateId": {
+      "enum": [
+        "DE-BW",
+        "DE-BY",
+        "DE-BE",
+        "DE-BB",
+        "DE-HB",
+        "DE-HH",
+        "DE-HE",
+        "DE-MV",
+        "DE-NI",
+        "DE-NW",
+        "DE-RP",
+        "DE-SL",
+        "DE-SN",
+        "DE-ST",
+        "DE-SH",
+        "DE-TH"
+      ]
+    },
+    "trackedRate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "origin"
+      ],
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/rateZeroToOne"
+        },
+        "origin": {
+          "enum": [
+            "assumption-set",
+            "user-override"
+          ]
+        },
+        "sourceId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sourceId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "assumption-set"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "required": [
+              "sourceId"
+            ],
+            "properties": {
+              "sourceId": {
+                "$ref": "#/$defs/sourceId"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "trackedBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amountCents",
+        "budgetStatus",
+        "origin"
+      ],
+      "properties": {
+        "amountCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "budgetStatus": {
+          "enum": [
+            "not-budgeted",
+            "confirmed-zero",
+            "budgeted"
+          ]
+        },
+        "origin": {
+          "enum": [
+            "assumption-set",
+            "user-override"
+          ]
+        },
+        "sourceId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sourceId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "budgetStatus": {
+                "const": "not-budgeted"
+              }
+            },
+            "required": [
+              "budgetStatus"
+            ]
+          },
+          "then": {
+            "properties": {
+              "amountCents": {
+                "const": 0
+              },
+              "origin": {
+                "const": "assumption-set"
+              },
+              "sourceId": {
+                "$ref": "#/$defs/sourceId"
+              }
+            },
+            "required": [
+              "sourceId"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "budgetStatus": {
+                "const": "confirmed-zero"
+              }
+            },
+            "required": [
+              "budgetStatus"
+            ]
+          },
+          "then": {
+            "properties": {
+              "amountCents": {
+                "const": 0
+              },
+              "origin": {
+                "const": "user-override"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "budgetStatus": {
+                "const": "budgeted"
+              }
+            },
+            "required": [
+              "budgetStatus"
+            ]
+          },
+          "then": {
+            "properties": {
+              "amountCents": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "property": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purchasePriceCents",
+        "stateId",
+        "propertyType"
+      ],
+      "properties": {
+        "purchasePriceCents": {
+          "$ref": "#/$defs/positiveMoneyCents"
+        },
+        "stateId": {
+          "$ref": "#/$defs/stateId"
+        },
+        "propertyType": {
+          "enum": [
+            "apartment",
+            "house",
+            "land",
+            "multi-family",
+            "other"
+          ]
+        },
+        "livingAreaSquareMetres": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "broker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "involved",
+        "buyerCommissionRate",
+        "includesVat"
+      ],
+      "properties": {
+        "involved": {
+          "type": "boolean"
+        },
+        "buyerCommissionRate": {
+          "$ref": "#/$defs/trackedRate"
+        },
+        "includesVat": {
+          "type": "boolean"
+        }
+      }
+    },
+    "acquisition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transferTaxRate",
+        "notaryRate",
+        "landRegisterRate",
+        "broker",
+        "renovationBudget",
+        "movingSetupCosts"
+      ],
+      "properties": {
+        "transferTaxRate": {
+          "$ref": "#/$defs/trackedRate"
+        },
+        "notaryRate": {
+          "$ref": "#/$defs/trackedRate"
+        },
+        "landRegisterRate": {
+          "$ref": "#/$defs/trackedRate"
+        },
+        "broker": {
+          "$ref": "#/$defs/broker"
+        },
+        "renovationBudget": {
+          "$ref": "#/$defs/trackedBudget"
+        },
+        "movingSetupCosts": {
+          "$ref": "#/$defs/trackedBudget"
+        }
+      }
+    },
+    "oneTimeAdditionalRepayment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentMonth",
+        "amountCents"
+      ],
+      "properties": {
+        "paymentMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        },
+        "amountCents": {
+          "$ref": "#/$defs/positiveMoneyCents"
+        }
+      }
+    },
+    "refinancingScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "nominalAnnualRate",
+        "initialRepaymentRate"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+        },
+        "nominalAnnualRate": {
+          "$ref": "#/$defs/rateZeroToBelowOne"
+        },
+        "initialRepaymentRate": {
+          "$ref": "#/$defs/positiveRate"
+        },
+        "fullRepaymentTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        }
+      }
+    },
+    "financing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "availableEquityCents",
+        "downPaymentCents",
+        "financedAcquisitionCostShare",
+        "nominalAnnualRate",
+        "initialRepaymentRate",
+        "fixedInterestMonths",
+        "annualAdditionalRepaymentCents",
+        "annualAdditionalRepaymentMonth",
+        "oneTimeAdditionalRepayments",
+        "refinancingScenarios"
+      ],
+      "properties": {
+        "availableEquityCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "downPaymentCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "financedAcquisitionCostShare": {
+          "$ref": "#/$defs/rateZeroToOne"
+        },
+        "nominalAnnualRate": {
+          "$ref": "#/$defs/rateZeroToBelowOne"
+        },
+        "initialRepaymentRate": {
+          "$ref": "#/$defs/positiveRate"
+        },
+        "fixedInterestMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        },
+        "annualAdditionalRepaymentCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "annualAdditionalRepaymentMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "oneTimeAdditionalRepayments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/oneTimeAdditionalRepayment"
+          }
+        },
+        "refinancingScenarios": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/refinancingScenario"
+          }
+        }
+      }
+    },
+    "ownerOccupier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currentComparableRentCents",
+        "monthlyOwnerCostsCents",
+        "rentGrowthRate",
+        "ownerCostGrowthRate",
+        "propertyAppreciationRate",
+        "alternativeReturnRate",
+        "sellingCostRate",
+        "analysisMonths",
+        "includeAdditionalRepaymentsInMatchedBudget"
+      ],
+      "properties": {
+        "currentComparableRentCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "monthlyOwnerCostsCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "rentGrowthRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "ownerCostGrowthRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "propertyAppreciationRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "alternativeReturnRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "sellingCostRate": {
+          "$ref": "#/$defs/rateZeroToOne"
+        },
+        "analysisMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        },
+        "includeAdditionalRepaymentsInMatchedBudget": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rentalInvestment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "monthlyNetColdRentCents",
+        "vacancyRate",
+        "otherAnnualRentLossCents",
+        "monthlyNonRecoverableHausgeldExcludingReserveCents",
+        "monthlyReserveContributionCents",
+        "annualMaintenanceAllowanceOutsideHausgeldCents",
+        "otherAnnualOwnerCostsCents",
+        "rentGrowthRate",
+        "ownerCostGrowthRate",
+        "propertyAppreciationRate",
+        "sellingCostRate",
+        "holdingPeriodMonths"
+      ],
+      "properties": {
+        "monthlyNetColdRentCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "vacancyRate": {
+          "$ref": "#/$defs/rateZeroToOne"
+        },
+        "otherAnnualRentLossCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "monthlyNonRecoverableHausgeldExcludingReserveCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "monthlyReserveContributionCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "annualMaintenanceAllowanceOutsideHausgeldCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "otherAnnualOwnerCostsCents": {
+          "$ref": "#/$defs/moneyCents"
+        },
+        "rentGrowthRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "ownerCostGrowthRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "propertyAppreciationRate": {
+          "$ref": "#/$defs/signedGrowthRate"
+        },
+        "sellingCostRate": {
+          "$ref": "#/$defs/rateZeroToOne"
+        },
+        "holdingPeriodMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        }
+      }
+    },
+    "offerAnalysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "askingPriceCents"
+      ],
+      "properties": {
+        "askingPriceCents": {
+          "$ref": "#/$defs/positiveMoneyCents"
+        },
+        "targetGrossYield": {
+          "$ref": "#/$defs/positiveRate"
+        },
+        "targetNetYield": {
+          "$ref": "#/$defs/positiveRate"
+        },
+        "comparablePricePerSquareMetreLowCents": {
+          "$ref": "#/$defs/positiveMoneyCents"
+        },
+        "comparablePricePerSquareMetreHighCents": {
+          "$ref": "#/$defs/positiveMoneyCents"
+        },
+        "openingOfferLargerDiscount": {
+          "$ref": "#/$defs/rateZeroToBelowOne"
+        },
+        "openingOfferSmallerDiscount": {
+          "$ref": "#/$defs/rateZeroToBelowOne"
+        }
+      }
+    }
+  }
+}

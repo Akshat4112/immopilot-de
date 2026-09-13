@@ -1,0 +1,103 @@
+{
+  "$schema": "../../schemas/scenario.schema.json",
+  "documentType": "scenario",
+  "schemaVersion": "1.0.0",
+  "assumptionSetVersion": "de-2026.09",
+  "calculationSpecificationVersion": "1.0.0",
+  "scenarioId": "example-owner-occupier",
+  "name": "Owner-occupier baseline",
+  "mode": "owner-occupier",
+  "locale": "en-GB",
+  "jurisdiction": "DE",
+  "currency": "EUR",
+  "createdAt": "2026-09-13T00:00:00Z",
+  "updatedAt": "2026-09-13T00:00:00Z",
+  "property": {
+    "purchasePriceCents": 25000000,
+    "stateId": "DE-BW",
+    "propertyType": "apartment",
+    "livingAreaSquareMetres": 65
+  },
+  "acquisition": {
+    "transferTaxRate": {
+      "value": 0.05,
+      "origin": "assumption-set",
+      "sourceId": "dnoti-transfer-tax-2026-01-28"
+    },
+    "notaryRate": {
+      "value": 0.01,
+      "origin": "assumption-set",
+      "sourceId": "bnotk-notary-costs"
+    },
+    "landRegisterRate": {
+      "value": 0.005,
+      "origin": "assumption-set",
+      "sourceId": "gnotkg-fee-schedule"
+    },
+    "broker": {
+      "involved": false,
+      "buyerCommissionRate": {
+        "value": 0.0357,
+        "origin": "assumption-set",
+        "sourceId": "vz-broker-2026-07-27"
+      },
+      "includesVat": true
+    },
+    "renovationBudget": {
+      "amountCents": 0,
+      "budgetStatus": "confirmed-zero",
+      "origin": "user-override"
+    },
+    "movingSetupCosts": {
+      "amountCents": 0,
+      "budgetStatus": "confirmed-zero",
+      "origin": "user-override"
+    }
+  },
+  "financing": {
+    "availableEquityCents": 6625000,
+    "downPaymentCents": 5000000,
+    "financedAcquisitionCostShare": 0,
+    "nominalAnnualRate": 0.035,
+    "initialRepaymentRate": 0.02,
+    "fixedInterestMonths": 120,
+    "annualAdditionalRepaymentCents": 0,
+    "annualAdditionalRepaymentMonth": 12,
+    "oneTimeAdditionalRepayments": [],
+    "refinancingScenarios": [
+      {
+        "id": "lower-rate",
+        "nominalAnnualRate": 0.02,
+        "initialRepaymentRate": 0.02
+      },
+      {
+        "id": "base-rate",
+        "nominalAnnualRate": 0.04,
+        "initialRepaymentRate": 0.02
+      },
+      {
+        "id": "higher-rate",
+        "nominalAnnualRate": 0.06,
+        "initialRepaymentRate": 0.02
+      }
+    ]
+  },
+  "ownerOccupier": {
+    "currentComparableRentCents": 100000,
+    "monthlyOwnerCostsCents": 25000,
+    "rentGrowthRate": 0.02,
+    "ownerCostGrowthRate": 0,
+    "propertyAppreciationRate": 0.02,
+    "alternativeReturnRate": 0.05,
+    "sellingCostRate": 0.03,
+    "analysisMonths": 120,
+    "includeAdditionalRepaymentsInMatchedBudget": true
+  },
+  "offerAnalysis": {
+    "askingPriceCents": 26000000,
+    "comparablePricePerSquareMetreLowCents": 350000,
+    "comparablePricePerSquareMetreHighCents": 420000,
+    "openingOfferLargerDiscount": 0.1,
+    "openingOfferSmallerDiscount": 0.05
+  }
+}
