@@ -50,4 +50,78 @@ export default defineConfig(
       ...reactRefresh.configs.vite.rules,
     },
   },
+  {
+    files: ['src/domain/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '**/app/**',
+                '**/components/**',
+                '**/config/**',
+                '**/features/**',
+                '**/i18n/**',
+                '**/storage/**',
+                '**/test/**',
+              ],
+              message:
+                'Domain modules must remain independent of application, UI, configuration, localization, storage, and test infrastructure.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/app/**', '**/features/**', '**/storage/**'],
+              message:
+                'Shared components must not depend on the application shell, product features, or persistence.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/config/**/*.{ts,tsx}', 'src/i18n/**/*.{ts,tsx}', 'src/storage/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/app/**', '**/components/**', '**/features/**'],
+              message: 'Infrastructure modules must not depend on the application shell or UI.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/features/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/app/**'],
+              message: 'Features must not depend on the application composition root.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 )

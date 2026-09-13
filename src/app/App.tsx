@@ -30,7 +30,7 @@ function ArrowIcon() {
   )
 }
 
-function App() {
+export default function App() {
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -131,5 +131,3 @@ function App() {
     </div>
   )
 }
-
-export default App
