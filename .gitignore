@@ -4,6 +4,11 @@ node_modules/
 # Production output
 dist/
 
+# Test and coverage output
+coverage/
+playwright-report/
+test-results/
+
 # Local tooling and logs
 *.local
 *.log
