@@ -61,10 +61,7 @@ function App() {
                 Projekt ansehen
                 <ArrowIcon />
               </a>
-              <a
-                className="secondary-action"
-                href="https://github.com/Akshat4112/immopilot-de"
-              >
+              <a className="secondary-action" href="https://github.com/Akshat4112/immopilot-de">
                 Dokumentation
               </a>
             </div>
@@ -107,8 +104,8 @@ function App() {
             <p className="eyebrow">Version 1</p>
             <h2 id="foundation-title">Eine klare Grundlage für den Immobilienkauf.</h2>
             <p>
-              Die fachlichen Regeln und deutschen Annahmen sind dokumentiert. Die
-              interaktiven Rechner werden schrittweise auf dieser geprüften Grundlage gebaut.
+              Die fachlichen Regeln und deutschen Annahmen sind dokumentiert. Die interaktiven
+              Rechner werden schrittweise auf dieser geprüften Grundlage gebaut.
             </p>
           </div>
 
@@ -126,8 +123,8 @@ function App() {
 
       <footer className="site-footer">
         <p>
-          Nur unverbindliche Planungswerte. Keine Finanzierungs-, Steuer- oder Rechtsberatung
-          und kein Darlehensangebot.
+          Nur unverbindliche Planungswerte. Keine Finanzierungs-, Steuer- oder Rechtsberatung und
+          kein Darlehensangebot.
         </p>
         <span>© 2026 ImmoPilot DE</span>
       </footer>
