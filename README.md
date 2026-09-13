@@ -51,6 +51,35 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - GitHub Actions
 - GitHub Pages
 
+## Approved application dependencies
+
+FND-002 establishes the approved Version 1 dependency set. Versions are pinned
+exactly in `package.json` and the complete reproducible graph is recorded in
+`package-lock.json`.
+
+| Area | Packages | Purpose |
+| --- | --- | --- |
+| Forms and validation | `react-hook-form`, `@hookform/resolvers`, `zod` | Typed form state, validation and schema integration |
+| Financial arithmetic | `decimal.js` | Deterministic decimal calculations without binary floating-point drift |
+| Routing | `react-router-dom` | Client-side navigation compatible with static hosting |
+| Internationalisation | `i18next`, `react-i18next` | German and English interface resources and React bindings |
+| Charts | `recharts` | Responsive financial charts built on React and SVG |
+| Client state | `zustand` | Small local scenario and interface state stores |
+| Unit and component tests | `vitest`, `@vitest/coverage-v8`, Testing Library, `jsdom` | Calculation, hook and accessible component tests with coverage |
+| Browser tests | `@playwright/test` | End-to-end checks for critical workflows and GitHub Pages behavior |
+| Code quality | ESLint, TypeScript ESLint, React Hooks/Refresh plugins, Prettier | Static analysis and consistent formatting |
+
+The interface will use semantic HTML and project-owned CSS, so no component or
+CSS framework is approved at this stage. This keeps the initial bundle and design
+surface small while the application shell and design tokens are still being
+defined.
+
+TypeScript is pinned to 5.9.3 because it is within the stable support range of
+the approved TypeScript ESLint release. Node type definitions stay on major 24
+to match the documented runtime. Configuration and npm scripts for linting,
+testing, routing and internationalisation are introduced by their respective
+follow-up tasks; FND-002 only approves and installs the shared packages.
+
 ## Local development
 
 The foundation uses Node.js 24.19.0 and npm 11.9.0. With `nvm` installed, select the
