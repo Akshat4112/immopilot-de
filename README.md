@@ -39,6 +39,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - [Calculation specification](docs/calculation-specification.md): normative formulas, timing, precision, validation rules and golden test vectors
 - [Versioned assumptions schema](docs/assumptions-schema.md): stable data types, defaults, provenance, migrations, examples and validation fixtures
 - [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
+- [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
 
 ## Planned technology
 
