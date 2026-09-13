@@ -99,6 +99,9 @@ npm run lint
 npm run lint:fix
 npm run format
 npm run format:check
+npm test
+npm run test:watch
+npm run test:coverage
 npm run typecheck
 npm run build
 npm run preview
@@ -111,7 +114,13 @@ checks the application and configuration files against the shared Prettier rules
 Normative financial specifications, versioned data fixtures and the npm-generated
 lockfile are intentionally excluded from automatic formatting.
 
-Automated test configuration, application architecture and GitHub Pages base-path
+Vitest runs unit and component tests in `jsdom`. React Testing Library suites are
+colocated with production code and use the shared setup and render utility in
+`src/test/`. `npm run test:coverage` creates text, HTML and LCOV reports and enforces
+an 80% baseline for statements, branches, functions and lines. Generated coverage
+reports are excluded from version control and formatting.
+
+Playwright configuration, continuous integration and GitHub Pages base-path
 configuration are tracked as later foundation tasks.
 
 ## Deployment target
