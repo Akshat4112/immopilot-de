@@ -1,0 +1,16 @@
+coverage/
+dist/
+node_modules/
+outputs/
+playwright-report/
+test-results/
+tmp/
+
+# Normative product specifications and fixtures are maintained independently.
+data/
+docs/
+examples/
+schemas/
+
+# npm owns the generated lockfile formatting.
+package-lock.json

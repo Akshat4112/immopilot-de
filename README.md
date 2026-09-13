@@ -57,17 +57,17 @@ FND-002 establishes the approved Version 1 dependency set. Versions are pinned
 exactly in `package.json` and the complete reproducible graph is recorded in
 `package-lock.json`.
 
-| Area | Packages | Purpose |
-| --- | --- | --- |
-| Forms and validation | `react-hook-form`, `@hookform/resolvers`, `zod` | Typed form state, validation and schema integration |
-| Financial arithmetic | `decimal.js` | Deterministic decimal calculations without binary floating-point drift |
-| Routing | `react-router-dom` | Client-side navigation compatible with static hosting |
-| Internationalisation | `i18next`, `react-i18next` | German and English interface resources and React bindings |
-| Charts | `recharts` | Responsive financial charts built on React and SVG |
-| Client state | `zustand` | Small local scenario and interface state stores |
-| Unit and component tests | `vitest`, `@vitest/coverage-v8`, Testing Library, `jsdom` | Calculation, hook and accessible component tests with coverage |
-| Browser tests | `@playwright/test` | End-to-end checks for critical workflows and GitHub Pages behavior |
-| Code quality | ESLint, TypeScript ESLint, React Hooks/Refresh plugins, Prettier | Static analysis and consistent formatting |
+| Area                     | Packages                                                         | Purpose                                                                |
+| ------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Forms and validation     | `react-hook-form`, `@hookform/resolvers`, `zod`                  | Typed form state, validation and schema integration                    |
+| Financial arithmetic     | `decimal.js`                                                     | Deterministic decimal calculations without binary floating-point drift |
+| Routing                  | `react-router-dom`                                               | Client-side navigation compatible with static hosting                  |
+| Internationalisation     | `i18next`, `react-i18next`                                       | German and English interface resources and React bindings              |
+| Charts                   | `recharts`                                                       | Responsive financial charts built on React and SVG                     |
+| Client state             | `zustand`                                                        | Small local scenario and interface state stores                        |
+| Unit and component tests | `vitest`, `@vitest/coverage-v8`, Testing Library, `jsdom`        | Calculation, hook and accessible component tests with coverage         |
+| Browser tests            | `@playwright/test`                                               | End-to-end checks for critical workflows and GitHub Pages behavior     |
+| Code quality             | ESLint, TypeScript ESLint, React Hooks/Refresh plugins, Prettier | Static analysis and consistent formatting                              |
 
 The interface will use semantic HTML and project-owned CSS, so no component or
 CSS framework is approved at this stage. This keeps the initial bundle and design
@@ -94,14 +94,24 @@ npm run dev
 Available foundation commands:
 
 ```bash
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
 npm run typecheck
 npm run build
 npm run preview
 ```
 
 `npm run build` performs strict TypeScript project compilation before creating the
-static `dist/` output. Linting, automated tests, application architecture and GitHub
-Pages base-path configuration are tracked as later foundation tasks.
+static `dist/` output. `npm run lint` applies the approved type-aware TypeScript,
+React Hooks and React Refresh rules with zero warnings allowed. `npm run format:check`
+checks the application and configuration files against the shared Prettier rules.
+Normative financial specifications, versioned data fixtures and the npm-generated
+lockfile are intentionally excluded from automatic formatting.
+
+Automated test configuration, application architecture and GitHub Pages base-path
+configuration are tracked as later foundation tasks.
 
 ## Deployment target
 
