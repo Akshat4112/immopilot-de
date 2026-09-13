@@ -1,0 +1,210 @@
+{
+  "fixtureSetVersion": "1.0.0",
+  "calculationSpecificationVersion": "1.0.0",
+  "assumptionSetVersion": "de-2026.09",
+  "moneyUnit": "cent",
+  "rateUnit": "decimal",
+  "roundingMode": "half-up",
+  "cases": [
+    {
+      "id": "transfer-tax-lookup",
+      "calculation": "transfer-tax",
+      "input": {
+        "purchasePriceCents": 10000000
+      },
+      "expectedByState": {
+        "DE-BW": 500000,
+        "DE-BY": 350000,
+        "DE-BE": 600000,
+        "DE-BB": 650000,
+        "DE-HB": 550000,
+        "DE-HH": 550000,
+        "DE-HE": 600000,
+        "DE-MV": 600000,
+        "DE-NI": 500000,
+        "DE-NW": 650000,
+        "DE-RP": 500000,
+        "DE-SL": 650000,
+        "DE-SN": 550000,
+        "DE-ST": 500000,
+        "DE-SH": 650000,
+        "DE-TH": 500000
+      }
+    },
+    {
+      "id": "acquisition-a-no-broker",
+      "calculation": "acquisition-costs",
+      "input": {
+        "purchasePriceCents": 25000000,
+        "stateId": "DE-BW",
+        "notaryRate": 0.01,
+        "landRegisterRate": 0.005,
+        "brokerInvolved": false,
+        "buyerBrokerRate": 0.0357,
+        "renovationBudgetCents": 2000000,
+        "movingSetupCostsCents": 300000,
+        "financedAcquisitionCostShare": 0,
+        "downPaymentCents": 5000000,
+        "availableEquityCents": 10000000
+      },
+      "expected": {
+        "transferTaxCents": 1250000,
+        "notaryCostsCents": 250000,
+        "landRegisterCostsCents": 125000,
+        "buyerBrokerCommissionCents": 0,
+        "transactionAcquisitionCostsCents": 1625000,
+        "postPurchaseBudgetCents": 2300000,
+        "totalProjectCostCents": 28925000,
+        "financedAcquisitionCostsCents": 0,
+        "requiredEquityCents": 8925000,
+        "loanAmountCents": 20000000,
+        "cashRemainingCents": 1075000,
+        "loanToPurchasePriceRatio": 0.8
+      }
+    },
+    {
+      "id": "acquisition-b-broker-and-financed-costs",
+      "calculation": "acquisition-costs",
+      "input": {
+        "purchasePriceCents": 30000000,
+        "stateId": "DE-NW",
+        "notaryRate": 0.01,
+        "landRegisterRate": 0.005,
+        "brokerInvolved": true,
+        "buyerBrokerRate": 0.0357,
+        "renovationBudgetCents": 1000000,
+        "movingSetupCostsCents": 200000,
+        "financedAcquisitionCostShare": 0.25,
+        "downPaymentCents": 2500000,
+        "availableEquityCents": 7000000
+      },
+      "expected": {
+        "transferTaxCents": 1950000,
+        "notaryCostsCents": 300000,
+        "landRegisterCostsCents": 150000,
+        "buyerBrokerCommissionCents": 1071000,
+        "transactionAcquisitionCostsCents": 3471000,
+        "financedAcquisitionCostsCents": 867750,
+        "postPurchaseBudgetCents": 1200000,
+        "totalProjectCostCents": 34671000,
+        "requiredEquityCents": 6303250,
+        "loanAmountCents": 28367750,
+        "cashRemainingCents": 696750,
+        "loanToPurchasePriceRatio": 0.9455916666666667
+      }
+    },
+    {
+      "id": "mortgage-base",
+      "calculation": "mortgage-schedule",
+      "input": {
+        "principalCents": 20000000,
+        "nominalAnnualRate": 0.035,
+        "initialRepaymentRate": 0.02,
+        "fixedInterestMonths": 120,
+        "annualAdditionalRepaymentCents": 0
+      },
+      "expected": {
+        "contractualMonthlyPaymentCents": 91667,
+        "month1InterestCents": 58333,
+        "month1ScheduledPrincipalCents": 33334,
+        "month1ClosingBalanceCents": 19966666,
+        "interestThroughFixedPeriodCents": 6218913,
+        "scheduledPrincipalThroughFixedPeriodCents": 4781127,
+        "remainingDebtAtFixedPeriodCents": 15218873,
+        "projectedPayoffMonth": 348,
+        "projectedLifetimeInterestCents": 11839480
+      }
+    },
+    {
+      "id": "refinancing-stress",
+      "calculation": "refinancing",
+      "input": {
+        "remainingDebtCents": 15218873,
+        "initialRepaymentRate": 0.02,
+        "currentMonthlyPaymentCents": 91667
+      },
+      "expectedScenarios": [
+        {
+          "nominalAnnualRate": 0.02,
+          "futureMonthlyPaymentCents": 50730,
+          "monthlyPaymentChangeCents": -40937
+        },
+        {
+          "nominalAnnualRate": 0.04,
+          "futureMonthlyPaymentCents": 76094,
+          "monthlyPaymentChangeCents": -15573
+        },
+        {
+          "nominalAnnualRate": 0.06,
+          "futureMonthlyPaymentCents": 101459,
+          "monthlyPaymentChangeCents": 9792
+        }
+      ]
+    },
+    {
+      "id": "annual-additional-repayment",
+      "calculation": "mortgage-schedule",
+      "input": {
+        "principalCents": 20000000,
+        "nominalAnnualRate": 0.035,
+        "initialRepaymentRate": 0.02,
+        "fixedInterestMonths": 120,
+        "annualAdditionalRepaymentCents": 500000,
+        "annualAdditionalRepaymentMonth": 12
+      },
+      "expected": {
+        "interestThroughFixedPeriodCents": 5337817,
+        "remainingDebtAtFixedPeriodCents": 9337777,
+        "additionalPrincipalThroughFixedPeriodCents": 5000000,
+        "projectedPayoffMonth": 203,
+        "projectedLifetimeInterestCents": 6518866,
+        "interestSavedThroughFixedPeriodCents": 881096,
+        "projectedLifetimeInterestSavedCents": 5320614,
+        "timeSavedMonths": 145
+      }
+    },
+    {
+      "id": "rental-investment",
+      "calculation": "rental-investment",
+      "inputScenarioPath": "../../examples/scenarios/rental-investment.json",
+      "expected": {
+        "annualNetColdRentCents": 1200000,
+        "effectiveAnnualRentCents": 1140000,
+        "annualOwnerCostsCents": 300000,
+        "netOperatingIncomeCents": 840000,
+        "grossRentalYield": 0.05,
+        "netRentalYield": 0.03162650602409639,
+        "monthlyMortgagePaymentCents": 88000,
+        "monthlyPreTaxCashFlowBeforeExtraCents": -18000,
+        "annualPreTaxCashFlowBeforeExtraCents": -216000,
+        "firstYearInterestCents": 665780,
+        "firstYearScheduledPrincipalCents": 390220,
+        "remainingDebtAfterHoldingPeriodCents": 14610159,
+        "projectedSalePriceCents": 29255866,
+        "sellingCostsCents": 877676,
+        "netSaleProceedsCents": 13768031,
+        "cumulativeCashFlowCents": -2160000,
+        "estimatedProfitBeforeTaxCents": 4248031
+      }
+    },
+    {
+      "id": "rent-versus-buy",
+      "calculation": "rent-versus-buy",
+      "inputScenarioPath": "../../examples/scenarios/owner-occupier.json",
+      "expected": {
+        "analysisMonth": 120,
+        "projectedPropertyValueCents": 30474860,
+        "remainingMortgageDebtCents": 15218873,
+        "buyerAlternativePortfolioCents": 68717,
+        "buyerNetWealthCents": 14410459,
+        "renterNetWealthCents": 11948986,
+        "buyerMinusRenterCents": 2461473,
+        "firstBreakEvenMonth": 68,
+        "year5BuyerNetWealthCents": 8956183,
+        "year5RenterNetWealthCents": 9258724,
+        "year6BuyerNetWealthCents": 9975761,
+        "year6RenterNetWealthCents": 9786206
+      }
+    }
+  ]
+}

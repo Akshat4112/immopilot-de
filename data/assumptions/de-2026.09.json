@@ -1,0 +1,323 @@
+{
+  "$schema": "../../schemas/assumptions.schema.json",
+  "documentType": "assumption-set",
+  "schemaVersion": "1.0.0",
+  "assumptionSetVersion": "de-2026.09",
+  "calculationSpecificationVersion": "1.0.0",
+  "jurisdiction": "DE",
+  "currency": "EUR",
+  "effectiveFrom": "2026-09-13",
+  "verifiedOn": "2026-09-13",
+  "acquisitionDefaults": {
+    "notaryRate": {
+      "value": 0.01,
+      "classification": "planning-proxy",
+      "editable": true,
+      "vatTreatment": "included-in-default",
+      "sourceIds": [
+        "bnotk-notary-costs",
+        "bnotk-notary-examples"
+      ]
+    },
+    "landRegisterRate": {
+      "value": 0.005,
+      "classification": "planning-proxy",
+      "editable": true,
+      "vatTreatment": "not-applicable",
+      "sourceIds": [
+        "gnotkg-fee-schedule",
+        "gnotkg-value-table"
+      ]
+    },
+    "broker": {
+      "involved": false,
+      "buyerCommissionRate": {
+        "value": 0.0357,
+        "classification": "contract-specific-rate",
+        "editable": true,
+        "vatTreatment": "included-in-default",
+        "sourceIds": [
+          "bgb-656b",
+          "bgb-656c",
+          "bgb-656d",
+          "ustg-12",
+          "vz-broker-2026-07-27"
+        ]
+      },
+      "splitRule": "contract-controls"
+    },
+    "renovationBudget": {
+      "amountCents": 0,
+      "budgetStatus": "not-budgeted",
+      "classification": "user-specific-amount",
+      "editable": true,
+      "timeScope": "Before occupation or letting, or within the first 12 months after purchase",
+      "sourceIds": [
+        "vz-renovation-2025-10-22"
+      ]
+    },
+    "movingSetupCosts": {
+      "amountCents": 0,
+      "budgetStatus": "not-budgeted",
+      "classification": "user-specific-amount",
+      "editable": true,
+      "sourceIds": [
+        "vz-moving-2025-06-11"
+      ]
+    }
+  },
+  "transferTax": {
+    "classification": "statutory-rate",
+    "taxableBasis": "purchase-price",
+    "editable": true,
+    "rateSourceDate": "2026-01-28",
+    "sourceIds": [
+      "dnoti-transfer-tax-2026-01-28",
+      "gg-105",
+      "grestg-11"
+    ],
+    "states": [
+      {
+        "id": "DE-BW",
+        "nameDe": "Baden-Württemberg",
+        "nameEn": "Baden-Württemberg",
+        "rate": 0.05,
+        "effectiveFrom": "2011-11-05"
+      },
+      {
+        "id": "DE-BY",
+        "nameDe": "Bayern",
+        "nameEn": "Bavaria",
+        "rate": 0.035,
+        "effectiveFrom": "1998-01-01"
+      },
+      {
+        "id": "DE-BE",
+        "nameDe": "Berlin",
+        "nameEn": "Berlin",
+        "rate": 0.06,
+        "effectiveFrom": "2014-01-01"
+      },
+      {
+        "id": "DE-BB",
+        "nameDe": "Brandenburg",
+        "nameEn": "Brandenburg",
+        "rate": 0.065,
+        "effectiveFrom": "2015-07-01"
+      },
+      {
+        "id": "DE-HB",
+        "nameDe": "Bremen",
+        "nameEn": "Bremen",
+        "rate": 0.055,
+        "effectiveFrom": "2025-07-01"
+      },
+      {
+        "id": "DE-HH",
+        "nameDe": "Hamburg",
+        "nameEn": "Hamburg",
+        "rate": 0.055,
+        "effectiveFrom": "2023-01-01"
+      },
+      {
+        "id": "DE-HE",
+        "nameDe": "Hessen",
+        "nameEn": "Hesse",
+        "rate": 0.06,
+        "effectiveFrom": "2014-08-01"
+      },
+      {
+        "id": "DE-MV",
+        "nameDe": "Mecklenburg-Vorpommern",
+        "nameEn": "Mecklenburg-Western Pomerania",
+        "rate": 0.06,
+        "effectiveFrom": "2019-07-01"
+      },
+      {
+        "id": "DE-NI",
+        "nameDe": "Niedersachsen",
+        "nameEn": "Lower Saxony",
+        "rate": 0.05,
+        "effectiveFrom": "2014-01-01"
+      },
+      {
+        "id": "DE-NW",
+        "nameDe": "Nordrhein-Westfalen",
+        "nameEn": "North Rhine-Westphalia",
+        "rate": 0.065,
+        "effectiveFrom": "2015-01-01"
+      },
+      {
+        "id": "DE-RP",
+        "nameDe": "Rheinland-Pfalz",
+        "nameEn": "Rhineland-Palatinate",
+        "rate": 0.05,
+        "effectiveFrom": "2012-03-01"
+      },
+      {
+        "id": "DE-SL",
+        "nameDe": "Saarland",
+        "nameEn": "Saarland",
+        "rate": 0.065,
+        "effectiveFrom": "2015-01-01"
+      },
+      {
+        "id": "DE-SN",
+        "nameDe": "Sachsen",
+        "nameEn": "Saxony",
+        "rate": 0.055,
+        "effectiveFrom": "2023-01-01"
+      },
+      {
+        "id": "DE-ST",
+        "nameDe": "Sachsen-Anhalt",
+        "nameEn": "Saxony-Anhalt",
+        "rate": 0.05,
+        "effectiveFrom": "2012-03-01"
+      },
+      {
+        "id": "DE-SH",
+        "nameDe": "Schleswig-Holstein",
+        "nameEn": "Schleswig-Holstein",
+        "rate": 0.065,
+        "effectiveFrom": "2014-01-01"
+      },
+      {
+        "id": "DE-TH",
+        "nameDe": "Thüringen",
+        "nameEn": "Thuringia",
+        "rate": 0.05,
+        "effectiveFrom": "2024-01-01"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "dnoti-transfer-tax-2026-01-28",
+      "publisher": "Deutsches Notarinstitut",
+      "title": "Aktuelle Grunderwerbsteuersätze — Stand: 28.01.2026",
+      "url": "https://www.dnoti.de/fileadmin/user_upload/Arbeitshilfen/Steuerrecht/Aktuelle_Grunderwerbsteuersaetze_Stand_28_01_2026.pdf",
+      "authorityType": "official-professional-guidance",
+      "sourceDate": "2026-01-28",
+      "verifiedOn": "2026-09-12"
+    },
+    {
+      "id": "gg-105",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "Article 105 Grundgesetz",
+      "url": "https://www.gesetze-im-internet.de/gg/art_105.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-12"
+    },
+    {
+      "id": "grestg-11",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "Section 11 Grunderwerbsteuergesetz",
+      "url": "https://www.gesetze-im-internet.de/grestg_1983/__11.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-12"
+    },
+    {
+      "id": "bnotk-notary-costs",
+      "publisher": "Bundesnotarkammer",
+      "title": "Notarkosten",
+      "url": "https://www.notar.de/themen/notarkosten",
+      "authorityType": "official-professional-guidance",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "bnotk-notary-examples",
+      "publisher": "Bundesnotarkammer",
+      "title": "Beispiele für Notarkosten",
+      "url": "https://www.notar.de/themen/notarkosten/beispiele",
+      "authorityType": "official-professional-guidance",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "gnotkg-fee-schedule",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "GNotKG Anlage 1",
+      "url": "https://www.gesetze-im-internet.de/gnotkg/anlage_1.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "gnotkg-value-table",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "GNotKG Anlage 2",
+      "url": "https://www.gesetze-im-internet.de/gnotkg/anlage_2.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "bgb-656b",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "§ 656b BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__656b.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "bgb-656c",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "§ 656c BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__656c.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "bgb-656d",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "§ 656d BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__656d.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "ustg-12",
+      "publisher": "Bundesministerium der Justiz and Bundesamt für Justiz",
+      "title": "§ 12 Umsatzsteuergesetz",
+      "url": "https://www.gesetze-im-internet.de/ustg_1980/__12.html",
+      "authorityType": "statute",
+      "sourceDate": null,
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "vz-broker-2026-07-27",
+      "publisher": "Verbraucherzentrale",
+      "title": "Maklergebühren bei Immobilien: Welche sind erlaubt, welche nicht?",
+      "url": "https://www.verbraucherzentrale.de/wissen/vertraege-reklamation/kundenrechte/maklergebuehren-bei-immobilien-welche-sind-erlaubt-welche-nicht-95387",
+      "authorityType": "consumer-guidance",
+      "sourceDate": "2026-07-27",
+      "verifiedOn": "2026-09-13"
+    },
+    {
+      "id": "vz-renovation-2025-10-22",
+      "publisher": "Verbraucherzentrale",
+      "title": "Rechenbeispiele für eine Fassadendämmung",
+      "url": "https://www.verbraucherzentrale.de/wissen/energie/energetische-sanierung/rechenbeispiele-fuer-eine-fassadendaemmung-8192",
+      "authorityType": "consumer-guidance",
+      "sourceDate": "2025-10-22",
+      "verifiedOn": "2026-09-13",
+      "notes": "Supports property- and measure-specific budgeting; its façade example is not a whole-renovation default."
+    },
+    {
+      "id": "vz-moving-2025-06-11",
+      "publisher": "Verbraucherzentrale",
+      "title": "Umzugsunternehmen: So fallen Sie nicht auf Umzugs-Abzocker rein",
+      "url": "https://www.verbraucherzentrale.de/wissen/vertraege-reklamation/kundenrechte/umzugsunternehmen-so-fallen-sie-nicht-auf-umzugsabzocker-rein-10470",
+      "authorityType": "consumer-guidance",
+      "sourceDate": "2025-06-11",
+      "verifiedOn": "2026-09-13"
+    }
+  ]
+}
