@@ -38,6 +38,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - [Acquisition-cost assumptions](docs/acquisition-cost-assumptions.md): editable defaults, legal rules, source dates and limitations for notary, land-register, broker, renovation and setup costs
 - [Calculation specification](docs/calculation-specification.md): normative formulas, timing, precision, validation rules and golden test vectors
 - [Versioned assumptions schema](docs/assumptions-schema.md): stable data types, defaults, provenance, migrations, examples and validation fixtures
+- [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
 
 ## Planned technology
 
