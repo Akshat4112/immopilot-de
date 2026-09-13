@@ -1,0 +1,219 @@
+{
+  "fixtureSetVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "assumptionSetVersion": "de-2026.09",
+  "calculationSpecificationVersion": "1.0.0",
+  "moneyUnit": "cent",
+  "rateUnit": "decimal",
+  "roundingMode": "half-up",
+  "tolerances": {
+    "moneyCents": 0,
+    "integerCounts": 0,
+    "rates": 1e-12
+  },
+  "cases": [
+    {
+      "id": "demo-owner-occupier-bw",
+      "inputScenarioPath": "../../examples/scenarios/owner-occupier.json",
+      "inputScenarioSha256": "48fcd1b597507a3b5f340c44defe36fb0b5d11803a4a1605bd3d6a91c124111e",
+      "expected": {
+        "acquisition": {
+          "transferTaxCents": 1250000,
+          "notaryCostsCents": 250000,
+          "landRegisterCostsCents": 125000,
+          "buyerBrokerCommissionCents": 0,
+          "transactionAcquisitionCostsCents": 1625000,
+          "postPurchaseBudgetCents": 0,
+          "totalProjectCostCents": 26625000,
+          "financedAcquisitionCostsCents": 0,
+          "requiredEquityCents": 6625000,
+          "loanAmountCents": 20000000,
+          "cashGapCents": 0,
+          "cashRemainingCents": 0,
+          "loanToPurchasePriceRatio": 0.8
+        },
+        "mortgageBaseline": {
+          "contractualMonthlyPaymentCents": 91667,
+          "month1InterestCents": 58333,
+          "month1ScheduledPrincipalCents": 33334,
+          "month1ClosingBalanceCents": 19966666,
+          "firstYearInterestCents": 693521,
+          "firstYearScheduledPrincipalCents": 406483,
+          "interestThroughFixedPeriodCents": 6218913,
+          "scheduledPrincipalThroughFixedPeriodCents": 4781127,
+          "additionalPrincipalThroughFixedPeriodCents": 0,
+          "remainingDebtAtFixedPeriodCents": 15218873,
+          "projectedPayoffMonth": 348,
+          "projectedLifetimeInterestCents": 11839480
+        },
+        "sondertilgungComparison": {
+          "inputOverrides": {
+            "annualAdditionalRepaymentCents": 500000,
+            "annualAdditionalRepaymentMonth": 12
+          },
+          "withAdditionalRepayment": {
+            "contractualMonthlyPaymentCents": 91667,
+            "interestThroughFixedPeriodCents": 5337817,
+            "scheduledPrincipalThroughFixedPeriodCents": 5662223,
+            "additionalPrincipalThroughFixedPeriodCents": 5000000,
+            "remainingDebtAtFixedPeriodCents": 9337777,
+            "projectedPayoffMonth": 203,
+            "projectedLifetimeInterestCents": 6518866
+          },
+          "interestSavedThroughFixedPeriodCents": 881096,
+          "projectedLifetimeInterestSavedCents": 5320614,
+          "timeSavedMonths": 145
+        },
+        "refinancingBaseline": [
+          {
+            "id": "lower-rate",
+            "nominalAnnualRate": 0.02,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 50730,
+            "monthlyPaymentChangeCents": -40937
+          },
+          {
+            "id": "base-rate",
+            "nominalAnnualRate": 0.04,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 76094,
+            "monthlyPaymentChangeCents": -15573
+          },
+          {
+            "id": "higher-rate",
+            "nominalAnnualRate": 0.06,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 101459,
+            "monthlyPaymentChangeCents": 9792
+          }
+        ],
+        "refinancingAfterSondertilgung": [
+          {
+            "id": "lower-rate",
+            "nominalAnnualRate": 0.02,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 31126,
+            "monthlyPaymentChangeCents": -60541
+          },
+          {
+            "id": "base-rate",
+            "nominalAnnualRate": 0.04,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 46689,
+            "monthlyPaymentChangeCents": -44978
+          },
+          {
+            "id": "higher-rate",
+            "nominalAnnualRate": 0.06,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 62252,
+            "monthlyPaymentChangeCents": -29415
+          }
+        ],
+        "rentVersusBuy": {
+          "analysisMonth": 120,
+          "projectedPropertyValueCents": 30474860,
+          "remainingMortgageDebtCents": 15218873,
+          "buyerAlternativePortfolioCents": 68717,
+          "buyerNetWealthCents": 14410459,
+          "renterNetWealthCents": 11948986,
+          "buyerMinusRenterCents": 2461473,
+          "firstBreakEvenMonth": 68,
+          "breakEvenYear": 6,
+          "year5BuyerNetWealthCents": 8956183,
+          "year5RenterNetWealthCents": 9258724,
+          "year6BuyerNetWealthCents": 9975761,
+          "year6RenterNetWealthCents": 9786206
+        }
+      }
+    },
+    {
+      "id": "demo-rental-investment-bw",
+      "inputScenarioPath": "../../examples/scenarios/rental-investment.json",
+      "inputScenarioSha256": "36b9b0c5721b8f7cb59fca1147758c1432cacbdf6cfab214578b494ca57f5f62",
+      "expected": {
+        "acquisition": {
+          "transferTaxCents": 1200000,
+          "notaryCostsCents": 240000,
+          "landRegisterCostsCents": 120000,
+          "buyerBrokerCommissionCents": 0,
+          "transactionAcquisitionCostsCents": 1560000,
+          "postPurchaseBudgetCents": 1000000,
+          "totalProjectCostCents": 26560000,
+          "financedAcquisitionCostsCents": 0,
+          "requiredEquityCents": 7360000,
+          "loanAmountCents": 19200000,
+          "cashGapCents": 0,
+          "cashRemainingCents": 0,
+          "loanToPurchasePriceRatio": 0.8
+        },
+        "mortgageBaseline": {
+          "contractualMonthlyPaymentCents": 88000,
+          "month1InterestCents": 56000,
+          "month1ScheduledPrincipalCents": 32000,
+          "month1ClosingBalanceCents": 19168000,
+          "firstYearInterestCents": 665780,
+          "firstYearScheduledPrincipalCents": 390220,
+          "interestThroughFixedPeriodCents": 5970159,
+          "scheduledPrincipalThroughFixedPeriodCents": 4589841,
+          "additionalPrincipalThroughFixedPeriodCents": 0,
+          "remainingDebtAtFixedPeriodCents": 14610159,
+          "projectedPayoffMonth": 348,
+          "projectedLifetimeInterestCents": 11365968
+        },
+        "refinancingBaseline": [
+          {
+            "id": "lower-rate",
+            "nominalAnnualRate": 0.02,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 48701,
+            "monthlyPaymentChangeCents": -39299
+          },
+          {
+            "id": "base-rate",
+            "nominalAnnualRate": 0.04,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 73051,
+            "monthlyPaymentChangeCents": -14949
+          },
+          {
+            "id": "higher-rate",
+            "nominalAnnualRate": 0.06,
+            "initialRepaymentRate": 0.02,
+            "futureMonthlyPaymentCents": 97401,
+            "monthlyPaymentChangeCents": 9401
+          }
+        ],
+        "rentalInvestment": {
+          "annualNetColdRentCents": 1200000,
+          "effectiveAnnualRentCents": 1140000,
+          "annualOwnerCostsCents": 300000,
+          "netOperatingIncomeCents": 840000,
+          "investmentCostBasisCents": 26560000,
+          "grossRentalYield": 0.05,
+          "netRentalYield": 0.03162650602409639,
+          "monthlyMortgagePaymentCents": 88000,
+          "monthlyPreTaxCashFlowBeforeExtraCents": -18000,
+          "annualPreTaxCashFlowBeforeExtraCents": -216000,
+          "annualPreTaxCashFlowAfterExtraCents": -216000,
+          "cashOnCashReturn": -0.02934782608695652,
+          "debtReductionAfterHoldingPeriodCents": 4589841,
+          "remainingDebtAfterHoldingPeriodCents": 14610159,
+          "projectedSalePriceCents": 29255866,
+          "sellingCostsCents": 877676,
+          "netSaleProceedsCents": 13768031,
+          "cumulativeCashFlowCents": -2160000,
+          "estimatedProfitBeforeTaxCents": 4248031
+        }
+      }
+    }
+  ],
+  "requiredInvariants": [
+    "loanAmountCents + requiredEquityCents = totalProjectCostCents",
+    "month1InterestCents + month1ScheduledPrincipalCents = contractualMonthlyPaymentCents",
+    "openingBalanceCents - scheduledPrincipalCents - additionalPrincipalCents = closingBalanceCents for every mortgage month",
+    "scheduledPrincipalThroughFixedPeriodCents + additionalPrincipalThroughFixedPeriodCents + remainingDebtAtFixedPeriodCents = loanAmountCents",
+    "netSaleProceedsCents = projectedSalePriceCents - sellingCostsCents - remainingDebtAfterHoldingPeriodCents",
+    "estimatedProfitBeforeTaxCents = netSaleProceedsCents + cumulativeCashFlowCents - requiredEquityCents"
+  ]
+}
