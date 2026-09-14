@@ -253,10 +253,10 @@ describe('mortgage payment calculation', () => {
     )
     expectValidationResult(
       calculateMortgagePayment({
-        paymentMode: 'invalid' as MortgagePaymentInput['paymentMode'],
+        paymentMode: 'invalid',
         financing: financingResult,
         nominalAnnualRate: 0.035,
-      } as MortgagePaymentInput),
+      } as unknown as MortgagePaymentInput),
       'OUT_OF_RANGE',
       'paymentMode',
     )
