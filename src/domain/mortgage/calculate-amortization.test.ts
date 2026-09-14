@@ -60,7 +60,7 @@ function payment(input: Omit<MortgagePaymentInput, 'financing'>): NonCashPayment
   const result = calculateMortgagePayment({
     ...input,
     financing: financing(),
-  } as MortgagePaymentInput)
+  })
 
   if (result.status !== 'available' || result.cashPurchase) {
     throw new Error('Expected available financed mortgage payment')
