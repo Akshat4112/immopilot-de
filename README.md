@@ -142,8 +142,9 @@ the Playwright job fails.
 
 ## GitHub Pages deployment
 
-The `Deploy GitHub Pages` workflow publishes the production `dist/` directory when
-a commit reaches `main`. It can also be started manually from the workflow's
+The `Deploy GitHub Pages` workflow publishes the production `dist/` directory after
+the `CI` workflow succeeds for a commit on `main`, preventing failed checks from
+reaching production. It can also be started manually from the workflow's
 `Run workflow` control in GitHub Actions. The build uses the pinned Node.js runtime
 and lockfile, configures Pages, uploads a one-day Pages artifact, and deploys it
 through the protected `github-pages` environment.
