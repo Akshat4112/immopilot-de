@@ -19,15 +19,9 @@ import {
   type AmortizationScheduleRow,
   type CashPurchaseAmortizationScheduleResult,
 } from './amortization-types'
-import type {
-  AvailableMortgagePaymentResult,
-  CashPurchaseMortgagePaymentResult,
-} from './types'
+import type { AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult } from './types'
 
-type MortgagePayment = Exclude<
-  AvailableMortgagePaymentResult,
-  CashPurchaseMortgagePaymentResult
->
+type MortgagePayment = Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
 
 function positiveWholeMonth(value: number | undefined, field: string): number {
   if (value === undefined) {
@@ -133,11 +127,7 @@ function calculateMortgageSchedule(
   let fixedPeriodScheduledPrincipal = zero
 
   for (let month = 1; month <= maximumAmortizationMonths; month += 1) {
-    const interest = multiplyMoney(
-      openingBalance,
-      payment.monthlyNominalRate,
-      'interestCents',
-    )
+    const interest = multiplyMoney(openingBalance, payment.monthlyNominalRate, 'interestCents')
     const plannedPrincipal = subtractMoney(contractualPayment, interest)
 
     if (plannedPrincipal < 0) {
@@ -169,25 +159,16 @@ function calculateMortgageSchedule(
     const closingBalance = subtractMoney(openingBalance, scheduledPrincipal)
 
     cumulativeInterest = addMoney(cumulativeInterest, interest)
-    cumulativeScheduledPrincipal = addMoney(
-      cumulativeScheduledPrincipal,
-      scheduledPrincipal,
-    )
+    cumulativeScheduledPrincipal = addMoney(cumulativeScheduledPrincipal, scheduledPrincipal)
 
     if (month <= 12) {
       firstYearInterest = addMoney(firstYearInterest, interest)
-      firstYearScheduledPrincipal = addMoney(
-        firstYearScheduledPrincipal,
-        scheduledPrincipal,
-      )
+      firstYearScheduledPrincipal = addMoney(firstYearScheduledPrincipal, scheduledPrincipal)
     }
 
     if (month <= fixedInterestMonths) {
       fixedPeriodInterest = addMoney(fixedPeriodInterest, interest)
-      fixedPeriodScheduledPrincipal = addMoney(
-        fixedPeriodScheduledPrincipal,
-        scheduledPrincipal,
-      )
+      fixedPeriodScheduledPrincipal = addMoney(fixedPeriodScheduledPrincipal, scheduledPrincipal)
     }
 
     rows.push({
@@ -215,25 +196,17 @@ function calculateMortgageSchedule(
         fixedInterestMonths,
         selectedMonth,
         remainingDebtAtSelectedMonthCents:
-          selectedMonth === null
-            ? null
-            : remainingDebtAtMonth(rows, principal, selectedMonth),
+          selectedMonth === null ? null : remainingDebtAtMonth(rows, principal, selectedMonth),
         rows,
         payoffMonth: month,
         firstYearInterestCents: firstYearInterest,
         firstYearScheduledPrincipalCents: firstYearScheduledPrincipal,
         interestThroughFixedPeriodCents: fixedPeriodInterest,
-        scheduledPrincipalThroughFixedPeriodCents:
-          fixedPeriodScheduledPrincipal,
+        scheduledPrincipalThroughFixedPeriodCents: fixedPeriodScheduledPrincipal,
         additionalPrincipalThroughFixedPeriodCents: zero,
-        remainingDebtAtFixedPeriodCents: remainingDebtAtMonth(
-          rows,
-          principal,
-          fixedInterestMonths,
-        ),
+        remainingDebtAtFixedPeriodCents: remainingDebtAtMonth(rows, principal, fixedInterestMonths),
         projectedLifetimeInterestCents: cumulativeInterest,
-        projectedLifetimeScheduledPrincipalCents:
-          cumulativeScheduledPrincipal,
+        projectedLifetimeScheduledPrincipalCents: cumulativeScheduledPrincipal,
       }
     }
 
@@ -272,16 +245,9 @@ function calculateAmortizationScheduleInternal(
     return cashPurchaseSchedule(input.payment, selectedMonth)
   }
 
-  const fixedInterestMonths = positiveWholeMonth(
-    input.fixedInterestMonths,
-    'fixedInterestMonths',
-  )
+  const fixedInterestMonths = positiveWholeMonth(input.fixedInterestMonths, 'fixedInterestMonths')
 
-  return calculateMortgageSchedule(
-    input.payment,
-    fixedInterestMonths,
-    selectedMonth,
-  )
+  return calculateMortgageSchedule(input.payment, fixedInterestMonths, selectedMonth)
 }
 
 export function calculateAmortizationSchedule(
