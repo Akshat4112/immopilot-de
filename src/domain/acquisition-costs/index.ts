@@ -1,7 +1,4 @@
-export {
-  acquisitionCostDefaults,
-  calculateAcquisitionCosts,
-} from './calculate-acquisition-costs'
+export { acquisitionCostDefaults, calculateAcquisitionCosts } from './calculate-acquisition-costs'
 export {
   acquisitionAssumptionSetVersion,
   germanStateIds,

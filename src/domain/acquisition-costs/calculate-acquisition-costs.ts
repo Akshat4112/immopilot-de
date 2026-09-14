@@ -258,14 +258,8 @@ export function calculateAcquisitionCosts(input: AcquisitionCostInput): Acquisit
     }
   }
 
-  const postPurchaseBudget = sumMoney([
-    renovationBudget.amountCents,
-    movingSetupCosts.amountCents,
-  ])
-  const allAdditionalInitialOutlay = sumMoney([
-    transactionAcquisitionCosts,
-    postPurchaseBudget,
-  ])
+  const postPurchaseBudget = sumMoney([renovationBudget.amountCents, movingSetupCosts.amountCents])
+  const allAdditionalInitialOutlay = sumMoney([transactionAcquisitionCosts, postPurchaseBudget])
 
   return {
     ...baseResult,

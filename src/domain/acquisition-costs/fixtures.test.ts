@@ -6,11 +6,7 @@ import ownerOccupierJson from '../../../examples/scenarios/owner-occupier.json'
 import rentalInvestmentJson from '../../../examples/scenarios/rental-investment.json'
 
 import { calculateAcquisitionCosts } from './calculate-acquisition-costs'
-import type {
-  AcquisitionCostInput,
-  AvailableAcquisitionCostResult,
-  BudgetStatus,
-} from './types'
+import type { AcquisitionCostInput, AvailableAcquisitionCostResult, BudgetStatus } from './types'
 
 interface Pd007AcquisitionCase {
   id: string
@@ -112,9 +108,7 @@ function expectAcquisitionFixture(
   expect(result.transactionAcquisitionCostsCents).toBe(
     expectedValue(expected, 'transactionAcquisitionCostsCents'),
   )
-  expect(result.postPurchaseBudgetCents).toBe(
-    expectedValue(expected, 'postPurchaseBudgetCents'),
-  )
+  expect(result.postPurchaseBudgetCents).toBe(expectedValue(expected, 'postPurchaseBudgetCents'))
   expect(result.totalProjectCostCents).toBe(expectedValue(expected, 'totalProjectCostCents'))
 }
 

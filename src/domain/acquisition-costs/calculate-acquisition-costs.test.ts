@@ -207,9 +207,7 @@ describe('German acquisition-cost calculation', () => {
         stateId: 'DE-BW',
         renovationBudget: null as unknown as PostPurchaseBudgetInput,
       }),
-    ).toThrowError(
-      expect.objectContaining({ code: 'INVALID_TYPE', field: 'renovationBudget' }),
-    )
+    ).toThrowError(expect.objectContaining({ code: 'INVALID_TYPE', field: 'renovationBudget' }))
   })
 
   it('detects overflow when composing the all-in project cost', () => {

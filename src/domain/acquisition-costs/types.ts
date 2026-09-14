@@ -5,10 +5,7 @@ import type { GermanStateId } from './tax-rates'
 export const budgetStatuses = ['not-budgeted', 'confirmed-zero', 'budgeted'] as const
 
 export type BudgetStatus = (typeof budgetStatuses)[number]
-export type AcquisitionAssumptionOrigin =
-  | 'state-lookup'
-  | 'assumption-default'
-  | 'user-override'
+export type AcquisitionAssumptionOrigin = 'state-lookup' | 'assumption-default' | 'user-override'
 export type UnconfirmedBudgetField = 'renovationBudget' | 'movingSetupCosts'
 
 export interface PostPurchaseBudgetInput {
@@ -83,5 +80,4 @@ export interface UnavailableAcquisitionCostResult extends AcquisitionCostResultB
 }
 
 export type AcquisitionCostResult =
-  | AvailableAcquisitionCostResult
-  | UnavailableAcquisitionCostResult
+  AvailableAcquisitionCostResult | UnavailableAcquisitionCostResult
