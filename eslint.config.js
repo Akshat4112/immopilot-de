@@ -11,6 +11,7 @@ const sourceAreaImports = (...areas) => areas.flatMap((area) => [`**/${area}`, `
 export default defineConfig(
   {
     ignores: [
+      'blob-report/',
       'coverage/',
       'dist/',
       'node_modules/',

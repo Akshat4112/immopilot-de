@@ -5,6 +5,7 @@ node_modules/
 dist/
 
 # Test and coverage output
+blob-report/
 coverage/
 playwright-report/
 test-results/

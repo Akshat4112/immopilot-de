@@ -89,6 +89,7 @@ documented runtime and install the exact dependency graph from the lockfile:
 ```bash
 nvm use
 npm ci
+npx playwright install chromium
 npm run dev
 ```
 
@@ -102,6 +103,9 @@ npm run format:check
 npm test
 npm run test:watch
 npm run test:coverage
+npm run test:e2e
+npm run test:e2e:ui
+npm run test:e2e:report
 npm run typecheck
 npm run build
 npm run preview
@@ -120,8 +124,14 @@ colocated with production code and use the shared setup and render utility in
 an 80% baseline for statements, branches, functions and lines. Generated coverage
 reports are excluded from version control and formatting.
 
-Playwright configuration, continuous integration and GitHub Pages base-path
-configuration are tracked as later foundation tasks.
+Playwright runs browser tests against the production build using Chromium. `npm run
+test:e2e` builds the application, starts an isolated Vite preview server and executes
+the smoke suite. Use `npm run test:e2e:ui` for the interactive runner and `npm run
+test:e2e:report` to reopen the most recent HTML report. Traces, screenshots and video
+are retained only according to the failure and retry policy in `playwright.config.ts`.
+
+Continuous integration and GitHub Pages base-path configuration are tracked as later
+foundation tasks.
 
 ## Deployment target
 

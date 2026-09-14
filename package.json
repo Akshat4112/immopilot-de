@@ -17,6 +17,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
