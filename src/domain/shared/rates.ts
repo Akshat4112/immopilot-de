@@ -52,10 +52,7 @@ export function proportionRate(value: DecimalValue, field = 'rate'): Rate {
   })
 }
 
-export function nominalAnnualRate(
-  value: DecimalValue,
-  field = 'nominalAnnualRate',
-): Rate {
+export function nominalAnnualRate(value: DecimalValue, field = 'nominalAnnualRate'): Rate {
   return rateWithin(value, field, {
     min: 0,
     max: 1,
@@ -64,10 +61,7 @@ export function nominalAnnualRate(
   })
 }
 
-export function initialRepaymentRate(
-  value: DecimalValue,
-  field = 'initialRepaymentRate',
-): Rate {
+export function initialRepaymentRate(value: DecimalValue, field = 'initialRepaymentRate'): Rate {
   return rateWithin(value, field, {
     min: 0,
     max: 1,

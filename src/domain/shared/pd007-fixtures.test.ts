@@ -3,12 +3,7 @@ import { describe, expect, it } from 'vitest'
 import fixtureSetJson from '../../../data/fixtures/pd007-v1.json'
 
 import { moneyCents, multiplyMoney } from './money'
-import {
-  addRates,
-  initialRepaymentRate,
-  nominalAnnualRate,
-  proportionRate,
-} from './rates'
+import { addRates, initialRepaymentRate, nominalAnnualRate, proportionRate } from './rates'
 import { safeDivide } from './rounding'
 
 interface NumericFixtureCase {

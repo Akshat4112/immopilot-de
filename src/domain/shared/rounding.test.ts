@@ -35,9 +35,7 @@ describe('decimal precision and rounding', () => {
     expect(() => decimal(Number.POSITIVE_INFINITY)).toThrowError(
       expect.objectContaining({ code: 'NOT_FINITE' }),
     )
-    expect(() => roundHalfUp(1, -1)).toThrowError(
-      expect.objectContaining({ code: 'OUT_OF_RANGE' }),
-    )
+    expect(() => roundHalfUp(1, -1)).toThrowError(expect.objectContaining({ code: 'OUT_OF_RANGE' }))
     expect(() => roundHalfUpToInteger('9007199254740992')).toThrowError(
       expect.objectContaining({ code: 'ARITHMETIC_OVERFLOW' }),
     )

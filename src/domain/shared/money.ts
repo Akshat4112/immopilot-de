@@ -1,11 +1,7 @@
 import type Decimal from 'decimal.js'
 
 import { decimal, roundHalfUpToInteger } from './rounding'
-import {
-  assertSafeInteger,
-  financialValidationErrorCodes,
-  validationFailure,
-} from './validation'
+import { assertSafeInteger, financialValidationErrorCodes, validationFailure } from './validation'
 
 declare const moneyCentsBrand: unique symbol
 

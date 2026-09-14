@@ -36,9 +36,7 @@ describe('canonical decimal rates', () => {
     expect(() => initialRepaymentRate(0)).toThrowError(
       expect.objectContaining({ code: 'OUT_OF_RANGE' }),
     )
-    expect(() => growthRate(-1)).toThrowError(
-      expect.objectContaining({ code: 'OUT_OF_RANGE' }),
-    )
+    expect(() => growthRate(-1)).toThrowError(expect.objectContaining({ code: 'OUT_OF_RANGE' }))
   })
 
   it('adds rates without binary floating-point drift', () => {
