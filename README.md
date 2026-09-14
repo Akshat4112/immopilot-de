@@ -1,5 +1,7 @@
 # ImmoPilot DE
 
+[![CI](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml/badge.svg)](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml)
+
 ImmoPilot DE is a planned client-side application for evaluating residential property purchases and financing decisions in the German market.
 
 > Status: foundation implementation. The application is not yet released.
@@ -130,8 +132,15 @@ the smoke suite. Use `npm run test:e2e:ui` for the interactive runner and `npm r
 test:e2e:report` to reopen the most recent HTML report. Traces, screenshots and video
 are retained only according to the failure and retry policy in `playwright.config.ts`.
 
-Continuous integration and GitHub Pages base-path configuration are tracked as later
-foundation tasks.
+The `CI` GitHub Actions workflow runs on every pull request and push to `main`. Its
+quality job installs the locked dependency graph on the `.nvmrc` Node.js version,
+then checks formatting, linting, strict types, unit coverage, the production build
+and dependency audits. After those checks pass, a separate job installs Chromium and
+runs the Playwright smoke test against the managed production preview. Browser
+reports, traces, screenshots and videos are retained as short-lived artifacts when
+the Playwright job fails.
+
+GitHub Pages base-path configuration is tracked as a later foundation task.
 
 ## Deployment target
 
