@@ -42,7 +42,7 @@ export const resources = {
       },
       footer: {
         disclaimer:
-          'Nur unverbindliche Planungswerte. Keine Finanzierungs-, Steuer- oder Rechtsberatung und kein Darlehensangebot.',
+          'Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfen Sie aktuelle Werte und lassen Sie sich vor einer Entscheidung qualifiziert beraten.',
         copyright: '© 2026 ImmoPilot DE',
       },
       property: { purchasePrice: 'Kaufpreis' },
@@ -94,7 +94,7 @@ export const resources = {
       },
       footer: {
         disclaimer:
-          'Non-binding planning estimates only. Not financial, tax or legal advice, and not a loan offer.',
+          'Educational estimates only. Not financial, mortgage, investment, tax or legal advice, and not a financing offer or approval. Check current figures and obtain qualified advice before making a commitment.',
         copyright: '© 2026 ImmoPilot DE',
       },
       property: { purchasePrice: 'Purchase price' },

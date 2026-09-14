@@ -24,6 +24,7 @@ describe('App', () => {
       '#top',
     )
     expect(screen.getByText('250.000 €')).toBeVisible()
+    expect(screen.getByText(/kein Darlehensangebot oder Finanzierungszusage/i)).toBeVisible()
     expect(screen.getAllByRole('article')).toHaveLength(3)
   })
 
@@ -43,6 +44,7 @@ describe('App', () => {
     ).toBeVisible()
     expect(screen.getByText('€250,000')).toBeVisible()
     expect(screen.getByRole('group', { name: 'Choose language' })).toBeVisible()
+    expect(screen.getByText(/not a financing offer or approval/i)).toBeVisible()
     expect(document.documentElement).toHaveAttribute('lang', 'en')
   })
 
