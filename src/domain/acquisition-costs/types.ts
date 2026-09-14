@@ -22,7 +22,7 @@ export interface AcquisitionCostRateOverrides {
 
 export interface AcquisitionCostInput {
   purchasePriceCents: number
-  stateId: GermanStateId | string
+  stateId: string
   brokerInvolved?: boolean
   rateOverrides?: AcquisitionCostRateOverrides
   renovationBudget?: PostPurchaseBudgetInput
