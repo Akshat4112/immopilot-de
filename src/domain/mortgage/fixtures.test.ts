@@ -138,9 +138,7 @@ function expectPaymentFixture(
   result: InitialRepaymentMortgagePaymentResult,
   expected: Record<string, number>,
 ): void {
-  expect(result.monthlyPaymentCents).toBe(
-    expectedValue(expected, 'contractualMonthlyPaymentCents'),
-  )
+  expect(result.monthlyPaymentCents).toBe(expectedValue(expected, 'contractualMonthlyPaymentCents'))
   expect(result.firstMonthInterestCents).toBe(expectedValue(expected, 'month1InterestCents'))
   expect(result.firstMonthScheduledPrincipalCents).toBe(
     expectedValue(expected, 'month1ScheduledPrincipalCents'),

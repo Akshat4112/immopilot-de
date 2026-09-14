@@ -21,8 +21,7 @@ export interface FullRepaymentTermMortgagePaymentInput extends MortgagePaymentIn
 }
 
 export type MortgagePaymentInput =
-  | InitialRepaymentMortgagePaymentInput
-  | FullRepaymentTermMortgagePaymentInput
+  InitialRepaymentMortgagePaymentInput | FullRepaymentTermMortgagePaymentInput
 
 interface AvailableMortgagePaymentResultBase {
   status: 'available'
@@ -42,8 +41,7 @@ export interface CashPurchaseMortgagePaymentResult extends AvailableMortgagePaym
   repaymentTermMonths: null
 }
 
-export interface InitialRepaymentMortgagePaymentResult
-  extends AvailableMortgagePaymentResultBase {
+export interface InitialRepaymentMortgagePaymentResult extends AvailableMortgagePaymentResultBase {
   cashPurchase: false
   paymentMode: 'initial-repayment-rate'
   nominalAnnualRate: Rate
@@ -53,8 +51,7 @@ export interface InitialRepaymentMortgagePaymentResult
   contractualMonthlyPaymentCents: MoneyCents
 }
 
-export interface FullRepaymentTermMortgagePaymentResult
-  extends AvailableMortgagePaymentResultBase {
+export interface FullRepaymentTermMortgagePaymentResult extends AvailableMortgagePaymentResultBase {
   cashPurchase: false
   paymentMode: 'full-repayment-term'
   nominalAnnualRate: Rate
