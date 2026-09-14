@@ -15,3 +15,7 @@ The `financing/` module consumes an available acquisition result and implements 
 payment and available-equity allocation. It reports required equity, loan amount, cash gaps,
 remaining cash and purchase-price financing classification while enforcing the source-of-funds
 identity.
+
+The `mortgage/` payment module consumes financing output and explicitly separates the German
+initial-repayment-rate annuity from a fully amortizing selected-term payment. It reports cent-rounded
+payment and first-month allocation, cash-purchase behavior and negative-amortization unavailability.
