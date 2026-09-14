@@ -16,10 +16,11 @@ The browser entry point imports the styling layers in this order:
 
 1. `src/styles/tokens.css` — primitive values and semantic aliases.
 2. `src/styles/global.css` — document defaults, reset, focus treatment and reduced motion.
-3. `src/styles/app.css` — temporary foundation-page composition and component styles.
+3. `src/styles/shell.css` — shared header, navigation, route layout and footer composition.
+4. `src/styles/app.css` — overview-page and feature presentation styles.
 
 Later feature styles may follow these layers. They may consume tokens but must not redefine the
-root token contract. FND-013 may reorganize `app.css` when it creates the application shell.
+root token contract.
 
 ## Token contract
 
@@ -47,6 +48,7 @@ respects browser zoom and user font settings.
 
 - The maximum content width is `73.75rem` with a `1.5rem` default gutter.
 - The compact gutter is `1rem` below `38.75rem`.
+- Primary navigation becomes a compact menu at and below `64rem`.
 - Foundation layouts collapse from two columns below `53.75rem`.
 - Responsive rules use content-driven rem breakpoints. CSS custom properties are not used inside
   media-query conditions because native CSS does not support that reliably.

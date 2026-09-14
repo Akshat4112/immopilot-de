@@ -44,6 +44,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
+- [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
 
 ## Planned technology
 
@@ -164,10 +165,10 @@ target site is:
 `https://akshat4112.github.io/immopilot-de/`
 
 Repository administrators must select **GitHub Actions** as the Pages source under
-**Settings → Pages**. Production builds use `/immopilot-de/` as the Vite base path,
-and React Router receives the same value through `import.meta.env.BASE_URL`. Local
-development remains available at `/`, while production preview and Playwright use
-`/immopilot-de/` to match the deployed project site.
+**Settings → Pages**. Production builds use `/immopilot-de/` as the Vite base path. React Router
+uses hash routes such as `#/purchase-costs`, keeping direct navigation and refreshes compatible
+with static GitHub Pages hosting. Local development remains available at `/`, while production
+preview and Playwright use `/immopilot-de/` to match the deployed project site.
 
 ## Localization
 
@@ -187,6 +188,14 @@ global document and accessibility rules, and application composition. Components
 color, typography, spacing, shape, depth and motion tokens rather than hard-coded palette values.
 The normative token contract and extension rules are documented in
 [`docs/design-tokens.md`](docs/design-tokens.md).
+
+## Application shell
+
+The shared shell provides the responsive header, primary navigation, German–English switcher,
+route content container, skip link and approved disclaimer footer. Desktop navigation is inline;
+tablet and mobile layouts use an accessible menu button. The production browser suite verifies all
+three viewport classes. Shell behavior and extension rules are documented in
+[`docs/application-shell.md`](docs/application-shell.md).
 
 ## Deployment target
 
