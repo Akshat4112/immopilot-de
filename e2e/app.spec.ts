@@ -36,4 +36,15 @@ test('loads the production application and navigates to the foundation section',
       name: 'Eine klare Grundlage für den Immobilienkauf.',
     }),
   ).toBeVisible()
+
+  await page.getByRole('button', { name: 'English' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: /Understand the numbers\.\s*Decide with confidence\./i,
+    }),
+  ).toBeVisible()
+  await expect(page.getByText('€250,000')).toBeVisible()
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
