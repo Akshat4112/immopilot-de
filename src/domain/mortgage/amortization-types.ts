@@ -48,8 +48,7 @@ interface AvailableAmortizationScheduleResultBase {
   projectedLifetimeScheduledPrincipalCents: MoneyCents
 }
 
-export interface CashPurchaseAmortizationScheduleResult
-  extends AvailableAmortizationScheduleResultBase {
+export interface CashPurchaseAmortizationScheduleResult extends AvailableAmortizationScheduleResultBase {
   cashPurchase: true
   payment: CashPurchaseMortgagePaymentResult
   fixedInterestMonths: null
@@ -57,16 +56,14 @@ export interface CashPurchaseAmortizationScheduleResult
   payoffMonth: 0
 }
 
-export interface MortgageAmortizationScheduleResult
-  extends AvailableAmortizationScheduleResultBase {
+export interface MortgageAmortizationScheduleResult extends AvailableAmortizationScheduleResultBase {
   cashPurchase: false
   payment: Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
   fixedInterestMonths: number
 }
 
 export type AvailableAmortizationScheduleResult =
-  | CashPurchaseAmortizationScheduleResult
-  | MortgageAmortizationScheduleResult
+  CashPurchaseAmortizationScheduleResult | MortgageAmortizationScheduleResult
 
 export interface PaymentUnavailableAmortizationScheduleResult {
   status: 'unavailable'
