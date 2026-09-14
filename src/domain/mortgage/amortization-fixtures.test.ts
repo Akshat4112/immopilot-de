@@ -92,8 +92,7 @@ function scenarioFinancing(scenario: Scenario): AvailableFinancingResult {
     acquisition: scenarioAcquisition(scenario),
     availableEquityCents: scenario.financing.availableEquityCents,
     downPaymentCents: scenario.financing.downPaymentCents,
-    financedAcquisitionCostShare:
-      scenario.financing.financedAcquisitionCostShare,
+    financedAcquisitionCostShare: scenario.financing.financedAcquisitionCostShare,
   })
 
   if (result.status !== 'available') {
@@ -143,15 +142,11 @@ function expectScheduleFixture(
   expect(result.contractualMonthlyPaymentCents).toBe(
     expectedValue(expected, 'contractualMonthlyPaymentCents'),
   )
-  expect(first?.interestCents).toBe(
-    expectedValue(expected, 'month1InterestCents'),
-  )
+  expect(first?.interestCents).toBe(expectedValue(expected, 'month1InterestCents'))
   expect(first?.scheduledPrincipalCents).toBe(
     expectedValue(expected, 'month1ScheduledPrincipalCents'),
   )
-  expect(first?.closingBalanceCents).toBe(
-    expectedValue(expected, 'month1ClosingBalanceCents'),
-  )
+  expect(first?.closingBalanceCents).toBe(expectedValue(expected, 'month1ClosingBalanceCents'))
   expect(result.interestThroughFixedPeriodCents).toBe(
     expectedValue(expected, 'interestThroughFixedPeriodCents'),
   )
@@ -161,9 +156,7 @@ function expectScheduleFixture(
   expect(result.remainingDebtAtFixedPeriodCents).toBe(
     expectedValue(expected, 'remainingDebtAtFixedPeriodCents'),
   )
-  expect(result.payoffMonth).toBe(
-    expectedValue(expected, 'projectedPayoffMonth'),
-  )
+  expect(result.payoffMonth).toBe(expectedValue(expected, 'projectedPayoffMonth'))
   expect(result.projectedLifetimeInterestCents).toBe(
     expectedValue(expected, 'projectedLifetimeInterestCents'),
   )
@@ -171,9 +164,7 @@ function expectScheduleFixture(
 
 describe('PD-007 and PD-010 amortization fixtures', () => {
   it('reproduces the complete PD-007 mortgage schedule vector', () => {
-    const fixture = pd007Cases.find(
-      (candidate) => candidate.id === 'mortgage-base',
-    )
+    const fixture = pd007Cases.find((candidate) => candidate.id === 'mortgage-base')
 
     if (!fixture) {
       throw new Error('PD-007 mortgage schedule fixture not found')
@@ -196,16 +187,10 @@ describe('PD-007 and PD-010 amortization fixtures', () => {
 
     expectScheduleFixture(result, fixture.expected.mortgageBaseline)
     expect(result.firstYearInterestCents).toBe(
-      expectedValue(
-        fixture.expected.mortgageBaseline,
-        'firstYearInterestCents',
-      ),
+      expectedValue(fixture.expected.mortgageBaseline, 'firstYearInterestCents'),
     )
     expect(result.firstYearScheduledPrincipalCents).toBe(
-      expectedValue(
-        fixture.expected.mortgageBaseline,
-        'firstYearScheduledPrincipalCents',
-      ),
+      expectedValue(fixture.expected.mortgageBaseline, 'firstYearScheduledPrincipalCents'),
     )
     expect(result.additionalPrincipalThroughFixedPeriodCents).toBe(
       expectedValue(
