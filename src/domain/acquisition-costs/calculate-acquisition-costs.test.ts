@@ -25,11 +25,7 @@ function availableResult(input: AcquisitionCostInput): AvailableAcquisitionCostR
   return result
 }
 
-function expectValidationResult(
-  result: AcquisitionCostResult,
-  code: string,
-  field: string,
-): void {
+function expectValidationResult(result: AcquisitionCostResult, code: string, field: string): void {
   expect(result).toMatchObject({
     status: 'unavailable',
     reason: 'VALIDATION_ERROR',
