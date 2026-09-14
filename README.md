@@ -168,6 +168,17 @@ and React Router receives the same value through `import.meta.env.BASE_URL`. Loc
 development remains available at `/`, while production preview and Playwright use
 `/immopilot-de/` to match the deployed project site.
 
+## Localization
+
+The interface uses `i18next` and `react-i18next`, defaults to German, and can be switched to
+English from the header. Translation resources use stable, language-neutral keys in
+`src/i18n/resources.ts`; financial labels follow the canonical mapping in
+`docs/terminology.md`. Locale formatters render integer-cent euro amounts, decimal percentage
+rates and numbers according to the active language without changing calculation inputs.
+
+When interface terminology changes, update the German and English resources, the terminology
+standard and the relevant unit and Playwright tests in the same pull request.
+
 ## Deployment target
 
 `https://akshat4112.github.io/immopilot-de/`

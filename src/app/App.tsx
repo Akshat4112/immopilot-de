@@ -1,26 +1,8 @@
-type FoundationArea = {
-  readonly number: string
-  readonly title: string
-  readonly description: string
-}
+import { useTranslation } from 'react-i18next'
 
-const foundationAreas: readonly FoundationArea[] = [
-  {
-    number: '01',
-    title: 'Kaufnebenkosten',
-    description: 'Bundesland, Notar, Grundbuch und Makler transparent aufschlüsseln.',
-  },
-  {
-    number: '02',
-    title: 'Finanzierung',
-    description: 'Rate, Tilgung, Restschuld und Anschlussfinanzierung nachvollziehen.',
-  },
-  {
-    number: '03',
-    title: 'Entscheidungen',
-    description: 'Eigennutzung, Vermietung und mehrere Szenarien konsistent vergleichen.',
-  },
-]
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { formatEuroFromCents } from '../i18n/formatters'
+import type { SupportedLanguage } from '../i18n/resources'
 
 function ArrowIcon() {
   return (
@@ -31,82 +13,99 @@ function ArrowIcon() {
 }
 
 export default function App() {
+  const { i18n, t } = useTranslation()
+  const language = i18n.resolvedLanguage as SupportedLanguage
+  const foundationAreas = [
+    {
+      number: '01',
+      title: t('purchase.additionalCosts'),
+      description: t('foundation.acquisitionDescription'),
+    },
+    {
+      number: '02',
+      title: t('foundation.financingTitle'),
+      description: t('foundation.financingDescription'),
+    },
+    {
+      number: '03',
+      title: t('foundation.decisionsTitle'),
+      description: t('foundation.decisionsDescription'),
+    },
+  ] as const
+
   return (
     <div className="site-shell">
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="ImmoPilot DE Startseite">
+        <a className="brand" href="#top" aria-label={t('brand.homeLabel')}>
           <span className="brand-mark" aria-hidden="true">
             IP
           </span>
           <span>ImmoPilot DE</span>
         </a>
-        <span className="release-tag">Foundation · 0.1</span>
+        <div className="header-actions">
+          <span className="release-tag">{t('brand.release')}</span>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">Immobilienentscheidungen für Deutschland</p>
+            <p className="eyebrow">{t('hero.eyebrow')}</p>
             <h1 id="hero-title">
-              Zahlen verstehen.
+              {t('hero.titleLineOne')}
               <br />
-              Sicherer entscheiden.
+              {t('hero.titleLineTwo')}
             </h1>
-            <p className="hero-summary">
-              Ein transparenter Rechner für Kaufkosten, Finanzierung und langfristige
-              Immobilienszenarien. Lokal im Browser und ohne Benutzerkonto.
-            </p>
+            <p className="hero-summary">{t('hero.summary')}</p>
             <div className="hero-actions">
               <a className="primary-action" href="#foundation">
-                Projekt ansehen
+                {t('hero.primaryAction')}
                 <ArrowIcon />
               </a>
               <a className="secondary-action" href="https://github.com/Akshat4112/immopilot-de">
-                Dokumentation
+                {t('hero.documentation')}
               </a>
             </div>
           </div>
 
-          <aside className="preview-card" aria-label="Geplanter Beispielüberblick">
+          <aside className="preview-card" aria-label={t('preview.label')}>
             <div className="preview-heading">
-              <span>Beispielszenario</span>
-              <span className="status-dot">Vorbereitet</span>
+              <span>{t('preview.title')}</span>
+              <span className="status-dot">{t('preview.status')}</span>
             </div>
-            <p className="preview-price">250.000 €</p>
-            <p className="preview-caption">Kaufpreis · Baden-Württemberg</p>
+            <p className="preview-price">{formatEuroFromCents(25_000_000, language)}</p>
+            <p className="preview-caption">{t('property.purchasePrice')} · Baden-Württemberg</p>
             <dl className="preview-metrics">
               <div>
-                <dt>Eigenkapital</dt>
-                <dd>66.250 €</dd>
+                <dt>{t('finance.equity')}</dt>
+                <dd>{formatEuroFromCents(6_625_000, language)}</dd>
               </div>
               <div>
-                <dt>Monatliche Rate</dt>
-                <dd>916,67 €</dd>
+                <dt>{t('finance.monthlyPayment')}</dt>
+                <dd>{formatEuroFromCents(91_667, language)}</dd>
               </div>
               <div>
-                <dt>Restschuld nach 10 J.</dt>
-                <dd>152.188,73 €</dd>
+                <dt>{t('preview.remainingDebtAfterYears', { years: 10 })}</dt>
+                <dd>{formatEuroFromCents(15_218_873, language)}</dd>
               </div>
             </dl>
-            <p className="preview-note">Geprüft gegen Berechnungsspezifikation 1.0.0</p>
+            <p className="preview-note">{t('preview.verified', { version: '1.0.0' })}</p>
           </aside>
         </section>
 
-        <section className="trust-strip" aria-label="Projektgrundsätze">
-          <span>Lokale Berechnung</span>
-          <span>Keine Konten</span>
-          <span>Quellenbasierte Annahmen</span>
-          <span>Deutsch &amp; English</span>
+        <section className="trust-strip" aria-label={t('principles.label')}>
+          <span>{t('principles.local')}</span>
+          <span>{t('principles.accounts')}</span>
+          <span>{t('principles.assumptions')}</span>
+          <span>{t('principles.bilingual')}</span>
         </section>
 
         <section className="foundation" id="foundation" aria-labelledby="foundation-title">
           <div className="section-intro">
-            <p className="eyebrow">Version 1</p>
-            <h2 id="foundation-title">Eine klare Grundlage für den Immobilienkauf.</h2>
-            <p>
-              Die fachlichen Regeln und deutschen Annahmen sind dokumentiert. Die interaktiven
-              Rechner werden schrittweise auf dieser geprüften Grundlage gebaut.
-            </p>
+            <p className="eyebrow">{t('foundation.eyebrow')}</p>
+            <h2 id="foundation-title">{t('foundation.title')}</h2>
+            <p>{t('foundation.summary')}</p>
           </div>
 
           <div className="area-grid">
@@ -122,11 +121,8 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <p>
-          Nur unverbindliche Planungswerte. Keine Finanzierungs-, Steuer- oder Rechtsberatung und
-          kein Darlehensangebot.
-        </p>
-        <span>© 2026 ImmoPilot DE</span>
+        <p>{t('footer.disclaimer')}</p>
+        <span>{t('footer.copyright')}</span>
       </footer>
     </div>
   )
