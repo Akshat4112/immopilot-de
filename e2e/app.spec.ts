@@ -111,6 +111,7 @@ test('uses the compact navigation at tablet width', async ({ page }) => {
 
   await expect(page.getByRole('heading', { level: 1, name: 'Finanzierung planen' })).toBeVisible()
   await expect(navigation).toBeHidden()
+  await expect(page.getByRole('main')).toBeFocused()
 })
 
 test('keeps the mobile shell accessible without horizontal overflow', async ({ page }) => {
