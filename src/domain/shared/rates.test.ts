@@ -49,8 +49,6 @@ describe('canonical decimal rates', () => {
     const monthly = annualEffectiveToMonthlyRate('0.05')
 
     expect(monthly.toDecimalPlaces(15).toString()).toBe('0.004074123783648')
-    expect(monthly.plus(1).pow(12).minus(1).toDecimalPlaces(30).toString()).toBe(
-      '0.05',
-    )
+    expect(monthly.plus(1).pow(12).minus(1).toDecimalPlaces(30).toString()).toBe('0.05')
   })
 })

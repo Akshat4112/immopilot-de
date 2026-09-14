@@ -57,12 +57,8 @@ describe('PD-007 primitive fixture compatibility', () => {
 
     expect(brokerCommission).toBe(fixture.expected.buyerBrokerCommissionCents)
 
-    const transactionCosts = moneyCents(
-      fixture.expected.transactionAcquisitionCostsCents,
-    )
-    const financedShare = proportionRate(
-      fixture.input.financedAcquisitionCostShare,
-    )
+    const transactionCosts = moneyCents(fixture.expected.transactionAcquisitionCostsCents)
+    const financedShare = proportionRate(fixture.input.financedAcquisitionCostShare)
 
     expect(multiplyMoney(transactionCosts, financedShare)).toBe(
       fixture.expected.financedAcquisitionCostsCents,

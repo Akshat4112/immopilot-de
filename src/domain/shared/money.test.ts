@@ -49,9 +49,9 @@ describe('cent-exact money', () => {
   })
 
   it('detects arithmetic overflow before precision is lost', () => {
-    expect(() =>
-      addMoney(moneyCents(Number.MAX_SAFE_INTEGER), moneyCents(1)),
-    ).toThrowError(expect.objectContaining({ code: 'ARITHMETIC_OVERFLOW' }))
+    expect(() => addMoney(moneyCents(Number.MAX_SAFE_INTEGER), moneyCents(1))).toThrowError(
+      expect.objectContaining({ code: 'ARITHMETIC_OVERFLOW' }),
+    )
   })
 
   it('multiplies cent amounts at a half-up boundary', () => {

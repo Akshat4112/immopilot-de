@@ -18,12 +18,7 @@ export class FinancialValidationError extends Error {
   readonly field: string
   readonly value: unknown
 
-  constructor(
-    code: FinancialValidationErrorCode,
-    field: string,
-    message: string,
-    value: unknown,
-  ) {
+  constructor(code: FinancialValidationErrorCode, field: string, message: string, value: unknown) {
     super(message)
     this.name = 'FinancialValidationError'
     this.code = code
@@ -94,11 +89,7 @@ export interface NumberRange {
   maxInclusive?: boolean
 }
 
-export function assertNumberInRange(
-  value: unknown,
-  field: string,
-  range: NumberRange,
-): number {
+export function assertNumberInRange(value: unknown, field: string, range: NumberRange): number {
   const finiteValue = assertFiniteNumber(value, field)
   const minMatches =
     range.minInclusive === false ? finiteValue > range.min : finiteValue >= range.min

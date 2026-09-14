@@ -33,10 +33,7 @@ export function moneyCents(value: unknown, field = 'moneyCents'): MoneyCents {
   return assertSafeInteger(value, field) as MoneyCents
 }
 
-export function nonNegativeMoneyCents(
-  value: unknown,
-  field = 'moneyCents',
-): MoneyCents {
+export function nonNegativeMoneyCents(value: unknown, field = 'moneyCents'): MoneyCents {
   const amount = moneyCents(value, field)
 
   if (amount < 0) {
@@ -51,14 +48,8 @@ export function nonNegativeMoneyCents(
   return amount
 }
 
-export function eurosToCents(
-  value: Decimal.Value,
-  field = 'euros',
-): MoneyCents {
-  return moneyCents(
-    roundHalfUpToInteger(decimal(value, field).times(100), field),
-    field,
-  )
+export function eurosToCents(value: Decimal.Value, field = 'euros'): MoneyCents {
+  return moneyCents(roundHalfUpToInteger(decimal(value, field).times(100), field), field)
 }
 
 export function centsToEuros(value: MoneyCents): Decimal {
@@ -70,31 +61,19 @@ export function sumMoney(values: readonly MoneyCents[]): MoneyCents {
   return fromCheckedBigInt(total, 'moneySum')
 }
 
-export function addMoney(
-  left: MoneyCents,
-  right: MoneyCents,
-): MoneyCents {
+export function addMoney(left: MoneyCents, right: MoneyCents): MoneyCents {
   return fromCheckedBigInt(BigInt(left) + BigInt(right), 'moneySum')
 }
 
-export function subtractMoney(
-  left: MoneyCents,
-  right: MoneyCents,
-): MoneyCents {
+export function subtractMoney(left: MoneyCents, right: MoneyCents): MoneyCents {
   return fromCheckedBigInt(BigInt(left) - BigInt(right), 'moneyDifference')
 }
 
-export function minMoney(
-  left: MoneyCents,
-  right: MoneyCents,
-): MoneyCents {
+export function minMoney(left: MoneyCents, right: MoneyCents): MoneyCents {
   return left <= right ? left : right
 }
 
-export function maxMoney(
-  left: MoneyCents,
-  right: MoneyCents,
-): MoneyCents {
+export function maxMoney(left: MoneyCents, right: MoneyCents): MoneyCents {
   return left >= right ? left : right
 }
 

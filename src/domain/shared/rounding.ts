@@ -1,9 +1,6 @@
 import Decimal from 'decimal.js'
 
-import {
-  financialValidationErrorCodes,
-  validationFailure,
-} from './validation'
+import { financialValidationErrorCodes, validationFailure } from './validation'
 
 export const financialDecimalPrecision = 40
 export const FinancialDecimal = Decimal.clone({
@@ -39,11 +36,7 @@ export function decimal(value: DecimalValue, field = 'value'): Decimal {
   return parsed
 }
 
-export function roundHalfUp(
-  value: DecimalValue,
-  decimalPlaces: number,
-  field = 'value',
-): Decimal {
+export function roundHalfUp(value: DecimalValue, decimalPlaces: number, field = 'value'): Decimal {
   if (!Number.isSafeInteger(decimalPlaces) || decimalPlaces < 0) {
     return validationFailure(
       financialValidationErrorCodes.outOfRange,
@@ -56,10 +49,7 @@ export function roundHalfUp(
   return decimal(value, field).toDecimalPlaces(decimalPlaces, Decimal.ROUND_HALF_UP)
 }
 
-export function roundHalfUpToInteger(
-  value: DecimalValue,
-  field = 'value',
-): number {
+export function roundHalfUpToInteger(value: DecimalValue, field = 'value'): number {
   const rounded = roundHalfUp(value, 0, field).toNumber()
 
   if (!Number.isSafeInteger(rounded)) {

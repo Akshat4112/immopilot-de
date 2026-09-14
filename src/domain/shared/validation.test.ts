@@ -12,7 +12,7 @@ import {
 describe('financial validation', () => {
   it('accepts finite numbers and safe integers', () => {
     expect(assertFiniteNumber(3.5, 'rate')).toBe(3.5)
-    expect(assertSafeInteger(250_000_00, 'purchasePriceCents')).toBe(250_000_00)
+    expect(assertSafeInteger(25_000_000, 'purchasePriceCents')).toBe(25_000_000)
   })
 
   it.each([
