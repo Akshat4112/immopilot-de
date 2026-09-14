@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const baseURL = 'http://127.0.0.1:4173'
+const baseURL = 'http://127.0.0.1:4173/immopilot-de/'
 
 export default defineConfig({
   testDir: './e2e',
