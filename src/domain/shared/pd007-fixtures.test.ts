@@ -23,6 +23,16 @@ interface FixtureSet {
 
 const fixtureSet = fixtureSetJson as unknown as FixtureSet
 
+function fixtureNumber(values: Record<string, number>, key: string): number {
+  const value = values[key]
+
+  if (value === undefined) {
+    throw new Error(`PD-007 numeric fixture value not found: ${key}`)
+  }
+
+  return value
+}
+
 function numericFixture(id: string): NumericFixtureCase {
   const fixture = fixtureSet.cases.find((candidate) => candidate.id === id)
 
@@ -46,31 +56,31 @@ describe('PD-007 primitive fixture compatibility', () => {
 
   it('reproduces acquisition-cost line and financed-share boundaries', () => {
     const fixture = numericFixture('acquisition-b-broker-and-financed-costs')
-    const purchasePrice = moneyCents(fixture.input.purchasePriceCents)
-    const brokerRate = proportionRate(fixture.input.buyerBrokerRate)
+    const purchasePrice = moneyCents(fixtureNumber(fixture.input, 'purchasePriceCents'))
+    const brokerRate = proportionRate(fixtureNumber(fixture.input, 'buyerBrokerRate'))
     const brokerCommission = multiplyMoney(purchasePrice, brokerRate)
 
-    expect(brokerCommission).toBe(fixture.expected.buyerBrokerCommissionCents)
+    expect(brokerCommission).toBe(fixtureNumber(fixture.expected, 'buyerBrokerCommissionCents'))
 
-    const transactionCosts = moneyCents(fixture.expected.transactionAcquisitionCostsCents)
-    const financedShare = proportionRate(fixture.input.financedAcquisitionCostShare)
+    const transactionCosts = moneyCents(fixtureNumber(fixture.expected, 'transactionAcquisitionCostsCents'))
+    const financedShare = proportionRate(fixtureNumber(fixture.input, 'financedAcquisitionCostShare'))
 
     expect(multiplyMoney(transactionCosts, financedShare)).toBe(
-      fixture.expected.financedAcquisitionCostsCents,
+      fixtureNumber(fixture.expected, 'financedAcquisitionCostsCents'),
     )
   })
 
   it('reproduces the mortgage contractual annuity boundary', () => {
     const fixture = numericFixture('mortgage-base')
-    const principal = moneyCents(fixture.input.principalCents)
+    const principal = moneyCents(fixtureNumber(fixture.input, 'principalCents'))
     const combinedAnnualRate = addRates([
-      nominalAnnualRate(fixture.input.nominalAnnualRate),
-      initialRepaymentRate(fixture.input.initialRepaymentRate),
+      nominalAnnualRate(fixtureNumber(fixture.input, 'nominalAnnualRate')),
+      initialRepaymentRate(fixtureNumber(fixture.input, 'initialRepaymentRate')),
     ])
     const monthlyRate = safeDivide(combinedAnnualRate, 12)
 
     expect(multiplyMoney(principal, monthlyRate)).toBe(
-      fixture.expected.contractualMonthlyPaymentCents,
+      fixtureNumber(fixture.expected, 'contractualMonthlyPaymentCents'),
     )
   })
 })
