@@ -140,7 +140,28 @@ runs the Playwright smoke test against the managed production preview. Browser
 reports, traces, screenshots and videos are retained as short-lived artifacts when
 the Playwright job fails.
 
-GitHub Pages base-path configuration is tracked as a later foundation task.
+## GitHub Pages deployment
+
+The `Deploy GitHub Pages` workflow publishes the production `dist/` directory when
+a commit reaches `main`. It can also be started manually from the workflow's
+`Run workflow` control in GitHub Actions. The build uses the pinned Node.js runtime
+and lockfile, configures Pages, uploads a one-day Pages artifact, and deploys it
+through the protected `github-pages` environment.
+
+The workflow grants read-only repository access by default. Only the deployment job
+receives `pages: write` and `id-token: write`; it also receives `actions: read` to
+retrieve the uploaded artifact. Deployment concurrency is shared under the `pages`
+group, and an in-progress production deployment is never cancelled.
+
+The published environment URL is populated from the Pages deployment output and the
+target site is:
+
+`https://akshat4112.github.io/immopilot-de/`
+
+Before the first deployment, repository administrators must select **GitHub Actions**
+as the Pages source under **Settings → Pages**. FND-010 will configure Vite's
+`/immopilot-de/` base path; until then, the workflow and Pages artifact can be
+validated, but browser-loaded asset URLs at the project site may be incorrect.
 
 ## Deployment target
 
