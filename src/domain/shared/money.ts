@@ -78,8 +78,5 @@ export function multiplyMoney(
   multiplier: Decimal.Value,
   field = 'moneyProduct',
 ): MoneyCents {
-  return moneyCents(
-    roundHalfUpToInteger(decimal(amount).times(decimal(multiplier)), field),
-    field,
-  )
+  return moneyCents(roundHalfUpToInteger(decimal(amount).times(decimal(multiplier)), field), field)
 }
