@@ -10,3 +10,8 @@ See `docs/calculation-engine-conventions.md` for the normative contract.
 The `acquisition-costs/` module calculates German transfer tax, notary, land-register, buyer-side
 broker and post-purchase budget amounts. Its discriminated result preserves the difference between
 an unconfirmed budget and a confirmed zero.
+
+The `financing/` module consumes an available acquisition result and implements selected-down-
+payment and available-equity allocation. It reports required equity, loan amount, cash gaps,
+remaining cash and purchase-price financing classification while enforcing the source-of-funds
+identity.
