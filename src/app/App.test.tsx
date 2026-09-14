@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -100,6 +101,7 @@ describe('App', () => {
       'page',
     )
     expect(navigation).toHaveAttribute('data-open', 'false')
+    await waitFor(() => expect(screen.getByRole('main')).toHaveFocus())
   })
 
   it('redirects unknown routes to the overview', () => {
