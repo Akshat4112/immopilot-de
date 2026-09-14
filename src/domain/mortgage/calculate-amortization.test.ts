@@ -10,11 +10,7 @@ import { moneyCents } from '../shared'
 import type { MortgageAmortizationScheduleResult } from './amortization-types'
 import { calculateAmortizationSchedule } from './calculate-amortization'
 import { calculateMortgagePayment } from './calculate-payment'
-import type {
-  AvailableMortgagePaymentResult,
-  CashPurchaseMortgagePaymentResult,
-  MortgagePaymentInput,
-} from './types'
+import type { AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult } from './types'
 
 type NonCashPayment = Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
 
@@ -56,10 +52,12 @@ function financing(purchasePriceCents = 20_000_000, downPaymentCents = 0) {
   return result
 }
 
-function payment(input: Omit<MortgagePaymentInput, 'financing'>): NonCashPayment {
+function fullTermPayment(nominalAnnualRate: number, repaymentTermMonths: number): NonCashPayment {
   const result = calculateMortgagePayment({
-    ...input,
+    paymentMode: 'full-repayment-term',
     financing: financing(),
+    nominalAnnualRate,
+    repaymentTermMonths,
   })
 
   if (result.status !== 'available' || result.cashPurchase) {
@@ -93,11 +91,11 @@ function availableSchedule(
   fixedInterestMonths = 120,
   selectedMonth?: number,
 ): MortgageAmortizationScheduleResult {
-  const result = calculateAmortizationSchedule({
-    payment: schedulePayment,
-    fixedInterestMonths,
-    selectedMonth,
-  })
+  const result = calculateAmortizationSchedule(
+    selectedMonth === undefined
+      ? { payment: schedulePayment, fixedInterestMonths }
+      : { payment: schedulePayment, fixedInterestMonths, selectedMonth },
+  )
 
   if (result.status !== 'available' || result.cashPurchase) {
     throw new Error('Expected available mortgage amortization schedule')
@@ -158,14 +156,7 @@ describe('mortgage amortization schedule', () => {
   })
 
   it('supports a zero-interest fully amortizing term schedule', () => {
-    const result = availableSchedule(
-      payment({
-        paymentMode: 'full-repayment-term',
-        nominalAnnualRate: 0,
-        repaymentTermMonths: 12,
-      }),
-      12,
-    )
+    const result = availableSchedule(fullTermPayment(0, 12), 12)
 
     expect(result.payment.paymentMode).toBe('full-repayment-term')
     expect(result.payoffMonth).toBe(12)
