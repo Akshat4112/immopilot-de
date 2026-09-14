@@ -9,6 +9,7 @@ import { calculateFinancing } from '../financing'
 import { calculateAdditionalRepaymentComparison } from './calculate-additional-repayments'
 import { calculateAmortizationSchedule } from './calculate-amortization'
 import { calculateMortgagePayment } from './calculate-payment'
+import type { AdditionalRepaymentPlan } from './additional-repayment-types'
 import type { AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult } from './types'
 
 type NonCashPayment = Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
@@ -258,6 +259,23 @@ describe('Sondertilgung schedules and comparisons', () => {
       reason: 'VALIDATION_ERROR',
       error: {
         field: 'oneTimeAdditionalRepayments[0].month',
+      },
+    })
+  })
+
+  it.each([null, 42])('rejects malformed repayment plan %p', (additionalRepayments) => {
+    expect(
+      calculateAmortizationSchedule({
+        payment: initialPayment(),
+        fixedInterestMonths: 120,
+        additionalRepayments: additionalRepayments as unknown as AdditionalRepaymentPlan,
+      }),
+    ).toMatchObject({
+      status: 'unavailable',
+      reason: 'VALIDATION_ERROR',
+      error: {
+        code: 'INVALID_TYPE',
+        field: 'additionalRepayments',
       },
     })
   })
