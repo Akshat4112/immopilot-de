@@ -16,7 +16,6 @@ import type {
   AdditionalRepaymentPlan,
   NormalizedAdditionalRepaymentPlan,
   NormalizedOneTimeAdditionalRepayment,
-  OneTimeAdditionalRepayment,
 } from './additional-repayment-types'
 import {
   maximumAmortizationMonths,
@@ -29,7 +28,7 @@ import type { AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult 
 
 type MortgagePayment = Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
 
-function positiveWholeMonth(value: number | undefined, field: string): number {
+function positiveWholeMonth(value: unknown, field: string): number {
   if (value === undefined) {
     return validationFailure(
       financialValidationErrorCodes.required,
@@ -70,7 +69,7 @@ function annualPaymentMonth(value: number | undefined): number {
 }
 
 function normalizeOneTimeRepayment(
-  value: OneTimeAdditionalRepayment,
+  value: unknown,
   index: number,
 ): NormalizedOneTimeAdditionalRepayment {
   const field = 'oneTimeAdditionalRepayments[' + index + ']'
@@ -84,9 +83,11 @@ function normalizeOneTimeRepayment(
     )
   }
 
+  const repayment = value as Record<string, unknown>
+
   return {
-    month: positiveWholeMonth(value.month, field + '.month'),
-    amountCents: nonNegativeMoneyCents(value.amountCents, field + '.amountCents'),
+    month: positiveWholeMonth(repayment.month, field + '.month'),
+    amountCents: nonNegativeMoneyCents(repayment.amountCents, field + '.amountCents'),
   }
 }
 
