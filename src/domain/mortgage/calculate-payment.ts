@@ -98,11 +98,7 @@ function firstMonthAllocation(
   firstMonthInterestCents: MoneyCents
   firstMonthScheduledPrincipalCents: MoneyCents
 } | null {
-  const firstMonthInterest = multiplyMoney(
-    principal,
-    monthlyNominalRate,
-    'firstMonthInterestCents',
-  )
+  const firstMonthInterest = multiplyMoney(principal, monthlyNominalRate, 'firstMonthInterestCents')
 
   if (monthlyPayment <= firstMonthInterest) {
     return null
