@@ -1,3 +1,15 @@
+export { calculateAdditionalRepaymentComparison } from './calculate-additional-repayments'
+export {
+  type AdditionalRepaymentComparisonInput,
+  type AdditionalRepaymentComparisonResult,
+  type AdditionalRepaymentPlan,
+  type AdditionalScheduleUnavailableComparisonResult,
+  type AvailableAdditionalRepaymentComparisonResult,
+  type BaselineUnavailableAdditionalRepaymentComparisonResult,
+  type NormalizedAdditionalRepaymentPlan,
+  type NormalizedOneTimeAdditionalRepayment,
+  type OneTimeAdditionalRepayment,
+} from './additional-repayment-types'
 export { calculateAmortizationSchedule } from './calculate-amortization'
 export {
   maximumAmortizationMonths,
