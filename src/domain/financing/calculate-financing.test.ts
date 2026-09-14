@@ -8,13 +8,11 @@ import {
 import type { DecimalValue } from '../shared'
 
 import { calculateFinancing } from './calculate-financing'
-import type {
-  AvailableFinancingResult,
-  FinancingInput,
-  FinancingResult,
-} from './types'
+import type { AvailableFinancingResult, FinancingInput, FinancingResult } from './types'
 
-function acquisitionWithConfirmedZero(purchasePriceCents = 25_000_000): AvailableAcquisitionCostResult {
+function acquisitionWithConfirmedZero(
+  purchasePriceCents = 25_000_000,
+): AvailableAcquisitionCostResult {
   const result = calculateAcquisitionCosts({
     purchasePriceCents,
     stateId: 'DE-BW',
@@ -274,8 +272,6 @@ describe('financing and required-equity calculation', () => {
       financedAcquisitionCostShare: 0.25,
     })
 
-    expect(result.loanAmountCents + result.requiredEquityCents).toBe(
-      result.totalProjectCostCents,
-    )
+    expect(result.loanAmountCents + result.requiredEquityCents).toBe(result.totalProjectCostCents)
   })
 })

@@ -69,11 +69,7 @@ function selectedDownPayment(
     )
   }
 
-  const requiredEquity = sumMoney([
-    downPayment,
-    cashFundedTransactionCosts,
-    postPurchaseBudget,
-  ])
+  const requiredEquity = sumMoney([downPayment, cashFundedTransactionCosts, postPurchaseBudget])
   const loanAmount = addMoney(subtractMoney(purchasePrice, downPayment), financedAcquisitionCosts)
   const zero = moneyCents(0)
 
@@ -100,23 +96,14 @@ function availableEquityAllocation(
   | 'cashGapCents'
   | 'cashRemainingCents'
 > {
-  const cashCostsBeforeDownPayment = addMoney(
-    cashFundedTransactionCosts,
-    postPurchaseBudget,
-  )
+  const cashCostsBeforeDownPayment = addMoney(cashFundedTransactionCosts, postPurchaseBudget)
   const zero = moneyCents(0)
   const hasCashCostGap = availableEquity < cashCostsBeforeDownPayment
   const downPayment = hasCashCostGap
     ? zero
     : minMoney(purchasePrice, subtractMoney(availableEquity, cashCostsBeforeDownPayment))
-  const cashGap = hasCashCostGap
-    ? subtractMoney(cashCostsBeforeDownPayment, availableEquity)
-    : zero
-  const requiredEquity = sumMoney([
-    downPayment,
-    cashFundedTransactionCosts,
-    postPurchaseBudget,
-  ])
+  const cashGap = hasCashCostGap ? subtractMoney(cashCostsBeforeDownPayment, availableEquity) : zero
+  const requiredEquity = sumMoney([downPayment, cashFundedTransactionCosts, postPurchaseBudget])
   const loanAmount = addMoney(subtractMoney(purchasePrice, downPayment), financedAcquisitionCosts)
 
   return {
@@ -148,10 +135,7 @@ function calculateFinancingInternal(input: FinancingInput): FinancingResult {
 
   const acquisition = input.acquisition
   const purchasePrice = acquisition.purchasePriceCents
-  const availableEquity = nonNegativeMoneyCents(
-    input.availableEquityCents,
-    'availableEquityCents',
-  )
+  const availableEquity = nonNegativeMoneyCents(input.availableEquityCents, 'availableEquityCents')
   const financedAcquisitionCostShare = proportionRate(
     input.financedAcquisitionCostShare,
     'financedAcquisitionCostShare',
@@ -197,10 +181,7 @@ function calculateFinancingInternal(input: FinancingInput): FinancingResult {
     status: 'available',
     mode: input.mode,
     fundingStatus: allocation.cashGapCents > 0 ? 'underfunded' : 'funded',
-    financingClassification: financingClassification(
-      allocation.loanAmountCents,
-      purchasePrice,
-    ),
+    financingClassification: financingClassification(allocation.loanAmountCents, purchasePrice),
     acquisition,
     purchasePriceCents: purchasePrice,
     transactionAcquisitionCostsCents: acquisition.transactionAcquisitionCostsCents,

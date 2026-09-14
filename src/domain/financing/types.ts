@@ -27,9 +27,7 @@ export interface AvailableEquityFinancingInput extends FinancingInputBase {
   mode: 'available-equity'
 }
 
-export type FinancingInput =
-  | SelectedDownPaymentFinancingInput
-  | AvailableEquityFinancingInput
+export type FinancingInput = SelectedDownPaymentFinancingInput | AvailableEquityFinancingInput
 
 export interface AvailableFinancingResult {
   status: 'available'
