@@ -41,8 +41,7 @@ function financing(purchasePriceCents = 25_000_000, downPaymentCents = 5_000_000
     mode: 'selected-down-payment',
     acquisition: acquisitionResult,
     downPaymentCents,
-    availableEquityCents:
-      downPaymentCents + acquisitionResult.transactionAcquisitionCostsCents,
+    availableEquityCents: downPaymentCents + acquisitionResult.transactionAcquisitionCostsCents,
     financedAcquisitionCostShare: 0,
   })
 
@@ -63,11 +62,7 @@ function availableResult(input: MortgagePaymentInput): AvailableMortgagePaymentR
   return result
 }
 
-function expectValidationResult(
-  result: MortgagePaymentResult,
-  code: string,
-  field: string,
-): void {
+function expectValidationResult(result: MortgagePaymentResult, code: string, field: string): void {
   expect(result).toMatchObject({
     status: 'unavailable',
     reason: 'VALIDATION_ERROR',
