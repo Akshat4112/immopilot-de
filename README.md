@@ -128,9 +128,12 @@ reports are excluded from version control and formatting.
 
 Playwright runs browser tests against the production build using Chromium. `npm run
 test:e2e` builds the application, starts an isolated Vite preview server and executes
-the smoke suite. Use `npm run test:e2e:ui` for the interactive runner and `npm run
-test:e2e:report` to reopen the most recent HTML report. Traces, screenshots and video
-are retained only according to the failure and retry policy in `playwright.config.ts`.
+the smoke suite at `/immopilot-de/`. The suite verifies that the application renders
+under its router basename and that generated JavaScript and stylesheet URLs remain
+under the repository path. Use `npm run test:e2e:ui` for the interactive runner and
+`npm run test:e2e:report` to reopen the most recent HTML report. Traces, screenshots
+and video are retained only according to the failure and retry policy in
+`playwright.config.ts`.
 
 The `CI` GitHub Actions workflow runs on every pull request and push to `main`. Its
 quality job installs the locked dependency graph on the `.nvmrc` Node.js version,
@@ -159,10 +162,11 @@ target site is:
 
 `https://akshat4112.github.io/immopilot-de/`
 
-Before the first deployment, repository administrators must select **GitHub Actions**
-as the Pages source under **Settings → Pages**. FND-010 will configure Vite's
-`/immopilot-de/` base path; until then, the workflow and Pages artifact can be
-validated, but browser-loaded asset URLs at the project site may be incorrect.
+Repository administrators must select **GitHub Actions** as the Pages source under
+**Settings → Pages**. Production builds use `/immopilot-de/` as the Vite base path,
+and React Router receives the same value through `import.meta.env.BASE_URL`. Local
+development remains available at `/`, while production preview and Playwright use
+`/immopilot-de/` to match the deployed project site.
 
 ## Deployment target
 
