@@ -16,10 +16,7 @@ import type {
   MortgagePaymentInput,
 } from './types'
 
-type NonCashPayment = Exclude<
-  AvailableMortgagePaymentResult,
-  CashPurchaseMortgagePaymentResult
->
+type NonCashPayment = Exclude<AvailableMortgagePaymentResult, CashPurchaseMortgagePaymentResult>
 
 function acquisition(purchasePriceCents: number): AvailableAcquisitionCostResult {
   const result = calculateAcquisitionCosts({
@@ -42,17 +39,13 @@ function acquisition(purchasePriceCents: number): AvailableAcquisitionCostResult
   return result
 }
 
-function financing(
-  purchasePriceCents = 20_000_000,
-  downPaymentCents = 0,
-) {
+function financing(purchasePriceCents = 20_000_000, downPaymentCents = 0) {
   const acquisitionResult = acquisition(purchasePriceCents)
   const result = calculateFinancing({
     mode: 'selected-down-payment',
     acquisition: acquisitionResult,
     downPaymentCents,
-    availableEquityCents:
-      downPaymentCents + acquisitionResult.transactionAcquisitionCostsCents,
+    availableEquityCents: downPaymentCents + acquisitionResult.transactionAcquisitionCostsCents,
     financedAcquisitionCostShare: 0,
   })
 
@@ -144,18 +137,12 @@ describe('mortgage amortization schedule', () => {
     })
 
     for (const row of result.rows) {
-      expect(row.regularPaymentCents).toBe(
-        row.interestCents + row.scheduledPrincipalCents,
-      )
+      expect(row.regularPaymentCents).toBe(row.interestCents + row.scheduledPrincipalCents)
       expect(row.closingBalanceCents).toBe(
-        row.openingBalanceCents -
-          row.scheduledPrincipalCents -
-          row.additionalPrincipalCents,
+        row.openingBalanceCents - row.scheduledPrincipalCents - row.additionalPrincipalCents,
       )
       expect(row.totalPaymentCents).toBe(
-        row.interestCents +
-          row.scheduledPrincipalCents +
-          row.additionalPrincipalCents,
+        row.interestCents + row.scheduledPrincipalCents + row.additionalPrincipalCents,
       )
       expect(row.closingBalanceCents).toBeGreaterThanOrEqual(0)
     }
