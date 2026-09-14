@@ -91,9 +91,20 @@ function normalizeOneTimeRepayment(
   }
 }
 
-function normalizeAdditionalRepaymentPlan(
-  plan: AdditionalRepaymentPlan | undefined,
-): NormalizedAdditionalRepaymentPlan {
+function normalizeAdditionalRepaymentPlan(value: unknown): NormalizedAdditionalRepaymentPlan {
+  if (
+    value !== undefined &&
+    (typeof value !== 'object' || value === null || Array.isArray(value))
+  ) {
+    return validationFailure(
+      financialValidationErrorCodes.invalidType,
+      'additionalRepayments',
+      'additionalRepayments must be an object',
+      value,
+    )
+  }
+
+  const plan = value as AdditionalRepaymentPlan | undefined
   const annualAmount = nonNegativeMoneyCents(
     plan?.annualAdditionalRepaymentCents === undefined ? 0 : plan.annualAdditionalRepaymentCents,
     'annualAdditionalRepaymentCents',
