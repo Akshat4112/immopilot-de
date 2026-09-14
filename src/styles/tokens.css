@@ -1,0 +1,104 @@
+:root {
+  /* Primitive palette. Use semantic color tokens in components. */
+  --palette-ink-950: #14251f;
+  --palette-ink-900: #173f32;
+  --palette-ink-700: #426457;
+  --palette-ink-600: #52615b;
+  --palette-ink-500: #617069;
+  --palette-ink-400: #74817c;
+  --palette-paper-100: #f5f3ee;
+  --palette-paper-50: #fffdf8;
+  --palette-mint-200: #dce8df;
+  --palette-mint-150: #cfd8ce;
+  --palette-line-200: #d9ddd7;
+  --palette-lime-300: #c8ff5a;
+  --palette-white: #ffffff;
+
+  /* Semantic colors. */
+  --color-text-primary: var(--palette-ink-950);
+  --color-text-secondary: var(--palette-ink-500);
+  --color-text-tertiary: var(--palette-ink-400);
+  --color-text-eyebrow: var(--palette-ink-700);
+  --color-text-trust: var(--palette-ink-600);
+  --color-background: var(--palette-paper-100);
+  --color-surface: var(--palette-paper-50);
+  --color-surface-translucent: rgb(255 253 248 / 72%);
+  --color-surface-card: rgb(255 253 248 / 76%);
+  --color-border: var(--palette-line-200);
+  --color-border-decorative: var(--palette-mint-150);
+  --color-brand: var(--palette-ink-900);
+  --color-accent: var(--palette-lime-300);
+  --color-on-brand: var(--palette-white);
+  --color-on-brand-prominent: rgb(255 255 255 / 72%);
+  --color-on-brand-muted: rgb(255 255 255 / 62%);
+  --color-on-brand-caption: rgb(255 255 255 / 58%);
+  --color-on-brand-subtle: rgb(255 255 255 / 50%);
+  --color-on-brand-border: rgb(255 255 255 / 12%);
+  --color-focus-ring: rgb(23 63 50 / 28%);
+  --color-selection: var(--palette-mint-200);
+  --gradient-preview-accent: radial-gradient(
+    circle at 80% 12%,
+    rgb(200 255 90 / 14%),
+    transparent 36%
+  );
+
+  /* Typography. */
+  --font-family-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-display: 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-size-2xs: 0.6875rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-display-sm: 2.25rem;
+  --font-size-display-md: 3rem;
+  --font-size-display-lg: 5.375rem;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 0.98;
+  --line-height-heading: 1.06;
+  --line-height-body: 1.65;
+  --line-height-relaxed: 1.7;
+  --letter-spacing-tightest: -0.065em;
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.03em;
+  --letter-spacing-label: 0.12em;
+
+  /* Spacing and sizing. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.625rem;
+  --space-11: 3rem;
+  --space-12: 3.5rem;
+  --space-13: 4.5rem;
+  --space-14: 5.625rem;
+  --space-15: 7.5rem;
+  --layout-max-width: 73.75rem;
+  --layout-gutter: 1.5rem;
+  --layout-gutter-compact: 1rem;
+  --control-height: 3.125rem;
+  --brand-mark-size: 2.25rem;
+
+  /* Shape, depth and motion. */
+  --radius-sm: 0.625rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --shadow-preview: 0 1.875rem 4.375rem rgb(20 37 31 / 20%);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+  --duration-fast: 160ms;
+  --duration-reduced: 0.01ms;
+  --ease-standard: ease;
+}

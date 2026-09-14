@@ -17,6 +17,31 @@ test('loads the production application and navigates to the foundation section',
   ).toBeVisible()
   await expect(page.getByText('250.000 €')).toBeVisible()
 
+  const designTokens = await page.evaluate<{
+    brand: string
+    layout: string
+    spacing: string
+  }>(`(() => {
+    const styles = getComputedStyle(document.documentElement)
+    return {
+      brand: styles.getPropertyValue('--color-brand').trim(),
+      layout: styles.getPropertyValue('--layout-max-width').trim(),
+      spacing: styles.getPropertyValue('--space-6').trim(),
+    }
+  })()`)
+
+  expect(designTokens).toEqual({
+    brand: '#173f32',
+    layout: '73.75rem',
+    spacing: '1.5rem',
+  })
+
+  await page.getByRole('link', { name: 'Projekt ansehen' }).focus()
+  await expect(page.getByRole('link', { name: 'Projekt ansehen' })).toHaveCSS(
+    'outline-style',
+    'solid',
+  )
+
   await expect(page.locator('script[type="module"]')).toHaveAttribute(
     'src',
     /^\/immopilot-de\/assets\//,
