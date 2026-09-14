@@ -4,7 +4,9 @@ import { I18nextProvider } from 'react-i18next'
 import { BrowserRouter } from 'react-router-dom'
 import App from './app/App.tsx'
 import i18n from './i18n/config.ts'
-import './styles.css'
+import './styles/tokens.css'
+import './styles/global.css'
+import './styles/app.css'
 
 const rootElement = document.getElementById('root')
 

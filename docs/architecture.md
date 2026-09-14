@@ -27,15 +27,16 @@ src/
 ├── features/            User-facing vertical slices and workflow orchestration
 ├── i18n/                Locale setup, translation resources and formatting adapters
 ├── storage/             Browser persistence, URL sharing and JSON import/export
+├── styles/              Design tokens, global defaults and application styles
 ├── test/                Cross-cutting test setup, builders and fixtures
 ├── main.tsx             Browser entry point
-├── styles.css           Temporary global foundation styles
 └── vite-env.d.ts        Vite environment types
 ```
 
-The global stylesheet remains at the source root until FND-012 defines design tokens and FND-013
-builds the final application shell. Domain folders contain documentation only until their owning
-implementation tasks add code.
+The styles directory separates the FND-012 token contract and global accessibility rules from the
+temporary foundation-page composition. FND-013 will build the final application shell on these
+foundations. Domain folders contain documentation only until their owning implementation tasks add
+code.
 
 ## Dependency direction
 

@@ -43,6 +43,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
 - [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
+- [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 
 ## Planned technology
 
@@ -178,6 +179,14 @@ rates and numbers according to the active language without changing calculation 
 
 When interface terminology changes, update the German and English resources, the terminology
 standard and the relevant unit and Playwright tests in the same pull request.
+
+## Styling foundations
+
+Project-owned styles are split into three ordered layers under `src/styles/`: design tokens,
+global document and accessibility rules, and application composition. Components consume semantic
+color, typography, spacing, shape, depth and motion tokens rather than hard-coded palette values.
+The normative token contract and extension rules are documented in
+[`docs/design-tokens.md`](docs/design-tokens.md).
 
 ## Deployment target
 
