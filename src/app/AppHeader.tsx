@@ -10,12 +10,24 @@ const navigationId = 'primary-navigation'
 export function AppHeader() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false)
   const { t } = useTranslation()
-  const closeNavigation = () => setIsNavigationOpen(false)
+
+  const closeNavigation = (moveFocusToContent = false) => {
+    setIsNavigationOpen(false)
+
+    if (moveFocusToContent) {
+      window.setTimeout(() => document.getElementById('main-content')?.focus(), 0)
+    }
+  }
 
   return (
     <header className="site-header">
       <div className="header-bar">
-        <Link className="brand" to="/" aria-label={t('brand.homeLabel')} onClick={closeNavigation}>
+        <Link
+          className="brand"
+          to="/"
+          aria-label={t('brand.homeLabel')}
+          onClick={() => closeNavigation()}
+        >
           <span className="brand-mark" aria-hidden="true">
             IP
           </span>
@@ -40,7 +52,11 @@ export function AppHeader() {
         </div>
       </div>
 
-      <AppNavigation id={navigationId} isOpen={isNavigationOpen} onNavigate={closeNavigation} />
+      <AppNavigation
+        id={navigationId}
+        isOpen={isNavigationOpen}
+        onNavigate={() => closeNavigation(isNavigationOpen)}
+      />
     </header>
   )
 }
