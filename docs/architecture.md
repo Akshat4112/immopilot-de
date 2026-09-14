@@ -34,9 +34,9 @@ src/
 ```
 
 The styles directory separates the FND-012 token contract and global accessibility rules from the
-temporary foundation-page composition. FND-013 will build the final application shell on these
-foundations. Domain folders contain documentation only until their owning implementation tasks add
-code.
+FND-013 shell and overview-page composition. The app directory owns hash-based routing and reusable
+shell components; feature routes render through its outlet. Domain folders contain documentation
+only until their owning implementation tasks add code.
 
 ## Dependency direction
 
@@ -90,13 +90,15 @@ aliases may be introduced later only when both TypeScript and Vite resolve them 
 ## Testing conventions
 
 - Unit and component tests are colocated as `*.test.ts` or `*.test.tsx` beside their subjects.
-- Browser tests will live in a root-level `e2e/` directory when FND-007 configures Playwright.
+- Browser tests live in the root-level `e2e/` directory and exercise production builds across
+  representative viewport sizes.
 - `src/test` contains only shared setup, builders and helpers. Production code cannot import it.
 - Normative PD-007 and PD-010 fixtures remain under `data/fixtures` and are consumed without
   rewriting their expected results.
 
-## Deferred work
+## Current foundation boundary
 
-FND-003 introduces boundaries, documentation and the relocated application shell only. It does
-not implement financial calculations, routing, localization, persistence, tests or design-system
-components. Those remain assigned to their dedicated roadmap tasks.
+Routing, localization, design tokens and the responsive application shell are implemented. The
+calculator routes intentionally remain presentation placeholders until the framework-free domain
+calculations are added by their owning roadmap tasks. Persistence and complete financial workflows
+remain deferred to those tasks.

@@ -3,13 +3,44 @@ export const resources = {
     translation: {
       language: { selectorLabel: 'Sprache auswählen', german: 'Deutsch', english: 'English' },
       brand: { homeLabel: 'ImmoPilot DE Startseite', release: 'Grundlage · 0.1' },
+      shell: {
+        skipToContent: 'Zum Inhalt springen',
+        primaryNavigation: 'Hauptnavigation',
+        openMenu: 'Navigation öffnen',
+        closeMenu: 'Navigation schließen',
+        navigation: {
+          overview: 'Überblick',
+          purchaseCosts: 'Kaufkosten',
+          financing: 'Finanzierung',
+          comparison: 'Vergleich',
+        },
+        pages: {
+          eyebrow: 'Rechner in Vorbereitung',
+          back: 'Zurück zum Überblick',
+          purchaseCosts: {
+            title: 'Kaufkosten berechnen',
+            summary:
+              'Der kommende Rechner schlüsselt Grunderwerbsteuer, Notar, Grundbuch, Makler und weitere Startkosten transparent auf.',
+          },
+          financing: {
+            title: 'Finanzierung planen',
+            summary:
+              'Hier entstehen Darlehensrate, Tilgungsplan, Sondertilgung und Anschlussfinanzierungs-Szenarien.',
+          },
+          comparison: {
+            title: 'Szenarien vergleichen',
+            summary:
+              'Diese Ansicht wird Eigennutzung, Vermietung und alternative Finanzierungsszenarien vergleichbar machen.',
+          },
+        },
+      },
       hero: {
         eyebrow: 'Immobilienentscheidungen für Deutschland',
         titleLineOne: 'Zahlen verstehen.',
         titleLineTwo: 'Sicherer entscheiden.',
         summary:
           'Ein transparenter Rechner für Kaufkosten, Finanzierung und langfristige Immobilienszenarien. Lokal im Browser und ohne Benutzerkonto.',
-        primaryAction: 'Projekt ansehen',
+        primaryAction: 'Kaufkosten starten',
         documentation: 'Dokumentation',
       },
       preview: {
@@ -54,13 +85,44 @@ export const resources = {
     translation: {
       language: { selectorLabel: 'Choose language', german: 'Deutsch', english: 'English' },
       brand: { homeLabel: 'ImmoPilot DE home', release: 'Foundation · 0.1' },
+      shell: {
+        skipToContent: 'Skip to content',
+        primaryNavigation: 'Primary navigation',
+        openMenu: 'Open navigation',
+        closeMenu: 'Close navigation',
+        navigation: {
+          overview: 'Overview',
+          purchaseCosts: 'Purchase costs',
+          financing: 'Financing',
+          comparison: 'Comparison',
+        },
+        pages: {
+          eyebrow: 'Calculator in preparation',
+          back: 'Back to overview',
+          purchaseCosts: {
+            title: 'Calculate purchase costs',
+            summary:
+              'The upcoming calculator will transparently break down transfer tax, notary, land-register, broker and other setup costs.',
+          },
+          financing: {
+            title: 'Plan financing',
+            summary:
+              'This is where mortgage payments, amortization, special repayments and refinancing scenarios will be built.',
+          },
+          comparison: {
+            title: 'Compare scenarios',
+            summary:
+              'This view will compare owner occupation, rental investment and alternative financing scenarios consistently.',
+          },
+        },
+      },
       hero: {
         eyebrow: 'Property decisions for Germany',
         titleLineOne: 'Understand the numbers.',
         titleLineTwo: 'Decide with confidence.',
         summary:
           'A transparent calculator for acquisition costs, financing and long-term property scenarios. Local in your browser, with no account required.',
-        primaryAction: 'View project',
+        primaryAction: 'Start purchase costs',
         documentation: 'Documentation',
       },
       preview: {
