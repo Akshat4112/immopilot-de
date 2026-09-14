@@ -75,7 +75,7 @@ function resolvedBudget(
   fallback: PostPurchaseBudgetInput,
   field: UnconfirmedBudgetField,
 ): ResolvedPostPurchaseBudget {
-  const selected = input ?? fallback
+  const selected = input === undefined ? fallback : input
 
   if (typeof selected !== 'object' || selected === null) {
     return validationFailure(
