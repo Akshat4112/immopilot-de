@@ -45,6 +45,7 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
+- [Calculation-engine conventions](docs/calculation-engine-conventions.md): cent-exact money, decimal rates, rounding boundaries and validation errors
 
 ## Planned technology
 
@@ -196,6 +197,13 @@ route content container, skip link and approved disclaimer footer. Desktop navig
 tablet and mobile layouts use an accessible menu button. The production browser suite verifies all
 three viewport classes. Shell behavior and extension rules are documented in
 [`docs/application-shell.md`](docs/application-shell.md).
+
+## Calculation engine
+
+Shared framework-free primitives under `src/domain/shared/` provide branded integer-cent money,
+40-digit decimal rates, PD-007 round-half-up boundaries, safe arithmetic and stable validation
+errors. Calculator modules must import the public shared API and follow
+[`docs/calculation-engine-conventions.md`](docs/calculation-engine-conventions.md).
 
 ## Deployment target
 
