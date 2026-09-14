@@ -1,4 +1,5 @@
 import {
+  FinancialValidationError,
   financialValidationErrorCodes,
   moneyCents,
   multiplyMoney,
@@ -48,7 +49,7 @@ function resolvedRate(
   fallbackOrigin: AcquisitionAssumptionOrigin,
 ): AppliedAcquisitionRate {
   return {
-    value: proportionRate(value ?? fallback, field),
+    value: proportionRate(value === undefined ? fallback : value, field),
     origin: value === undefined ? fallbackOrigin : 'user-override',
   }
 }
@@ -148,7 +149,7 @@ function requirePositivePurchasePrice(value: number): MoneyCents {
   return purchasePrice
 }
 
-export function calculateAcquisitionCosts(input: AcquisitionCostInput): AcquisitionCostResult {
+function calculateAcquisitionCostsInternal(input: AcquisitionCostInput): AcquisitionCostResult {
   const purchasePrice = requirePositivePurchasePrice(input.purchasePriceCents)
   const stateRate = getTransferTaxRate(input.stateId)
 
@@ -267,5 +268,26 @@ export function calculateAcquisitionCosts(input: AcquisitionCostInput): Acquisit
     postPurchaseBudgetCents: postPurchaseBudget,
     allAdditionalInitialOutlayCents: allAdditionalInitialOutlay,
     totalProjectCostCents: sumMoney([purchasePrice, allAdditionalInitialOutlay]),
+  }
+}
+
+export function calculateAcquisitionCosts(input: AcquisitionCostInput): AcquisitionCostResult {
+  try {
+    return calculateAcquisitionCostsInternal(input)
+  } catch (error: unknown) {
+    if (error instanceof FinancialValidationError) {
+      return {
+        status: 'unavailable',
+        reason: 'VALIDATION_ERROR',
+        error: {
+          code: error.code,
+          field: error.field,
+          message: error.message,
+          value: error.value,
+        },
+      }
+    }
+
+    throw error
   }
 }

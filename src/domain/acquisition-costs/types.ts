@@ -1,4 +1,4 @@
-import type { DecimalValue, MoneyCents, Rate } from '../shared'
+import type { DecimalValue, FinancialValidationErrorCode, MoneyCents, Rate } from '../shared'
 
 import type { GermanStateId } from './tax-rates'
 
@@ -79,5 +79,18 @@ export interface UnavailableAcquisitionCostResult extends AcquisitionCostResultB
   totalProjectCostCents: null
 }
 
+export interface ValidationUnavailableAcquisitionCostResult {
+  status: 'unavailable'
+  reason: 'VALIDATION_ERROR'
+  error: {
+    code: FinancialValidationErrorCode
+    field: string
+    message: string
+    value: unknown
+  }
+}
+
 export type AcquisitionCostResult =
-  AvailableAcquisitionCostResult | UnavailableAcquisitionCostResult
+  | AvailableAcquisitionCostResult
+  | UnavailableAcquisitionCostResult
+  | ValidationUnavailableAcquisitionCostResult

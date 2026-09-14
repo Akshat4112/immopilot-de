@@ -1,16 +1,45 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PostPurchaseBudgetInput } from './types'
+import type { DecimalValue } from '../shared'
+
 import { calculateAcquisitionCosts } from './calculate-acquisition-costs'
+import type {
+  AcquisitionCostInput,
+  AcquisitionCostResult,
+  AvailableAcquisitionCostResult,
+  PostPurchaseBudgetInput,
+} from './types'
 
 const confirmedZero = {
   amountCents: 0,
   budgetStatus: 'confirmed-zero',
 } as const
 
+function availableResult(input: AcquisitionCostInput): AvailableAcquisitionCostResult {
+  const result = calculateAcquisitionCosts(input)
+
+  if (result.status !== 'available') {
+    throw new Error('Expected an available acquisition-cost result')
+  }
+
+  return result
+}
+
+function expectValidationResult(
+  result: AcquisitionCostResult,
+  code: string,
+  field: string,
+): void {
+  expect(result).toMatchObject({
+    status: 'unavailable',
+    reason: 'VALIDATION_ERROR',
+    error: { code, field },
+  })
+}
+
 describe('German acquisition-cost calculation', () => {
   it('calculates the PD-007 no-broker example and preserves default origins', () => {
-    const result = calculateAcquisitionCosts({
+    const result = availableResult({
       purchasePriceCents: 25_000_000,
       stateId: 'DE-BW',
       brokerInvolved: false,
@@ -41,7 +70,7 @@ describe('German acquisition-cost calculation', () => {
   })
 
   it('calculates broker costs and applies editable rate overrides', () => {
-    const result = calculateAcquisitionCosts({
+    const result = availableResult({
       purchasePriceCents: 30_000_000,
       stateId: 'DE-NW',
       brokerInvolved: true,
@@ -74,7 +103,7 @@ describe('German acquisition-cost calculation', () => {
   })
 
   it('rounds every proportional component independently using half-up', () => {
-    const result = calculateAcquisitionCosts({
+    const result = availableResult({
       purchasePriceCents: 10_100,
       stateId: 'DE-BY',
       brokerInvolved: true,
@@ -113,7 +142,7 @@ describe('German acquisition-cost calculation', () => {
       totalProjectCostCents: null,
     })
 
-    const available = calculateAcquisitionCosts({
+    const available = availableResult({
       purchasePriceCents: 25_000_000,
       stateId: 'DE-BW',
       renovationBudget: confirmedZero,
@@ -128,7 +157,7 @@ describe('German acquisition-cost calculation', () => {
   })
 
   it('does not charge broker commission when no broker is involved', () => {
-    const result = calculateAcquisitionCosts({
+    const result = availableResult({
       purchasePriceCents: 100_000,
       stateId: 'DE-BY',
       brokerInvolved: false,
@@ -142,40 +171,71 @@ describe('German acquisition-cost calculation', () => {
     expect(result.buyerBrokerCommissionCents).toBe(0)
   })
 
-  it('rejects malformed core inputs with stable validation errors', () => {
-    expect(() =>
+  it('returns stable unavailable results for malformed core inputs', () => {
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 0,
         stateId: 'DE-BW',
       }),
-    ).toThrowError(expect.objectContaining({ code: 'OUT_OF_RANGE', field: 'purchasePriceCents' }))
+      'OUT_OF_RANGE',
+      'purchasePriceCents',
+    )
 
-    expect(() =>
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-XX',
       }),
-    ).toThrowError(expect.objectContaining({ code: 'OUT_OF_RANGE', field: 'stateId' }))
+      'OUT_OF_RANGE',
+      'stateId',
+    )
 
-    expect(() =>
+    expectValidationResult(
+      calculateAcquisitionCosts({
+        purchasePriceCents: 10_000,
+        stateId: undefined as unknown as string,
+      }),
+      'INVALID_TYPE',
+      'stateId',
+    )
+
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-BW',
         brokerInvolved: 'yes' as unknown as boolean,
       }),
-    ).toThrowError(expect.objectContaining({ code: 'INVALID_TYPE', field: 'brokerInvolved' }))
+      'INVALID_TYPE',
+      'brokerInvolved',
+    )
 
-    expect(() =>
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-BW',
         rateOverrides: { notaryRate: 1.01 },
       }),
-    ).toThrowError(expect.objectContaining({ code: 'OUT_OF_RANGE', field: 'notaryRate' }))
+      'OUT_OF_RANGE',
+      'notaryRate',
+    )
+  })
+
+  it('rejects null rate overrides instead of applying a plausible default', () => {
+    expectValidationResult(
+      calculateAcquisitionCosts({
+        purchasePriceCents: 10_000,
+        stateId: 'DE-BW',
+        rateOverrides: {
+          notaryRate: null as unknown as DecimalValue,
+        },
+      }),
+      'INVALID_DECIMAL',
+      'notaryRate',
+    )
   })
 
   it('validates semantic budget states instead of silently coercing them', () => {
-    expect(() =>
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-BW',
@@ -184,11 +244,11 @@ describe('German acquisition-cost calculation', () => {
           budgetStatus: 'confirmed-zero',
         },
       }),
-    ).toThrowError(
-      expect.objectContaining({ code: 'OUT_OF_RANGE', field: 'renovationBudget.amountCents' }),
+      'OUT_OF_RANGE',
+      'renovationBudget.amountCents',
     )
 
-    expect(() =>
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-BW',
@@ -197,27 +257,31 @@ describe('German acquisition-cost calculation', () => {
           budgetStatus: 'budgeted',
         },
       }),
-    ).toThrowError(
-      expect.objectContaining({ code: 'OUT_OF_RANGE', field: 'renovationBudget.amountCents' }),
+      'OUT_OF_RANGE',
+      'renovationBudget.amountCents',
     )
 
-    expect(() =>
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: 10_000,
         stateId: 'DE-BW',
         renovationBudget: null as unknown as PostPurchaseBudgetInput,
       }),
-    ).toThrowError(expect.objectContaining({ code: 'INVALID_TYPE', field: 'renovationBudget' }))
+      'INVALID_TYPE',
+      'renovationBudget',
+    )
   })
 
-  it('detects overflow when composing the all-in project cost', () => {
-    expect(() =>
+  it('returns overflow as a stable unavailable result', () => {
+    expectValidationResult(
       calculateAcquisitionCosts({
         purchasePriceCents: Number.MAX_SAFE_INTEGER,
         stateId: 'DE-BW',
         renovationBudget: confirmedZero,
         movingSetupCosts: confirmedZero,
       }),
-    ).toThrowError(expect.objectContaining({ code: 'ARITHMETIC_OVERFLOW' }))
+      'ARITHMETIC_OVERFLOW',
+      'moneySum',
+    )
   })
 })

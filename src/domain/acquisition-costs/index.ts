@@ -21,4 +21,5 @@ export {
   type ResolvedPostPurchaseBudget,
   type UnavailableAcquisitionCostResult,
   type UnconfirmedBudgetField,
+  type ValidationUnavailableAcquisitionCostResult,
 } from './types'
