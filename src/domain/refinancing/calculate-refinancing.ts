@@ -272,8 +272,10 @@ function calculateRefinancingStressInternal(
     'currentContractualMonthlyPaymentCents',
   )
 
-  // Keep the typed readonly collection after the runtime check: Array.isArray narrows to any[].
-  if (!Array.isArray(input.scenarios as unknown)) {
+  // Validate through an unknown alias so Array.isArray does not narrow the typed input to any[].
+  const scenarioCollection: unknown = input.scenarios
+
+  if (!Array.isArray(scenarioCollection)) {
     return validationFailure(
       financialValidationErrorCodes.invalidType,
       'scenarios',
