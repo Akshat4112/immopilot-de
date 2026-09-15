@@ -29,11 +29,11 @@ export interface ComparableOfferInput {
 export interface OfferPriceInput {
   /** Current property's confirmed assumptions; candidate prices replace only purchasePriceCents. */
   acquisitionTemplate: AcquisitionCostInput
-  rental?: RentalInvestmentResult
-  targetGrossYield?: DecimalValue
-  targetNetYield?: DecimalValue
-  affordability?: AffordabilityOfferInput
-  comparables?: ComparableOfferInput
+  rental?: RentalInvestmentResult | undefined
+  targetGrossYield?: DecimalValue | undefined
+  targetNetYield?: DecimalValue | undefined
+  affordability?: AffordabilityOfferInput | undefined
+  comparables?: ComparableOfferInput | undefined
 }
 
 export type PriceCeilingResult =
