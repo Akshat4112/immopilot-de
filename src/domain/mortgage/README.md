@@ -1,6 +1,7 @@
 # Mortgage calculations
 
 This framework-free domain implements the CF-004 payment calculator and CF-005 amortization schedule from PD-007.
+CF-006 adds Sondertilgung comparisons; CF-007 exposes fixed-interest-period results.
 
 ## Payment modes
 
@@ -29,3 +30,13 @@ This framework-free domain implements the CF-004 payment calculator and CF-005 a
 - Cash purchases return two empty schedules and zero comparison savings. Repayment events after payoff have no effect.
 
 Unavailable mortgage payments propagate into the schedule, while invalid schedule inputs become stable VALIDATION_ERROR results. The iterative schedule is authoritative; closed-form formulas are not used for persisted balances.
+
+## Fixed-interest-period contract
+
+`calculateFixedPeriod` summarizes an **existing** amortization schedule, without calculating a second one. For a period of `K` whole months it reports the balance after the end-of-month payment in month `K`, including regular principal and eligible Sondertilgung through that month. A payment in month `K + 1` does not affect the fixed-period result. The scenario schema stores `fixedInterestMonths`; convert whole years to months at the UI/input boundary.
+
+The summary includes fixed-period interest, scheduled principal and additional principal in integer cents. Its `refinancing` union is `applicable` only when debt remains after the fixed period. Cash purchases return a null fixed period and `CASH_PURCHASE`; loans paid off before or at the period end return `PAID_OFF`. Consumers must not feed these not-applicable results to a refinancing calculator.
+
+`calculateFixedPeriodComparison` summarizes CF-006's identical baseline and additional-repayment schedules and reports the reduction in end-of-period debt. It rejects different period endpoints with `FIXED_PERIOD_MISMATCH` and propagates unavailable upstream results. Neither function invents a balance from a failed or truncated schedule.
+
+The selected **Zinsbindung** is a contractual fixed-interest duration, not the projected repayment duration. `projectedPayoffMonth` is explicitly marked `constant-initial-rate`: the mortgage schedule continues the initial nominal rate past Zinsbindung only as an illustrative projection. Do not label post-Zinsbindung interest, payoff or future payments as guaranteed contractual terms. CF-008 will use `refinancing.remainingDebtCents` only for applicable results, with editable future rates and repayment assumptions.
