@@ -110,6 +110,8 @@ export interface ScenarioResultBase {
   scenarioId: string
   assumptionSetVersion: string
   calculationSpecificationVersion: string
+  /** Original PD-008 source/origin metadata; CF-002's override mechanism alone cannot express it. */
+  inputAcquisitionAssumptions: ScenarioBase['acquisition']
   /** Underfunding is an incomplete scenario even if some mortgage calculations remain available. */
   unavailableStages: readonly ScenarioStage[]
   acquisition: AcquisitionCostResult
