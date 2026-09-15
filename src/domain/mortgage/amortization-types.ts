@@ -4,6 +4,7 @@ import type {
   MortgagePaymentResult,
 } from './types'
 import type { FinancialValidationErrorCode, MoneyCents } from '../shared'
+import type { AdditionalRepaymentPlan } from './additional-repayment-types'
 
 export const maximumAmortizationMonths = 1_200
 
@@ -11,6 +12,7 @@ export interface AmortizationScheduleInput {
   payment: MortgagePaymentResult
   fixedInterestMonths?: number
   selectedMonth?: number
+  additionalRepayments?: AdditionalRepaymentPlan
 }
 
 export interface AmortizationScheduleRow {
@@ -40,12 +42,14 @@ interface AvailableAmortizationScheduleResultBase {
   payoffMonth: number
   firstYearInterestCents: MoneyCents
   firstYearScheduledPrincipalCents: MoneyCents
+  firstYearAdditionalPrincipalCents: MoneyCents
   interestThroughFixedPeriodCents: MoneyCents
   scheduledPrincipalThroughFixedPeriodCents: MoneyCents
   additionalPrincipalThroughFixedPeriodCents: MoneyCents
   remainingDebtAtFixedPeriodCents: MoneyCents
   projectedLifetimeInterestCents: MoneyCents
   projectedLifetimeScheduledPrincipalCents: MoneyCents
+  projectedLifetimeAdditionalPrincipalCents: MoneyCents
 }
 
 export interface CashPurchaseAmortizationScheduleResult extends AvailableAmortizationScheduleResultBase {
@@ -96,6 +100,7 @@ export interface ScheduleLimitExceededAmortizationResult {
   remainingDebtCents: MoneyCents
   cumulativeInterestCents: MoneyCents
   cumulativeScheduledPrincipalCents: MoneyCents
+  cumulativeAdditionalPrincipalCents: MoneyCents
 }
 
 export interface ValidationUnavailableAmortizationResult {

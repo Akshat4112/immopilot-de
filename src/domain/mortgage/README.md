@@ -21,6 +21,11 @@ This framework-free domain implements the CF-004 payment calculator and CF-005 a
 - Negative-amortizing and non-amortizing payments return distinct typed unavailable results.
 - Projection stops with SCHEDULE_LIMIT_EXCEEDED if debt remains after 1,200 months.
 - Results include first-year totals, fixed-interest-period totals and debt, an optional selected-month balance, payoff month, and projected lifetime interest.
-- Additional principal is explicitly zero in CF-005; Sondertilgung is applied by the following domain task.
+- A recurring annual Sondertilgung may be assigned to any month from 1 through 12 of each loan year; month 12 is the default.
+- One-time repayments use explicit positive payment months. Duplicate one-time months are rejected, while a recurring and one-time event in the same month are combined.
+- Additional repayments are applied after the regular payment and capped at the post-regular-payment balance.
+- The contractual monthly payment remains unchanged, so Sondertilgung shortens the projected payoff period.
+- Comparison results expose fixed-period interest savings, projected lifetime interest savings, and months saved against an otherwise identical baseline.
+- Cash purchases return two empty schedules and zero comparison savings. Repayment events after payoff have no effect.
 
 Unavailable mortgage payments propagate into the schedule, while invalid schedule inputs become stable VALIDATION_ERROR results. The iterative schedule is authoritative; closed-form formulas are not used for persisted balances.
