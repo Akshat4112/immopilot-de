@@ -54,6 +54,9 @@ describe('CF-012 scenario composition', () => {
     const result = composePropertyScenario(owner)
     expect(result.status).toBe('complete')
     expect(result.unavailableStages).toEqual([])
+    expect(result.inputAcquisitionAssumptions.transferTaxRate).toEqual(
+      owner.acquisition.transferTaxRate,
+    )
     expect(result.acquisition).toMatchObject({
       status: 'available',
       totalProjectCostCents: ownerExpected.acquisition.totalProjectCostCents,
