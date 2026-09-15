@@ -124,6 +124,7 @@ export function composePropertyScenario(scenario: PropertyScenario): PropertySce
     scenarioId: scenario.scenarioId,
     assumptionSetVersion: scenario.assumptionSetVersion,
     calculationSpecificationVersion: scenario.calculationSpecificationVersion,
+    inputAcquisitionAssumptions: scenario.acquisition,
     acquisition,
     financing,
     payment,
