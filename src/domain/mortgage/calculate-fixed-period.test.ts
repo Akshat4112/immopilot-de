@@ -135,6 +135,19 @@ describe('fixed-interest-period result', () => {
       },
     })
   })
+
+  it('propagates an unavailable mortgage payment through the schedule', () => {
+    const schedule = calculateAmortizationSchedule({
+      payment: payment(1_200, 0),
+      fixedInterestMonths: 12,
+    })
+
+    expect(calculateFixedPeriod(schedule)).toMatchObject({
+      status: 'unavailable',
+      reason: 'AMORTIZATION_SCHEDULE_UNAVAILABLE',
+      schedule: { reason: 'MORTGAGE_PAYMENT_UNAVAILABLE' },
+    })
+  })
 })
 
 describe('fixed-interest-period comparison', () => {
@@ -168,6 +181,23 @@ describe('fixed-interest-period comparison', () => {
       status: 'unavailable',
       reason: 'ADDITIONAL_REPAYMENT_COMPARISON_UNAVAILABLE',
       comparison: { reason: 'BASELINE_SCHEDULE_UNAVAILABLE' },
+    })
+  })
+
+  it('returns two not-applicable cash purchase summaries and zero reduction', () => {
+    const comparison = calculateAdditionalRepaymentComparison({
+      payment: payment(1_200, 0.5, true),
+      additionalRepayments: { annualAdditionalRepaymentCents: 500 },
+    })
+
+    expect(calculateFixedPeriodComparison(comparison)).toMatchObject({
+      status: 'available',
+      fixedInterestMonths: null,
+      baseline: { refinancing: { status: 'not-applicable', reason: 'CASH_PURCHASE' } },
+      withAdditionalRepayments: {
+        refinancing: { status: 'not-applicable', reason: 'CASH_PURCHASE' },
+      },
+      remainingDebtReductionCents: 0,
     })
   })
 
