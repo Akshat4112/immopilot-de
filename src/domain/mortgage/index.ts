@@ -11,6 +11,17 @@ export {
   type OneTimeAdditionalRepayment,
 } from './additional-repayment-types'
 export { calculateAmortizationSchedule } from './calculate-amortization'
+export { calculateFixedPeriod, calculateFixedPeriodComparison } from './calculate-fixed-period'
+export {
+  type AvailableFixedPeriodComparisonResult,
+  type AvailableFixedPeriodResult,
+  type FixedPeriodComparisonResult,
+  type FixedPeriodComparisonUnavailableResult,
+  type FixedPeriodMismatchResult,
+  type FixedPeriodResult,
+  type FixedPeriodScheduleUnavailableResult,
+  type RefinancingEligibility,
+} from './fixed-period-types'
 export {
   maximumAmortizationMonths,
   type AmortizationScheduleInput,
