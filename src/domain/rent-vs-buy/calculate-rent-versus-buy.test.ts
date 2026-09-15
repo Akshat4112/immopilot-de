@@ -36,7 +36,7 @@ function sample(overrides: Partial<RentVersusBuyInput> = {}): RentVersusBuyInput
           closingBalanceCents: zero,
         },
       ],
-    } as RentVersusBuyInput['amortization'],
+    } as unknown as RentVersusBuyInput['amortization'],
     analysisMonths: 3,
     currentComparableRentCents: 2_000,
     monthlyOwnerCostsCents: 1_000,
@@ -100,7 +100,7 @@ describe('matched-budget rent-versus-buy', () => {
         fixedInterestMonths: null,
         payoffMonth: 0,
         rows: [],
-      } as RentVersusBuyInput['amortization'],
+      } as unknown as RentVersusBuyInput['amortization'],
     })
     const result = calculateRentVersusBuy(input)
     if (result.status !== 'available') throw new Error(result.reason)
