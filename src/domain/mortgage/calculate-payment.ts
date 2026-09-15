@@ -2,7 +2,6 @@ import {
   FinancialValidationError,
   addRates,
   assertSafeInteger,
-  decimal,
   financialValidationErrorCodes,
   initialRepaymentRate,
   moneyCents,
@@ -16,6 +15,8 @@ import {
   type MoneyCents,
   type Rate,
 } from '../shared'
+
+import { fullyAmortizingMonthlyPayment } from './payment-formulas'
 
 import type {
   CashPurchaseMortgagePaymentResult,
@@ -169,20 +170,6 @@ function initialRepaymentPayment(
   }
 }
 
-function fullyAmortizingMultiplier(
-  monthlyNominalRate: Rate,
-  repaymentTermMonths: number,
-): DecimalValue {
-  if (monthlyNominalRate.isZero()) {
-    return safeDivide(1, repaymentTermMonths, 'repaymentTermMonths')
-  }
-
-  const one = decimal(1)
-  const denominator = one.minus(one.plus(monthlyNominalRate).pow(-repaymentTermMonths))
-
-  return safeDivide(monthlyNominalRate, denominator, 'amortizationDenominator')
-}
-
 function fullRepaymentTermPayment(
   input: FullRepaymentTermMortgagePaymentInput,
   principal: MoneyCents,
@@ -200,10 +187,10 @@ function fullRepaymentTermPayment(
     safeDivide(annualInterest, 12, 'monthsPerYear'),
     'monthlyNominalRate',
   )
-  const monthlyPayment = multiplyMoney(
+  const monthlyPayment = fullyAmortizingMonthlyPayment(
     principal,
-    fullyAmortizingMultiplier(monthlyNominalRate, repaymentTermMonths),
-    'fullyAmortizingMonthlyPaymentCents',
+    monthlyNominalRate,
+    repaymentTermMonths,
   )
   const allocation = firstMonthAllocation(principal, monthlyPayment, monthlyNominalRate)
 
