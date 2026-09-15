@@ -164,7 +164,7 @@ describe('CF-012 scenario composition', () => {
 
   it('keeps budget uncertainty and its downstream unavailable reasons visible', () => {
     const result = composePropertyScenario({
-      ...owner,
+      ...withoutOffer(owner),
       acquisition: {
         ...owner.acquisition,
         renovationBudget: {
