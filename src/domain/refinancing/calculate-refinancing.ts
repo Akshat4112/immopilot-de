@@ -84,6 +84,9 @@ function normalizeScenario(value: RefinancingScenarioInput, index: number): Norm
     )
   }
 
+  const runtimeValue: unknown = value
+  const runtimeScenario = runtimeValue as Record<string, unknown>
+
   if (typeof value.id !== 'string' || value.id.trim().length === 0) {
     return validationFailure(
       financialValidationErrorCodes.invalidType,
@@ -93,12 +96,15 @@ function normalizeScenario(value: RefinancingScenarioInput, index: number): Norm
     )
   }
 
-  if (value.paymentMode !== 'initial-repayment-rate' && value.paymentMode !== 'selected-term') {
+  if (
+    runtimeScenario.paymentMode !== 'initial-repayment-rate' &&
+    runtimeScenario.paymentMode !== 'selected-term'
+  ) {
     return validationFailure(
       financialValidationErrorCodes.outOfRange,
       field + '.paymentMode',
       field + '.paymentMode is not supported',
-      value.paymentMode,
+      runtimeScenario.paymentMode,
     )
   }
 
@@ -108,12 +114,12 @@ function normalizeScenario(value: RefinancingScenarioInput, index: number): Norm
   )
 
   if (value.paymentMode === 'initial-repayment-rate') {
-    if (value.repaymentTermMonths !== undefined) {
+    if (runtimeScenario.repaymentTermMonths !== undefined) {
       return validationFailure(
         financialValidationErrorCodes.outOfRange,
         field + '.repaymentTermMonths',
         'selected-term months cannot be combined with an initial repayment rate',
-        value.repaymentTermMonths,
+        runtimeScenario.repaymentTermMonths,
       )
     }
 
@@ -129,12 +135,12 @@ function normalizeScenario(value: RefinancingScenarioInput, index: number): Norm
     }
   }
 
-  if (value.futureInitialRepaymentRate !== undefined) {
+  if (runtimeScenario.futureInitialRepaymentRate !== undefined) {
     return validationFailure(
       financialValidationErrorCodes.outOfRange,
       field + '.futureInitialRepaymentRate',
       'initial repayment rate cannot be combined with a selected repayment term',
-      value.futureInitialRepaymentRate,
+      runtimeScenario.futureInitialRepaymentRate,
     )
   }
 
