@@ -377,7 +377,7 @@ h3 {
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 
-.advanced-toggle[aria-expanded="true"]::after {
+.advanced-toggle[aria-expanded='true']::after {
   transform: rotate(180deg);
 }
 
@@ -429,7 +429,9 @@ h3 {
   color: var(--color-text-primary);
   font-size: var(--font-size-md);
   font-family: inherit;
-  transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .form-field__input-group input:focus,
@@ -489,7 +491,9 @@ h3 {
   border-radius: var(--radius-pill);
   background: var(--color-border);
   border: var(--border-width) solid var(--color-border);
-  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
 .toggle-slider::after {
@@ -777,7 +781,9 @@ h3 {
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
   text-decoration: none;
-  transition: transform var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
 }
 
 .next-steps__link.primary {

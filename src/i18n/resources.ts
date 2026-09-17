@@ -111,7 +111,8 @@ export const resources = {
         },
         warnings: {
           unconfirmedBudgets: 'Post-Purchase-Budget noch nicht bestätigt',
-          unconfirmedBudgetsMessage: 'Die folgenden Budgets sind noch nicht bestätigt. Bitte setzen Sie sie auf "Bestätigt: 0 €" oder geben Sie ein Budget ein.',
+          unconfirmedBudgetsMessage:
+            'Die folgenden Budgets sind noch nicht bestätigt. Bitte setzen Sie sie auf "Bestätigt: 0 €" oder geben Sie ein Budget ein.',
         },
         budgetFields: {
           renovationBudget: 'Renovierungsbudget',
@@ -139,7 +140,8 @@ export const resources = {
           'user-override': 'Benutzerdefiniert',
         },
         nextSteps: {
-          message: 'Die Kaufkosten stehen. Jetzt können Sie die Finanzierung planen oder Szenarien vergleichen.',
+          message:
+            'Die Kaufkosten stehen. Jetzt können Sie die Finanzierung planen oder Szenarien vergleichen.',
           continueToFinancing: 'Zur Finanzierung →',
           compareScenarios: 'Szenarien vergleichen →',
         },
@@ -260,7 +262,8 @@ export const resources = {
         },
         warnings: {
           unconfirmedBudgets: 'Post-purchase budget not confirmed',
-          unconfirmedBudgetsMessage: 'The following budgets are not yet confirmed. Please set them to "Confirmed: €0" or enter a budget amount.',
+          unconfirmedBudgetsMessage:
+            'The following budgets are not yet confirmed. Please set them to "Confirmed: €0" or enter a budget amount.',
         },
         budgetFields: {
           renovationBudget: 'Renovation budget',

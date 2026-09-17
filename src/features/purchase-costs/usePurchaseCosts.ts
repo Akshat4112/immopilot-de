@@ -9,7 +9,13 @@ import type {
   AcquisitionCostInput,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
-import { purchaseCostsInputSchema, type PurchaseCostsInput, QUICK_DEFAULTS, germanStateIds, budgetStatuses } from './schema'
+import {
+  purchaseCostsInputSchema,
+  type PurchaseCostsInput,
+  QUICK_DEFAULTS,
+  germanStateIds,
+  budgetStatuses,
+} from './schema'
 
 export interface PurchaseCostsFormData extends PurchaseCostsInput {
   // Form-specific fields
@@ -75,13 +81,15 @@ export function usePurchaseCostsCalculator() {
   // Transform form data to domain input
   const domainInput = useMemo((): AcquisitionCostInput => {
     const values = form.getValues()
-    const rateOverrides = values.rateOverrides ? {
-      transferTaxRate: values.rateOverrides.transferTaxRate,
-      notaryRate: values.rateOverrides.notaryRate,
-      landRegisterRate: values.rateOverrides.landRegisterRate,
-      buyerBrokerRate: values.rateOverrides.buyerBrokerRate,
-      financedAcquisitionCostShare: values.rateOverrides.financedAcquisitionCostShare,
-    } : undefined
+    const rateOverrides = values.rateOverrides
+      ? {
+          transferTaxRate: values.rateOverrides.transferTaxRate,
+          notaryRate: values.rateOverrides.notaryRate,
+          landRegisterRate: values.rateOverrides.landRegisterRate,
+          buyerBrokerRate: values.rateOverrides.buyerBrokerRate,
+          financedAcquisitionCostShare: values.rateOverrides.financedAcquisitionCostShare,
+        }
+      : undefined
 
     return {
       purchasePriceCents: parseEuroInput(values.purchasePrice),
@@ -105,25 +113,40 @@ export function usePurchaseCostsCalculator() {
       availableEquityCents: parseEuroInput(values.availableEquity),
       nominalAnnualRate: parseRateInput(values.nominalRate),
       initialRepaymentRate: parseRateInput(values.initialRepaymentRate),
-      fixedInterestMonths: values.fixedInterestYears ? parseInt(values.fixedInterestYears, 10) * 12 : 120,
+      fixedInterestMonths: values.fixedInterestYears
+        ? parseInt(values.fixedInterestYears, 10) * 12
+        : 120,
       currentComparableRentCents: parseEuroInput(values.currentRent),
     }
   }, [form])
 
-  const setBudgetConfirmed = useCallback((field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
-    const current = form.getValues(field)
-    if (current) {
-      form.setValue(field, { ...current, budgetStatus: status, amountCents: current.amountCents ?? 0 }, { shouldValidate: true })
-    }
-  }, [form])
+  const setBudgetConfirmed = useCallback(
+    (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
+      const current = form.getValues(field)
+      if (current) {
+        form.setValue(
+          field,
+          { ...current, budgetStatus: status, amountCents: current.amountCents ?? 0 },
+          { shouldValidate: true },
+        )
+      }
+    },
+    [form],
+  )
 
-  const toggleBroker = useCallback((involved: boolean) => {
-    form.setValue('brokerInvolved', involved, { shouldValidate: true })
-  }, [form])
+  const toggleBroker = useCallback(
+    (involved: boolean) => {
+      form.setValue('brokerInvolved', involved, { shouldValidate: true })
+    },
+    [form],
+  )
 
-  const setRateOverride = useCallback((rate: keyof AcquisitionCostRateOverrides, value: string) => {
-    form.setValue(`rateOverrides.${rate}`, value, { shouldValidate: true })
-  }, [form])
+  const setRateOverride = useCallback(
+    (rate: keyof AcquisitionCostRateOverrides, value: string) => {
+      form.setValue(`rateOverrides.${rate}`, value, { shouldValidate: true })
+    },
+    [form],
+  )
 
   const isAvailable = result.status === 'available'
   const availableResult = isAvailable ? result : null

@@ -20,7 +20,13 @@ export function PurchaseCostsPage() {
     germanStateIds,
   } = usePurchaseCostsCalculator()
 
-  const { register, control, watch, setValue, formState: { errors } } = form
+  const {
+    register,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form
 
   const purchasePrice = watch('purchasePrice')
   const brokerInvolved = watch('brokerInvolved')
@@ -28,14 +34,23 @@ export function PurchaseCostsPage() {
   const movingSetupCosts = watch('movingSetupCosts')
 
   const hasErrors = result.status === 'unavailable' && result.reason === 'VALIDATION_ERROR'
-  const hasUnconfirmedBudgets = result.status === 'unavailable' && result.reason === 'POST_PURCHASE_BUDGET_NOT_CONFIRMED'
+  const hasUnconfirmedBudgets =
+    result.status === 'unavailable' && result.reason === 'POST_PURCHASE_BUDGET_NOT_CONFIRMED'
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = e.target.value.replace(/[^\d]/g, '')
     setValue('purchasePrice', digits, { shouldValidate: true })
   }
 
-  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'notaryRate' | 'landRegisterRate' | 'buyerBrokerRate' | 'financedAcquisitionCostShare' | 'transferTaxRate') => {
+  const handleRateChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field:
+      | 'notaryRate'
+      | 'landRegisterRate'
+      | 'buyerBrokerRate'
+      | 'financedAcquisitionCostShare'
+      | 'transferTaxRate',
+  ) => {
     const cleaned = e.target.value.replace(/[^\d,]/g, '')
     setValue(`rateOverrides.${field}`, cleaned, { shouldValidate: true })
   }
@@ -86,7 +101,9 @@ export function PurchaseCostsPage() {
               <option value="confirmed-zero">{t('purchase.budgetStatus.confirmedZero')}</option>
               <option value="budgeted">{t('purchase.budgetStatus.budgeted')}</option>
             </select>
-            <span className={`budget-field__status-badge ${isNotBudgeted ? 'warning' : ''} ${isConfirmedZero ? 'confirmed' : ''} ${isBudgeted ? 'budgeted' : ''}`}>
+            <span
+              className={`budget-field__status-badge ${isNotBudgeted ? 'warning' : ''} ${isConfirmedZero ? 'confirmed' : ''} ${isBudgeted ? 'budgeted' : ''}`}
+            >
               {isNotBudgeted && t('purchase.budgetStatus.notBudgetedBadge')}
               {isConfirmedZero && t('purchase.budgetStatus.confirmedZeroBadge')}
               {isBudgeted && t('purchase.budgetStatus.budgetedBadge')}
@@ -109,7 +126,10 @@ export function PurchaseCostsPage() {
 
           <div className="form-field">
             <label htmlFor="purchasePrice">
-              {t('property.purchasePrice')} <span className="required" aria-hidden="true">*</span>
+              {t('property.purchasePrice')}{' '}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
             </label>
             <div className="form-field__input-group">
               <input
@@ -124,7 +144,9 @@ export function PurchaseCostsPage() {
                 aria-invalid={!!errors.purchasePrice}
                 aria-describedby={errors.purchasePrice ? 'purchasePrice-error' : undefined}
               />
-              <span className="form-field__currency" aria-hidden="true">€</span>
+              <span className="form-field__currency" aria-hidden="true">
+                €
+              </span>
             </div>
             {errors.purchasePrice && (
               <p id="purchasePrice-error" className="form-field__error" role="alert">
@@ -135,7 +157,10 @@ export function PurchaseCostsPage() {
 
           <div className="form-field">
             <label htmlFor="stateId">
-              {t('purchase.stateLabel')} <span className="required" aria-hidden="true">*</span>
+              {t('purchase.stateLabel')}{' '}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
             </label>
             <Controller
               name="stateId"
@@ -150,22 +175,37 @@ export function PurchaseCostsPage() {
                 >
                   {germanStateIds.map((id) => (
                     <option key={id} value={id}>
-                      {id === 'DE-BW' ? 'Baden-Württemberg' :
-                       id === 'DE-BY' ? 'Bayern' :
-                       id === 'DE-BE' ? 'Berlin' :
-                       id === 'DE-BB' ? 'Brandenburg' :
-                       id === 'DE-HB' ? 'Bremen' :
-                       id === 'DE-HH' ? 'Hamburg' :
-                       id === 'DE-HE' ? 'Hessen' :
-                       id === 'DE-MV' ? 'Mecklenburg-Vorpommern' :
-                       id === 'DE-NI' ? 'Niedersachsen' :
-                       id === 'DE-NW' ? 'Nordrhein-Westfalen' :
-                       id === 'DE-RP' ? 'Rheinland-Pfalz' :
-                       id === 'DE-SL' ? 'Saarland' :
-                       id === 'DE-SN' ? 'Sachsen' :
-                       id === 'DE-ST' ? 'Sachsen-Anhalt' :
-                       id === 'DE-SH' ? 'Schleswig-Holstein' :
-                       'Thüringen'}
+                      {id === 'DE-BW'
+                        ? 'Baden-Württemberg'
+                        : id === 'DE-BY'
+                          ? 'Bayern'
+                          : id === 'DE-BE'
+                            ? 'Berlin'
+                            : id === 'DE-BB'
+                              ? 'Brandenburg'
+                              : id === 'DE-HB'
+                                ? 'Bremen'
+                                : id === 'DE-HH'
+                                  ? 'Hamburg'
+                                  : id === 'DE-HE'
+                                    ? 'Hessen'
+                                    : id === 'DE-MV'
+                                      ? 'Mecklenburg-Vorpommern'
+                                      : id === 'DE-NI'
+                                        ? 'Niedersachsen'
+                                        : id === 'DE-NW'
+                                          ? 'Nordrhein-Westfalen'
+                                          : id === 'DE-RP'
+                                            ? 'Rheinland-Pfalz'
+                                            : id === 'DE-SL'
+                                              ? 'Saarland'
+                                              : id === 'DE-SN'
+                                                ? 'Sachsen'
+                                                : id === 'DE-ST'
+                                                  ? 'Sachsen-Anhalt'
+                                                  : id === 'DE-SH'
+                                                    ? 'Schleswig-Holstein'
+                                                    : 'Thüringen'}
                     </option>
                   ))}
                 </select>
@@ -200,9 +240,7 @@ export function PurchaseCostsPage() {
 
           {brokerInvolved && (
             <div className="form-field form-field--conditional">
-              <label htmlFor="buyerBrokerRate">
-                {t('purchase.buyerBrokerRateLabel')}
-              </label>
+              <label htmlFor="buyerBrokerRate">{t('purchase.buyerBrokerRateLabel')}</label>
               <Controller
                 name="rateOverrides.buyerBrokerRate"
                 control={control}
@@ -218,7 +256,9 @@ export function PurchaseCostsPage() {
                       placeholder="3,57"
                       className="rate-input"
                     />
-                    <span className="form-field__currency" aria-hidden="true">%</span>
+                    <span className="form-field__currency" aria-hidden="true">
+                      %
+                    </span>
                   </div>
                 )}
               />
@@ -226,9 +266,7 @@ export function PurchaseCostsPage() {
           )}
 
           <div className="form-field">
-            <label htmlFor="availableEquity">
-              {t('finance.equity')}
-            </label>
+            <label htmlFor="availableEquity">{t('finance.equity')}</label>
             <Controller
               name="availableEquity"
               control={control}
@@ -244,16 +282,16 @@ export function PurchaseCostsPage() {
                     placeholder="50.000"
                     className="rate-input"
                   />
-                  <span className="form-field__currency" aria-hidden="true">€</span>
+                  <span className="form-field__currency" aria-hidden="true">
+                    €
+                  </span>
                 </div>
               )}
             />
           </div>
 
           <div className="form-field">
-            <label htmlFor="nominalRate">
-              {t('finance.nominalRate')}
-            </label>
+            <label htmlFor="nominalRate">{t('finance.nominalRate')}</label>
             <Controller
               name="nominalRate"
               control={control}
@@ -272,16 +310,16 @@ export function PurchaseCostsPage() {
                     placeholder="3,50"
                     className="rate-input"
                   />
-                  <span className="form-field__currency" aria-hidden="true">%</span>
+                  <span className="form-field__currency" aria-hidden="true">
+                    %
+                  </span>
                 </div>
               )}
             />
           </div>
 
           <div className="form-field">
-            <label htmlFor="initialRepaymentRate">
-              {t('finance.initialRepaymentRate')}
-            </label>
+            <label htmlFor="initialRepaymentRate">{t('finance.initialRepaymentRate')}</label>
             <Controller
               name="initialRepaymentRate"
               control={control}
@@ -300,16 +338,16 @@ export function PurchaseCostsPage() {
                     placeholder="2,00"
                     className="rate-input"
                   />
-                  <span className="form-field__currency" aria-hidden="true">%</span>
+                  <span className="form-field__currency" aria-hidden="true">
+                    %
+                  </span>
                 </div>
               )}
             />
           </div>
 
           <div className="form-field">
-            <label htmlFor="fixedInterestYears">
-              {t('finance.fixedRatePeriod')}
-            </label>
+            <label htmlFor="fixedInterestYears">{t('finance.fixedRatePeriod')}</label>
             <Controller
               name="fixedInterestYears"
               control={control}
@@ -349,7 +387,9 @@ export function PurchaseCostsPage() {
                     placeholder="1.000"
                     className="rate-input"
                   />
-                  <span className="form-field__currency" aria-hidden="true">€</span>
+                  <span className="form-field__currency" aria-hidden="true">
+                    €
+                  </span>
                 </div>
               )}
             />
@@ -365,7 +405,10 @@ export function PurchaseCostsPage() {
                 const el = document.querySelector('.advanced-fields')
                 el?.classList.toggle('expanded')
                 const btn = document.querySelector('.advanced-toggle')
-                btn?.setAttribute('aria-expanded', el?.classList.contains('expanded') ? 'true' : 'false')
+                btn?.setAttribute(
+                  'aria-expanded',
+                  el?.classList.contains('expanded') ? 'true' : 'false',
+                )
               }}
               aria-expanded="false"
             >
@@ -392,7 +435,9 @@ export function PurchaseCostsPage() {
                       placeholder="1,00"
                       className="rate-input"
                     />
-                    <span className="form-field__currency" aria-hidden="true">%</span>
+                    <span className="form-field__currency" aria-hidden="true">
+                      %
+                    </span>
                   </div>
                 )}
               />
@@ -417,7 +462,9 @@ export function PurchaseCostsPage() {
                       placeholder="0,50"
                       className="rate-input"
                     />
-                    <span className="form-field__currency" aria-hidden="true">%</span>
+                    <span className="form-field__currency" aria-hidden="true">
+                      %
+                    </span>
                   </div>
                 )}
               />
@@ -427,9 +474,7 @@ export function PurchaseCostsPage() {
             {renderBudgetField('movingSetupCosts', 'initialCosts')}
 
             <div className="form-field">
-              <label htmlFor="financedShare">
-                {t('purchase.financedAcquisitionCostShare')}
-              </label>
+              <label htmlFor="financedShare">{t('purchase.financedAcquisitionCostShare')}</label>
               <Controller
                 name="rateOverrides.financedAcquisitionCostShare"
                 control={control}
@@ -445,7 +490,9 @@ export function PurchaseCostsPage() {
                       placeholder="0,00"
                       className="rate-input"
                     />
-                    <span className="form-field__currency" aria-hidden="true">%</span>
+                    <span className="form-field__currency" aria-hidden="true">
+                      %
+                    </span>
                   </div>
                 )}
               />
@@ -462,7 +509,8 @@ export function PurchaseCostsPage() {
               <h3>{t('purchase.errors.calculationFailed')}</h3>
               <p>{result.error?.message}</p>
               <p className="error-detail">
-                {t('purchase.errors.field')}: {result.error?.field} | {t('purchase.errors.code')}: {result.error?.code}
+                {t('purchase.errors.field')}: {result.error?.field} | {t('purchase.errors.code')}:{' '}
+                {result.error?.code}
               </p>
             </div>
           )}
@@ -484,38 +532,79 @@ export function PurchaseCostsPage() {
               <div className="result-grid">
                 <article className="result-card">
                   <h3>{t('purchase.results.transferTax')}</h3>
-                  <p className="result-value">{formatEuroInput(availableResult.transferTaxCents)} €</p>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.transferTaxCents)} €
+                  </p>
                   <p className="result-detail">
-                    {t('purchase.results.rate')}: {(((availableResult.appliedAssumptions.transferTaxRate.value).toNumber?.() * 100 || 0).toFixed(2))}%
-                    <span className="origin-badge">{t(`purchase.origin.${availableResult.appliedAssumptions.transferTaxRate.origin}`)}</span>
+                    {t('purchase.results.rate')}:{' '}
+                    {(
+                      availableResult.appliedAssumptions.transferTaxRate.value.toNumber?.() * 100 ||
+                      0
+                    ).toFixed(2)}
+                    %
+                    <span className="origin-badge">
+                      {t(
+                        `purchase.origin.${availableResult.appliedAssumptions.transferTaxRate.origin}`,
+                      )}
+                    </span>
                   </p>
                 </article>
 
                 <article className="result-card">
                   <h3>{t('purchase.results.notaryCosts')}</h3>
-                  <p className="result-value">{formatEuroInput(availableResult.notaryCostsCents)} €</p>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.notaryCostsCents)} €
+                  </p>
                   <p className="result-detail">
-                    {t('purchase.results.rate')}: {(((availableResult.appliedAssumptions.notaryRate.value).toNumber?.() * 100 || 0).toFixed(2))}%
-                    <span className="origin-badge">{t(`purchase.origin.${availableResult.appliedAssumptions.notaryRate.origin}`)}</span>
+                    {t('purchase.results.rate')}:{' '}
+                    {(
+                      availableResult.appliedAssumptions.notaryRate.value.toNumber?.() * 100 || 0
+                    ).toFixed(2)}
+                    %
+                    <span className="origin-badge">
+                      {t(`purchase.origin.${availableResult.appliedAssumptions.notaryRate.origin}`)}
+                    </span>
                   </p>
                 </article>
 
                 <article className="result-card">
                   <h3>{t('purchase.results.landRegisterCosts')}</h3>
-                  <p className="result-value">{formatEuroInput(availableResult.landRegisterCostsCents)} €</p>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.landRegisterCostsCents)} €
+                  </p>
                   <p className="result-detail">
-                    {t('purchase.results.rate')}: {(((availableResult.appliedAssumptions.landRegisterRate.value).toNumber?.() * 100 || 0).toFixed(2))}%
-                    <span className="origin-badge">{t(`purchase.origin.${availableResult.appliedAssumptions.landRegisterRate.origin}`)}</span>
+                    {t('purchase.results.rate')}:{' '}
+                    {(
+                      availableResult.appliedAssumptions.landRegisterRate.value.toNumber?.() *
+                        100 || 0
+                    ).toFixed(2)}
+                    %
+                    <span className="origin-badge">
+                      {t(
+                        `purchase.origin.${availableResult.appliedAssumptions.landRegisterRate.origin}`,
+                      )}
+                    </span>
                   </p>
                 </article>
 
                 {brokerInvolved && (
                   <article className="result-card">
                     <h3>{t('purchase.results.brokerCommission')}</h3>
-                    <p className="result-value">{formatEuroInput(availableResult.buyerBrokerCommissionCents)} €</p>
+                    <p className="result-value">
+                      {formatEuroInput(availableResult.buyerBrokerCommissionCents)} €
+                    </p>
                     <p className="result-detail">
-                      {t('purchase.results.rate')}: {(((availableResult.appliedAssumptions.buyerBrokerRate.value).toNumber?.() * 100 || 0).toFixed(2))}%
-                      <span className="origin-badge">{t(`purchase.origin.${availableResult.appliedAssumptions.buyerBrokerRate.origin}`)}</span>
+                      {t('purchase.results.rate')}:{' '}
+                      {(
+                        availableResult.appliedAssumptions.buyerBrokerRate.value.toNumber?.() *
+                          100 || 0
+                      ).toFixed(2)}
+                      %
+                      <span className="origin-badge">
+                        {t(
+                          `purchase.origin.${availableResult.appliedAssumptions.buyerBrokerRate.origin}`,
+                        )}
+                      </span>
                     </p>
                   </article>
                 )}
@@ -523,19 +612,25 @@ export function PurchaseCostsPage() {
 
               <div className="result-card summary">
                 <h3>{t('purchase.results.transactionCosts')}</h3>
-                <p className="result-value large">{formatEuroInput(availableResult.transactionAcquisitionCostsCents)} €</p>
+                <p className="result-value large">
+                  {formatEuroInput(availableResult.transactionAcquisitionCostsCents)} €
+                </p>
                 <p className="result-detail">{t('purchase.results.sumOfAbove')}</p>
               </div>
 
               <div className="result-card summary">
                 <h3>{t('purchase.results.postPurchaseBudget')}</h3>
-                <p className="result-value large">{formatEuroInput(availableResult.postPurchaseBudgetCents)} €</p>
+                <p className="result-value large">
+                  {formatEuroInput(availableResult.postPurchaseBudgetCents)} €
+                </p>
                 <p className="result-detail">{t('purchase.results.renovationPlusMoving')}</p>
               </div>
 
               <div className="result-card total">
                 <h3>{t('purchase.results.totalProjectCost')}</h3>
-                <p className="result-value large">{formatEuroInput(availableResult.totalProjectCostCents)} €</p>
+                <p className="result-value large">
+                  {formatEuroInput(availableResult.totalProjectCostCents)} €
+                </p>
                 <p className="result-detail">{t('purchase.results.purchasePricePlusAllCosts')}</p>
               </div>
 
