@@ -11,7 +11,6 @@ import type {
 } from '../../domain/acquisition-costs'
 import {
   purchaseCostsInputSchema,
-  type PurchaseCostsInput,
   QUICK_DEFAULTS,
   germanStateIds,
   budgetStatuses,
