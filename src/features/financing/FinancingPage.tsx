@@ -9,7 +9,7 @@ import { useFinancingCalculator } from './useFinancing'
 const fixedInterestPeriods = [5, 10, 15, 20, 30] as const
 
 function inputValue(value: string) {
-  return value.replace(/[^\\d,.]/g, '')
+  return value.replace(/[^\d,.]/g, '')
 }
 
 function languageForFormatting(language: string): SupportedLanguage {
