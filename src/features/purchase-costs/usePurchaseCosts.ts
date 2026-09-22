@@ -1,14 +1,10 @@
 import { useCallback, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
 import { calculateAcquisitionCosts } from '../../domain/acquisition-costs'
-import type {
-  AcquisitionCostResult,
-  AcquisitionCostInput,
-  BudgetStatus,
-} from '../../domain/acquisition-costs'
+import type { AcquisitionCostInput, AcquisitionCostResult, BudgetStatus } from '../../domain/acquisition-costs'
 import {
   purchaseCostsInputSchema,
   type PurchaseCostsInput,
@@ -17,15 +13,11 @@ import {
   budgetStatuses,
 } from './schema'
 
-export interface PurchaseCostsFormData extends PurchaseCostsInput {
-  // Form-specific fields
-  purchasePrice: string
-  availableEquity: string
-  nominalRate: string
-  initialRepaymentRate: string
-  fixedInterestYears: string
-  currentRent: string
-}
+const formSchema = purchaseCostsInputSchema
+  .omit({ purchasePriceCents: true })
+  .extend({ purchasePrice: z.string() })
+
+export type PurchaseCostsFormData = z.infer<typeof formSchema>
 
 function parseEuroInput(value: string): number {
   const cleaned = value.replace(/[€\s.]/g, '').replace(',', '.')
@@ -45,20 +37,13 @@ function parseRateInput(value: string): number {
   return parseFloat(cleaned) / 100
 }
 
+function parseOptionalRate(value: string | undefined): number | undefined {
+  return value?.trim() ? parseRateInput(value) : undefined
+}
+
 function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
-
-const formSchema = purchaseCostsInputSchema.extend({
-  purchasePrice: z.string(),
-  availableEquity: z.string(),
-  nominalRate: z.string(),
-  initialRepaymentRate: z.string(),
-  fixedInterestYears: z.string(),
-  currentRent: z.string(),
-})
-
-type AcquisitionCostRateOverrides = NonNullable<PurchaseCostsInput['rateOverrides']>
 
 export function usePurchaseCostsCalculator() {
   const form = useForm<PurchaseCostsFormData>({
@@ -67,58 +52,40 @@ export function usePurchaseCostsCalculator() {
       purchasePrice: '',
       stateId: QUICK_DEFAULTS.stateId,
       brokerInvolved: false,
-      availableEquity: '',
-      nominalRate: '',
-      initialRepaymentRate: '',
-      fixedInterestYears: '',
-      currentRent: '',
       renovationBudget: QUICK_DEFAULTS.renovationBudget,
       movingSetupCosts: QUICK_DEFAULTS.movingSetupCosts,
     },
     mode: 'onChange',
   })
+  const values = useWatch({ control: form.control })
 
-  // Transform form data to domain input
   const domainInput = useMemo((): AcquisitionCostInput => {
-    const values = form.getValues()
-    const rateOverrides = values.rateOverrides
-      ? {
-          transferTaxRate: values.rateOverrides.transferTaxRate,
-          notaryRate: values.rateOverrides.notaryRate,
-          landRegisterRate: values.rateOverrides.landRegisterRate,
-          buyerBrokerRate: values.rateOverrides.buyerBrokerRate,
-          financedAcquisitionCostShare: values.rateOverrides.financedAcquisitionCostShare,
-        }
+    const parsedRateOverrides = {
+      transferTaxRate: parseOptionalRate(values.rateOverrides?.transferTaxRate),
+      notaryRate: parseOptionalRate(values.rateOverrides?.notaryRate),
+      landRegisterRate: parseOptionalRate(values.rateOverrides?.landRegisterRate),
+      buyerBrokerRate: parseOptionalRate(values.rateOverrides?.buyerBrokerRate),
+      financedAcquisitionCostShare: parseOptionalRate(
+        values.rateOverrides?.financedAcquisitionCostShare,
+      ),
+    }
+    const rateOverrides = Object.values(parsedRateOverrides).some((rate) => rate !== undefined)
+      ? parsedRateOverrides
       : undefined
 
     return {
-      purchasePriceCents: parseEuroInput(values.purchasePrice),
-      stateId: values.stateId,
-      brokerInvolved: values.brokerInvolved,
-      rateOverrides: rateOverrides,
+      purchasePriceCents: parseEuroInput(values.purchasePrice ?? ''),
+      stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
+      brokerInvolved: values.brokerInvolved ?? false,
+      rateOverrides,
       renovationBudget: values.renovationBudget,
       movingSetupCosts: values.movingSetupCosts,
     }
-  }, [form])
+  }, [values])
 
-  // Run calculation
   const result = useMemo((): AcquisitionCostResult => {
     return calculateAcquisitionCosts(domainInput)
   }, [domainInput])
-
-  // Quick-mode financing preview inputs (not calculated here, just passed through)
-  const financingPreview = useMemo(() => {
-    const values = form.getValues()
-    return {
-      availableEquityCents: parseEuroInput(values.availableEquity),
-      nominalAnnualRate: parseRateInput(values.nominalRate),
-      initialRepaymentRate: parseRateInput(values.initialRepaymentRate),
-      fixedInterestMonths: values.fixedInterestYears
-        ? parseInt(values.fixedInterestYears, 10) * 12
-        : 120,
-      currentComparableRentCents: parseEuroInput(values.currentRent),
-    }
-  }, [form])
 
   const setBudgetConfirmed = useCallback(
     (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
@@ -141,13 +108,6 @@ export function usePurchaseCostsCalculator() {
     [form],
   )
 
-  const setRateOverride = useCallback(
-    (rate: keyof AcquisitionCostRateOverrides, value: string) => {
-      form.setValue(`rateOverrides.${rate}`, value, { shouldValidate: true })
-    },
-    [form],
-  )
-
   const isAvailable = result.status === 'available'
   const availableResult = isAvailable ? result : null
 
@@ -156,13 +116,9 @@ export function usePurchaseCostsCalculator() {
     result,
     availableResult,
     isAvailable,
-    financingPreview,
     setBudgetConfirmed,
     toggleBroker,
-    setRateOverride,
-    parseEuroInput,
     formatEuroInput,
-    parseRateInput,
     formatRateInput,
     germanStateIds,
     budgetStatuses,
