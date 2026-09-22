@@ -79,7 +79,9 @@ export function FinancingPage() {
                 <input
                   id="availableEquity"
                   inputMode="decimal"
-                  onChange={(event) => updateFinancing({ availableEquity: inputValue(event.target.value) })}
+                  onChange={(event) =>
+                    updateFinancing({ availableEquity: inputValue(event.target.value) })
+                  }
                   placeholder="50.000"
                   type="text"
                   value={financingDraft.availableEquity}
@@ -97,7 +99,9 @@ export function FinancingPage() {
                   <input
                     id="downPayment"
                     inputMode="decimal"
-                    onChange={(event) => updateFinancing({ downPayment: inputValue(event.target.value) })}
+                    onChange={(event) =>
+                      updateFinancing({ downPayment: inputValue(event.target.value) })
+                    }
                     placeholder="50.000"
                     type="text"
                     value={financingDraft.downPayment}
@@ -118,7 +122,9 @@ export function FinancingPage() {
                   id="financedAcquisitionCostShare"
                   inputMode="decimal"
                   onChange={(event) =>
-                    updateFinancing({ financedAcquisitionCostShare: inputValue(event.target.value) })
+                    updateFinancing({
+                      financedAcquisitionCostShare: inputValue(event.target.value),
+                    })
                   }
                   placeholder="0,00"
                   type="text"
@@ -136,7 +142,9 @@ export function FinancingPage() {
                 <input
                   id="nominalAnnualRate"
                   inputMode="decimal"
-                  onChange={(event) => updateFinancing({ nominalAnnualRate: inputValue(event.target.value) })}
+                  onChange={(event) =>
+                    updateFinancing({ nominalAnnualRate: inputValue(event.target.value) })
+                  }
                   placeholder="3,50"
                   type="text"
                   value={financingDraft.nominalAnnualRate}
