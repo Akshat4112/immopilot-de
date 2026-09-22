@@ -3,8 +3,9 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import type {
-  AcquisitionCostInput,
+import {
+  calculateAcquisitionCosts,
+  type AcquisitionCostInput,
   AcquisitionCostResult,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
@@ -21,13 +22,6 @@ const formSchema = purchaseCostsInputSchema
   .extend({ purchasePrice: z.string() })
 
 export type PurchaseCostsFormData = z.infer<typeof formSchema>
-
-function parseEuroInput(value: string): number {
-  const cleaned = value.replace(/[€\s.]/g, '').replace(',', '.')
-  if (!cleaned) return 0
-  const euros = parseFloat(cleaned)
-  return Math.round(euros * 100)
-}
 
 function formatEuroInput(cents: number): string {
   const euros = (cents / 100).toFixed(2).replace('.', ',')
