@@ -60,10 +60,6 @@ export const rateOverridesSchema = z
       .string()
       .regex(/^\d+(?:[.,]\d+)?$/)
       .optional(),
-    financedAcquisitionCostShare: z
-      .string()
-      .regex(/^\d+(?:[.,]\d+)?$/)
-      .optional(),
   })
   .optional()
 
