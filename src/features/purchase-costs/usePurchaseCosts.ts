@@ -1,14 +1,19 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import { calculateAcquisitionCosts } from '../../domain/acquisition-costs'
 import type {
   AcquisitionCostInput,
   AcquisitionCostResult,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
+import {
+  acquisitionCostInputFromDraft,
+  initialPurchaseCostsDraft,
+  useScenarioWorkspaceStore,
+  type PurchaseCostsDraft,
+} from '../scenario-workspace'
 import { purchaseCostsInputSchema, QUICK_DEFAULTS, germanStateIds, budgetStatuses } from './schema'
 
 const formSchema = purchaseCostsInputSchema
@@ -43,56 +48,41 @@ function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
 
-type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
-
-function normalizeBudget(
-  value: WatchedBudget | undefined,
-): AcquisitionCostInput['renovationBudget'] {
-  if (value?.amountCents === undefined || value.budgetStatus === undefined) return undefined
-  return { amountCents: value.amountCents, budgetStatus: value.budgetStatus }
+function purchaseCostsDraftFromForm(values: PurchaseCostsFormData): PurchaseCostsDraft {
+  return {
+    purchasePrice: values.purchasePrice ?? '',
+    stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
+    brokerInvolved: values.brokerInvolved ?? false,
+    rateOverrides: values.rateOverrides,
+    renovationBudget: values.renovationBudget,
+    movingSetupCosts: values.movingSetupCosts,
+  }
 }
 
 export function usePurchaseCostsCalculator() {
+  const initialDraft = useScenarioWorkspaceStore.getState().purchaseCosts
+  const setPurchaseCosts = useScenarioWorkspaceStore((state) => state.setPurchaseCosts)
   const form = useForm<PurchaseCostsFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      purchasePrice: '',
-      stateId: QUICK_DEFAULTS.stateId,
-      brokerInvolved: false,
-      renovationBudget: QUICK_DEFAULTS.renovationBudget,
-      movingSetupCosts: QUICK_DEFAULTS.movingSetupCosts,
-    },
+    defaultValues: initialDraft ?? initialPurchaseCostsDraft,
     mode: 'onChange',
   })
   const values = useWatch({ control: form.control })
+  const purchaseCostsDraft = useMemo(
+    () => purchaseCostsDraftFromForm(values),
+    [values],
+  )
 
-  const domainInput = useMemo((): AcquisitionCostInput => {
-    const parsedRateOverrides = {
-      transferTaxRate: parseOptionalRate(values.rateOverrides?.transferTaxRate),
-      notaryRate: parseOptionalRate(values.rateOverrides?.notaryRate),
-      landRegisterRate: parseOptionalRate(values.rateOverrides?.landRegisterRate),
-      buyerBrokerRate: parseOptionalRate(values.rateOverrides?.buyerBrokerRate),
-      financedAcquisitionCostShare: parseOptionalRate(
-        values.rateOverrides?.financedAcquisitionCostShare,
-      ),
-    }
-    const rateOverrides = Object.values(parsedRateOverrides).some((rate) => rate !== undefined)
-      ? parsedRateOverrides
-      : undefined
+  useEffect(() => {
+    setPurchaseCosts(purchaseCostsDraft)
+  }, [purchaseCostsDraft, setPurchaseCosts])
 
-    return {
-      purchasePriceCents: parseEuroInput(values.purchasePrice ?? ''),
-      stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
-      brokerInvolved: values.brokerInvolved ?? false,
-      rateOverrides,
-      renovationBudget: normalizeBudget(values.renovationBudget),
-      movingSetupCosts: normalizeBudget(values.movingSetupCosts),
-    }
-  }, [values])
+  const domainInput = useMemo(
+    (): AcquisitionCostInput => acquisitionCostInputFromDraft(purchaseCostsDraft),
+    [purchaseCostsDraft],
+  )
 
-  const result = useMemo((): AcquisitionCostResult => {
-    return calculateAcquisitionCosts(domainInput)
-  }, [domainInput])
+  const result = useMemo((): AcquisitionCostResult => calculateAcquisitionCosts(domainInput), [domainInput])
 
   const setBudgetConfirmed = useCallback(
     (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
