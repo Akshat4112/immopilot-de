@@ -48,11 +48,7 @@ export function PurchaseCostsPage() {
 
   const handleRateChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field:
-      | 'notaryRate'
-      | 'landRegisterRate'
-      | 'buyerBrokerRate'
-      | 'transferTaxRate',
+    field: 'notaryRate' | 'landRegisterRate' | 'buyerBrokerRate' | 'transferTaxRate',
   ) => {
     const cleaned = e.target.value.replace(/[^\d,]/g, '')
     setValue(`rateOverrides.${field}`, cleaned, { shouldValidate: true })
@@ -345,8 +341,6 @@ export function PurchaseCostsPage() {
 
             {renderBudgetField('renovationBudget', 'budgetFields.renovationBudget')}
             {renderBudgetField('movingSetupCosts', 'budgetFields.movingSetupCosts')}
-
-
           </div>
         </section>
 
