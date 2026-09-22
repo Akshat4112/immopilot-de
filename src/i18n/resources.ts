@@ -158,7 +158,84 @@ export const resources = {
             'Die Kaufkosten sind berechnet. Der Finanzierungsrechner wird als nächster Schritt ergänzt.',
         },
       },
-      finance: { equity: 'Eigenkapital', monthlyPayment: 'Monatliche Darlehensrate' },
+      finance: {
+        equity: 'Eigenkapital',
+        monthlyPayment: 'Monatliche Darlehensrate',
+        page: {
+          eyebrow: 'Finanzierung',
+          summary:
+            'Plane Eigenkapital, Darlehen und Annuitätenrate anhand deiner bereits berechneten Kaufkosten.',
+        },
+        section: {
+          inputs: 'Finanzierung eingeben',
+          results: 'Finanzierungsübersicht',
+        },
+        inputIntro:
+          'Diese Eingaben bleiben nur für die aktuelle Browsersitzung im Arbeitsspeicher. Alle Ergebnisse werden aus den bestehenden Rechenmodulen neu berechnet.',
+        allocationLegend: 'Wie soll dein Eigenkapital eingesetzt werden?',
+        mode: {
+          downPayment: 'Anzahlung selbst festlegen',
+          downPaymentDescription:
+            'Lege die Anzahlung auf den Kaufpreis fest; Kaufnebenkosten werden separat berücksichtigt.',
+          availableEquity: 'Verfügbares Eigenkapital einsetzen',
+          availableEquityDescription:
+            'Verteile das verfügbare Eigenkapital automatisch zuerst auf Kaufnebenkosten und dann auf den Kaufpreis.',
+        },
+        availableEquity: 'Verfügbares Eigenkapital',
+        downPayment: 'Anzahlung auf den Kaufpreis',
+        availableEquityHint:
+          'Die Anzahlung wird aus dem verfügbaren Eigenkapital nach den Kaufnebenkosten abgeleitet.',
+        financedAcquisitionCostShare: 'Finanzierter Anteil der Kaufnebenkosten',
+        nominalAnnualRate: 'Sollzinssatz p.a.',
+        initialRepaymentRate: 'Anfängliche Tilgung p.a.',
+        fixedInterestPeriod: 'Zinsbindung',
+        fixedPeriod: {
+          5: '5 Jahre',
+          10: '10 Jahre',
+          15: '15 Jahre',
+          20: '20 Jahre',
+          30: '30 Jahre',
+        },
+        results: {
+          requiredEquity: 'Benötigtes Eigenkapital',
+          cashForCostsAndDownPayment: 'Anzahlung, bar finanzierte Kaufnebenkosten und Budgets',
+          loanAmount: 'Anfänglicher Darlehensbetrag',
+          financingRatio: 'Finanzierung des Kaufpreises: {{value}}',
+          totalProjectCost: 'Gesamtkosten',
+          includesAllCosts: 'Kaufpreis, Kaufnebenkosten und bestätigte Budgets',
+          monthlyPayment: 'Monatliche Darlehensrate',
+          initialRepaymentPayment: 'Annuität aus Sollzins und anfänglicher Tilgung',
+          firstMonthInterest: 'Zinsen im ersten Monat',
+          firstMonthPrincipal: 'Tilgung im ersten Monat',
+          remainingDebt: 'Restschuld',
+          afterFixedPeriod: 'Nach {{years}} Jahren Zinsbindung',
+          payoffProjection: 'Rechnerische Volltilgung',
+          months: 'Monate ab Darlehensbeginn · keine garantierte Vertragslaufzeit',
+          firstYearInterest: 'Zinsen im ersten Jahr',
+        },
+        funding: {
+          fundedTitle: 'Finanzierung gedeckt',
+          fundedMessage: 'Nach dem Eigenkapitaleinsatz verbleiben {{value}}.',
+          underfundedTitle: 'Eigenkapitallücke',
+          underfundedMessage: 'Für diese Aufteilung fehlen {{value}} an Eigenkapital.',
+        },
+        cashPurchase: {
+          title: 'Kauf ohne Darlehen',
+          message: 'Das gewählte Eigenkapital deckt das gesamte Projekt. Es fällt keine monatliche Darlehensrate an.',
+        },
+        unavailable: {
+          purchaseCostsTitle: 'Kaufkosten zuerst vervollständigen',
+          purchaseCostsMessage:
+            'Bestätige Renovierungs- und Umzugskosten auf der Kaufkostenseite, bevor die Finanzierung berechnet werden kann.',
+          paymentTitle: 'Darlehensrate nicht verfügbar',
+          paymentMessage:
+            'Prüfe Sollzinssatz und anfängliche Tilgung. Die gewählte Kombination muss das Darlehen amortisieren.',
+          scheduleTitle: 'Tilgungsplan nicht verfügbar',
+          scheduleMessage:
+            'Mit diesen Eingaben kann kein vollständiger Tilgungsplan innerhalb des unterstützten Projektionszeitraums erstellt werden.',
+        },
+        backToPurchaseCosts: 'Kaufkosten bearbeiten',
+      },
     },
   },
   en: {
@@ -320,7 +397,84 @@ export const resources = {
             'Acquisition costs are calculated. The financing calculator will be added as the next step.',
         },
       },
-      finance: { equity: 'Equity', monthlyPayment: 'Monthly mortgage payment' },
+      finance: {
+        equity: 'Equity',
+        monthlyPayment: 'Monthly mortgage payment',
+        page: {
+          eyebrow: 'Financing',
+          summary:
+            'Plan equity, loan amount and monthly mortgage payment from your calculated acquisition costs.',
+        },
+        section: {
+          inputs: 'Enter financing',
+          results: 'Financing overview',
+        },
+        inputIntro:
+          'These inputs remain only in memory for the current browser session. Every result is recalculated through the existing calculation modules.',
+        allocationLegend: 'How should your equity be allocated?',
+        mode: {
+          downPayment: 'Set a down payment',
+          downPaymentDescription:
+            'Set the purchase-price down payment yourself; acquisition costs are considered separately.',
+          availableEquity: 'Use available equity',
+          availableEquityDescription:
+            'Allocate available equity automatically to acquisition costs first and then to the purchase price.',
+        },
+        availableEquity: 'Available equity',
+        downPayment: 'Purchase-price down payment',
+        availableEquityHint:
+          'The down payment is derived from available equity after acquisition costs.',
+        financedAcquisitionCostShare: 'Financed acquisition-cost share',
+        nominalAnnualRate: 'Nominal annual interest rate',
+        initialRepaymentRate: 'Initial repayment rate',
+        fixedInterestPeriod: 'Fixed-interest period',
+        fixedPeriod: {
+          5: '5 years',
+          10: '10 years',
+          15: '15 years',
+          20: '20 years',
+          30: '30 years',
+        },
+        results: {
+          requiredEquity: 'Required equity',
+          cashForCostsAndDownPayment: 'Down payment, cash-funded acquisition costs and budgets',
+          loanAmount: 'Initial loan amount',
+          financingRatio: 'Purchase-price financing: {{value}}',
+          totalProjectCost: 'Total project cost',
+          includesAllCosts: 'Purchase price, acquisition costs and confirmed budgets',
+          monthlyPayment: 'Monthly mortgage payment',
+          initialRepaymentPayment: 'Annuity from nominal interest and initial repayment',
+          firstMonthInterest: 'First-month interest',
+          firstMonthPrincipal: 'First-month principal repayment',
+          remainingDebt: 'Remaining debt',
+          afterFixedPeriod: 'After {{years}} years of fixed interest',
+          payoffProjection: 'Projected full repayment',
+          months: 'months from loan start · not a guaranteed contractual term',
+          firstYearInterest: 'First-year interest',
+        },
+        funding: {
+          fundedTitle: 'Funding covered',
+          fundedMessage: '{{value}} remains after the equity contribution.',
+          underfundedTitle: 'Equity gap',
+          underfundedMessage: '{{value}} of additional equity is needed for this allocation.',
+        },
+        cashPurchase: {
+          title: 'Cash purchase',
+          message: 'The selected equity covers the whole project. No monthly mortgage payment is due.',
+        },
+        unavailable: {
+          purchaseCostsTitle: 'Complete purchase costs first',
+          purchaseCostsMessage:
+            'Confirm the renovation and moving budgets on the purchase-costs page before financing can be calculated.',
+          paymentTitle: 'Mortgage payment unavailable',
+          paymentMessage:
+            'Check the nominal interest and initial repayment rate. Their combination must amortize the loan.',
+          scheduleTitle: 'Amortization schedule unavailable',
+          scheduleMessage:
+            'These inputs cannot produce a complete amortization schedule within the supported projection period.',
+        },
+        backToPurchaseCosts: 'Edit purchase costs',
+      },
     },
   },
 } as const
