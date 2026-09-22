@@ -150,8 +150,9 @@ test('calculates acquisition costs after the user enters a purchase price', asyn
   await expect(page.getByText('Berechnung fehlgeschlagen')).toHaveCount(0)
 })
 
-
-test('carries completed purchase costs into the financing and mortgage workflow', async ({ page }) => {
+test('carries completed purchase costs into the financing and mortgage workflow', async ({
+  page,
+}) => {
   await page.goto('./')
   await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
