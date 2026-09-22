@@ -62,10 +62,7 @@ export function usePurchaseCostsCalculator() {
     mode: 'onChange',
   })
   const values = useWatch({ control: form.control })
-  const purchaseCostsDraft = useMemo(
-    () => purchaseCostsDraftFromForm(values),
-    [values],
-  )
+  const purchaseCostsDraft = useMemo(() => purchaseCostsDraftFromForm(values), [values])
 
   useEffect(() => {
     setPurchaseCosts(purchaseCostsDraft)
@@ -76,7 +73,10 @@ export function usePurchaseCostsCalculator() {
     [purchaseCostsDraft],
   )
 
-  const result = useMemo((): AcquisitionCostResult => calculateAcquisitionCosts(domainInput), [domainInput])
+  const result = useMemo(
+    (): AcquisitionCostResult => calculateAcquisitionCosts(domainInput),
+    [domainInput],
+  )
 
   const setBudgetConfirmed = useCallback(
     (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
