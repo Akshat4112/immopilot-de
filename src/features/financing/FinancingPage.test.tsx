@@ -70,7 +70,7 @@ describe('FinancingPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Finanzierung planen' })).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Finanzierung gedeckt' })).toBeVisible()
-    expect(screen.getByText(/66\.250/)).toBeVisible()
+    expect(screen.getByText(/^66\.250/)).toBeVisible()
     expect(screen.getByText(/916,67/)).toBeVisible()
     expect(screen.getByText(/152\.188,73/)).toBeVisible()
   })
