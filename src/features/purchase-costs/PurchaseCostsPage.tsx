@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 
 import { usePurchaseCostsCalculator } from './usePurchaseCosts'
 import { PageLayout } from '../../components/PageLayout'
@@ -51,7 +52,6 @@ export function PurchaseCostsPage() {
       | 'notaryRate'
       | 'landRegisterRate'
       | 'buyerBrokerRate'
-      | 'financedAcquisitionCostShare'
       | 'transferTaxRate',
   ) => {
     const cleaned = e.target.value.replace(/[^\d,]/g, '')
@@ -346,30 +346,7 @@ export function PurchaseCostsPage() {
             {renderBudgetField('renovationBudget', 'budgetFields.renovationBudget')}
             {renderBudgetField('movingSetupCosts', 'budgetFields.movingSetupCosts')}
 
-            <div className="form-field">
-              <label htmlFor="financedShare">{t('purchase.financedAcquisitionCostShare')}</label>
-              <Controller
-                name="rateOverrides.financedAcquisitionCostShare"
-                control={control}
-                render={({ field }) => (
-                  <div className="form-field__input-group">
-                    <input
-                      {...field}
-                      type="text"
-                      id="financedShare"
-                      inputMode="decimal"
-                      value={field.value || formatRateInput(0)}
-                      onChange={(e) => handleRateChange(e, 'financedAcquisitionCostShare')}
-                      placeholder="0,00"
-                      className="rate-input"
-                    />
-                    <span className="form-field__currency" aria-hidden="true">
-                      %
-                    </span>
-                  </div>
-                )}
-              />
-            </div>
+
           </div>
         </section>
 
@@ -527,7 +504,12 @@ export function PurchaseCostsPage() {
         {isAvailable && availableResult && (
           <section className="next-steps">
             <h3>{t('purchase.section.nextSteps')}</h3>
-            <p>{t('purchase.nextSteps.financingSoon')}</p>
+            <p>{t('purchase.nextSteps.message')}</p>
+            <div className="next-steps__links">
+              <Link className="next-steps__link primary" to="/financing">
+                {t('purchase.nextSteps.continueToFinancing')}
+              </Link>
+            </div>
           </section>
         )}
       </form>
