@@ -1,0 +1,123 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+
+import {
+  calculateScenarioWorkspace,
+  initialFinancingDraft,
+  initialPurchaseCostsDraft,
+  useScenarioWorkspaceStore,
+} from './index'
+
+function completePurchaseDraft() {
+  return {
+    ...initialPurchaseCostsDraft,
+    purchasePrice: '250000',
+    renovationBudget: {
+      amountCents: 0,
+      budgetStatus: 'confirmed-zero' as const,
+    },
+    movingSetupCosts: {
+      amountCents: 0,
+      budgetStatus: 'confirmed-zero' as const,
+    },
+  }
+}
+
+describe('scenario workspace', () => {
+  beforeEach(() => {
+    useScenarioWorkspaceStore.getState().reset()
+  })
+
+  it('keeps raw purchase and financing inputs in memory without storing calculated results', () => {
+    const purchaseCosts = completePurchaseDraft()
+
+    useScenarioWorkspaceStore.getState().setPurchaseCosts(purchaseCosts)
+    useScenarioWorkspaceStore
+      .getState()
+      .updateFinancing({ availableEquity: '66.250', downPayment: '50.000' })
+
+    expect(useScenarioWorkspaceStore.getState()).toMatchObject({
+      purchaseCosts,
+      financing: {
+        availableEquity: '66.250',
+        downPayment: '50.000',
+      },
+    })
+    expect(useScenarioWorkspaceStore.getState()).not.toHaveProperty('results')
+  })
+
+  it('composes the acquisition, financing, payment and amortization modules for a funded loan', () => {
+    const result = calculateScenarioWorkspace(completePurchaseDraft(), {
+      ...initialFinancingDraft,
+      availableEquity: '66.250',
+      downPayment: '50.000',
+    })
+
+    expect(result.acquisition).toMatchObject({
+      status: 'available',
+      transactionAcquisitionCostsCents: 1_625_000,
+      totalProjectCostCents: 26_625_000,
+    })
+    expect(result.financing).toMatchObject({
+      status: 'available',
+      fundingStatus: 'funded',
+      requiredEquityCents: 6_625_000,
+      loanAmountCents: 20_000_000,
+      cashGapCents: 0,
+    })
+    expect(result.payment).toMatchObject({
+      status: 'available',
+      cashPurchase: false,
+      monthlyPaymentCents: 91_667,
+      firstMonthInterestCents: 58_333,
+      firstMonthScheduledPrincipalCents: 33_334,
+    })
+    expect(result.amortization).toMatchObject({
+      status: 'available',
+      cashPurchase: false,
+      fixedInterestMonths: 120,
+      remainingDebtAtFixedPeriodCents: 15_218_873,
+    })
+  })
+
+  it('keeps the domain unavailable result when purchase budgets are not confirmed', () => {
+    const result = calculateScenarioWorkspace(initialPurchaseCostsDraft, initialFinancingDraft)
+
+    expect(result.acquisition).toMatchObject({
+      status: 'unavailable',
+      reason: 'VALIDATION_ERROR',
+    })
+    expect(result.financing).toMatchObject({
+      status: 'unavailable',
+      reason: 'ACQUISITION_COSTS_UNAVAILABLE',
+    })
+    expect(result.payment).toMatchObject({
+      status: 'unavailable',
+      reason: 'FINANCING_UNAVAILABLE',
+    })
+  })
+
+  it('handles a cash purchase with an empty amortization schedule', () => {
+    const result = calculateScenarioWorkspace(completePurchaseDraft(), {
+      ...initialFinancingDraft,
+      mode: 'available-equity',
+      availableEquity: '266250',
+    })
+
+    expect(result.financing).toMatchObject({
+      status: 'available',
+      fundingStatus: 'funded',
+      loanAmountCents: 0,
+    })
+    expect(result.payment).toMatchObject({
+      status: 'available',
+      cashPurchase: true,
+      monthlyPaymentCents: 0,
+    })
+    expect(result.amortization).toMatchObject({
+      status: 'available',
+      cashPurchase: true,
+      rows: [],
+      remainingDebtAtFixedPeriodCents: 0,
+    })
+  })
+})
