@@ -43,6 +43,13 @@ function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
 
+function normalizeBudget(
+  value: PurchaseCostsFormData['renovationBudget'],
+): AcquisitionCostInput['renovationBudget'] {
+  if (value?.amountCents === undefined || value.budgetStatus === undefined) return undefined
+  return { amountCents: value.amountCents, budgetStatus: value.budgetStatus }
+}
+
 export function usePurchaseCostsCalculator() {
   const form = useForm<PurchaseCostsFormData>({
     resolver: zodResolver(formSchema),
@@ -76,8 +83,8 @@ export function usePurchaseCostsCalculator() {
       stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
       brokerInvolved: values.brokerInvolved ?? false,
       rateOverrides,
-      renovationBudget: values.renovationBudget,
-      movingSetupCosts: values.movingSetupCosts,
+      renovationBudget: normalizeBudget(values.renovationBudget),
+      movingSetupCosts: normalizeBudget(values.movingSetupCosts),
     }
   }, [values])
 
