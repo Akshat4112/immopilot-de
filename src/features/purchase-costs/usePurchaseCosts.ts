@@ -43,8 +43,10 @@ function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
 
+type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
+
 function normalizeBudget(
-  value: PurchaseCostsFormData['renovationBudget'],
+  value: WatchedBudget | undefined,
 ): AcquisitionCostInput['renovationBudget'] {
   if (value?.amountCents === undefined || value.budgetStatus === undefined) return undefined
   return { amountCents: value.amountCents, budgetStatus: value.budgetStatus }
