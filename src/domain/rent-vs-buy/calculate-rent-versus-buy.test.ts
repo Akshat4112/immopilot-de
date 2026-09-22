@@ -71,18 +71,72 @@ describe('matched-budget rent-versus-buy', () => {
       renterNetWealthCents: 18_000,
     })
     expect(result.breakEven).toEqual({ status: 'reached', firstMonth: 1, year: 1 })
+    expect(result.mortgageProjectionAssumption).toBe('within-fixed-period-or-paid-off')
+  })
+
+  it('labels a loan paid off before Zinsbindung without claiming a later-rate projection', () => {
+    const original = sample()
+    if (original.amortization.status !== 'available') throw new Error('Expected schedule')
+    const result = calculateRentVersusBuy(
+      sample({
+        amortization: {
+          ...original.amortization,
+          payoffMonth: 1,
+          rows: [
+            {
+              ...original.amortization.rows[0]!,
+              closingBalanceCents: moneyCents(0),
+            },
+          ],
+        } as RentVersusBuyInput['amortization'],
+      }),
+    )
+    if (result.status !== 'available') throw new Error(result.reason)
+    expect(result.mortgageProjectionAssumption).toBe('within-fixed-period-or-paid-off')
+  })
+
+  it('labels post-Zinsbindung months as a projection only when debt remains at period end', () => {
+    const original = sample()
+    if (original.amortization.status !== 'available') throw new Error('Expected schedule')
+    const result = calculateRentVersusBuy(
+      sample({
+        amortization: {
+          ...original.amortization,
+          payoffMonth: 3,
+          rows: [
+            {
+              ...original.amortization.rows[0]!,
+              regularPaymentCents: moneyCents(3_334),
+              closingBalanceCents: moneyCents(6_666),
+            },
+            {
+              ...original.amortization.rows[1]!,
+              regularPaymentCents: moneyCents(3_333),
+              closingBalanceCents: moneyCents(3_333),
+            },
+            {
+              month: 3,
+              regularPaymentCents: moneyCents(3_333),
+              additionalPrincipalCents: moneyCents(0),
+              closingBalanceCents: moneyCents(0),
+            },
+          ],
+        } as RentVersusBuyInput['amortization'],
+      }),
+    )
+    if (result.status !== 'available') throw new Error(result.reason)
     expect(result.mortgageProjectionAssumption).toBe('constant-initial-rate-beyond-fixed-period')
   })
 
   it('applies optional hypothetical selling costs without charging principal as an expense', () => {
-    const result = calculateRentVersusBuy(sample({ sellingCostRate: 0.2, analysisMonths: 2 }))
+    const result = calculateRentVersusBuy(sample({ sellingCostRate: 0.2, analysisMonths: 1 }))
     if (result.status !== 'available') throw new Error(result.reason)
     expect(result.rows[0]).toMatchObject({
       hypotheticalSellingCostsCents: 4_000,
       buyerNetWealthCents: 11_000,
       buyerMinusRenterCents: -3_000,
     })
-    expect(result.breakEven).toEqual({ status: 'not-reached-within-horizon', analysisMonths: 2 })
+    expect(result.breakEven).toEqual({ status: 'not-reached-within-horizon', analysisMonths: 1 })
     expect(result.mortgageProjectionAssumption).toBe('within-fixed-period')
   })
 

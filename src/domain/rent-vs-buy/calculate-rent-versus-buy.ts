@@ -205,7 +205,9 @@ function calculateAvailable(input: RentVersusBuyInput): RentVersusBuyResult {
       ? 'cash-purchase'
       : analysisMonths <= amortization.fixedInterestMonths
         ? 'within-fixed-period'
-        : 'constant-initial-rate-beyond-fixed-period',
+        : amortization.payoffMonth <= amortization.fixedInterestMonths
+          ? 'within-fixed-period-or-paid-off'
+          : 'constant-initial-rate-beyond-fixed-period',
     rows,
     atAnalysisMonth: rows[rows.length - 1] as RentVersusBuyMonth,
     breakEven:
