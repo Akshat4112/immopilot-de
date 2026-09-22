@@ -28,12 +28,6 @@ function formatEuroInput(cents: number): string {
   return euros.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
-function parseRateInput(value: string): number {
-  const cleaned = value.replace(/[%\s]/g, '').replace(',', '.')
-  if (!cleaned) return 0
-  return parseFloat(cleaned) / 100
-}
-
 function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
