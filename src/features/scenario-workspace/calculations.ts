@@ -19,7 +19,7 @@ import {
 import type { FinancingDraft, PurchaseCostsDraft } from './scenarioStore'
 
 function parseEuroInput(value: string): number {
-  const cleaned = value.replace(/[€\\s.]/g, '').replace(',', '.')
+  const cleaned = value.replace(/[€\s.]/g, '').replace(',', '.')
 
   if (!cleaned) {
     return 0
@@ -30,7 +30,7 @@ function parseEuroInput(value: string): number {
 }
 
 function parseRateInput(value: string): number {
-  const cleaned = value.replace(/[%\\s]/g, '').replace(',', '.')
+  const cleaned = value.replace(/[%\s]/g, '').replace(',', '.')
 
   if (!cleaned) {
     return 0
