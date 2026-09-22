@@ -149,3 +149,33 @@ test('calculates acquisition costs after the user enters a purchase price', asyn
   await expect(page.getByText('12.500,00 €')).toBeVisible()
   await expect(page.getByText('Berechnung fehlgeschlagen')).toHaveCount(0)
 })
+
+
+test('carries completed purchase costs into the financing and mortgage workflow', async ({ page }) => {
+  await page.goto('./')
+  await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
+  await page.getByRole('button', { name: /Erweiterte Eingaben/ }).click()
+
+  const budgetStatuses = page.locator('.budget-field__status-select')
+  await budgetStatuses.nth(0).selectOption('confirmed-zero')
+  await budgetStatuses.nth(1).selectOption('confirmed-zero')
+
+  await page.getByRole('link', { name: 'Zur Finanzierung →' }).click()
+
+  await expect(page).toHaveURL(/#\/financing$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Finanzierung planen' })).toBeVisible()
+
+  await page.getByRole('textbox', { name: 'Verfügbares Eigenkapital' }).fill('66250')
+  await page.getByRole('textbox', { name: 'Anzahlung auf den Kaufpreis' }).fill('50000')
+
+  await expect(page.getByRole('heading', { name: 'Finanzierung gedeckt' })).toBeVisible()
+  await expect(page.getByText(/200\.000/)).toBeVisible()
+  await expect(page.getByText(/916,67/)).toBeVisible()
+  await expect(page.getByText(/152\.188,73/)).toBeVisible()
+
+  await page.getByRole('button', { name: 'English' }).click()
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Plan financing' })).toBeVisible()
+  await expect(page.getByRole('textbox', { name: 'Available equity' })).toHaveValue('66250')
+})
