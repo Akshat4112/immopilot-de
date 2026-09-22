@@ -3,9 +3,9 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import {
-  calculateAcquisitionCosts,
-  type AcquisitionCostInput,
+import { calculateAcquisitionCosts } from '../../domain/acquisition-costs'
+import type {
+  AcquisitionCostInput,
   AcquisitionCostResult,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
@@ -32,14 +32,27 @@ function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
 
-function purchaseCostsDraftFromForm(values: PurchaseCostsFormData): PurchaseCostsDraft {
+type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
+
+function normalizeBudget(value: WatchedBudget | undefined): PurchaseCostsDraft['renovationBudget'] {
+  if (value?.amountCents === undefined || value.budgetStatus === undefined) {
+    return undefined
+  }
+
+  return {
+    amountCents: value.amountCents,
+    budgetStatus: value.budgetStatus,
+  }
+}
+
+function purchaseCostsDraftFromForm(values: Partial<PurchaseCostsFormData>): PurchaseCostsDraft {
   return {
     purchasePrice: values.purchasePrice ?? '',
     stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
     brokerInvolved: values.brokerInvolved ?? false,
     rateOverrides: values.rateOverrides,
-    renovationBudget: values.renovationBudget,
-    movingSetupCosts: values.movingSetupCosts,
+    renovationBudget: normalizeBudget(values.renovationBudget),
+    movingSetupCosts: normalizeBudget(values.movingSetupCosts),
   }
 }
 
