@@ -34,10 +34,6 @@ function parseRateInput(value: string): number {
   return parseFloat(cleaned) / 100
 }
 
-function parseOptionalRate(value: string | undefined): number | undefined {
-  return value?.trim() ? parseRateInput(value) : undefined
-}
-
 function formatRateInput(rate: number): string {
   return (rate * 100).toFixed(2).replace('.', ',')
 }
