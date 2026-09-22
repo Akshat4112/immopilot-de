@@ -79,12 +79,18 @@ describe('scenario workspace', () => {
     })
   })
 
-  it('keeps the domain unavailable result when purchase budgets are not confirmed', () => {
-    const result = calculateScenarioWorkspace(initialPurchaseCostsDraft, initialFinancingDraft)
+  it('keeps unavailable purchase-budget results visible to downstream calculations', () => {
+    const result = calculateScenarioWorkspace(
+      {
+        ...initialPurchaseCostsDraft,
+        purchasePrice: '250000',
+      },
+      initialFinancingDraft,
+    )
 
     expect(result.acquisition).toMatchObject({
       status: 'unavailable',
-      reason: 'VALIDATION_ERROR',
+      reason: 'POST_PURCHASE_BUDGET_NOT_CONFIRMED',
     })
     expect(result.financing).toMatchObject({
       status: 'unavailable',
