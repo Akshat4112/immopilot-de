@@ -33,6 +33,13 @@ function formatRateInput(rate: number): string {
 }
 
 type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
+type WatchedPurchaseCostsFormData = Omit<
+  Partial<PurchaseCostsFormData>,
+  'movingSetupCosts' | 'renovationBudget'
+> & {
+  renovationBudget?: WatchedBudget
+  movingSetupCosts?: WatchedBudget
+}
 
 function normalizeBudget(value: WatchedBudget | undefined): PurchaseCostsDraft['renovationBudget'] {
   if (value?.amountCents === undefined || value.budgetStatus === undefined) {
@@ -45,7 +52,7 @@ function normalizeBudget(value: WatchedBudget | undefined): PurchaseCostsDraft['
   }
 }
 
-function purchaseCostsDraftFromForm(values: Partial<PurchaseCostsFormData>): PurchaseCostsDraft {
+function purchaseCostsDraftFromForm(values: WatchedPurchaseCostsFormData): PurchaseCostsDraft {
   return {
     purchasePrice: values.purchasePrice ?? '',
     stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
