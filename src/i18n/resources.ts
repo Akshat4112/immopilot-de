@@ -221,7 +221,8 @@ export const resources = {
         },
         cashPurchase: {
           title: 'Kauf ohne Darlehen',
-          message: 'Das gewählte Eigenkapital deckt das gesamte Projekt. Es fällt keine monatliche Darlehensrate an.',
+          message:
+            'Das gewählte Eigenkapital deckt das gesamte Projekt. Es fällt keine monatliche Darlehensrate an.',
         },
         unavailable: {
           purchaseCostsTitle: 'Kaufkosten zuerst vervollständigen',
@@ -460,7 +461,8 @@ export const resources = {
         },
         cashPurchase: {
           title: 'Cash purchase',
-          message: 'The selected equity covers the whole project. No monthly mortgage payment is due.',
+          message:
+            'The selected equity covers the whole project. No monthly mortgage payment is due.',
         },
         unavailable: {
           purchaseCostsTitle: 'Complete purchase costs first',
