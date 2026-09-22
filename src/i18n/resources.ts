@@ -79,6 +79,11 @@ export const resources = {
       property: { purchasePrice: 'Kaufpreis' },
       purchase: {
         additionalCosts: 'Kaufnebenkosten',
+        page: {
+          eyebrow: 'Kaufnebenkosten',
+          summary:
+            'Berechne Grunderwerbsteuer, Notar, Grundbuch und Maklerkosten für dein Bundesland mit transparenten, editierbaren Annahmen.',
+        },
         section: {
           quickInputs: 'Schnelleingaben',
           advancedInputs: 'Erweiterte Eingaben',
@@ -88,12 +93,16 @@ export const resources = {
         stateLabel: 'Bundesland',
         brokerToggle: 'Makler beteiligt',
         buyerBrokerRateLabel: 'Käuferprovision',
+        financedAcquisitionCostShare: 'Finanzierter Anteil der Kaufnebenkosten',
         rateLabel: 'Satz',
         budgetPlaceholder: 'Betrag in €',
         budgetStatus: {
           notBudgeted: 'Noch nicht budgetiert',
           confirmedZero: 'Bestätigt: 0 €',
           budgeted: 'Budgetiert',
+          notBudgetedBadge: 'Eingabe erforderlich',
+          confirmedZeroBadge: 'Bestätigt',
+          budgetedBadge: 'Budgetiert',
         },
         fixedPeriod: {
           5: '5 Jahre',
@@ -133,6 +142,7 @@ export const resources = {
           transferTaxRateSourceDate: 'Grunderwerbsteuer-Quelldatum',
           assumptions: 'Verwendete Annahmen',
           rate: 'Satz',
+          enterPurchasePrice: 'Gib einen Kaufpreis ein, um die Kaufnebenkosten zu berechnen.',
         },
         origin: {
           'state-lookup': 'Staatlich',
@@ -144,6 +154,8 @@ export const resources = {
             'Die Kaufkosten stehen. Jetzt können Sie die Finanzierung planen oder Szenarien vergleichen.',
           continueToFinancing: 'Zur Finanzierung →',
           compareScenarios: 'Szenarien vergleichen →',
+          financingSoon:
+            'Die Kaufkosten sind berechnet. Der Finanzierungsrechner wird als nächster Schritt ergänzt.',
         },
       },
       finance: { equity: 'Eigenkapital', monthlyPayment: 'Monatliche Darlehensrate' },
@@ -230,6 +242,11 @@ export const resources = {
       property: { purchasePrice: 'Purchase price' },
       purchase: {
         additionalCosts: 'Acquisition costs',
+        page: {
+          eyebrow: 'Acquisition costs',
+          summary:
+            'Calculate property transfer tax, notary, land-register and broker costs for your federal state with transparent, editable assumptions.',
+        },
         section: {
           quickInputs: 'Quick inputs',
           advancedInputs: 'Advanced inputs',
@@ -239,12 +256,16 @@ export const resources = {
         stateLabel: 'Federal state',
         brokerToggle: 'Broker involved',
         buyerBrokerRateLabel: 'Buyer broker commission',
+        financedAcquisitionCostShare: 'Financed acquisition-cost share',
         rateLabel: 'Rate',
         budgetPlaceholder: 'Amount in €',
         budgetStatus: {
           notBudgeted: 'Not yet budgeted',
           confirmedZero: 'Confirmed: €0',
           budgeted: 'Budgeted',
+          notBudgetedBadge: 'Input required',
+          confirmedZeroBadge: 'Confirmed',
+          budgetedBadge: 'Budgeted',
         },
         fixedPeriod: {
           5: '5 years',
@@ -284,6 +305,7 @@ export const resources = {
           transferTaxRateSourceDate: 'Transfer tax rate source date',
           assumptions: 'Applied assumptions',
           rate: 'Rate',
+          enterPurchasePrice: 'Enter a purchase price to calculate acquisition costs.',
         },
         origin: {
           'state-lookup': 'Statutory',
@@ -294,6 +316,8 @@ export const resources = {
           message: 'Purchase costs are ready. Now you can plan financing or compare scenarios.',
           continueToFinancing: 'Continue to financing →',
           compareScenarios: 'Compare scenarios →',
+          financingSoon:
+            'Acquisition costs are calculated. The financing calculator will be added as the next step.',
         },
       },
       finance: { equity: 'Equity', monthlyPayment: 'Monthly mortgage payment' },

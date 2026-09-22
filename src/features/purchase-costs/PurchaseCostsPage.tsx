@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { Controller } from 'react-hook-form'
 
 import { usePurchaseCostsCalculator } from './usePurchaseCosts'
@@ -33,7 +32,11 @@ export function PurchaseCostsPage() {
   const renovationBudget = watch('renovationBudget')
   const movingSetupCosts = watch('movingSetupCosts')
 
-  const hasErrors = result.status === 'unavailable' && result.reason === 'VALIDATION_ERROR'
+  const hasEnteredPurchasePrice = purchasePrice.trim().length > 0
+  const hasErrors =
+    hasEnteredPurchasePrice &&
+    result.status === 'unavailable' &&
+    result.reason === 'VALIDATION_ERROR'
   const hasUnconfirmedBudgets =
     result.status === 'unavailable' && result.reason === 'POST_PURCHASE_BUDGET_NOT_CONFIRMED'
 
@@ -116,9 +119,9 @@ export function PurchaseCostsPage() {
 
   return (
     <PageLayout
-      eyebrow={t('shell.pages.eyebrow')}
+      eyebrow={t('purchase.page.eyebrow')}
       title={t('shell.pages.purchaseCosts.title')}
-      summary={t('shell.pages.purchaseCosts.summary')}
+      summary={t('purchase.page.summary')}
     >
       <form onSubmit={(e) => e.preventDefault()} className="purchase-costs-form">
         <section className="form-section">
@@ -264,136 +267,6 @@ export function PurchaseCostsPage() {
               />
             </div>
           )}
-
-          <div className="form-field">
-            <label htmlFor="availableEquity">{t('finance.equity')}</label>
-            <Controller
-              name="availableEquity"
-              control={control}
-              render={({ field }) => (
-                <div className="form-field__input-group">
-                  <input
-                    {...field}
-                    type="text"
-                    id="availableEquity"
-                    inputMode="numeric"
-                    value={field.value || ''}
-                    onChange={handlePriceChange}
-                    placeholder="50.000"
-                    className="rate-input"
-                  />
-                  <span className="form-field__currency" aria-hidden="true">
-                    €
-                  </span>
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="nominalRate">{t('finance.nominalRate')}</label>
-            <Controller
-              name="nominalRate"
-              control={control}
-              render={({ field }) => (
-                <div className="form-field__input-group">
-                  <input
-                    {...field}
-                    type="text"
-                    id="nominalRate"
-                    inputMode="decimal"
-                    value={field.value || ''}
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/[^\d,]/g, '')
-                      field.onChange(cleaned)
-                    }}
-                    placeholder="3,50"
-                    className="rate-input"
-                  />
-                  <span className="form-field__currency" aria-hidden="true">
-                    %
-                  </span>
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="initialRepaymentRate">{t('finance.initialRepaymentRate')}</label>
-            <Controller
-              name="initialRepaymentRate"
-              control={control}
-              render={({ field }) => (
-                <div className="form-field__input-group">
-                  <input
-                    {...field}
-                    type="text"
-                    id="initialRepaymentRate"
-                    inputMode="decimal"
-                    value={field.value || ''}
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/[^\d,]/g, '')
-                      field.onChange(cleaned)
-                    }}
-                    placeholder="2,00"
-                    className="rate-input"
-                  />
-                  <span className="form-field__currency" aria-hidden="true">
-                    %
-                  </span>
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="fixedInterestYears">{t('finance.fixedRatePeriod')}</label>
-            <Controller
-              name="fixedInterestYears"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  id="fixedInterestYears"
-                  value={field.value || '10'}
-                  className="rate-input"
-                >
-                  <option value="5">{t('purchase.fixedPeriod.5')}</option>
-                  <option value="10">{t('purchase.fixedPeriod.10')}</option>
-                  <option value="15">{t('purchase.fixedPeriod.15')}</option>
-                  <option value="20">{t('purchase.fixedPeriod.20')}</option>
-                  <option value="30">{t('purchase.fixedPeriod.30')}</option>
-                </select>
-              )}
-            />
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="currentRent">
-              {t('rent.netColdRent')} ({t('rent.monthly')})
-            </label>
-            <Controller
-              name="currentRent"
-              control={control}
-              render={({ field }) => (
-                <div className="form-field__input-group">
-                  <input
-                    {...field}
-                    type="text"
-                    id="currentRent"
-                    inputMode="numeric"
-                    value={field.value || ''}
-                    onChange={handlePriceChange}
-                    placeholder="1.000"
-                    className="rate-input"
-                  />
-                  <span className="form-field__currency" aria-hidden="true">
-                    €
-                  </span>
-                </div>
-              )}
-            />
-          </div>
         </section>
 
         <section className="form-section form-section--advanced">
@@ -418,7 +291,7 @@ export function PurchaseCostsPage() {
           <div className="advanced-fields">
             <div className="form-field">
               <label htmlFor="notaryRate">
-                {t('purchase.notaryCosts')} ({t('purchase.rateLabel')})
+                {t('purchase.results.notaryCosts')} ({t('purchase.rateLabel')})
               </label>
               <Controller
                 name="rateOverrides.notaryRate"
@@ -445,7 +318,7 @@ export function PurchaseCostsPage() {
 
             <div className="form-field">
               <label htmlFor="landRegisterRate">
-                {t('purchase.landRegisterCosts')} ({t('purchase.rateLabel')})
+                {t('purchase.results.landRegisterCosts')} ({t('purchase.rateLabel')})
               </label>
               <Controller
                 name="rateOverrides.landRegisterRate"
@@ -470,8 +343,8 @@ export function PurchaseCostsPage() {
               />
             </div>
 
-            {renderBudgetField('renovationBudget', 'renovationCosts')}
-            {renderBudgetField('movingSetupCosts', 'initialCosts')}
+            {renderBudgetField('renovationBudget', 'budgetFields.renovationBudget')}
+            {renderBudgetField('movingSetupCosts', 'budgetFields.movingSetupCosts')}
 
             <div className="form-field">
               <label htmlFor="financedShare">{t('purchase.financedAcquisitionCostShare')}</label>
@@ -503,6 +376,10 @@ export function PurchaseCostsPage() {
         {/* Results */}
         <section className="results-section" aria-live="polite">
           <h2>{t('purchase.section.results')}</h2>
+
+          {!hasEnteredPurchasePrice && (
+            <p className="result-detail">{t('purchase.results.enterPurchasePrice')}</p>
+          )}
 
           {hasErrors && (
             <div className="result-card error" role="alert">
@@ -650,15 +527,7 @@ export function PurchaseCostsPage() {
         {isAvailable && availableResult && (
           <section className="next-steps">
             <h3>{t('purchase.section.nextSteps')}</h3>
-            <p>{t('purchase.nextSteps.message')}</p>
-            <nav className="next-steps__links">
-              <Link to="/financing" className="next-steps__link primary">
-                {t('purchase.nextSteps.continueToFinancing')}
-              </Link>
-              <Link to="/comparison" className="next-steps__link secondary">
-                {t('purchase.nextSteps.compareScenarios')}
-              </Link>
-            </nav>
+            <p>{t('purchase.nextSteps.financingSoon')}</p>
           </section>
         )}
       </form>
