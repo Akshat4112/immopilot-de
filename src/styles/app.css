@@ -852,3 +852,123 @@ h3 {
     justify-content: center;
   }
 }
+
+
+/* Scenario workspace and financing workflow */
+.financing-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.form-section__intro {
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.form-fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0 0 var(--space-7);
+  padding: 0;
+  border: 0;
+}
+
+.form-fieldset legend {
+  margin-bottom: var(--space-3);
+  font-weight: var(--font-weight-medium);
+}
+
+.choice-card {
+  display: flex;
+  gap: var(--space-3);
+  min-height: 6.5rem;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.choice-card:has(input:checked) {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-brand-alpha);
+}
+
+.choice-card input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+  accent-color: var(--color-brand);
+}
+
+.choice-card span {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.choice-card small {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.financing-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--space-6);
+}
+
+.financing-input-grid select {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.financing-input-grid select:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-brand-alpha);
+}
+
+.form-field__hint {
+  align-self: end;
+  padding: var(--space-4);
+  border-left: 0.25rem solid var(--color-brand);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text-secondary);
+  background: var(--color-brand-alpha);
+  line-height: var(--line-height-relaxed);
+}
+
+.financing-results-grid {
+  margin-top: var(--space-6);
+}
+
+.funding-status {
+  margin-top: var(--space-6);
+}
+
+.inline-link {
+  display: inline-flex;
+  margin-top: var(--space-3);
+  color: var(--color-brand);
+  font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 53.75rem) {
+  .form-fieldset,
+  .financing-input-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .financing-input-grid {
+    gap: 0;
+  }
+}
