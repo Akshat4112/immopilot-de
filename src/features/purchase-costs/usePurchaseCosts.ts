@@ -9,12 +9,7 @@ import type {
   AcquisitionCostResult,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
-import {
-  purchaseCostsInputSchema,
-  QUICK_DEFAULTS,
-  germanStateIds,
-  budgetStatuses,
-} from './schema'
+import { purchaseCostsInputSchema, QUICK_DEFAULTS, germanStateIds, budgetStatuses } from './schema'
 
 const formSchema = purchaseCostsInputSchema
   .omit({ purchasePriceCents: true })
