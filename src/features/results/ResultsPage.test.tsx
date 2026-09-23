@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -120,6 +120,23 @@ describe('ResultsPage', () => {
     fireEvent.change(rentGrowth, { target: { value: '-2' } })
 
     expect(rentGrowth).toHaveValue('-2')
+  })
+
+  it('normalizes English monetary input and preserves its value after changing language', async () => {
+    await i18n.changeLanguage('en')
+    renderPage()
+
+    const currentRent = document.getElementById('currentComparableRent')
+    if (!(currentRent instanceof HTMLInputElement))
+      throw new Error('Comparable-rent input is missing')
+    expect(currentRent).toHaveAttribute('placeholder', '1,200')
+
+    fireEvent.change(currentRent, { target: { value: '1,200.50' } })
+    expect(useScenarioWorkspaceStore.getState().analysis.currentComparableRent).toBe('1200.50')
+
+    await i18n.changeLanguage('de')
+    await waitFor(() => expect(currentRent).toHaveValue('1200,50'))
+    expect(useScenarioWorkspaceStore.getState().analysis.currentComparableRent).toBe('1200.50')
   })
 
   it('labels an owner-occupier projection that extends beyond the fixed-interest period', () => {
