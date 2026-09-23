@@ -23,15 +23,6 @@ const formSchema = purchaseCostsInputSchema
 
 export type PurchaseCostsFormData = z.infer<typeof formSchema>
 
-function formatEuroInput(cents: number): string {
-  const euros = (cents / 100).toFixed(2).replace('.', ',')
-  return euros.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-}
-
-function formatRateInput(rate: number): string {
-  return (rate * 100).toFixed(2).replace('.', ',')
-}
-
 type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
 type WatchedPurchaseCostsFormData = Omit<
   Partial<PurchaseCostsFormData>,
@@ -106,6 +97,21 @@ export function usePurchaseCostsCalculator() {
     [form],
   )
 
+  const setBudgetAmount = useCallback(
+    (field: 'renovationBudget' | 'movingSetupCosts', amountCents: number) => {
+      const current = form.getValues(field)
+      form.setValue(
+        field,
+        {
+          amountCents,
+          budgetStatus: amountCents > 0 ? 'budgeted' : (current?.budgetStatus ?? 'not-budgeted'),
+        },
+        { shouldValidate: true },
+      )
+    },
+    [form],
+  )
+
   const toggleBroker = useCallback(
     (involved: boolean) => {
       form.setValue('brokerInvolved', involved, { shouldValidate: true })
@@ -122,9 +128,8 @@ export function usePurchaseCostsCalculator() {
     availableResult,
     isAvailable,
     setBudgetConfirmed,
+    setBudgetAmount,
     toggleBroker,
-    formatEuroInput,
-    formatRateInput,
     germanStateIds,
     budgetStatuses,
   }

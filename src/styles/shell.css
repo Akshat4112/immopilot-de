@@ -195,6 +195,10 @@
   max-width: 49rem;
 }
 
+.route-page-copy--wide {
+  max-width: none;
+}
+
 .route-page h1 {
   margin-bottom: var(--space-6);
   font-size: clamp(var(--font-size-display-md), 7vw, 4.75rem);
