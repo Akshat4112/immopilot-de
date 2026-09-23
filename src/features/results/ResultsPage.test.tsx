@@ -115,7 +115,8 @@ describe('ResultsPage', () => {
     renderPage()
 
     const rentGrowth = document.getElementById('ownerRentGrowthRate')
-    if (!(rentGrowth instanceof HTMLInputElement)) throw new Error('Owner rent-growth input is missing')
+    if (!(rentGrowth instanceof HTMLInputElement))
+      throw new Error('Owner rent-growth input is missing')
     fireEvent.change(rentGrowth, { target: { value: '-2' } })
 
     expect(rentGrowth).toHaveValue('-2')
