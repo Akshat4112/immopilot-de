@@ -123,4 +123,16 @@ describe('App', () => {
       'page',
     )
   })
+
+  it('opens the property comparison workspace from the primary navigation', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('link', { name: 'Vergleich' }))
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Immobilien im direkten Vergleich' }),
+    ).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Vergleich' })).toHaveAttribute('aria-current', 'page')
+  })
 })

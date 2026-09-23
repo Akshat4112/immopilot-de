@@ -38,6 +38,9 @@ describe('ScenariosPage', () => {
     ) as { scenarios: Array<Record<string, unknown>> }
     expect(library.scenarios).toHaveLength(1)
     expect(library.scenarios[0]).not.toHaveProperty('results')
+    expect(
+      within(screen.getByRole('listitem')).getByRole('link', { name: 'Vergleichen' }),
+    ).toHaveAttribute('href', expect.stringMatching(/^\/comparison\?scenario=/))
 
     useScenarioWorkspaceStore.getState().setPurchaseCosts({
       ...useScenarioWorkspaceStore.getState().purchaseCosts,

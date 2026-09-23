@@ -236,3 +236,63 @@ test('persists and manages a named scenario locally without saved results', asyn
   await duplicateCard.getByRole('button', { name: 'Endgültig löschen' }).click()
   await expect(savedCards).toHaveCount(1)
 })
+
+test('compares three saved properties and supports reorder, remove, and mobile scrolling', async ({
+  page,
+}) => {
+  for (const [name, price] of [
+    ['Berlin', '250000'],
+    ['Hamburg', '320000'],
+    ['Leipzig', '210000'],
+  ] as const) {
+    await page.goto('./#/purchase-costs')
+    await page.getByRole('textbox', { name: 'Kaufpreis' }).fill(price)
+    await page.goto('./#/scenarios')
+    await page
+      .getByRole('region', { name: 'Aktueller Arbeitsstand' })
+      .getByLabel('Szenarioname')
+      .fill(name)
+    await page.getByRole('button', { name: 'Szenario speichern' }).click()
+    await expect(page.getByText('Szenario gespeichert.')).toBeVisible()
+  }
+
+  await page.goto('./#/comparison')
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Immobilien im direkten Vergleich' }),
+  ).toBeVisible()
+  await expect(page.getByRole('columnheader', { name: /Berlin/ })).toBeVisible()
+  await expect(page.getByRole('columnheader', { name: /Hamburg/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Hinzufügen' }).click()
+  await expect(page.getByRole('columnheader', { name: /Leipzig/ })).toBeVisible()
+  await expect(page.getByText('3 von maximal 3 Szenarien ausgewählt')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Leipzig nach links verschieben' }).click()
+  const propertyHeaders = page
+    .getByRole('columnheader')
+    .filter({ has: page.getByRole('button', { name: 'Entfernen' }) })
+  await expect(propertyHeaders.nth(1)).toContainText('Leipzig')
+
+  await propertyHeaders.nth(0).getByRole('button', { name: 'Entfernen' }).click()
+  await expect(page.getByRole('columnheader', { name: /Berlin/ })).toHaveCount(0)
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect(page.getByText(/horizontal wischen/)).toBeVisible()
+  const overflow = await page.evaluate<{
+    container: number
+    content: number
+    page: number
+    viewport: number
+  }>(`(() => {
+    const element = document.querySelector('.comparison-table-scroll')
+    if (!(element instanceof HTMLElement)) throw new Error('Missing comparison table')
+    return {
+      container: element.clientWidth,
+      content: element.scrollWidth,
+      page: document.documentElement.scrollWidth,
+      viewport: window.innerWidth,
+    }
+  })()`)
+  expect(overflow.content).toBeGreaterThan(overflow.container)
+  expect(overflow.page).toBeLessThanOrEqual(overflow.viewport)
+})

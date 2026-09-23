@@ -499,6 +499,12 @@ export function ScenariosPage() {
                     >
                       {t('scenarios.actions.share')}
                     </button>
+                    <Link
+                      className="secondary-action"
+                      to={`/comparison?scenario=${encodeURIComponent(scenario.id)}`}
+                    >
+                      {t('scenarios.actions.compare')}
+                    </Link>
                     {pendingDeleteId === scenario.id ? (
                       <>
                         <span className="scenario-delete-warning">

@@ -474,6 +474,262 @@ h3 {
   }
 }
 
+/* Saved property comparison workspace */
+.comparison-workspace {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-7);
+  margin-top: var(--space-9);
+}
+
+.comparison-workspace > section {
+  min-width: 0;
+}
+
+.comparison-picker,
+.comparison-empty {
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.comparison-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
+  gap: var(--space-5);
+  align-items: end;
+}
+
+.comparison-picker h2,
+.comparison-picker p,
+.comparison-empty h2 {
+  margin-bottom: var(--space-3);
+}
+
+.comparison-empty .primary-action {
+  margin-top: var(--space-3);
+}
+
+.comparison-picker-controls {
+  display: flex;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.comparison-picker-controls .form-field {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.comparison-picker-controls select {
+  width: 100%;
+  min-height: var(--control-height);
+  padding-inline: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.comparison-picker .comparison-limit {
+  grid-column: 1 / -1;
+  margin: calc(var(--space-3) * -1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.comparison-table-heading {
+  display: flex;
+  gap: var(--space-5);
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.comparison-table-heading h2,
+.comparison-table-heading p {
+  margin-bottom: var(--space-2);
+}
+
+.comparison-mobile-hint {
+  display: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.comparison-table-scroll {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.comparison-table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.comparison-table th,
+.comparison-table td {
+  width: 14rem;
+  padding: var(--space-4);
+  border-right: var(--border-width) solid var(--color-border);
+  border-bottom: var(--border-width) solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.comparison-table th:first-child {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  width: 15rem;
+  background: var(--color-surface-card);
+}
+
+.comparison-table thead th {
+  background: var(--color-background);
+}
+
+.comparison-table thead th:first-child {
+  z-index: 2;
+  background: var(--color-background);
+}
+
+.comparison-table th:last-child,
+.comparison-table td:last-child {
+  border-right: 0;
+}
+
+.comparison-table tbody tr:last-child th,
+.comparison-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.comparison-group-row th:first-child {
+  position: static;
+  width: auto;
+  padding-block: var(--space-3);
+  color: var(--color-text-eyebrow);
+  background: var(--color-background);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
+
+.comparison-column-heading {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.comparison-column-heading > strong {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+}
+
+.comparison-column-heading > small,
+.comparison-value-detail {
+  color: var(--color-text-secondary);
+}
+
+.comparison-column-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.comparison-column-actions button {
+  min-height: 2.25rem;
+  padding-inline: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.comparison-column-actions button:disabled,
+.comparison-picker-controls button:disabled,
+.comparison-picker-controls select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.comparison-value,
+.comparison-value-detail,
+.comparison-value-status,
+.comparison-basis-warning {
+  display: block;
+}
+
+.comparison-value {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+}
+
+.comparison-value-detail,
+.comparison-basis-warning {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-body);
+}
+
+.comparison-value-status {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+}
+
+.comparison-value-status--warning,
+.comparison-basis-warning {
+  color: var(--color-warning-text);
+}
+
+@media (max-width: 53.75rem) {
+  .comparison-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-table-heading {
+    display: grid;
+  }
+
+  .comparison-mobile-hint {
+    display: block;
+  }
+}
+
+@media (max-width: 38.75rem) {
+  .comparison-picker-controls {
+    display: grid;
+  }
+
+  .comparison-picker-controls .primary-action {
+    width: 100%;
+  }
+
+  .comparison-table {
+    min-width: 42rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    width: 12.5rem;
+    padding: var(--space-3);
+  }
+
+  .comparison-table th:first-child {
+    width: 12rem;
+  }
+}
+
 /* Purchase Costs Calculator Styles */
 .purchase-costs-form {
   display: flex;
