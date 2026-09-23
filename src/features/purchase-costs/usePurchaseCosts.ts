@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -9,6 +9,12 @@ import type {
   AcquisitionCostResult,
   BudgetStatus,
 } from '../../domain/acquisition-costs'
+import {
+  acquisitionCostInputFromDraft,
+  initialPurchaseCostsDraft,
+  useScenarioWorkspaceStore,
+  type PurchaseCostsDraft,
+} from '../scenario-workspace'
 import { purchaseCostsInputSchema, QUICK_DEFAULTS, germanStateIds, budgetStatuses } from './schema'
 
 const formSchema = purchaseCostsInputSchema
@@ -17,26 +23,9 @@ const formSchema = purchaseCostsInputSchema
 
 export type PurchaseCostsFormData = z.infer<typeof formSchema>
 
-function parseEuroInput(value: string): number {
-  const cleaned = value.replace(/[€\s.]/g, '').replace(',', '.')
-  if (!cleaned) return 0
-  const euros = parseFloat(cleaned)
-  return Math.round(euros * 100)
-}
-
 function formatEuroInput(cents: number): string {
   const euros = (cents / 100).toFixed(2).replace('.', ',')
   return euros.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-}
-
-function parseRateInput(value: string): number {
-  const cleaned = value.replace(/[%\s]/g, '').replace(',', '.')
-  if (!cleaned) return 0
-  return parseFloat(cleaned) / 100
-}
-
-function parseOptionalRate(value: string | undefined): number | undefined {
-  return value?.trim() ? parseRateInput(value) : undefined
 }
 
 function formatRateInput(rate: number): string {
@@ -44,55 +33,60 @@ function formatRateInput(rate: number): string {
 }
 
 type WatchedBudget = Partial<NonNullable<PurchaseCostsFormData['renovationBudget']>>
+type WatchedPurchaseCostsFormData = Omit<
+  Partial<PurchaseCostsFormData>,
+  'movingSetupCosts' | 'renovationBudget'
+> & {
+  renovationBudget?: WatchedBudget
+  movingSetupCosts?: WatchedBudget
+}
 
-function normalizeBudget(
-  value: WatchedBudget | undefined,
-): AcquisitionCostInput['renovationBudget'] {
-  if (value?.amountCents === undefined || value.budgetStatus === undefined) return undefined
-  return { amountCents: value.amountCents, budgetStatus: value.budgetStatus }
+function normalizeBudget(value: WatchedBudget | undefined): PurchaseCostsDraft['renovationBudget'] {
+  if (value?.amountCents === undefined || value.budgetStatus === undefined) {
+    return undefined
+  }
+
+  return {
+    amountCents: value.amountCents,
+    budgetStatus: value.budgetStatus,
+  }
+}
+
+function purchaseCostsDraftFromForm(values: WatchedPurchaseCostsFormData): PurchaseCostsDraft {
+  return {
+    purchasePrice: values.purchasePrice ?? '',
+    stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
+    brokerInvolved: values.brokerInvolved ?? false,
+    rateOverrides: values.rateOverrides,
+    renovationBudget: normalizeBudget(values.renovationBudget),
+    movingSetupCosts: normalizeBudget(values.movingSetupCosts),
+  }
 }
 
 export function usePurchaseCostsCalculator() {
+  const initialDraft = useScenarioWorkspaceStore.getState().purchaseCosts
+  const setPurchaseCosts = useScenarioWorkspaceStore((state) => state.setPurchaseCosts)
   const form = useForm<PurchaseCostsFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      purchasePrice: '',
-      stateId: QUICK_DEFAULTS.stateId,
-      brokerInvolved: false,
-      renovationBudget: QUICK_DEFAULTS.renovationBudget,
-      movingSetupCosts: QUICK_DEFAULTS.movingSetupCosts,
-    },
+    defaultValues: initialDraft ?? initialPurchaseCostsDraft,
     mode: 'onChange',
   })
   const values = useWatch({ control: form.control })
+  const purchaseCostsDraft = useMemo(() => purchaseCostsDraftFromForm(values), [values])
 
-  const domainInput = useMemo((): AcquisitionCostInput => {
-    const parsedRateOverrides = {
-      transferTaxRate: parseOptionalRate(values.rateOverrides?.transferTaxRate),
-      notaryRate: parseOptionalRate(values.rateOverrides?.notaryRate),
-      landRegisterRate: parseOptionalRate(values.rateOverrides?.landRegisterRate),
-      buyerBrokerRate: parseOptionalRate(values.rateOverrides?.buyerBrokerRate),
-      financedAcquisitionCostShare: parseOptionalRate(
-        values.rateOverrides?.financedAcquisitionCostShare,
-      ),
-    }
-    const rateOverrides = Object.values(parsedRateOverrides).some((rate) => rate !== undefined)
-      ? parsedRateOverrides
-      : undefined
+  useEffect(() => {
+    setPurchaseCosts(purchaseCostsDraft)
+  }, [purchaseCostsDraft, setPurchaseCosts])
 
-    return {
-      purchasePriceCents: parseEuroInput(values.purchasePrice ?? ''),
-      stateId: values.stateId ?? QUICK_DEFAULTS.stateId,
-      brokerInvolved: values.brokerInvolved ?? false,
-      rateOverrides,
-      renovationBudget: normalizeBudget(values.renovationBudget),
-      movingSetupCosts: normalizeBudget(values.movingSetupCosts),
-    }
-  }, [values])
+  const domainInput = useMemo(
+    (): AcquisitionCostInput => acquisitionCostInputFromDraft(purchaseCostsDraft),
+    [purchaseCostsDraft],
+  )
 
-  const result = useMemo((): AcquisitionCostResult => {
-    return calculateAcquisitionCosts(domainInput)
-  }, [domainInput])
+  const result = useMemo(
+    (): AcquisitionCostResult => calculateAcquisitionCosts(domainInput),
+    [domainInput],
+  )
 
   const setBudgetConfirmed = useCallback(
     (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {

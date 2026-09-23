@@ -19,6 +19,17 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 - German and English interfaces
 - Static deployment on GitHub Pages
 
+## Current interactive workflow
+
+The current application flow supports **Kaufkosten** (purchase costs) followed by
+**Finanzierung** (financing and mortgage planning). The pages share one
+in-memory scenario draft: purchase-cost inputs continue into the financing page,
+where the existing calculation engine recomputes acquisition costs, required
+equity, loan amount, annuity payment and amortization results.
+
+The draft stores only the user's inputs. It is intentionally cleared on a browser
+reload; local storage, share links and JSON import/export are later milestones.
+
 ## Product principles
 
 - **Deterministic calculations:** Financial outputs come from documented and tested formulas.
