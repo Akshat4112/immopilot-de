@@ -971,3 +971,76 @@ h3 {
     gap: 0;
   }
 }
+
+/* Single-property results workspace */
+.results-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.results-section--key-decisions {
+  border-color: var(--color-brand);
+  background:
+    linear-gradient(135deg, var(--color-brand-alpha), transparent 42%), var(--color-surface-card);
+}
+
+.results-section__header {
+  display: flex;
+  gap: var(--space-4);
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.results-section__header .eyebrow {
+  margin-bottom: var(--space-2);
+}
+
+.results-section__header h2 {
+  margin-bottom: 0;
+}
+
+.results-section__header .inline-link {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.results-assumptions {
+  display: flow-root;
+}
+
+.results-subheading {
+  margin: var(--space-9) 0 var(--space-3);
+  font-size: var(--font-size-md);
+}
+
+.results-details {
+  margin-top: var(--space-9);
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.results-details summary {
+  color: var(--color-brand);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.results-details > p {
+  max-width: 48rem;
+  margin: var(--space-3) 0 var(--space-5);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.results-refinancing-grid {
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 38.75rem) {
+  .results-section__header {
+    display: grid;
+  }
+}

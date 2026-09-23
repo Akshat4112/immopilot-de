@@ -1,14 +1,22 @@
 export {
   acquisitionCostInputFromDraft,
+  calculateScenarioDashboard,
   calculateScenarioWorkspace,
   financingInputFromDraft,
   mortgagePaymentInputFromDraft,
+  type ConfigurableDashboardResult,
+  type ModeSpecificDashboardResult,
+  type NotConfiguredDashboardResult,
+  type ScenarioDashboardCalculationResult,
   type ScenarioWorkspaceCalculationResult,
 } from './calculations'
 export {
   initialFinancingDraft,
   initialPurchaseCostsDraft,
+  initialScenarioAnalysisDraft,
   useScenarioWorkspaceStore,
+  type PropertyUseDraft,
+  type ScenarioAnalysisDraft,
   type FinancingDraft,
   type PostPurchaseBudgetDraft,
   type PurchaseCostsDraft,

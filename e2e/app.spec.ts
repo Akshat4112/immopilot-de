@@ -179,4 +179,10 @@ test('carries completed purchase costs into the financing and mortgage workflow'
 
   await expect(page.getByRole('heading', { level: 1, name: 'Plan financing' })).toBeVisible()
   await expect(page.getByRole('textbox', { name: 'Available equity' })).toHaveValue('66250')
+
+  await page.getByRole('link', { name: 'Open analysis →' }).click()
+
+  await expect(page).toHaveURL(/#\/results$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Evaluate one property' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Refinancing stress test' })).toBeVisible()
 })
