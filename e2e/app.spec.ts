@@ -248,7 +248,10 @@ test('compares three saved properties and supports reorder, remove, and mobile s
     await page.goto('./#/purchase-costs')
     await page.getByRole('textbox', { name: 'Kaufpreis' }).fill(price)
     await page.goto('./#/scenarios')
-    await page.getByLabel('Szenarioname').fill(name)
+    await page
+      .getByRole('region', { name: 'Aktueller Arbeitsstand' })
+      .getByLabel('Szenarioname')
+      .fill(name)
     await page.getByRole('button', { name: 'Szenario speichern' }).click()
     await expect(page.getByText('Szenario gespeichert.')).toBeVisible()
   }
