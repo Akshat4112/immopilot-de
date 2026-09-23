@@ -114,7 +114,7 @@ describe('ResultsPage', () => {
   it('retains a negative annual growth assumption in the editable field', () => {
     renderPage()
 
-    const rentGrowth = screen.getByLabelText('Jährliches Mietwachstum')
+    const rentGrowth = screen.getByLabelText('Mietsteigerung p.a.')
     fireEvent.change(rentGrowth, { target: { value: '-2' } })
 
     expect(rentGrowth).toHaveValue('-2')
