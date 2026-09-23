@@ -16,8 +16,22 @@ function languageForFormatting(language: string): SupportedLanguage {
   return language === 'en' ? 'en' : 'de'
 }
 
-function inputValue(value: string) {
-  return value.replace(/[^\d,.]/g, '')
+function inputValue(value: string, language: SupportedLanguage, allowsNegativeRate = false) {
+  const normalized = value.replace(allowsNegativeRate ? /[^\d,.-]/g : /[^\d,.]/g, '')
+  const signedValue = allowsNegativeRate
+    ? `${normalized.startsWith('-') ? '-' : ''}${normalized.replace(/-/g, '')}`
+    : normalized
+  const unsignedValue = signedValue.startsWith('-') ? signedValue.slice(1) : signedValue
+  const canonicalValue =
+    language === 'en'
+      ? unsignedValue.replace(/,/g, '')
+      : unsignedValue.replace(/\./g, '').replace(',', '.')
+
+  return signedValue.startsWith('-') ? `-${canonicalValue}` : canonicalValue
+}
+
+function displayInputValue(value: string, language: SupportedLanguage) {
+  return language === 'de' ? value.replace('.', ',') : value
 }
 
 interface DashboardInputProps {
@@ -26,10 +40,22 @@ interface DashboardInputProps {
   value: string
   suffix?: string
   placeholder?: string
+  allowsNegativeRate?: boolean
   onChange: (value: string) => void
 }
 
-function DashboardInput({ id, label, value, suffix, placeholder, onChange }: DashboardInputProps) {
+function DashboardInput({
+  id,
+  label,
+  value,
+  suffix,
+  placeholder,
+  allowsNegativeRate = false,
+  onChange,
+}: DashboardInputProps) {
+  const { i18n } = useTranslation()
+  const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
+
   return (
     <label className="form-field" htmlFor={id}>
       <span className="form-field__label">{label}</span>
@@ -37,10 +63,12 @@ function DashboardInput({ id, label, value, suffix, placeholder, onChange }: Das
         <input
           id={id}
           inputMode="decimal"
-          onChange={(event) => onChange(inputValue(event.target.value))}
+          onChange={(event) =>
+            onChange(inputValue(event.target.value, language, allowsNegativeRate))
+          }
           placeholder={placeholder}
           type="text"
-          value={value}
+          value={displayInputValue(value, language)}
         />
         {suffix ? (
           <span className="form-field__currency" aria-hidden="true">
@@ -257,7 +285,7 @@ export function ResultsPage() {
                       id="currentComparableRent"
                       label={t('results.owner.currentRent')}
                       onChange={update('currentComparableRent')}
-                      placeholder="1.200"
+                      placeholder={language === 'en' ? '1,200' : '1.200'}
                       suffix="€"
                       value={analysis.currentComparableRent}
                     />
@@ -278,6 +306,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="ownerRentGrowthRate"
+                      allowsNegativeRate
                       label={t('results.owner.rentGrowth')}
                       onChange={update('ownerRentGrowthRate')}
                       suffix="%"
@@ -285,6 +314,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="ownerCostGrowthRate"
+                      allowsNegativeRate
                       label={t('results.owner.ownerCostGrowth')}
                       onChange={update('ownerCostGrowthRate')}
                       suffix="%"
@@ -292,6 +322,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="propertyAppreciationRate"
+                      allowsNegativeRate
                       label={t('results.owner.propertyAppreciation')}
                       onChange={update('propertyAppreciationRate')}
                       suffix="%"
@@ -299,6 +330,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="alternativeReturnRate"
+                      allowsNegativeRate
                       label={t('results.owner.alternativeReturn')}
                       onChange={update('alternativeReturnRate')}
                       suffix="%"
@@ -321,7 +353,7 @@ export function ResultsPage() {
                       id="monthlyNetColdRent"
                       label={t('results.rental.monthlyNetColdRent')}
                       onChange={update('monthlyNetColdRent')}
-                      placeholder="1.000"
+                      placeholder={language === 'en' ? '1,000' : '1.000'}
                       suffix="€"
                       value={analysis.monthlyNetColdRent}
                     />
@@ -377,6 +409,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="rentalRentGrowthRate"
+                      allowsNegativeRate
                       label={t('results.rental.rentGrowth')}
                       onChange={update('rentalRentGrowthRate')}
                       suffix="%"
@@ -384,6 +417,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="rentalOwnerCostGrowthRate"
+                      allowsNegativeRate
                       label={t('results.rental.ownerCostGrowth')}
                       onChange={update('rentalOwnerCostGrowthRate')}
                       suffix="%"
@@ -391,6 +425,7 @@ export function ResultsPage() {
                     />
                     <DashboardInput
                       id="rentalPropertyAppreciationRate"
+                      allowsNegativeRate
                       label={t('results.rental.saleAppreciation')}
                       onChange={update('rentalPropertyAppreciationRate')}
                       suffix="%"
@@ -562,6 +597,10 @@ export function ResultsPage() {
                       />
                     </div>
                     <p className="result-detail">{t('results.owner.matchedBudgetDetail')}</p>
+                    {dashboard.modeSpecific.result.mortgageProjectionAssumption ===
+                    'constant-initial-rate-beyond-fixed-period' ? (
+                      <p className="result-detail">{t('results.projection.constantInitialRate')}</p>
+                    ) : null}
                   </>
                 ) : (
                   <UnavailableResult reason={dashboard.modeSpecific.result.reason} />
@@ -576,10 +615,26 @@ export function ResultsPage() {
                   <>
                     <div className="result-grid">
                       <ResultCard
+                        detail={t('results.rental.grossYieldBasis', {
+                          numerator: formatEuro(
+                            dashboard.modeSpecific.result.grossYieldBasis.numeratorCents,
+                          ),
+                          denominator: formatEuro(
+                            dashboard.modeSpecific.result.grossYieldBasis.denominatorCents,
+                          ),
+                        })}
                         title={t('results.rental.grossYield')}
                         value={formatRate(dashboard.modeSpecific.result.grossRentalYield)}
                       />
                       <ResultCard
+                        detail={t('results.rental.netYieldBasis', {
+                          numerator: formatEuro(
+                            dashboard.modeSpecific.result.netYieldBasis.numeratorCents,
+                          ),
+                          denominator: formatEuro(
+                            dashboard.modeSpecific.result.netYieldBasis.denominatorCents,
+                          ),
+                        })}
                         title={t('results.rental.netYield')}
                         value={formatRate(dashboard.modeSpecific.result.netRentalYield)}
                       />
@@ -616,6 +671,10 @@ export function ResultsPage() {
                         }
                       />
                     </div>
+                    {dashboard.modeSpecific.result.mortgageProjectionAssumption ===
+                    'constant-initial-rate-beyond-fixed-period' ? (
+                      <p className="result-detail">{t('results.projection.constantInitialRate')}</p>
+                    ) : null}
                     {dashboard.modeSpecific.result.sale.status === 'available' ? (
                       <article className="result-card summary">
                         <h3>{t('results.rental.saleTitle')}</h3>
@@ -686,6 +745,19 @@ export function ResultsPage() {
                           language,
                         )}
                       />
+                      {dashboard.offerPrice.comparableOffer.openingOffer.status === 'available' ? (
+                        <ResultCard
+                          detail={t('results.offer.openingOfferRangeDetail', {
+                            high: formatEuro(
+                              dashboard.offerPrice.comparableOffer.openingOffer.highCents,
+                            ),
+                          })}
+                          title={t('results.offer.openingOfferRange')}
+                          value={formatEuro(
+                            dashboard.offerPrice.comparableOffer.openingOffer.lowCents,
+                          )}
+                        />
+                      ) : null}
                     </>
                   ) : null}
                 </div>
