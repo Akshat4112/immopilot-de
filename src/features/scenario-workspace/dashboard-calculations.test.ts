@@ -65,6 +65,26 @@ describe('single-property dashboard calculations', () => {
     })
   })
 
+  it('uses the selected locale when parsing analysis money inputs', () => {
+    const germanResult = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, {
+      ...initialScenarioAnalysisDraft,
+      currentComparableRent: '1.200,50',
+      monthlyOwnerCosts: '250',
+    })
+    const englishResult = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      fundedFinancing,
+      {
+        ...initialScenarioAnalysisDraft,
+        currentComparableRent: '1,200.50',
+        monthlyOwnerCosts: '250',
+      },
+      'en',
+    )
+
+    expect(englishResult.modeSpecific).toEqual(germanResult.modeSpecific)
+  })
+
   it('derives rental, projected-sale and offer metrics from explicit investment assumptions', () => {
     const result = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, {
       ...initialScenarioAnalysisDraft,
