@@ -314,6 +314,10 @@ export const resources = {
             higher: 'Hohes Szenario · {{rate}}',
           },
         },
+        projection: {
+          constantInitialRate:
+            'Projektion: Nach Ende der Zinsbindung wird die ursprüngliche Rate nur zur Orientierung fortgeschrieben; die Anschlussfinanzierung ist nicht enthalten.',
+        },
         owner: {
           title: 'Mieten oder kaufen',
           assumptionsTitle: 'Annahmen für Eigennutzung',
@@ -350,7 +354,9 @@ export const resources = {
           saleAppreciation: 'Wertentwicklung für Verkauf p.a. (optional)',
           saleCosts: 'Verkaufskosten (optional)',
           grossYield: 'Bruttomietrendite',
+          grossYieldBasis: 'Jahresnettokaltmiete {{numerator}} ÷ Kaufpreis {{denominator}}',
           netYield: 'Nettomietrendite',
+          netYieldBasis: 'Betriebsergebnis {{numerator}} ÷ Gesamtprojektkosten {{denominator}}',
           monthlyCashFlow: 'Monatlicher Cashflow vor Steuer',
           beforeExtra: 'Vor Sondertilgung',
           afterExtra: 'Nach Sondertilgung',
@@ -380,6 +386,8 @@ export const resources = {
           affordabilityCeiling: 'Preisobergrenze nach Budget',
           comparableRange: 'Vergleichbarer Wert',
           comparableRangeDetail: 'bis {{high}}',
+          openingOfferRange: 'Eröffnungsangebot',
+          openingOfferRangeDetail: 'bis {{high}}',
           offerDifference: 'Abweichung deines Angebots',
         },
       },
@@ -698,6 +706,10 @@ export const resources = {
             higher: 'Higher scenario · {{rate}}',
           },
         },
+        projection: {
+          constantInitialRate:
+            'Projection: after the fixed-interest period, the original rate is extended only for orientation; refinancing is not included.',
+        },
         owner: {
           title: 'Rent or buy',
           assumptionsTitle: 'Owner-occupier assumptions',
@@ -734,7 +746,9 @@ export const resources = {
           saleAppreciation: 'Annual sale-value appreciation (optional)',
           saleCosts: 'Selling costs (optional)',
           grossYield: 'Gross rental yield',
+          grossYieldBasis: 'Annual net cold rent {{numerator}} ÷ purchase price {{denominator}}',
           netYield: 'Net rental yield',
+          netYieldBasis: 'Net operating income {{numerator}} ÷ total project cost {{denominator}}',
           monthlyCashFlow: 'Monthly pre-tax cash flow',
           beforeExtra: 'Before additional repayment',
           afterExtra: 'After additional repayment',
@@ -764,6 +778,8 @@ export const resources = {
           affordabilityCeiling: 'Budget price ceiling',
           comparableRange: 'Comparable value',
           comparableRangeDetail: 'to {{high}}',
+          openingOfferRange: 'Opening offer',
+          openingOfferRangeDetail: 'to {{high}}',
           offerDifference: 'Your offer difference',
         },
       },
