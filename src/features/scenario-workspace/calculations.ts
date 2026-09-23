@@ -174,7 +174,9 @@ export function calculateScenarioWorkspace(
   financingDraft: FinancingDraft,
   locale: NumericInputLocale = 'de',
 ): ScenarioWorkspaceCalculationResult {
-  const acquisition = calculateAcquisitionCosts(acquisitionCostInputFromDraft(purchaseCosts, locale))
+  const acquisition = calculateAcquisitionCosts(
+    acquisitionCostInputFromDraft(purchaseCosts, locale),
+  )
   const financing = calculateFinancing(financingInputFromDraft(financingDraft, acquisition, locale))
   const payment = calculateMortgagePayment(mortgagePaymentInputFromDraft(financingDraft, financing))
   const amortization = calculateAmortizationSchedule({
