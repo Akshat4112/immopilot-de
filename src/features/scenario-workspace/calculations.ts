@@ -27,14 +27,16 @@ import {
 
 import type { FinancingDraft, PurchaseCostsDraft, ScenarioAnalysisDraft } from './scenarioStore'
 
-export type NumericInputLocale = 'de' | 'en'
+export type NumericInputLocale = 'canonical' | 'de' | 'en'
 
 function parseEuroInput(value: string, locale: NumericInputLocale = 'de'): number {
   const withoutCurrency = value.replace(/[€\s]/g, '')
   const cleaned =
-    locale === 'en'
-      ? withoutCurrency.replace(/,/g, '')
-      : withoutCurrency.replace(/\./g, '').replace(',', '.')
+    locale === 'canonical'
+      ? withoutCurrency
+      : locale === 'en'
+        ? withoutCurrency.replace(/,/g, '')
+        : withoutCurrency.replace(/\./g, '').replace(',', '.')
 
   if (!cleaned) {
     return 0
@@ -237,7 +239,6 @@ function calculateOwnerOccupierFromDraft(
   financing: FinancingResult,
   amortization: AmortizationScheduleResult,
   draft: ScenarioAnalysisDraft,
-  locale: NumericInputLocale,
 ): ConfigurableDashboardResult<RentVersusBuyResult> {
   const required = [
     'currentComparableRent',
@@ -256,8 +257,8 @@ function calculateOwnerOccupierFromDraft(
     financing,
     amortization,
     analysisMonths: yearsToMonths(draft.ownerAnalysisYears),
-    currentComparableRentCents: parseEuroInput(draft.currentComparableRent, locale),
-    monthlyOwnerCostsCents: parseEuroInput(draft.monthlyOwnerCosts, locale),
+    currentComparableRentCents: parseEuroInput(draft.currentComparableRent, 'canonical'),
+    monthlyOwnerCostsCents: parseEuroInput(draft.monthlyOwnerCosts, 'canonical'),
     rentGrowthRate: parseRateInput(draft.ownerRentGrowthRate),
     ownerCostGrowthRate: parseRateInput(draft.ownerCostGrowthRate),
     propertyAppreciationRate: parseRateInput(draft.propertyAppreciationRate),
@@ -271,7 +272,6 @@ function calculateRentalFromDraft(
   financing: FinancingResult,
   amortization: AmortizationScheduleResult,
   draft: ScenarioAnalysisDraft,
-  locale: NumericInputLocale,
 ): ConfigurableDashboardResult<RentalInvestmentResult> {
   const required = [
     'monthlyNetColdRent',
@@ -297,19 +297,19 @@ function calculateRentalFromDraft(
   return calculateRentalInvestment({
     financing,
     amortization,
-    monthlyNetColdRentCents: parseEuroInput(draft.monthlyNetColdRent, locale),
+    monthlyNetColdRentCents: parseEuroInput(draft.monthlyNetColdRent, 'canonical'),
     vacancyRate: parseRateInput(draft.vacancyRate),
-    otherAnnualRentLossCents: parseEuroInput(draft.otherAnnualRentLoss, locale),
+    otherAnnualRentLossCents: parseEuroInput(draft.otherAnnualRentLoss, 'canonical'),
     monthlyNonRecoverableHausgeldExcludingReserveCents: parseEuroInput(
       draft.monthlyNonRecoverableHausgeld,
-      locale,
+      'canonical',
     ),
-    monthlyReserveContributionCents: parseEuroInput(draft.monthlyReserveContribution, locale),
+    monthlyReserveContributionCents: parseEuroInput(draft.monthlyReserveContribution, 'canonical'),
     annualMaintenanceAllowanceOutsideHausgeldCents: parseEuroInput(
       draft.annualMaintenanceAllowance,
-      locale,
+      'canonical',
     ),
-    otherAnnualOwnerCostsCents: parseEuroInput(draft.otherAnnualOwnerCosts, locale),
+    otherAnnualOwnerCostsCents: parseEuroInput(draft.otherAnnualOwnerCosts, 'canonical'),
     rentGrowthRate: parseRateInput(draft.rentalRentGrowthRate),
     ownerCostGrowthRate: parseRateInput(draft.rentalOwnerCostGrowthRate),
     holdingPeriodMonths: yearsToMonths(draft.rentalHoldingYears),
@@ -327,7 +327,6 @@ function calculateOfferPriceFromDraft(
   financingDraft: FinancingDraft,
   rental: ConfigurableDashboardResult<RentalInvestmentResult> | undefined,
   draft: ScenarioAnalysisDraft,
-  locale: NumericInputLocale,
 ): ConfigurableDashboardResult<OfferPriceResult> {
   const targetGrossYield = parseOptionalRateInput(draft.targetGrossYield)
   const targetNetYield = parseOptionalRateInput(draft.targetNetYield)
@@ -366,8 +365,8 @@ function calculateOfferPriceFromDraft(
     ...(hasAffordability
       ? {
           affordability: {
-            availableEquityCents: parseEuroInput(financingDraft.availableEquity, locale),
-            maximumMonthlyPaymentCents: parseEuroInput(draft.maximumMonthlyPayment, locale),
+            availableEquityCents: parseEuroInput(financingDraft.availableEquity),
+            maximumMonthlyPaymentCents: parseEuroInput(draft.maximumMonthlyPayment, 'canonical'),
             financedAcquisitionCostShare: parseRateInput(
               financingDraft.financedAcquisitionCostShare,
             ),
@@ -379,23 +378,23 @@ function calculateOfferPriceFromDraft(
     ...(hasComparables
       ? {
           comparables: {
-            askingPriceCents: parseEuroInput(draft.askingPrice, locale),
-            purchaseOfferCents: parseEuroInput(draft.proposedOffer, locale),
+            askingPriceCents: parseEuroInput(draft.askingPrice, 'canonical'),
+            purchaseOfferCents: parseEuroInput(draft.proposedOffer, 'canonical'),
             livingAreaSquareMetres: Number.parseFloat(
               draft.livingAreaSquareMetres.replace(',', '.'),
             ),
             comparablePricePerSquareMetreLowCents: parseEuroInput(
               draft.comparablePricePerSquareMetreLow,
-              locale,
+              'canonical',
             ),
             comparablePricePerSquareMetreHighCents: parseEuroInput(
               draft.comparablePricePerSquareMetreHigh,
-              locale,
+              'canonical',
             ),
             ...(suppliedOpeningOfferFields.length === openingOfferFields.length
               ? {
                   openingOffer: {
-                    referencePriceCents: parseEuroInput(draft.askingPrice, locale),
+                    referencePriceCents: parseEuroInput(draft.askingPrice, 'canonical'),
                     largerDiscount: parseRateInput(draft.openingOfferLargerDiscount),
                     smallerDiscount: parseRateInput(draft.openingOfferSmallerDiscount),
                   },
@@ -411,7 +410,6 @@ export function calculateScenarioDashboard(
   purchaseCosts: PurchaseCostsDraft,
   financingDraft: FinancingDraft,
   analysisDraft: ScenarioAnalysisDraft,
-  locale: NumericInputLocale = 'de',
 ): ScenarioDashboardCalculationResult {
   const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft)
   const fixedPeriod = calculateFixedPeriod(workspace.amortization)
@@ -424,7 +422,6 @@ export function calculateScenarioDashboard(
             workspace.financing,
             workspace.amortization,
             analysisDraft,
-            locale,
           ),
         }
       : {
@@ -433,7 +430,6 @@ export function calculateScenarioDashboard(
             workspace.financing,
             workspace.amortization,
             analysisDraft,
-            locale,
           ),
         }
   const rental = modeSpecific.mode === 'rental-investment' ? modeSpecific.result : undefined
@@ -442,7 +438,6 @@ export function calculateScenarioDashboard(
     financingDraft,
     rental,
     analysisDraft,
-    locale,
   )
 
   return {
