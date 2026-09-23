@@ -411,7 +411,7 @@ export function calculateScenarioDashboard(
   analysisDraft: ScenarioAnalysisDraft,
   locale: NumericInputLocale = 'de',
 ): ScenarioDashboardCalculationResult {
-  const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft, locale)
+  const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft)
   const fixedPeriod = calculateFixedPeriod(workspace.amortization)
   const refinancing = calculateRefinancingFromDraft(fixedPeriod, workspace.payment, analysisDraft)
   const modeSpecific =
