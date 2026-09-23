@@ -203,9 +203,9 @@ test('persists and manages a named scenario locally without saved results', asyn
   expect(persisted).not.toContain('results')
 
   await page.reload()
-  const savedCard = page
-    .getByRole('listitem')
-    .filter({ has: page.locator('input[value="Altbau Köln"]') })
+  const savedRegion = page.getByRole('region', { name: 'Lokal gespeicherte Szenarien' })
+  const savedCards = savedRegion.getByRole('listitem')
+  const savedCard = savedCards.filter({ has: page.locator('input[value="Altbau Köln"]') })
   await expect(savedCard).toBeVisible()
   await savedCard.getByRole('button', { name: 'Teilen' }).click()
   await expect(page.getByText(/Jeder mit dem vollständigen Link/)).toBeVisible()
@@ -215,11 +215,11 @@ test('persists and manages a named scenario locally without saved results', asyn
   )
 
   await savedCard.getByRole('button', { name: 'Duplizieren' }).click()
-  await expect(page.getByRole('listitem')).toHaveCount(2)
-  const duplicateCard = page
-    .getByRole('listitem')
-    .filter({ has: page.locator('input[value="Altbau Köln (Kopie)"]') })
+  await expect(savedCards).toHaveCount(2)
+  const duplicateCard = savedCards.filter({
+    has: page.locator('input[value="Altbau Köln (Kopie)"]'),
+  })
   await duplicateCard.getByRole('button', { name: 'Löschen' }).click()
   await duplicateCard.getByRole('button', { name: 'Endgültig löschen' }).click()
-  await expect(page.getByRole('listitem')).toHaveCount(1)
+  await expect(savedCards).toHaveCount(1)
 })
