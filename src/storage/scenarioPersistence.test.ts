@@ -7,6 +7,7 @@ import {
 } from '../config/scenarioDrafts'
 import {
   SCENARIO_LIBRARY_STORAGE_KEY,
+  clearScenarioLibrary,
   createSavedScenario,
   createScenarioShareUrl,
   duplicateSavedScenario,
@@ -83,6 +84,9 @@ describe('scenario persistence', () => {
     expect(writeScenarioLibrary(storage, [scenario])).toBe(true)
     expect(readScenarioLibrary(storage)).toEqual({ scenarios: [scenario] })
     expect(memory.has(SCENARIO_LIBRARY_STORAGE_KEY)).toBe(true)
+
+    expect(clearScenarioLibrary({ removeItem: (key) => memory.delete(key) })).toBe(true)
+    expect(readScenarioLibrary(storage)).toEqual({ scenarios: [] })
   })
 
   it('distinguishes corrupted, unsupported, and unavailable local data', () => {
@@ -123,10 +127,26 @@ describe('scenario persistence', () => {
 
     expect(shareUrl).toContain('#/scenarios?scenario=')
     expect(encoded).toBeDefined()
-    expect(parseSharedScenario(decodeURIComponent(encoded!))).toEqual({
-      status: 'valid',
-      scenario,
+    const parsed = parseSharedScenario(decodeURIComponent(encoded!))
+
+    expect(parsed.status).toBe('valid')
+    if (parsed.status !== 'valid') return
+    expect(parsed.scenario).toMatchObject({
+      name: 'Geteiltes Szenario',
+      locale: scenario.locale,
+      inputs: scenario.inputs,
     })
+    expect(parsed.scenario.id).not.toBe(scenario.id)
+    const base64 = decodeURIComponent(encoded!).replaceAll('-', '+').replaceAll('_', '/')
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
+    const shareDocument = JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.from(atob(padded), (character) => character.charCodeAt(0)),
+      ),
+    ) as Record<string, unknown>
+    expect(shareDocument).not.toHaveProperty('name')
+    expect(shareDocument).not.toHaveProperty('id')
+    expect(shareDocument).not.toHaveProperty('createdAt')
   })
 
   it('creates a safe download filename', () => {

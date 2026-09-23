@@ -136,6 +136,15 @@ const scenarioLibrarySchema = z
   })
   .strict()
 
+const sharedScenarioSchema = z
+  .object({
+    documentType: z.literal('immopilot-workspace-share'),
+    schemaVersion: z.literal(SCENARIO_SCHEMA_VERSION),
+    locale: z.enum(['de-DE', 'en-GB']),
+    inputs: scenarioInputsSchema,
+  })
+  .strict()
+
 export type ScenarioInputs = ScenarioWorkspaceSnapshot
 
 export type SavedScenario = z.infer<typeof savedScenarioSchema>
@@ -260,6 +269,15 @@ export function writeScenarioLibrary(
   }
 }
 
+export function clearScenarioLibrary(storage: Pick<Storage, 'removeItem'>) {
+  try {
+    storage.removeItem(SCENARIO_LIBRARY_STORAGE_KEY)
+    return true
+  } catch {
+    return false
+  }
+}
+
 function encodeUtf8(value: string) {
   const bytes = new TextEncoder().encode(value)
   let binary = ''
@@ -276,7 +294,13 @@ function decodeUtf8(value: string) {
 
 export function createScenarioShareUrl(scenario: SavedScenario, currentUrl: string) {
   const url = new URL(currentUrl)
-  const encodedScenario = encodeUtf8(serializeScenario(scenario))
+  const shareDocument = sharedScenarioSchema.parse({
+    documentType: 'immopilot-workspace-share',
+    schemaVersion: SCENARIO_SCHEMA_VERSION,
+    locale: scenario.locale,
+    inputs: scenario.inputs,
+  })
+  const encodedScenario = encodeUtf8(JSON.stringify(shareDocument))
   url.hash = `/scenarios?scenario=${encodeURIComponent(encodedScenario)}`
   return url.toString()
 }
@@ -286,7 +310,18 @@ export function parseSharedScenario(encodedScenario: string): ScenarioParseResul
     if (encodedScenario.length > MAX_SHARE_PAYLOAD_LENGTH) {
       return { status: 'invalid', issue: 'corrupted' }
     }
-    return parseScenarioJson(decodeUtf8(encodedScenario))
+    const value: unknown = JSON.parse(decodeUtf8(encodedScenario))
+    if (hasUnsupportedVersion(value)) return { status: 'invalid', issue: 'unsupported-version' }
+    const parsed = sharedScenarioSchema.safeParse(value)
+    if (!parsed.success) return { status: 'invalid', issue: 'corrupted' }
+    return {
+      status: 'valid',
+      scenario: createSavedScenario(
+        parsed.data.locale === 'de-DE' ? 'Geteiltes Szenario' : 'Shared scenario',
+        parsed.data.inputs,
+        { locale: parsed.data.locale },
+      ),
+    }
   } catch {
     return { status: 'invalid', issue: 'corrupted' }
   }

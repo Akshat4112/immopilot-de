@@ -206,6 +206,8 @@ test('persists and manages a named scenario locally without saved results', asyn
   const savedCard = page.getByRole('listitem').filter({ hasText: 'Altbau Köln' })
   await expect(savedCard).toBeVisible()
   await savedCard.getByRole('button', { name: 'Teilen' }).click()
+  await expect(page.getByText(/Jeder mit dem vollständigen Link/)).toBeVisible()
+  await page.getByRole('button', { name: 'Verstanden, Link erstellen' }).click()
   await expect(page.getByLabel('Freigabelink für das Szenario')).toHaveValue(
     /#\/scenarios\?scenario=/,
   )
@@ -216,6 +218,11 @@ test('persists and manages a named scenario locally without saved results', asyn
     .getByRole('listitem')
     .filter({ hasText: 'Altbau Köln (Kopie)' })
     .getByRole('button', { name: 'Löschen' })
+    .click()
+  await page
+    .getByRole('listitem')
+    .filter({ hasText: 'Altbau Köln (Kopie)' })
+    .getByRole('button', { name: 'Endgültig löschen' })
     .click()
   await expect(page.getByRole('listitem')).toHaveCount(1)
 })

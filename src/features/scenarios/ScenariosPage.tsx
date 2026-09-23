@@ -1,12 +1,13 @@
 import { type ChangeEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { PageLayout } from '../../components/PageLayout'
 import { useScenarioWorkspaceStore } from '../scenario-workspace'
 import {
   createSavedScenario,
   createScenarioShareUrl,
+  clearScenarioLibrary,
   duplicateSavedScenario,
   parseScenarioJson,
   parseSharedScenario,
@@ -24,6 +25,7 @@ type StatusKey =
   | 'renamed'
   | 'duplicated'
   | 'deleted'
+  | 'cleared'
   | 'loaded'
   | 'reset'
   | 'imported'
@@ -31,7 +33,10 @@ type StatusKey =
   | 'linkReady'
   | 'nameRequired'
   | 'dataInvalid'
+  | 'urlCleared'
   | 'writeFailed'
+
+type PendingSensitiveAction = { type: 'share' | 'export'; scenario: SavedScenario }
 
 function localeForLanguage(language: string): SavedScenario['locale'] {
   return language.startsWith('en') ? 'en-GB' : 'de-DE'
@@ -64,8 +69,17 @@ function writeBrowserScenarioLibrary(scenarios: SavedScenario[]) {
   }
 }
 
+function clearBrowserScenarioLibrary() {
+  try {
+    return clearScenarioLibrary(window.localStorage)
+  } catch {
+    return false
+  }
+}
+
 export function ScenariosPage() {
   const { i18n, t } = useTranslation()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const purchaseCosts = useScenarioWorkspaceStore((state) => state.purchaseCosts)
   const financing = useScenarioWorkspaceStore((state) => state.financing)
@@ -81,6 +95,9 @@ export function ScenariosPage() {
   const [renameValues, setRenameValues] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<StatusKey>()
   const [shareUrl, setShareUrl] = useState('')
+  const [pendingSensitiveAction, setPendingSensitiveAction] = useState<PendingSensitiveAction>()
+  const [pendingDeleteId, setPendingDeleteId] = useState<string>()
+  const [clearAllPending, setClearAllPending] = useState(false)
   const sharedScenario = useMemo(() => {
     const encoded = searchParams.get('scenario')
     return encoded ? parseSharedScenario(encoded) : undefined
@@ -116,16 +133,16 @@ export function ScenariosPage() {
   }
 
   const createCurrentShareLink = () => {
-    if (!scenarioName.trim()) {
-      setStatus('nameRequired')
-      return
-    }
     try {
-      const scenario = createSavedScenario(scenarioName.trim(), currentInputs(), {
-        locale: localeForLanguage(i18n.resolvedLanguage ?? i18n.language),
-      })
-      setShareUrl(createScenarioShareUrl(scenario, window.location.href))
-      setStatus('linkReady')
+      const locale = localeForLanguage(i18n.resolvedLanguage ?? i18n.language)
+      const scenario = createSavedScenario(
+        locale === 'de-DE' ? 'Geteiltes Szenario' : 'Shared scenario',
+        currentInputs(),
+        {
+          locale,
+        },
+      )
+      setPendingSensitiveAction({ type: 'share', scenario })
     } catch {
       setStatus('dataInvalid')
     }
@@ -157,6 +174,7 @@ export function ScenariosPage() {
       scenarios.filter((item) => item.id !== scenario.id),
       'deleted',
     )
+    setPendingDeleteId(undefined)
   }
 
   const loadScenario = (scenario: SavedScenario) => {
@@ -165,8 +183,37 @@ export function ScenariosPage() {
   }
 
   const shareScenario = (scenario: SavedScenario) => {
-    setShareUrl(createScenarioShareUrl(scenario, window.location.href))
-    setStatus('linkReady')
+    setPendingSensitiveAction({ type: 'share', scenario })
+  }
+
+  const confirmSensitiveAction = () => {
+    if (!pendingSensitiveAction) return
+    if (pendingSensitiveAction.type === 'share') {
+      setShareUrl(createScenarioShareUrl(pendingSensitiveAction.scenario, window.location.href))
+      setStatus('linkReady')
+    } else {
+      downloadScenario(pendingSensitiveAction.scenario)
+      setStatus('exported')
+    }
+    setPendingSensitiveAction(undefined)
+  }
+
+  const removeSharedDataFromUrl = () => {
+    void navigate('/scenarios', { replace: true })
+    setStatus('urlCleared')
+  }
+
+  const clearAllScenarios = () => {
+    if (!clearBrowserScenarioLibrary()) {
+      setLibraryIssue('storage-unavailable')
+      setStatus('writeFailed')
+      return
+    }
+    setScenarios([])
+    setRenameValues({})
+    setClearAllPending(false)
+    setLibraryIssue(undefined)
+    setStatus('cleared')
   }
 
   const saveExternalScenario = (scenario: SavedScenario) => {
@@ -242,10 +289,26 @@ export function ScenariosPage() {
                   >
                     {t('scenarios.actions.saveShared')}
                   </button>
+                  <button
+                    className="secondary-action"
+                    type="button"
+                    onClick={removeSharedDataFromUrl}
+                  >
+                    {t('scenarios.actions.removeSharedData')}
+                  </button>
                 </div>
               </>
             ) : (
-              <p role="alert">{t(`scenarios.issues.${sharedScenario.issue}.message`)}</p>
+              <>
+                <p role="alert">{t(`scenarios.issues.${sharedScenario.issue}.message`)}</p>
+                <button
+                  className="secondary-action"
+                  type="button"
+                  onClick={removeSharedDataFromUrl}
+                >
+                  {t('scenarios.actions.removeSharedData')}
+                </button>
+              </>
             )}
           </section>
         ) : null}
@@ -283,6 +346,32 @@ export function ScenariosPage() {
           </div>
         </section>
 
+        {pendingSensitiveAction ? (
+          <section
+            className="scenario-notice scenario-notice--warning"
+            aria-labelledby="sensitive-action-heading"
+          >
+            <h2 id="sensitive-action-heading">
+              {t(`scenarios.privacy.${pendingSensitiveAction.type}Title`)}
+            </h2>
+            <p>{t(`scenarios.privacy.${pendingSensitiveAction.type}Warning`)}</p>
+            <div className="scenario-actions">
+              <button className="primary-action" type="button" onClick={confirmSensitiveAction}>
+                {t(
+                  `scenarios.actions.confirm${pendingSensitiveAction.type === 'share' ? 'Share' : 'Export'}`,
+                )}
+              </button>
+              <button
+                className="secondary-action"
+                type="button"
+                onClick={() => setPendingSensitiveAction(undefined)}
+              >
+                {t('scenarios.actions.cancel')}
+              </button>
+            </div>
+          </section>
+        ) : null}
+
         {shareUrl ? (
           <section className="scenario-panel scenario-share" aria-labelledby="share-link-heading">
             <h2 id="share-link-heading">{t('scenarios.share.title')}</h2>
@@ -306,15 +395,44 @@ export function ScenariosPage() {
               <h2 id="saved-scenarios-heading">{t('scenarios.saved.title')}</h2>
               <p>{t('scenarios.saved.description')}</p>
             </div>
-            <label className="secondary-action scenario-file-action">
-              {t('scenarios.actions.import')}
-              <input
-                accept="application/json,.json"
-                type="file"
-                onChange={(event) => void importScenario(event)}
-              />
-            </label>
+            <div className="scenario-actions">
+              <label className="secondary-action scenario-file-action">
+                {t('scenarios.actions.import')}
+                <input
+                  accept="application/json,.json"
+                  type="file"
+                  onChange={(event) => void importScenario(event)}
+                />
+              </label>
+              {scenarios.length > 0 ? (
+                <button
+                  className="secondary-action"
+                  type="button"
+                  onClick={() => setClearAllPending(true)}
+                >
+                  {t('scenarios.actions.clearAll')}
+                </button>
+              ) : null}
+            </div>
           </div>
+
+          {clearAllPending ? (
+            <div className="scenario-confirmation" role="alert">
+              <p>{t('scenarios.saved.clearAllWarning')}</p>
+              <div className="scenario-actions">
+                <button className="primary-action" type="button" onClick={clearAllScenarios}>
+                  {t('scenarios.actions.confirmClearAll')}
+                </button>
+                <button
+                  className="secondary-action"
+                  type="button"
+                  onClick={() => setClearAllPending(false)}
+                >
+                  {t('scenarios.actions.cancel')}
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {scenarios.length === 0 ? (
             <p className="scenario-empty">{t('scenarios.saved.empty')}</p>
@@ -370,10 +488,7 @@ export function ScenariosPage() {
                     <button
                       className="secondary-action"
                       type="button"
-                      onClick={() => {
-                        downloadScenario(scenario)
-                        setStatus('exported')
-                      }}
+                      onClick={() => setPendingSensitiveAction({ type: 'export', scenario })}
                     >
                       {t('scenarios.actions.export')}
                     </button>
@@ -384,13 +499,35 @@ export function ScenariosPage() {
                     >
                       {t('scenarios.actions.share')}
                     </button>
-                    <button
-                      className="secondary-action"
-                      type="button"
-                      onClick={() => removeScenario(scenario)}
-                    >
-                      {t('scenarios.actions.delete')}
-                    </button>
+                    {pendingDeleteId === scenario.id ? (
+                      <>
+                        <span className="scenario-delete-warning">
+                          {t('scenarios.saved.deleteWarning', { name: scenario.name })}
+                        </span>
+                        <button
+                          className="secondary-action"
+                          type="button"
+                          onClick={() => removeScenario(scenario)}
+                        >
+                          {t('scenarios.actions.confirmDelete')}
+                        </button>
+                        <button
+                          className="secondary-action"
+                          type="button"
+                          onClick={() => setPendingDeleteId(undefined)}
+                        >
+                          {t('scenarios.actions.cancel')}
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="secondary-action"
+                        type="button"
+                        onClick={() => setPendingDeleteId(scenario.id)}
+                      >
+                        {t('scenarios.actions.delete')}
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}

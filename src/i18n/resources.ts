@@ -77,6 +77,9 @@ export const resources = {
           description: 'Diese Szenarien bleiben nur in diesem Browser gespeichert.',
           empty: 'Noch keine Szenarien gespeichert.',
           updated: 'Aktualisiert: {{date}}',
+          deleteWarning: '„{{name}}“ wirklich dauerhaft löschen?',
+          clearAllWarning:
+            'Alle lokal gespeicherten Szenarien dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
         },
         shared: {
           title: 'Geteiltes Szenario',
@@ -87,6 +90,14 @@ export const resources = {
           description:
             'Der Link enthält die versionierten Eingaben. Es werden keine Daten an einen Server gesendet.',
           fieldLabel: 'Freigabelink für das Szenario',
+        },
+        privacy: {
+          shareTitle: 'Finanzdaten im Link teilen?',
+          shareWarning:
+            'Jeder mit dem vollständigen Link kann die enthaltenen Finanzdaten lesen. Der Link kann im Browserverlauf, in Zwischenablagen, Nachrichten, Screenshots oder Synchronisierungsdiensten verbleiben. Der Szenarioname wird nicht aufgenommen.',
+          exportTitle: 'Sensible Finanzdaten exportieren?',
+          exportWarning:
+            'Die JSON-Datei kann Kaufpläne und finanzielle Verhältnisse offenlegen. Prüfe ihren Inhalt vor dem Teilen und bewahre sie angemessen geschützt auf.',
         },
         fields: { name: 'Szenarioname' },
         actions: {
@@ -102,6 +113,13 @@ export const resources = {
           import: 'JSON importieren',
           share: 'Teilen',
           copyLink: 'Link kopieren',
+          confirmShare: 'Verstanden, Link erstellen',
+          confirmExport: 'Verstanden, JSON exportieren',
+          cancel: 'Abbrechen',
+          removeSharedData: 'Geteilte Daten aus URL entfernen',
+          clearAll: 'Alle lokalen Daten löschen',
+          confirmClearAll: 'Alle endgültig löschen',
+          confirmDelete: 'Endgültig löschen',
           results: 'Zur Auswertung →',
         },
         status: {
@@ -109,6 +127,7 @@ export const resources = {
           renamed: 'Szenario umbenannt.',
           duplicated: 'Szenario dupliziert.',
           deleted: 'Szenario gelöscht.',
+          cleared: 'Alle lokal gespeicherten Szenarien wurden gelöscht.',
           loaded: 'Szenario geladen. Alle Ergebnisse werden neu berechnet.',
           reset: 'Der aktuelle Arbeitsstand wurde zurückgesetzt.',
           imported: 'Szenario importiert und lokal gespeichert.',
@@ -116,6 +135,7 @@ export const resources = {
           linkReady: 'Freigabelink erstellt.',
           nameRequired: 'Bitte gib einen Szenarionamen ein.',
           dataInvalid: 'Die aktuellen Eingaben können nicht als Szenario gespeichert werden.',
+          urlCleared: 'Die geteilten Daten wurden aus der URL entfernt.',
           writeFailed: 'Das Szenario konnte nicht lokal gespeichert werden.',
         },
         issues: {
@@ -548,6 +568,9 @@ export const resources = {
           description: 'These scenarios remain in this browser only.',
           empty: 'No scenarios saved yet.',
           updated: 'Updated: {{date}}',
+          deleteWarning: 'Permanently delete “{{name}}”?',
+          clearAllWarning:
+            'Permanently delete every locally saved scenario? This action cannot be undone.',
         },
         shared: {
           title: 'Shared scenario',
@@ -557,6 +580,14 @@ export const resources = {
           title: 'Share link',
           description: 'The link contains the versioned inputs. No data is sent to a server.',
           fieldLabel: 'Scenario share link',
+        },
+        privacy: {
+          shareTitle: 'Share financial data in a link?',
+          shareWarning:
+            'Anyone with the full link can read the included financial data. The link may remain in browser history, clipboards, messages, screenshots, or synchronization services. The scenario name is excluded.',
+          exportTitle: 'Export sensitive financial data?',
+          exportWarning:
+            'The JSON file can reveal purchase plans and financial circumstances. Review its contents before sharing and store it appropriately.',
         },
         fields: { name: 'Scenario name' },
         actions: {
@@ -572,6 +603,13 @@ export const resources = {
           import: 'Import JSON',
           share: 'Share',
           copyLink: 'Copy link',
+          confirmShare: 'I understand, create link',
+          confirmExport: 'I understand, export JSON',
+          cancel: 'Cancel',
+          removeSharedData: 'Remove shared data from URL',
+          clearAll: 'Clear all local data',
+          confirmClearAll: 'Permanently clear all',
+          confirmDelete: 'Permanently delete',
           results: 'Open analysis →',
         },
         status: {
@@ -579,6 +617,7 @@ export const resources = {
           renamed: 'Scenario renamed.',
           duplicated: 'Scenario duplicated.',
           deleted: 'Scenario deleted.',
+          cleared: 'All locally saved scenarios were deleted.',
           loaded: 'Scenario loaded. All results are recalculated.',
           reset: 'The current workspace was reset.',
           imported: 'Scenario imported and saved locally.',
@@ -586,6 +625,7 @@ export const resources = {
           linkReady: 'Share link created.',
           nameRequired: 'Enter a scenario name.',
           dataInvalid: 'The current inputs cannot be saved as a scenario.',
+          urlCleared: 'The shared data was removed from the URL.',
           writeFailed: 'The scenario could not be saved locally.',
         },
         issues: {

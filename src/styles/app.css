@@ -450,6 +450,20 @@ h3 {
   font-weight: var(--font-weight-medium);
 }
 
+.scenario-confirmation {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-surface);
+}
+
+.scenario-delete-warning {
+  align-self: center;
+  color: var(--color-warning-text);
+  font-weight: var(--font-weight-medium);
+}
+
 @media (max-width: 53.75rem) {
   .scenario-create-row,
   .scenario-panel-heading,

@@ -1,6 +1,7 @@
 export {
   SCENARIO_LIBRARY_STORAGE_KEY,
   SCENARIO_SCHEMA_VERSION,
+  clearScenarioLibrary,
   createSavedScenario,
   createScenarioShareUrl,
   duplicateSavedScenario,

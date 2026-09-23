@@ -60,10 +60,22 @@ describe('ScenariosPage', () => {
     await user.click(
       within(screen.getAllByRole('listitem')[1]!).getByRole('button', { name: 'Löschen' }),
     )
+    expect(screen.getByText(/wirklich dauerhaft löschen/i)).toBeVisible()
+    await user.click(
+      within(screen.getAllByRole('listitem')[1]!).getByRole('button', {
+        name: 'Endgültig löschen',
+      }),
+    )
     expect(screen.getAllByRole('listitem')).toHaveLength(1)
+
+    await user.click(screen.getByRole('button', { name: 'Alle lokalen Daten löschen' }))
+    expect(screen.getByText(/kann nicht rückgängig gemacht werden/i)).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Alle endgültig löschen' }))
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
   })
 
-  it('does not overwrite the workspace with corrupted shared data', () => {
+  it('does not overwrite the workspace with corrupted shared data and can remove it from the URL', async () => {
+    const user = userEvent.setup()
     useScenarioWorkspaceStore.getState().setPurchaseCosts({
       ...useScenarioWorkspaceStore.getState().purchaseCosts,
       purchasePrice: '777000',
@@ -73,6 +85,27 @@ describe('ScenariosPage', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent(/beschädigt oder unvollständig/i)
     expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('777000')
+
+    await user.click(screen.getByRole('button', { name: 'Geteilte Daten aus URL entfernen' }))
+    expect(screen.queryByRole('heading', { name: 'Geteiltes Szenario' })).not.toBeInTheDocument()
+  })
+
+  it('requires an explicit privacy acknowledgement before sharing or exporting', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.type(screen.getByLabelText('Szenarioname'), 'Private Adresse')
+    await user.click(screen.getByRole('button', { name: 'Szenario speichern' }))
+    const savedCard = screen.getByRole('listitem')
+
+    await user.click(within(savedCard).getByRole('button', { name: 'Teilen' }))
+    expect(screen.queryByLabelText('Freigabelink für das Szenario')).not.toBeInTheDocument()
+    expect(screen.getByText(/Jeder mit dem vollständigen Link/i)).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Verstanden, Link erstellen' }))
+    expect(screen.getByLabelText('Freigabelink für das Szenario')).toBeVisible()
+
+    await user.click(within(savedCard).getByRole('button', { name: 'JSON exportieren' }))
+    expect(screen.getByText(/Kaufpläne und finanzielle Verhältnisse/i)).toBeVisible()
   })
 
   it('reports corrupted local data without throwing', () => {
