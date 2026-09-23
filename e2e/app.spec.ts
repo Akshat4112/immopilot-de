@@ -186,3 +186,36 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await expect(page.getByRole('heading', { level: 1, name: 'Evaluate one property' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Refinancing stress test' })).toBeVisible()
 })
+
+test('persists and manages a named scenario locally without saved results', async ({ page }) => {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('350000')
+  await page.getByRole('link', { name: 'Gespeicherte Szenarien' }).click()
+
+  await page.getByLabel('Szenarioname').fill('Altbau Köln')
+  await page.getByRole('button', { name: 'Szenario speichern' }).click()
+  await expect(page.getByText('Szenario gespeichert.')).toBeVisible()
+
+  const persisted = await page.evaluate<string>(
+    `localStorage.getItem('immopilot-de.scenarios.v1') ?? ''`,
+  )
+  expect(persisted).toContain('Altbau Köln')
+  expect(persisted).not.toContain('results')
+
+  await page.reload()
+  const savedCard = page.getByRole('listitem').filter({ hasText: 'Altbau Köln' })
+  await expect(savedCard).toBeVisible()
+  await savedCard.getByRole('button', { name: 'Teilen' }).click()
+  await expect(page.getByLabel('Freigabelink für das Szenario')).toHaveValue(
+    /#\/scenarios\?scenario=/,
+  )
+
+  await savedCard.getByRole('button', { name: 'Duplizieren' }).click()
+  await expect(page.getByRole('listitem')).toHaveCount(2)
+  await page
+    .getByRole('listitem')
+    .filter({ hasText: 'Altbau Köln (Kopie)' })
+    .getByRole('button', { name: 'Löschen' })
+    .click()
+  await expect(page.getByRole('listitem')).toHaveCount(1)
+})

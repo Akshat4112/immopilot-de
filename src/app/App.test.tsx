@@ -110,4 +110,17 @@ describe('App', () => {
     expect(screen.getByRole('link', { name: 'Überblick' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
   })
+
+  it('opens the saved-scenarios workspace from the primary navigation', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('link', { name: 'Gespeicherte Szenarien' }))
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Gespeicherte Szenarien' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Gespeicherte Szenarien' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
 })
