@@ -114,7 +114,8 @@ describe('ResultsPage', () => {
   it('retains a negative annual growth assumption in the editable field', () => {
     renderPage()
 
-    const rentGrowth = screen.getByLabelText('Mietsteigerung p.a.')
+    const rentGrowth = document.getElementById('ownerRentGrowthRate')
+    if (!(rentGrowth instanceof HTMLInputElement)) throw new Error('Owner rent-growth input is missing')
     fireEvent.change(rentGrowth, { target: { value: '-2' } })
 
     expect(rentGrowth).toHaveValue('-2')
