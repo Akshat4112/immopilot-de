@@ -115,6 +115,7 @@ export const resources = {
           exported: 'Szenario als JSON exportiert.',
           linkReady: 'Freigabelink erstellt.',
           nameRequired: 'Bitte gib einen Szenarionamen ein.',
+          dataInvalid: 'Die aktuellen Eingaben können nicht als Szenario gespeichert werden.',
           writeFailed: 'Das Szenario konnte nicht lokal gespeichert werden.',
         },
         issues: {
@@ -584,6 +585,7 @@ export const resources = {
           exported: 'Scenario exported as JSON.',
           linkReady: 'Share link created.',
           nameRequired: 'Enter a scenario name.',
+          dataInvalid: 'The current inputs cannot be saved as a scenario.',
           writeFailed: 'The scenario could not be saved locally.',
         },
         issues: {

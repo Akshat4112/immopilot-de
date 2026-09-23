@@ -194,7 +194,7 @@ export function duplicateSavedScenario(
   scenario: SavedScenario,
   options: { id?: string; name: string; now?: Date },
 ) {
-  return createSavedScenario(options.name, scenario.inputs, {
+  return createSavedScenario(options.name.trim().slice(0, 120), scenario.inputs, {
     id: options.id,
     locale: scenario.locale,
     now: options.now,

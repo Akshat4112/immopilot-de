@@ -61,6 +61,17 @@ describe('scenario persistence', () => {
     expect(duplicate.inputs).not.toBe(source.inputs)
   })
 
+  it('keeps generated duplicate names within the validated limit', () => {
+    const source = createSavedScenario('A'.repeat(120), inputs, { id: 'source' })
+
+    const duplicate = duplicateSavedScenario(source, {
+      id: 'copy',
+      name: `${source.name} (copy)`,
+    })
+
+    expect(duplicate.name).toHaveLength(120)
+  })
+
   it('reads and writes the local scenario library', () => {
     const memory = new Map<string, string>()
     const storage = {

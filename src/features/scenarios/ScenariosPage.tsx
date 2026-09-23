@@ -30,6 +30,7 @@ type StatusKey =
   | 'exported'
   | 'linkReady'
   | 'nameRequired'
+  | 'dataInvalid'
   | 'writeFailed'
 
 function localeForLanguage(language: string): SavedScenario['locale'] {
@@ -104,10 +105,14 @@ export function ScenariosPage() {
       setStatus('nameRequired')
       return
     }
-    const scenario = createSavedScenario(scenarioName.trim(), currentInputs(), {
-      locale: localeForLanguage(i18n.resolvedLanguage ?? i18n.language),
-    })
-    if (persist([...scenarios, scenario], 'saved')) setScenarioName('')
+    try {
+      const scenario = createSavedScenario(scenarioName.trim(), currentInputs(), {
+        locale: localeForLanguage(i18n.resolvedLanguage ?? i18n.language),
+      })
+      if (persist([...scenarios, scenario], 'saved')) setScenarioName('')
+    } catch {
+      setStatus('dataInvalid')
+    }
   }
 
   const createCurrentShareLink = () => {
@@ -115,11 +120,15 @@ export function ScenariosPage() {
       setStatus('nameRequired')
       return
     }
-    const scenario = createSavedScenario(scenarioName.trim(), currentInputs(), {
-      locale: localeForLanguage(i18n.resolvedLanguage ?? i18n.language),
-    })
-    setShareUrl(createScenarioShareUrl(scenario, window.location.href))
-    setStatus('linkReady')
+    try {
+      const scenario = createSavedScenario(scenarioName.trim(), currentInputs(), {
+        locale: localeForLanguage(i18n.resolvedLanguage ?? i18n.language),
+      })
+      setShareUrl(createScenarioShareUrl(scenario, window.location.href))
+      setStatus('linkReady')
+    } catch {
+      setStatus('dataInvalid')
+    }
   }
 
   const renameScenario = (scenario: SavedScenario) => {
@@ -172,7 +181,14 @@ export function ScenariosPage() {
     event.target.value = ''
     if (!file) return
 
-    const parsed = parseScenarioJson(await file.text())
+    let fileContents: string
+    try {
+      fileContents = await file.text()
+    } catch {
+      setLibraryIssue('corrupted')
+      return
+    }
+    const parsed = parseScenarioJson(fileContents)
     if (parsed.status === 'invalid') {
       setLibraryIssue(parsed.issue)
       return
