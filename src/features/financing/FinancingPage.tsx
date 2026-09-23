@@ -317,6 +317,18 @@ export function FinancingPage() {
               <p>{t('finance.unavailable.scheduleMessage')}</p>
             </div>
           )}
+
+          {paymentReady && scheduleReady && (
+            <div className="next-steps">
+              <h3>{t('finance.nextSteps.title')}</h3>
+              <p>{t('finance.nextSteps.message')}</p>
+              <div className="next-steps__links">
+                <Link className="next-steps__link primary" to="/results">
+                  {t('finance.nextSteps.continueToResults')}
+                </Link>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </PageLayout>

@@ -10,13 +10,22 @@ import {
 } from '../../domain/financing'
 import {
   calculateAmortizationSchedule,
+  calculateFixedPeriod,
   calculateMortgagePayment,
   type AmortizationScheduleResult,
+  type FixedPeriodResult,
   type MortgagePaymentInput,
   type MortgagePaymentResult,
 } from '../../domain/mortgage'
+import { calculateOfferPrice, type OfferPriceResult } from '../../domain/offer-price'
+import { calculateRefinancingStress, type RefinancingStressResult } from '../../domain/refinancing'
+import { calculateRentVersusBuy, type RentVersusBuyResult } from '../../domain/rent-vs-buy'
+import {
+  calculateRentalInvestment,
+  type RentalInvestmentResult,
+} from '../../domain/rental-investment'
 
-import type { FinancingDraft, PurchaseCostsDraft } from './scenarioStore'
+import type { FinancingDraft, PurchaseCostsDraft, ScenarioAnalysisDraft } from './scenarioStore'
 
 function parseEuroInput(value: string): number {
   const cleaned = value.replace(/[€\s.]/g, '').replace(',', '.')
@@ -42,6 +51,22 @@ function parseRateInput(value: string): number {
 
 function parseOptionalRateInput(value: string | undefined): number | undefined {
   return value?.trim() ? parseRateInput(value) : undefined
+}
+
+function hasInput(value: string) {
+  return value.trim().length > 0
+}
+
+function missingInputs(
+  draft: ScenarioAnalysisDraft,
+  fields: readonly (keyof ScenarioAnalysisDraft)[],
+) {
+  return fields.filter((field) => !hasInput(draft[field]))
+}
+
+function yearsToMonths(value: string) {
+  const years = Number.parseInt(value, 10)
+  return Number.isSafeInteger(years) ? years * 12 : 0
 }
 
 export function acquisitionCostInputFromDraft(draft: PurchaseCostsDraft): AcquisitionCostInput {
@@ -110,6 +135,30 @@ export interface ScenarioWorkspaceCalculationResult {
   amortization: AmortizationScheduleResult
 }
 
+export interface NotConfiguredDashboardResult {
+  status: 'not-configured'
+  missing: readonly (keyof ScenarioAnalysisDraft)[]
+}
+
+export type ConfigurableDashboardResult<Result> = Result | NotConfiguredDashboardResult
+
+export type ModeSpecificDashboardResult =
+  | {
+      mode: 'owner-occupier'
+      result: ConfigurableDashboardResult<RentVersusBuyResult>
+    }
+  | {
+      mode: 'rental-investment'
+      result: ConfigurableDashboardResult<RentalInvestmentResult>
+    }
+
+export interface ScenarioDashboardCalculationResult extends ScenarioWorkspaceCalculationResult {
+  fixedPeriod: FixedPeriodResult
+  refinancing: ConfigurableDashboardResult<RefinancingStressResult>
+  modeSpecific: ModeSpecificDashboardResult
+  offerPrice: ConfigurableDashboardResult<OfferPriceResult>
+}
+
 export function calculateScenarioWorkspace(
   purchaseCosts: PurchaseCostsDraft,
   financingDraft: FinancingDraft,
@@ -127,5 +176,256 @@ export function calculateScenarioWorkspace(
     financing,
     payment,
     amortization,
+  }
+}
+
+function calculateRefinancingFromDraft(
+  fixedPeriod: FixedPeriodResult,
+  payment: MortgagePaymentResult,
+  draft: ScenarioAnalysisDraft,
+): ConfigurableDashboardResult<RefinancingStressResult> {
+  const required = [
+    'refinancingInitialRepaymentRate',
+    'refinancingLowerRate',
+    'refinancingBaseRate',
+    'refinancingHigherRate',
+  ] as const
+  const missing = missingInputs(draft, required)
+  if (missing.length) return { status: 'not-configured', missing }
+
+  return calculateRefinancingStress({
+    fixedPeriod,
+    currentContractualMonthlyPaymentCents:
+      payment.status === 'available' ? payment.monthlyPaymentCents : 0,
+    scenarios: [
+      {
+        id: 'lower',
+        paymentMode: 'initial-repayment-rate',
+        futureNominalAnnualRate: parseRateInput(draft.refinancingLowerRate),
+        futureInitialRepaymentRate: parseRateInput(draft.refinancingInitialRepaymentRate),
+      },
+      {
+        id: 'base',
+        paymentMode: 'initial-repayment-rate',
+        futureNominalAnnualRate: parseRateInput(draft.refinancingBaseRate),
+        futureInitialRepaymentRate: parseRateInput(draft.refinancingInitialRepaymentRate),
+      },
+      {
+        id: 'higher',
+        paymentMode: 'initial-repayment-rate',
+        futureNominalAnnualRate: parseRateInput(draft.refinancingHigherRate),
+        futureInitialRepaymentRate: parseRateInput(draft.refinancingInitialRepaymentRate),
+      },
+    ],
+  })
+}
+
+function calculateOwnerOccupierFromDraft(
+  financing: FinancingResult,
+  amortization: AmortizationScheduleResult,
+  draft: ScenarioAnalysisDraft,
+): ConfigurableDashboardResult<RentVersusBuyResult> {
+  const required = [
+    'currentComparableRent',
+    'monthlyOwnerCosts',
+    'ownerAnalysisYears',
+    'ownerRentGrowthRate',
+    'ownerCostGrowthRate',
+    'propertyAppreciationRate',
+    'alternativeReturnRate',
+    'ownerSellingCostRate',
+  ] as const
+  const missing = missingInputs(draft, required)
+  if (missing.length) return { status: 'not-configured', missing }
+
+  return calculateRentVersusBuy({
+    financing,
+    amortization,
+    analysisMonths: yearsToMonths(draft.ownerAnalysisYears),
+    currentComparableRentCents: parseEuroInput(draft.currentComparableRent),
+    monthlyOwnerCostsCents: parseEuroInput(draft.monthlyOwnerCosts),
+    rentGrowthRate: parseRateInput(draft.ownerRentGrowthRate),
+    ownerCostGrowthRate: parseRateInput(draft.ownerCostGrowthRate),
+    propertyAppreciationRate: parseRateInput(draft.propertyAppreciationRate),
+    alternativeReturnRate: parseRateInput(draft.alternativeReturnRate),
+    sellingCostRate: parseRateInput(draft.ownerSellingCostRate),
+    includeAdditionalRepaymentsInMatchedBudget: true,
+  })
+}
+
+function calculateRentalFromDraft(
+  financing: FinancingResult,
+  amortization: AmortizationScheduleResult,
+  draft: ScenarioAnalysisDraft,
+): ConfigurableDashboardResult<RentalInvestmentResult> {
+  const required = [
+    'monthlyNetColdRent',
+    'vacancyRate',
+    'otherAnnualRentLoss',
+    'monthlyNonRecoverableHausgeld',
+    'monthlyReserveContribution',
+    'annualMaintenanceAllowance',
+    'otherAnnualOwnerCosts',
+    'rentalRentGrowthRate',
+    'rentalOwnerCostGrowthRate',
+    'rentalHoldingYears',
+  ] as const
+  const saleFields = ['rentalPropertyAppreciationRate', 'rentalSellingCostRate'] as const
+  const missing = missingInputs(draft, required)
+  const suppliedSaleFields = saleFields.filter((field) => hasInput(draft[field]))
+  if (suppliedSaleFields.length === 1) {
+    missing.push(saleFields.find((field) => !hasInput(draft[field]))!)
+  }
+  if (missing.length) return { status: 'not-configured', missing }
+
+  const includeSale = suppliedSaleFields.length === saleFields.length
+  return calculateRentalInvestment({
+    financing,
+    amortization,
+    monthlyNetColdRentCents: parseEuroInput(draft.monthlyNetColdRent),
+    vacancyRate: parseRateInput(draft.vacancyRate),
+    otherAnnualRentLossCents: parseEuroInput(draft.otherAnnualRentLoss),
+    monthlyNonRecoverableHausgeldExcludingReserveCents: parseEuroInput(
+      draft.monthlyNonRecoverableHausgeld,
+    ),
+    monthlyReserveContributionCents: parseEuroInput(draft.monthlyReserveContribution),
+    annualMaintenanceAllowanceOutsideHausgeldCents: parseEuroInput(
+      draft.annualMaintenanceAllowance,
+    ),
+    otherAnnualOwnerCostsCents: parseEuroInput(draft.otherAnnualOwnerCosts),
+    rentGrowthRate: parseRateInput(draft.rentalRentGrowthRate),
+    ownerCostGrowthRate: parseRateInput(draft.rentalOwnerCostGrowthRate),
+    holdingPeriodMonths: yearsToMonths(draft.rentalHoldingYears),
+    ...(includeSale
+      ? {
+          propertyAppreciationRate: parseRateInput(draft.rentalPropertyAppreciationRate),
+          sellingCostRate: parseRateInput(draft.rentalSellingCostRate),
+        }
+      : {}),
+  })
+}
+
+function calculateOfferPriceFromDraft(
+  purchaseCosts: PurchaseCostsDraft,
+  financingDraft: FinancingDraft,
+  rental: ConfigurableDashboardResult<RentalInvestmentResult> | undefined,
+  draft: ScenarioAnalysisDraft,
+): ConfigurableDashboardResult<OfferPriceResult> {
+  const targetGrossYield = parseOptionalRateInput(draft.targetGrossYield)
+  const targetNetYield = parseOptionalRateInput(draft.targetNetYield)
+  const hasAffordability = hasInput(draft.maximumMonthlyPayment)
+  const comparableFields = [
+    'livingAreaSquareMetres',
+    'askingPrice',
+    'proposedOffer',
+    'comparablePricePerSquareMetreLow',
+    'comparablePricePerSquareMetreHigh',
+  ] as const
+  const suppliedComparableFields = comparableFields.filter((field) => hasInput(draft[field]))
+  const hasComparables = suppliedComparableFields.length === comparableFields.length
+  const hasAnyRequest =
+    targetGrossYield !== undefined ||
+    targetNetYield !== undefined ||
+    hasAffordability ||
+    suppliedComparableFields.length > 0
+  if (!hasAnyRequest) return { status: 'not-configured', missing: [] }
+  if (suppliedComparableFields.length > 0 && !hasComparables) {
+    return { status: 'not-configured', missing: missingInputs(draft, comparableFields) }
+  }
+
+  const openingOfferFields = ['openingOfferLargerDiscount', 'openingOfferSmallerDiscount'] as const
+  const suppliedOpeningOfferFields = openingOfferFields.filter((field) => hasInput(draft[field]))
+  if (suppliedOpeningOfferFields.length === 1) {
+    return { status: 'not-configured', missing: missingInputs(draft, openingOfferFields) }
+  }
+
+  const rentalResult = rental?.status === 'not-configured' ? undefined : rental
+  return calculateOfferPrice({
+    acquisitionTemplate: acquisitionCostInputFromDraft(purchaseCosts),
+    ...(rentalResult ? { rental: rentalResult } : {}),
+    ...(targetGrossYield === undefined ? {} : { targetGrossYield }),
+    ...(targetNetYield === undefined ? {} : { targetNetYield }),
+    ...(hasAffordability
+      ? {
+          affordability: {
+            availableEquityCents: parseEuroInput(financingDraft.availableEquity),
+            maximumMonthlyPaymentCents: parseEuroInput(draft.maximumMonthlyPayment),
+            financedAcquisitionCostShare: parseRateInput(
+              financingDraft.financedAcquisitionCostShare,
+            ),
+            nominalAnnualRate: parseRateInput(financingDraft.nominalAnnualRate),
+            initialRepaymentRate: parseRateInput(financingDraft.initialRepaymentRate),
+          },
+        }
+      : {}),
+    ...(hasComparables
+      ? {
+          comparables: {
+            askingPriceCents: parseEuroInput(draft.askingPrice),
+            purchaseOfferCents: parseEuroInput(draft.proposedOffer),
+            livingAreaSquareMetres: Number.parseFloat(
+              draft.livingAreaSquareMetres.replace(',', '.'),
+            ),
+            comparablePricePerSquareMetreLowCents: parseEuroInput(
+              draft.comparablePricePerSquareMetreLow,
+            ),
+            comparablePricePerSquareMetreHighCents: parseEuroInput(
+              draft.comparablePricePerSquareMetreHigh,
+            ),
+            ...(suppliedOpeningOfferFields.length === openingOfferFields.length
+              ? {
+                  openingOffer: {
+                    referencePriceCents: parseEuroInput(draft.askingPrice),
+                    largerDiscount: parseRateInput(draft.openingOfferLargerDiscount),
+                    smallerDiscount: parseRateInput(draft.openingOfferSmallerDiscount),
+                  },
+                }
+              : {}),
+          },
+        }
+      : {}),
+  })
+}
+
+export function calculateScenarioDashboard(
+  purchaseCosts: PurchaseCostsDraft,
+  financingDraft: FinancingDraft,
+  analysisDraft: ScenarioAnalysisDraft,
+): ScenarioDashboardCalculationResult {
+  const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft)
+  const fixedPeriod = calculateFixedPeriod(workspace.amortization)
+  const refinancing = calculateRefinancingFromDraft(fixedPeriod, workspace.payment, analysisDraft)
+  const modeSpecific =
+    analysisDraft.propertyUse === 'owner-occupier'
+      ? {
+          mode: 'owner-occupier' as const,
+          result: calculateOwnerOccupierFromDraft(
+            workspace.financing,
+            workspace.amortization,
+            analysisDraft,
+          ),
+        }
+      : {
+          mode: 'rental-investment' as const,
+          result: calculateRentalFromDraft(
+            workspace.financing,
+            workspace.amortization,
+            analysisDraft,
+          ),
+        }
+  const rental = modeSpecific.mode === 'rental-investment' ? modeSpecific.result : undefined
+  const offerPrice = calculateOfferPriceFromDraft(
+    purchaseCosts,
+    financingDraft,
+    rental,
+    analysisDraft,
+  )
+
+  return {
+    ...workspace,
+    fixedPeriod,
+    refinancing,
+    modeSpecific,
+    offerPrice,
   }
 }
