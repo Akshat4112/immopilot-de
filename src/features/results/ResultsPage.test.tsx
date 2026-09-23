@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -94,6 +94,9 @@ describe('ResultsPage', () => {
     expect(screen.getByRole('heading', { name: 'Hypothetischer Verkauf' })).toBeVisible()
     expect(screen.getByText('Preisobergrenze bei Bruttorendite')).toBeVisible()
     expect(screen.getByText('Vergleichbarer Wert')).toBeVisible()
+    expect(screen.getByText('Eröffnungsangebot')).toBeVisible()
+    expect(screen.getByText(/Jahresnettokaltmiete/)).toBeVisible()
+    expect(screen.getByText(/Betriebsergebnis/)).toBeVisible()
   })
 
   it('explains when purchase costs must be complete before analysis can begin', () => {
@@ -106,6 +109,28 @@ describe('ResultsPage', () => {
       'href',
       '/purchase-costs',
     )
+  })
+
+  it('retains a negative annual growth assumption in the editable field', () => {
+    renderPage()
+
+    const rentGrowth = screen.getByLabelText('Jährliches Mietwachstum')
+    fireEvent.change(rentGrowth, { target: { value: '-2' } })
+
+    expect(rentGrowth).toHaveValue('-2')
+  })
+
+  it('labels an owner-occupier projection that extends beyond the fixed-interest period', () => {
+    useScenarioWorkspaceStore.getState().updateAnalysis({
+      ...initialScenarioAnalysisDraft,
+      currentComparableRent: '1000',
+      monthlyOwnerCosts: '250',
+      ownerAnalysisYears: '15',
+    })
+
+    renderPage()
+
+    expect(screen.getByText(/Nach Ende der Zinsbindung/)).toBeVisible()
   })
 
   it('marks refinancing as not applicable for a cash purchase', () => {
