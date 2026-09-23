@@ -43,7 +43,11 @@ function languageForFormatting(language: string): SupportedLanguage {
 
 function readBrowserLibrary(): { scenarios: SavedScenario[]; issue?: ScenarioLibraryIssue } {
   if (typeof window === 'undefined') return { scenarios: [] }
-  return readScenarioLibrary(window.localStorage)
+  try {
+    return readScenarioLibrary(window.localStorage)
+  } catch {
+    return { scenarios: [], issue: 'storage-unavailable' }
+  }
 }
 
 function move<T>(items: readonly T[], from: number, to: number) {

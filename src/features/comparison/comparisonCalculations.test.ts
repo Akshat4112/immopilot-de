@@ -126,4 +126,18 @@ describe('saved scenario comparison calculations', () => {
     expect(hasMixedComparisonBasis(comparisons, 'remainingDebt')).toBe(true)
     expect(hasMixedComparisonBasis(comparisons, 'projectedReturn')).toBe(true)
   })
+
+  it('marks remaining debt as not applicable for a cash purchase', () => {
+    const cashPurchase = scenario('Cash purchase')
+    cashPurchase.inputs.financing = {
+      ...cashPurchase.inputs.financing,
+      availableEquity: '300000',
+      downPayment: '250000',
+    }
+
+    const comparison = calculateSavedScenarioComparison(cashPurchase)
+
+    expect(comparison.dashboard.payment).toMatchObject({ status: 'available', cashPurchase: true })
+    expect(comparison.values.remainingDebt.status).toBe('not-applicable')
+  })
 })

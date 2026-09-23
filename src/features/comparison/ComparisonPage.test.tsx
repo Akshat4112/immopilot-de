@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
 import {
@@ -113,5 +113,19 @@ describe('ComparisonPage', () => {
       screen.getByRole('heading', { level: 1, name: 'Compare properties side by side' }),
     ).toBeVisible()
     expect(screen.getByRole('heading', { name: 'No scenarios to compare yet' })).toBeVisible()
+  })
+
+  it('handles browsers that deny access to local storage', () => {
+    const storageAccess = vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError')
+    })
+
+    renderPage()
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Lokaler Speicher nicht verfügbar')
+    expect(
+      screen.getByRole('heading', { name: 'Noch keine Szenarien zum Vergleichen' }),
+    ).toBeVisible()
+    storageAccess.mockRestore()
   })
 })
