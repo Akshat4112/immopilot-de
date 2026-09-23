@@ -477,8 +477,13 @@ h3 {
 /* Saved property comparison workspace */
 .comparison-workspace {
   display: grid;
+  min-width: 0;
   gap: var(--space-7);
   margin-top: var(--space-9);
+}
+
+.comparison-workspace > section {
+  min-width: 0;
 }
 
 .comparison-picker,
