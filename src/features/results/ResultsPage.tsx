@@ -16,9 +16,22 @@ function languageForFormatting(language: string): SupportedLanguage {
   return language === 'en' ? 'en' : 'de'
 }
 
-function inputValue(value: string, allowsNegativeRate = false) {
+function inputValue(value: string, language: SupportedLanguage, allowsNegativeRate = false) {
   const normalized = value.replace(allowsNegativeRate ? /[^\d,.-]/g : /[^\d,.]/g, '')
-  return allowsNegativeRate ? normalized.replace(/(?!^)-/g, '') : normalized
+  const signedValue = allowsNegativeRate
+    ? `${normalized.startsWith('-') ? '-' : ''}${normalized.replace(/-/g, '')}`
+    : normalized
+  const unsignedValue = signedValue.startsWith('-') ? signedValue.slice(1) : signedValue
+  const canonicalValue =
+    language === 'en'
+      ? unsignedValue.replace(/,/g, '')
+      : unsignedValue.replace(/\./g, '').replace(',', '.')
+
+  return signedValue.startsWith('-') ? `-${canonicalValue}` : canonicalValue
+}
+
+function displayInputValue(value: string, language: SupportedLanguage) {
+  return language === 'de' ? value.replace('.', ',') : value
 }
 
 interface DashboardInputProps {
@@ -40,6 +53,9 @@ function DashboardInput({
   allowsNegativeRate = false,
   onChange,
 }: DashboardInputProps) {
+  const { i18n } = useTranslation()
+  const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
+
   return (
     <label className="form-field" htmlFor={id}>
       <span className="form-field__label">{label}</span>
@@ -47,10 +63,12 @@ function DashboardInput({
         <input
           id={id}
           inputMode="decimal"
-          onChange={(event) => onChange(inputValue(event.target.value, allowsNegativeRate))}
+          onChange={(event) =>
+            onChange(inputValue(event.target.value, language, allowsNegativeRate))
+          }
           placeholder={placeholder}
           type="text"
-          value={value}
+          value={displayInputValue(value, language)}
         />
         {suffix ? (
           <span className="form-field__currency" aria-hidden="true">
@@ -118,8 +136,8 @@ export function ResultsPage() {
   const analysis = useScenarioWorkspaceStore((state) => state.analysis)
   const updateAnalysis = useScenarioWorkspaceStore((state) => state.updateAnalysis)
   const dashboard = useMemo(
-    () => calculateScenarioDashboard(purchaseCosts, financingDraft, analysis, language),
-    [analysis, financingDraft, language, purchaseCosts],
+    () => calculateScenarioDashboard(purchaseCosts, financingDraft, analysis),
+    [analysis, financingDraft, purchaseCosts],
   )
   const formatEuro = (cents: number) => formatEuroFromCents(cents, language)
   const formatRate = (value: { toNumber: () => number }) =>
@@ -267,7 +285,7 @@ export function ResultsPage() {
                       id="currentComparableRent"
                       label={t('results.owner.currentRent')}
                       onChange={update('currentComparableRent')}
-                      placeholder="1.200"
+                      placeholder={language === 'en' ? '1,200' : '1.200'}
                       suffix="€"
                       value={analysis.currentComparableRent}
                     />
@@ -335,7 +353,7 @@ export function ResultsPage() {
                       id="monthlyNetColdRent"
                       label={t('results.rental.monthlyNetColdRent')}
                       onChange={update('monthlyNetColdRent')}
-                      placeholder="1.000"
+                      placeholder={language === 'en' ? '1,000' : '1.000'}
                       suffix="€"
                       value={analysis.monthlyNetColdRent}
                     />
