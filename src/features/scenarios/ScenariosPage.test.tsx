@@ -117,6 +117,19 @@ describe('ScenariosPage', () => {
     expect(screen.getByText('Noch keine Szenarien gespeichert.')).toBeVisible()
   })
 
+  it('restores the saved library after the page remounts', async () => {
+    const user = userEvent.setup()
+    const view = renderPage()
+    await user.type(screen.getByLabelText('Szenarioname'), 'Reload test')
+    await user.click(screen.getByRole('button', { name: 'Szenario speichern' }))
+
+    view.unmount()
+    renderPage()
+
+    expect(screen.getByDisplayValue('Reload test')).toBeVisible()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
   it('switches all scenario-management copy to English', async () => {
     const user = userEvent.setup()
     renderPage()
