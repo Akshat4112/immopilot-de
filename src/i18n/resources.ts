@@ -14,6 +14,7 @@ export const resources = {
           financing: 'Finanzierung',
           comparison: 'Vergleich',
           results: 'Auswertung',
+          scenarios: 'Gespeicherte Szenarien',
         },
         pages: {
           eyebrow: 'Rechner in Vorbereitung',
@@ -58,6 +59,103 @@ export const resources = {
         accounts: 'Keine Konten',
         assumptions: 'Quellenbasierte Annahmen',
         bilingual: 'Deutsch & English',
+      },
+      scenarios: {
+        page: {
+          eyebrow: 'Szenarien verwalten',
+          title: 'Gespeicherte Szenarien',
+          summary:
+            'Speichere deine Eingaben lokal, übertrage sie als JSON oder teile sie über einen Link. Ergebnisse werden beim Laden immer neu berechnet.',
+        },
+        current: {
+          title: 'Aktueller Arbeitsstand',
+          description:
+            'Gespeichert werden ausschließlich die Eingaben – keine berechneten Ergebnisse.',
+        },
+        saved: {
+          title: 'Lokal gespeicherte Szenarien',
+          description: 'Diese Szenarien bleiben nur in diesem Browser gespeichert.',
+          empty: 'Noch keine Szenarien gespeichert.',
+          updated: 'Aktualisiert: {{date}}',
+          deleteWarning: '„{{name}}“ wirklich dauerhaft löschen?',
+          clearAllWarning:
+            'Alle lokal gespeicherten Szenarien dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+        },
+        shared: {
+          title: 'Geteiltes Szenario',
+          valid: '„{{name}}“ wurde sicher aus dem Link gelesen. Lade oder speichere es bewusst.',
+        },
+        share: {
+          title: 'Freigabelink',
+          description:
+            'Der Link enthält die versionierten Eingaben. Es werden keine Daten an einen Server gesendet.',
+          fieldLabel: 'Freigabelink für das Szenario',
+        },
+        privacy: {
+          shareTitle: 'Finanzdaten im Link teilen?',
+          shareWarning:
+            'Jeder mit dem vollständigen Link kann die enthaltenen Finanzdaten lesen. Der Link kann im Browserverlauf, in Zwischenablagen, Nachrichten, Screenshots oder Synchronisierungsdiensten verbleiben. Der Szenarioname wird nicht aufgenommen.',
+          exportTitle: 'Sensible Finanzdaten exportieren?',
+          exportWarning:
+            'Die JSON-Datei kann Kaufpläne und finanzielle Verhältnisse offenlegen. Prüfe ihren Inhalt vor dem Teilen und bewahre sie angemessen geschützt auf.',
+        },
+        fields: { name: 'Szenarioname' },
+        actions: {
+          save: 'Szenario speichern',
+          saveShared: 'Lokal speichern',
+          shareCurrent: 'Aktuellen Stand teilen',
+          reset: 'Arbeitsstand zurücksetzen',
+          load: 'Laden',
+          rename: 'Umbenennen',
+          duplicate: 'Duplizieren',
+          delete: 'Löschen',
+          export: 'JSON exportieren',
+          import: 'JSON importieren',
+          share: 'Teilen',
+          copyLink: 'Link kopieren',
+          confirmShare: 'Verstanden, Link erstellen',
+          confirmExport: 'Verstanden, JSON exportieren',
+          cancel: 'Abbrechen',
+          removeSharedData: 'Geteilte Daten aus URL entfernen',
+          clearAll: 'Alle lokalen Daten löschen',
+          confirmClearAll: 'Alle endgültig löschen',
+          confirmDelete: 'Endgültig löschen',
+          results: 'Zur Auswertung →',
+        },
+        status: {
+          saved: 'Szenario gespeichert.',
+          renamed: 'Szenario umbenannt.',
+          duplicated: 'Szenario dupliziert.',
+          deleted: 'Szenario gelöscht.',
+          cleared: 'Alle lokal gespeicherten Szenarien wurden gelöscht.',
+          loaded: 'Szenario geladen. Alle Ergebnisse werden neu berechnet.',
+          reset: 'Der aktuelle Arbeitsstand wurde zurückgesetzt.',
+          imported: 'Szenario importiert und lokal gespeichert.',
+          exported: 'Szenario als JSON exportiert.',
+          linkReady: 'Freigabelink erstellt.',
+          nameRequired: 'Bitte gib einen Szenarionamen ein.',
+          dataInvalid: 'Die aktuellen Eingaben können nicht als Szenario gespeichert werden.',
+          urlCleared: 'Die geteilten Daten wurden aus der URL entfernt.',
+          writeFailed: 'Das Szenario konnte nicht lokal gespeichert werden.',
+        },
+        issues: {
+          corrupted: {
+            title: 'Ungültige Szenariodaten',
+            message:
+              'Die Daten sind beschädigt oder unvollständig und wurden nicht geladen. Deine aktuellen Eingaben bleiben unverändert.',
+          },
+          'unsupported-version': {
+            title: 'Nicht unterstützte Szenarioversion',
+            message:
+              'Dieses Szenario stammt aus einer nicht unterstützten Version und wurde nicht geladen.',
+          },
+          'storage-unavailable': {
+            title: 'Lokaler Speicher nicht verfügbar',
+            message:
+              'Der Browser hat den lokalen Speicher blockiert. Du kannst weiterhin rechnen und Freigabelinks verwenden.',
+          },
+        },
+        copyName: '{{name}} (Kopie)',
       },
       foundation: {
         eyebrow: 'Version 1',
@@ -408,6 +506,7 @@ export const resources = {
           financing: 'Financing',
           comparison: 'Comparison',
           results: 'Analysis',
+          scenarios: 'Saved scenarios',
         },
         pages: {
           eyebrow: 'Calculator in preparation',
@@ -452,6 +551,100 @@ export const resources = {
         accounts: 'No accounts',
         assumptions: 'Source-based assumptions',
         bilingual: 'German & English',
+      },
+      scenarios: {
+        page: {
+          eyebrow: 'Manage scenarios',
+          title: 'Saved scenarios',
+          summary:
+            'Save your inputs locally, transfer them as JSON, or share them with a link. Results are always recalculated when loaded.',
+        },
+        current: {
+          title: 'Current workspace',
+          description: 'Only user inputs are saved—never calculated results.',
+        },
+        saved: {
+          title: 'Locally saved scenarios',
+          description: 'These scenarios remain in this browser only.',
+          empty: 'No scenarios saved yet.',
+          updated: 'Updated: {{date}}',
+          deleteWarning: 'Permanently delete “{{name}}”?',
+          clearAllWarning:
+            'Permanently delete every locally saved scenario? This action cannot be undone.',
+        },
+        shared: {
+          title: 'Shared scenario',
+          valid: '“{{name}}” was safely read from the link. Choose whether to load or save it.',
+        },
+        share: {
+          title: 'Share link',
+          description: 'The link contains the versioned inputs. No data is sent to a server.',
+          fieldLabel: 'Scenario share link',
+        },
+        privacy: {
+          shareTitle: 'Share financial data in a link?',
+          shareWarning:
+            'Anyone with the full link can read the included financial data. The link may remain in browser history, clipboards, messages, screenshots, or synchronization services. The scenario name is excluded.',
+          exportTitle: 'Export sensitive financial data?',
+          exportWarning:
+            'The JSON file can reveal purchase plans and financial circumstances. Review its contents before sharing and store it appropriately.',
+        },
+        fields: { name: 'Scenario name' },
+        actions: {
+          save: 'Save scenario',
+          saveShared: 'Save locally',
+          shareCurrent: 'Share current workspace',
+          reset: 'Reset workspace',
+          load: 'Load',
+          rename: 'Rename',
+          duplicate: 'Duplicate',
+          delete: 'Delete',
+          export: 'Export JSON',
+          import: 'Import JSON',
+          share: 'Share',
+          copyLink: 'Copy link',
+          confirmShare: 'I understand, create link',
+          confirmExport: 'I understand, export JSON',
+          cancel: 'Cancel',
+          removeSharedData: 'Remove shared data from URL',
+          clearAll: 'Clear all local data',
+          confirmClearAll: 'Permanently clear all',
+          confirmDelete: 'Permanently delete',
+          results: 'Open analysis →',
+        },
+        status: {
+          saved: 'Scenario saved.',
+          renamed: 'Scenario renamed.',
+          duplicated: 'Scenario duplicated.',
+          deleted: 'Scenario deleted.',
+          cleared: 'All locally saved scenarios were deleted.',
+          loaded: 'Scenario loaded. All results are recalculated.',
+          reset: 'The current workspace was reset.',
+          imported: 'Scenario imported and saved locally.',
+          exported: 'Scenario exported as JSON.',
+          linkReady: 'Share link created.',
+          nameRequired: 'Enter a scenario name.',
+          dataInvalid: 'The current inputs cannot be saved as a scenario.',
+          urlCleared: 'The shared data was removed from the URL.',
+          writeFailed: 'The scenario could not be saved locally.',
+        },
+        issues: {
+          corrupted: {
+            title: 'Invalid scenario data',
+            message:
+              'The data is corrupted or incomplete and was not loaded. Your current inputs remain unchanged.',
+          },
+          'unsupported-version': {
+            title: 'Unsupported scenario version',
+            message: 'This scenario uses an unsupported version and was not loaded.',
+          },
+          'storage-unavailable': {
+            title: 'Local storage unavailable',
+            message:
+              'The browser blocked local storage. You can keep calculating and use share links.',
+          },
+        },
+        copyName: '{{name}} (copy)',
       },
       foundation: {
         eyebrow: 'Version 1',

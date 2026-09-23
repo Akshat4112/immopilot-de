@@ -22,4 +22,5 @@ export {
   type PurchaseCostsDraft,
   type PurchaseCostRateOverridesDraft,
   type ScenarioWorkspaceState,
+  type ScenarioWorkspaceSnapshot,
 } from './scenarioStore'

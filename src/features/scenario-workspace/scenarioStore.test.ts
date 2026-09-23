@@ -45,6 +45,30 @@ describe('scenario workspace', () => {
     expect(useScenarioWorkspaceStore.getState()).not.toHaveProperty('results')
   })
 
+  it('replaces the complete input workspace without retaining a reference to saved data', () => {
+    const workspace = {
+      purchaseCosts: completePurchaseDraft(),
+      financing: {
+        ...initialFinancingDraft,
+        downPayment: '50.000',
+      },
+      analysis: {
+        ...useScenarioWorkspaceStore.getState().analysis,
+        currentComparableRent: '1.200',
+      },
+    }
+
+    useScenarioWorkspaceStore.getState().replaceWorkspace(workspace)
+    workspace.purchaseCosts.purchasePrice = '999999'
+
+    expect(useScenarioWorkspaceStore.getState()).toMatchObject({
+      purchaseCosts: { purchasePrice: '250000' },
+      financing: { downPayment: '50.000' },
+      analysis: { currentComparableRent: '1.200' },
+    })
+    expect(useScenarioWorkspaceStore.getState()).not.toHaveProperty('results')
+  })
+
   it('composes the acquisition, financing, payment and amortization modules for a funded loan', () => {
     const result = calculateScenarioWorkspace(completePurchaseDraft(), {
       ...initialFinancingDraft,

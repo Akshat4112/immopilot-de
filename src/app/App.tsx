@@ -4,6 +4,7 @@ import { FinancingPage } from '../features/financing'
 import { HomePage } from '../features/home/HomePage'
 import { PurchaseCostsPage } from '../features/purchase-costs/PurchaseCostsPage'
 import { ResultsPage } from '../features/results'
+import { ScenariosPage } from '../features/scenarios'
 import { AppShell } from './AppShell'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="purchase-costs" element={<PurchaseCostsPage />} />
         <Route path="financing" element={<FinancingPage />} />
         <Route path="results" element={<ResultsPage />} />
+        <Route path="scenarios" element={<ScenariosPage />} />
         <Route path="comparison" element={<Navigate replace to="/results" />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Route>

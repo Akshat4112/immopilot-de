@@ -335,6 +335,145 @@ h3 {
   }
 }
 
+/* Local scenario persistence workspace */
+.scenario-workspace {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-9);
+}
+
+.scenario-panel,
+.scenario-notice {
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.scenario-panel h2,
+.scenario-panel p,
+.scenario-notice p {
+  margin-bottom: var(--space-3);
+}
+
+.scenario-notice--warning {
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-surface);
+}
+
+.scenario-create-row,
+.scenario-panel-heading,
+.scenario-share-row,
+.scenario-card-heading {
+  display: flex;
+  gap: var(--space-4);
+  align-items: end;
+  justify-content: space-between;
+}
+
+.scenario-create-row .form-field,
+.scenario-card-heading .form-field,
+.scenario-share-row input {
+  flex: 1 1 20rem;
+  margin: 0;
+}
+
+.scenario-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.scenario-actions .primary-action,
+.scenario-actions .secondary-action,
+.scenario-share-row .secondary-action,
+.scenario-file-action {
+  min-height: var(--control-height);
+  padding-inline: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  font: inherit;
+  cursor: pointer;
+}
+
+.scenario-actions .primary-action {
+  border-color: var(--color-brand);
+}
+
+.scenario-list {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scenario-card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.scenario-card small,
+.scenario-empty {
+  color: var(--color-text-secondary);
+}
+
+.scenario-file-action {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.scenario-file-action input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.scenario-share-row input {
+  min-width: 0;
+  height: var(--control-height);
+  padding-inline: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.scenario-status {
+  min-height: 1.5rem;
+  margin: 0;
+  color: var(--color-brand);
+  font-weight: var(--font-weight-medium);
+}
+
+.scenario-confirmation {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-surface);
+}
+
+.scenario-delete-warning {
+  align-self: center;
+  color: var(--color-warning-text);
+  font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 53.75rem) {
+  .scenario-create-row,
+  .scenario-panel-heading,
+  .scenario-share-row,
+  .scenario-card-heading {
+    display: grid;
+    align-items: stretch;
+  }
+}
+
 /* Purchase Costs Calculator Styles */
 .purchase-costs-form {
   display: flex;
