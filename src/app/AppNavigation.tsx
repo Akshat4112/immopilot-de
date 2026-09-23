@@ -7,6 +7,7 @@ const navigationItems = [
   { to: '/financing', labelKey: 'shell.navigation.financing', end: false },
   { to: '/results', labelKey: 'shell.navigation.results', end: false },
   { to: '/scenarios', labelKey: 'shell.navigation.scenarios', end: false },
+  { to: '/comparison', labelKey: 'shell.navigation.comparison', end: false },
 ] as const
 
 interface AppNavigationProps {
