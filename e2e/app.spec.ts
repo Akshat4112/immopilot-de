@@ -138,16 +138,30 @@ test('calculates acquisition costs after the user enters a purchase price', asyn
   await expect(page.getByRole('heading', { name: 'Berechnung fehlgeschlagen' })).toHaveCount(0)
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
 
-  await expect(page.getByText('Post-Purchase-Budget noch nicht bestätigt')).toBeVisible()
-  await page.getByRole('button', { name: /Erweiterte Eingaben/ }).click()
+  await expect(page.getByRole('heading', { name: 'Grunderwerbsteuer' })).toBeVisible()
+  await expect(page.getByText('12.500,00 €')).toBeVisible()
+  await expect(page.getByText('Budgets nach dem Kauf noch nicht bestätigt')).toBeVisible()
 
   const budgetStatuses = page.locator('.budget-field__status-select')
   await budgetStatuses.nth(0).selectOption('confirmed-zero')
   await budgetStatuses.nth(1).selectOption('confirmed-zero')
 
-  await expect(page.getByRole('heading', { name: 'Grunderwerbsteuer' })).toBeVisible()
-  await expect(page.getByText('12.500,00 €')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Gesamtkosten' })).toBeVisible()
   await expect(page.getByText('Berechnung fehlgeschlagen')).toHaveCount(0)
+})
+
+test('supports English decimal rate overrides and localized state names', async ({ page }) => {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('button', { name: 'English' }).click()
+  await page.getByRole('textbox', { name: 'Purchase price' }).fill('250000')
+
+  await expect(page.getByRole('option', { name: 'Bavaria' })).toHaveCount(1)
+  await page.getByRole('button', { name: 'Advanced inputs' }).click()
+  await page.getByRole('textbox', { name: 'Property transfer tax (Rate)' }).fill('1.5')
+
+  const transferTaxCard = page.getByRole('heading', { name: 'Property transfer tax' }).locator('..')
+  await expect(transferTaxCard.getByText('€3,750.00')).toBeVisible()
+  await expect(transferTaxCard.getByText(/1\.50%/)).toBeVisible()
 })
 
 test('carries completed purchase costs into the financing and mortgage workflow', async ({
@@ -156,7 +170,6 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await page.goto('./')
   await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
-  await page.getByRole('button', { name: /Erweiterte Eingaben/ }).click()
 
   const budgetStatuses = page.locator('.budget-field__status-select')
   await budgetStatuses.nth(0).selectOption('confirmed-zero')
