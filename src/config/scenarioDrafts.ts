@@ -22,6 +22,17 @@ export interface PurchaseCostsDraft {
   movingSetupCosts?: PostPurchaseBudgetDraft
 }
 
+export interface OneTimeAdditionalRepaymentDraft {
+  month: string
+  amount: string
+}
+
+export interface AdditionalRepaymentsDraft {
+  annualAdditionalRepayment: string
+  annualAdditionalRepaymentMonth: string
+  oneTimeAdditionalRepayments: OneTimeAdditionalRepaymentDraft[]
+}
+
 export interface FinancingDraft {
   mode: FinancingMode
   availableEquity: string
@@ -30,6 +41,7 @@ export interface FinancingDraft {
   nominalAnnualRate: string
   initialRepaymentRate: string
   fixedInterestYears: string
+  additionalRepayments: AdditionalRepaymentsDraft
 }
 
 export type PropertyUseDraft = 'owner-occupier' | 'rental-investment'
@@ -95,6 +107,11 @@ export const initialFinancingDraft: FinancingDraft = {
   nominalAnnualRate: '3,50',
   initialRepaymentRate: '2,00',
   fixedInterestYears: '10',
+  additionalRepayments: {
+    annualAdditionalRepayment: '',
+    annualAdditionalRepaymentMonth: '12',
+    oneTimeAdditionalRepayments: [],
+  },
 }
 
 /** These values are visible starting assumptions, not forecasts or recommendations. */
