@@ -80,9 +80,15 @@ This document defines the canonical labels and meanings for ImmoPilot DE. Interf
 | --- | --- | --- | --- |
 | `specialRepayment.label` | Additional repayment | Sondertilgung | Principal payment made in addition to scheduled repayment. Keep Sondertilgung in German rather than using an approximate phrase. |
 | `specialRepayment.annualAmount` | Annual additional repayment | Jährliche Sondertilgung | Additional amount paid once per year under the documented timing assumption. |
+| `specialRepayment.annualMonth` | Annual repayment month | Monat der jährlichen Sondertilgung | Month within each loan year when the recurring repayment is applied. Month 12 means loan months 12, 24, 36 and so on. |
 | `specialRepayment.oneTimeAmount` | One-time additional repayment | Einmalige Sondertilgung | Additional principal payment in a specified period. |
-| `specialRepayment.interestSaved` | Interest saved | Eingesparte Zinsen | Difference in interest between the baseline and extra-repayment scenarios over the same comparison basis. |
+| `specialRepayment.oneTimeMonth` | Repayment loan month | Darlehensmonat der Sondertilgung | Positive whole loan month in which a one-time repayment is applied. It is not a calendar month. |
+| `specialRepayment.additionalPrincipal` | Additional principal repaid | Zusätzlich getilgter Betrag | Principal repaid through Sondertilgung over the stated period. |
+| `specialRepayment.interestSavedFixedPeriod` | Interest saved through the fixed-interest period | Eingesparte Zinsen während der Zinsbindung | Difference in interest between the baseline and Sondertilgung schedules through the same fixed-interest period. |
+| `specialRepayment.debtReductionFixedPeriod` | Remaining-debt reduction at fixed-period end | Verringerung der Restschuld zum Ende der Zinsbindung | Baseline remaining debt less the Sondertilgung-schedule remaining debt after the same number of months. |
+| `specialRepayment.projectedLifetimeInterestSaved` | Projected lifetime interest saved | Voraussichtlich eingesparte Zinsen über die Gesamtlaufzeit | Difference in projected total interest under the visibly stated constant-rate assumption beyond Zinsbindung. It is not a contractual saving. |
 | `specialRepayment.timeSaved` | Time saved | Verkürzte Darlehenslaufzeit | Reduction in the calculated loan term. Prefer a duration such as years and months. |
+| `specialRepayment.constantRateProjection` | Constant-rate projection | Projektion bei konstantem Sollzins | Illustrative result that continues the initial nominal rate beyond Zinsbindung. It is not a lender quotation or contractual maturity. |
 | `refinancing.label` | Refinancing | Anschlussfinanzierung | New financing for the remaining debt after the fixed-interest period. |
 | `refinancing.futureRate` | Refinancing rate | Sollzins der Anschlussfinanzierung | Assumed nominal rate applied to the refinanced balance. |
 | `refinancing.futurePayment` | Future monthly payment | Künftige monatliche Darlehensrate | Payment calculated for the Anschlussfinanzierung assumptions. |
