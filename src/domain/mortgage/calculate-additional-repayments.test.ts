@@ -152,6 +152,90 @@ describe('Sondertilgung schedules and comparisons', () => {
     expect(result.timeSavedMonths).toBeGreaterThan(0)
   })
 
+  it.each([
+    { paymentMonth: 1, dueRows: [1, 13] },
+    { paymentMonth: 12, dueRows: [12, 24] },
+  ])(
+    'applies an annual repayment at month $paymentMonth of every loan year',
+    ({ paymentMonth, dueRows }) => {
+      const result = calculateAmortizationSchedule({
+        payment: initialPayment(),
+        fixedInterestMonths: 24,
+        additionalRepayments: {
+          annualAdditionalRepaymentCents: 100_000,
+          annualAdditionalRepaymentMonth: paymentMonth,
+        },
+      })
+
+      if (result.status !== 'available' || result.cashPurchase) {
+        throw new Error('Expected available annual-repayment schedule')
+      }
+
+      expect(
+        result.rows
+          .filter((row) => row.additionalPrincipalCents > 0)
+          .slice(0, 2)
+          .map((row) => row.month),
+      ).toEqual(dueRows)
+    },
+  )
+
+  it('separates repayments at and immediately after the fixed-period boundary', () => {
+    const result = calculateAdditionalRepaymentComparison({
+      payment: initialPayment(),
+      fixedInterestMonths: 120,
+      additionalRepayments: {
+        oneTimeAdditionalRepayments: [
+          { month: 120, amountCents: 100_000 },
+          { month: 121, amountCents: 200_000 },
+        ],
+      },
+    })
+
+    if (result.status !== 'available' || result.withAdditionalRepayments.cashPurchase) {
+      throw new Error('Expected available fixed-period boundary comparison')
+    }
+
+    expect(result.withAdditionalRepayments.rows[119]?.additionalPrincipalCents).toBe(100_000)
+    expect(result.withAdditionalRepayments.rows[120]?.additionalPrincipalCents).toBe(200_000)
+    expect(result.withAdditionalRepayments.additionalPrincipalThroughFixedPeriodCents).toBe(100_000)
+    expect(result.remainingDebtReductionAtFixedPeriodCents).toBe(100_000)
+    expect(result.interestSavedThroughFixedPeriodCents).toBe(0)
+    expect(result.projectedLifetimeInterestSavedCents).toBeGreaterThan(0)
+  })
+
+  it('preserves cent-precise accounting invariants on every generated row', () => {
+    const result = calculateAmortizationSchedule({
+      payment: initialPayment(),
+      fixedInterestMonths: 120,
+      additionalRepayments: {
+        annualAdditionalRepaymentCents: 123_456,
+        annualAdditionalRepaymentMonth: 7,
+        oneTimeAdditionalRepayments: [
+          { month: 1, amountCents: 250_005 },
+          { month: 7, amountCents: 99 },
+          { month: 1_200, amountCents: 100_000 },
+        ],
+      },
+    })
+
+    if (result.status !== 'available' || result.cashPurchase) {
+      throw new Error('Expected available cent-precision schedule')
+    }
+
+    for (const row of result.rows) {
+      expect(row.regularPaymentCents).toBe(row.interestCents + row.scheduledPrincipalCents)
+      expect(row.totalPaymentCents).toBe(row.regularPaymentCents + row.additionalPrincipalCents)
+      expect(row.closingBalanceCents).toBe(
+        row.openingBalanceCents - row.scheduledPrincipalCents - row.additionalPrincipalCents,
+      )
+      expect(row.closingBalanceCents).toBeGreaterThanOrEqual(0)
+    }
+
+    expect(result.rows.at(-1)?.closingBalanceCents).toBe(0)
+    expect(result.rows).toHaveLength(result.payoffMonth)
+  })
+
   it('returns a zero comparison for a cash purchase', () => {
     const acquisitionResult = acquisition(20_000_000)
     const cashFinancing = calculateFinancing({

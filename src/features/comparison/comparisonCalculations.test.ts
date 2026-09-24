@@ -170,6 +170,31 @@ describe('saved scenario comparison calculations', () => {
     expect(comparison.values.projectedReturn).not.toEqual(baseline.values.projectedReturn)
   })
 
+  it('keeps different repayment plans comparable when their projection horizons match', () => {
+    const annual = scenario('Annual repayment')
+    annual.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '5.000',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [],
+    }
+    const oneTime = scenario('One-time repayment')
+    oneTime.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [{ amount: '5.000', month: '12' }],
+    }
+    const comparisons = [
+      calculateSavedScenarioComparison(annual),
+      calculateSavedScenarioComparison(oneTime),
+    ]
+
+    expect(
+      comparisons.every((comparison) => comparison.values.remainingDebt.status === 'available'),
+    ).toBe(true)
+    expect(hasMixedComparisonBasis(comparisons, 'remainingDebt')).toBe(false)
+    expect(hasMixedComparisonBasis(comparisons, 'projectedReturn')).toBe(false)
+  })
+
   it('includes a due one-time repayment in rental cash flow and projected return', () => {
     const baselineSaved = scenario('Rental baseline', { mode: 'rental-investment' })
     const repaymentSaved = scenario('Rental repayment', { mode: 'rental-investment' })
