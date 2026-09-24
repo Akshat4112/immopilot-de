@@ -2,8 +2,9 @@ import { z } from 'zod'
 
 import type { ScenarioWorkspaceSnapshot } from '../config/scenarioDrafts'
 
-export const SCENARIO_SCHEMA_VERSION = '1.0.0'
+export const SCENARIO_SCHEMA_VERSION = '1.1.0'
 export const SCENARIO_LIBRARY_STORAGE_KEY = 'immopilot-de.scenarios.v1'
+const LEGACY_SCENARIO_SCHEMA_VERSION = '1.0.0'
 const MAX_INPUT_LENGTH = 1_000
 const MAX_SHARE_PAYLOAD_LENGTH = 100_000
 const MAX_SCENARIO_JSON_LENGTH = 250_000
@@ -55,7 +56,7 @@ const purchaseCostsSchema = z
   })
   .strict()
 
-const financingSchema = z
+const financingSchemaV1 = z
   .object({
     mode: z.enum(['available-equity', 'selected-down-payment']),
     availableEquity: inputStringSchema,
@@ -66,6 +67,25 @@ const financingSchema = z
     fixedInterestYears: inputStringSchema,
   })
   .strict()
+
+const oneTimeAdditionalRepaymentSchema = z
+  .object({
+    month: inputStringSchema,
+    amount: inputStringSchema,
+  })
+  .strict()
+
+const additionalRepaymentsSchema = z
+  .object({
+    annualAdditionalRepayment: inputStringSchema,
+    annualAdditionalRepaymentMonth: inputStringSchema,
+    oneTimeAdditionalRepayments: z.array(oneTimeAdditionalRepaymentSchema),
+  })
+  .strict()
+
+const financingSchema = financingSchemaV1.extend({
+  additionalRepayments: additionalRepaymentsSchema,
+})
 
 const analysisSchema = z
   .object({
@@ -115,6 +135,14 @@ export const scenarioInputsSchema = z
   })
   .strict()
 
+const scenarioInputsSchemaV1 = z
+  .object({
+    purchaseCosts: purchaseCostsSchema,
+    financing: financingSchemaV1,
+    analysis: analysisSchema,
+  })
+  .strict()
+
 export const savedScenarioSchema = z
   .object({
     documentType: z.literal('immopilot-workspace-scenario'),
@@ -128,11 +156,32 @@ export const savedScenarioSchema = z
   })
   .strict()
 
+const savedScenarioSchemaV1 = z
+  .object({
+    documentType: z.literal('immopilot-workspace-scenario'),
+    schemaVersion: z.literal(LEGACY_SCENARIO_SCHEMA_VERSION),
+    id: z.string().min(1).max(120),
+    name: z.string().trim().min(1).max(120),
+    locale: z.enum(['de-DE', 'en-GB']),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    inputs: scenarioInputsSchemaV1,
+  })
+  .strict()
+
 const scenarioLibrarySchema = z
   .object({
     documentType: z.literal('immopilot-scenario-library'),
     schemaVersion: z.literal(SCENARIO_SCHEMA_VERSION),
     scenarios: z.array(savedScenarioSchema).max(100),
+  })
+  .strict()
+
+const scenarioLibrarySchemaV1 = z
+  .object({
+    documentType: z.literal('immopilot-scenario-library'),
+    schemaVersion: z.literal(LEGACY_SCENARIO_SCHEMA_VERSION),
+    scenarios: z.array(savedScenarioSchemaV1).max(100),
   })
   .strict()
 
@@ -142,6 +191,15 @@ const sharedScenarioSchema = z
     schemaVersion: z.literal(SCENARIO_SCHEMA_VERSION),
     locale: z.enum(['de-DE', 'en-GB']),
     inputs: scenarioInputsSchema,
+  })
+  .strict()
+
+const sharedScenarioSchemaV1 = z
+  .object({
+    documentType: z.literal('immopilot-workspace-share'),
+    schemaVersion: z.literal(LEGACY_SCENARIO_SCHEMA_VERSION),
+    locale: z.enum(['de-DE', 'en-GB']),
+    inputs: scenarioInputsSchemaV1,
   })
   .strict()
 
@@ -159,13 +217,60 @@ export type ScenarioParseResult =
   | { status: 'valid'; scenario: SavedScenario }
   | { status: 'invalid'; issue: 'corrupted' | 'unsupported-version' }
 
+function documentVersion(value: unknown) {
+  if (typeof value !== 'object' || value === null || !('schemaVersion' in value)) return undefined
+  return value.schemaVersion
+}
+
 function hasUnsupportedVersion(value: unknown) {
+  const version = documentVersion(value)
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    'schemaVersion' in value &&
-    value.schemaVersion !== SCENARIO_SCHEMA_VERSION
+    typeof version === 'string' &&
+    version !== SCENARIO_SCHEMA_VERSION &&
+    version !== LEGACY_SCENARIO_SCHEMA_VERSION
   )
+}
+
+function emptyAdditionalRepayments() {
+  return {
+    annualAdditionalRepayment: '',
+    annualAdditionalRepaymentMonth: '12',
+    oneTimeAdditionalRepayments: [],
+  }
+}
+
+function migrateInputsV1(inputs: z.infer<typeof scenarioInputsSchemaV1>): ScenarioInputs {
+  return scenarioInputsSchema.parse({
+    ...inputs,
+    financing: {
+      ...inputs.financing,
+      additionalRepayments: emptyAdditionalRepayments(),
+    },
+  })
+}
+
+function migrateSavedScenarioV1(scenario: z.infer<typeof savedScenarioSchemaV1>): SavedScenario {
+  return savedScenarioSchema.parse({
+    ...scenario,
+    schemaVersion: SCENARIO_SCHEMA_VERSION,
+    inputs: migrateInputsV1(scenario.inputs),
+  })
+}
+
+function parseSavedScenarioValue(value: unknown): ScenarioParseResult {
+  if (hasUnsupportedVersion(value)) return { status: 'invalid', issue: 'unsupported-version' }
+
+  if (documentVersion(value) === LEGACY_SCENARIO_SCHEMA_VERSION) {
+    const parsed = savedScenarioSchemaV1.safeParse(value)
+    return parsed.success
+      ? { status: 'valid', scenario: migrateSavedScenarioV1(parsed.data) }
+      : { status: 'invalid', issue: 'corrupted' }
+  }
+
+  const parsed = savedScenarioSchema.safeParse(value)
+  return parsed.success
+    ? { status: 'valid', scenario: parsed.data }
+    : { status: 'invalid', issue: 'corrupted' }
 }
 
 function createScenarioId() {
@@ -220,11 +325,7 @@ export function parseScenarioJson(json: string): ScenarioParseResult {
   }
   try {
     const value: unknown = JSON.parse(json)
-    if (hasUnsupportedVersion(value)) return { status: 'invalid', issue: 'unsupported-version' }
-    const parsed = savedScenarioSchema.safeParse(value)
-    return parsed.success
-      ? { status: 'valid', scenario: parsed.data }
-      : { status: 'invalid', issue: 'corrupted' }
+    return parseSavedScenarioValue(value)
   } catch {
     return { status: 'invalid', issue: 'corrupted' }
   }
@@ -243,6 +344,14 @@ export function readScenarioLibrary(storage: Pick<Storage, 'getItem'>): Scenario
   try {
     const value: unknown = JSON.parse(raw)
     if (hasUnsupportedVersion(value)) return { scenarios: [], issue: 'unsupported-version' }
+
+    if (documentVersion(value) === LEGACY_SCENARIO_SCHEMA_VERSION) {
+      const parsed = scenarioLibrarySchemaV1.safeParse(value)
+      return parsed.success
+        ? { scenarios: parsed.data.scenarios.map(migrateSavedScenarioV1) }
+        : { scenarios: [], issue: 'corrupted' }
+    }
+
     const parsed = scenarioLibrarySchema.safeParse(value)
     return parsed.success
       ? { scenarios: parsed.data.scenarios }
@@ -312,14 +421,26 @@ export function parseSharedScenario(encodedScenario: string): ScenarioParseResul
     }
     const value: unknown = JSON.parse(decodeUtf8(encodedScenario))
     if (hasUnsupportedVersion(value)) return { status: 'invalid', issue: 'unsupported-version' }
-    const parsed = sharedScenarioSchema.safeParse(value)
-    if (!parsed.success) return { status: 'invalid', issue: 'corrupted' }
+
+    let locale: SavedScenario['locale']
+    let inputs: ScenarioInputs
+    if (documentVersion(value) === LEGACY_SCENARIO_SCHEMA_VERSION) {
+      const parsed = sharedScenarioSchemaV1.safeParse(value)
+      if (!parsed.success) return { status: 'invalid', issue: 'corrupted' }
+      locale = parsed.data.locale
+      inputs = migrateInputsV1(parsed.data.inputs)
+    } else {
+      const parsed = sharedScenarioSchema.safeParse(value)
+      if (!parsed.success) return { status: 'invalid', issue: 'corrupted' }
+      locale = parsed.data.locale
+      inputs = parsed.data.inputs
+    }
     return {
       status: 'valid',
       scenario: createSavedScenario(
-        parsed.data.locale === 'de-DE' ? 'Geteiltes Szenario' : 'Shared scenario',
-        parsed.data.inputs,
-        { locale: parsed.data.locale },
+        locale === 'de-DE' ? 'Geteiltes Szenario' : 'Shared scenario',
+        inputs,
+        { locale },
       ),
     }
   } catch {

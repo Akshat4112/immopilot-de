@@ -7,6 +7,7 @@ import {
 } from '../config/scenarioDrafts'
 import {
   SCENARIO_LIBRARY_STORAGE_KEY,
+  SCENARIO_SCHEMA_VERSION,
   clearScenarioLibrary,
   createSavedScenario,
   createScenarioShareUrl,
@@ -22,8 +23,58 @@ import {
 
 const inputs = {
   purchaseCosts: { ...initialPurchaseCostsDraft, purchasePrice: '350.000' },
-  financing: { ...initialFinancingDraft, downPayment: '80.000' },
+  financing: {
+    ...initialFinancingDraft,
+    downPayment: '80.000',
+    additionalRepayments: {
+      annualAdditionalRepayment: '5.000',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [{ month: '18', amount: '2.500' }],
+    },
+  },
   analysis: { ...initialScenarioAnalysisDraft, currentComparableRent: '1.250' },
+}
+
+function legacyInputs() {
+  return {
+    purchaseCosts: inputs.purchaseCosts,
+    financing: {
+      mode: inputs.financing.mode,
+      availableEquity: inputs.financing.availableEquity,
+      downPayment: inputs.financing.downPayment,
+      financedAcquisitionCostShare: inputs.financing.financedAcquisitionCostShare,
+      nominalAnnualRate: inputs.financing.nominalAnnualRate,
+      initialRepaymentRate: inputs.financing.initialRepaymentRate,
+      fixedInterestYears: inputs.financing.fixedInterestYears,
+    },
+    analysis: inputs.analysis,
+  }
+}
+
+function legacyScenario() {
+  return {
+    documentType: 'immopilot-workspace-scenario',
+    schemaVersion: '1.0.0',
+    id: 'legacy',
+    name: 'Legacy scenario',
+    locale: 'en-GB',
+    createdAt: '2026-09-23T12:00:00.000Z',
+    updatedAt: '2026-09-23T13:00:00.000Z',
+    inputs: legacyInputs(),
+  }
+}
+
+function encodeShareDocument(value: unknown) {
+  const bytes = new TextEncoder().encode(JSON.stringify(value))
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/u, '')
+}
+
+const emptyAdditionalRepayments = {
+  annualAdditionalRepayment: '',
+  annualAdditionalRepaymentMonth: '12',
+  oneTimeAdditionalRepayments: [],
 }
 
 describe('scenario persistence', () => {
@@ -37,8 +88,24 @@ describe('scenario persistence', () => {
     const parsed = parseScenarioJson(serializeScenario(scenario))
 
     expect(parsed).toEqual({ status: 'valid', scenario })
+    expect(scenario.schemaVersion).toBe('1.1.0')
     expect(scenario).not.toHaveProperty('results')
     expect(scenario.inputs).toEqual(inputs)
+  })
+
+  it('migrates a valid 1.0.0 JSON scenario to empty additional repayments', () => {
+    const parsed = parseScenarioJson(JSON.stringify(legacyScenario()))
+
+    expect(parsed.status).toBe('valid')
+    if (parsed.status !== 'valid') return
+    expect(parsed.scenario).toMatchObject({
+      schemaVersion: SCENARIO_SCHEMA_VERSION,
+      id: 'legacy',
+      name: 'Legacy scenario',
+      createdAt: '2026-09-23T12:00:00.000Z',
+      updatedAt: '2026-09-23T13:00:00.000Z',
+    })
+    expect(parsed.scenario.inputs.financing.additionalRepayments).toEqual(emptyAdditionalRepayments)
   })
 
   it('renames and duplicates without mutating the source scenario', () => {
@@ -60,6 +127,12 @@ describe('scenario persistence', () => {
     expect(duplicate.createdAt).toBe(duplicate.updatedAt)
     expect(duplicate.inputs).toEqual(source.inputs)
     expect(duplicate.inputs).not.toBe(source.inputs)
+    expect(duplicate.inputs.financing.additionalRepayments).not.toBe(
+      source.inputs.financing.additionalRepayments,
+    )
+    expect(duplicate.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments).not.toBe(
+      source.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments,
+    )
   })
 
   it('keeps generated duplicate names within the validated limit', () => {
@@ -84,9 +157,30 @@ describe('scenario persistence', () => {
     expect(writeScenarioLibrary(storage, [scenario])).toBe(true)
     expect(readScenarioLibrary(storage)).toEqual({ scenarios: [scenario] })
     expect(memory.has(SCENARIO_LIBRARY_STORAGE_KEY)).toBe(true)
+    expect(SCENARIO_LIBRARY_STORAGE_KEY).toBe('immopilot-de.scenarios.v1')
 
     expect(clearScenarioLibrary({ removeItem: (key) => memory.delete(key) })).toBe(true)
     expect(readScenarioLibrary(storage)).toEqual({ scenarios: [] })
+  })
+
+  it('migrates an entire 1.0.0 local library without rewriting the storage key', () => {
+    const legacyLibrary = JSON.stringify({
+      documentType: 'immopilot-scenario-library',
+      schemaVersion: '1.0.0',
+      scenarios: [legacyScenario()],
+    })
+    const storage = {
+      getItem: (key: string) => (key === SCENARIO_LIBRARY_STORAGE_KEY ? legacyLibrary : null),
+    }
+
+    const loaded = readScenarioLibrary(storage)
+
+    expect(loaded.issue).toBeUndefined()
+    expect(loaded.scenarios).toHaveLength(1)
+    expect(loaded.scenarios[0]?.schemaVersion).toBe(SCENARIO_SCHEMA_VERSION)
+    expect(loaded.scenarios[0]?.inputs.financing.additionalRepayments).toEqual(
+      emptyAdditionalRepayments,
+    )
   })
 
   it('distinguishes corrupted, unsupported, and unavailable local data', () => {
@@ -120,6 +214,19 @@ describe('scenario persistence', () => {
     })
   })
 
+  it('rejects malformed 1.1.0 repayment data instead of applying defaults', () => {
+    const scenario = createSavedScenario('Malformed', inputs, { id: 'malformed' })
+    const malformed = JSON.parse(serializeScenario(scenario)) as {
+      inputs: { financing: { additionalRepayments: Record<string, unknown> } }
+    }
+    malformed.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments = [{ month: '18' }]
+
+    expect(parseScenarioJson(JSON.stringify(malformed))).toEqual({
+      status: 'invalid',
+      issue: 'corrupted',
+    })
+  })
+
   it('round-trips unicode scenarios through a backend-free share URL', () => {
     const scenario = createSavedScenario('Grünes Haus 🏡', inputs, { id: 'shared' })
     const shareUrl = createScenarioShareUrl(scenario, 'https://example.test/#/results')
@@ -147,6 +254,26 @@ describe('scenario persistence', () => {
     expect(shareDocument).not.toHaveProperty('name')
     expect(shareDocument).not.toHaveProperty('id')
     expect(shareDocument).not.toHaveProperty('createdAt')
+  })
+
+  it('migrates a valid 1.0.0 share payload', () => {
+    const encoded = encodeShareDocument({
+      documentType: 'immopilot-workspace-share',
+      schemaVersion: '1.0.0',
+      locale: 'en-GB',
+      inputs: legacyInputs(),
+    })
+
+    const parsed = parseSharedScenario(encoded)
+
+    expect(parsed.status).toBe('valid')
+    if (parsed.status !== 'valid') return
+    expect(parsed.scenario).toMatchObject({
+      schemaVersion: SCENARIO_SCHEMA_VERSION,
+      name: 'Shared scenario',
+      locale: 'en-GB',
+    })
+    expect(parsed.scenario.inputs.financing.additionalRepayments).toEqual(emptyAdditionalRepayments)
   })
 
   it('creates a safe download filename', () => {
