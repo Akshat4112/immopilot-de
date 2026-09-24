@@ -39,6 +39,7 @@ describe('single-property dashboard calculations', () => {
       status: 'available',
       remainingDebtCents: 15_218_873,
     })
+    expect(result.baselineFixedPeriod).toBe(result.fixedPeriod)
     expect(result.refinancing).toMatchObject({
       status: 'available',
       assumptionKind: 'user-selected-stress-not-forecast',
@@ -47,6 +48,152 @@ describe('single-property dashboard calculations', () => {
       mode: 'owner-occupier',
       result: { status: 'not-configured' },
     })
+  })
+
+  it('uses the selected Sondertilgung debt for fixed-period and refinancing results', () => {
+    const baseline = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      fundedFinancing,
+      initialScenarioAnalysisDraft,
+    )
+    const result = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      {
+        ...fundedFinancing,
+        additionalRepayments: {
+          annualAdditionalRepayment: '5.000',
+          annualAdditionalRepaymentMonth: '12',
+          oneTimeAdditionalRepayments: [{ amount: '2.500', month: '12' }],
+        },
+      },
+      initialScenarioAnalysisDraft,
+    )
+
+    expect(result.selectedAmortizationBasis).toBe('additional-repayments')
+    expect(result.baselineFixedPeriod).toMatchObject({
+      status: 'available',
+      remainingDebtCents: 15_218_873,
+    })
+    expect(result.additionalRepaymentComparison.status).toBe('available')
+    if (
+      result.additionalRepaymentComparison.status !== 'available' ||
+      result.fixedPeriod.status !== 'available' ||
+      result.refinancing.status !== 'available' ||
+      baseline.refinancing.status !== 'available'
+    ) {
+      throw new Error('Expected available selected and baseline refinancing results')
+    }
+    expect(result.fixedPeriod.remainingDebtCents).toBe(
+      result.additionalRepaymentComparison.withAdditionalRepayments.remainingDebtAtFixedPeriodCents,
+    )
+    expect(result.fixedPeriod.additionalPrincipalPaidCents).toBeGreaterThan(0)
+    expect(result.refinancing.remainingDebtCents).toBe(result.fixedPeriod.remainingDebtCents)
+    expect(result.payment).toMatchObject({ monthlyPaymentCents: 91_667 })
+    expect(result.refinancing.scenarios[1]?.futureMonthlyPaymentCents).toBeLessThan(
+      baseline.refinancing.scenarios[1]?.futureMonthlyPaymentCents ?? 0,
+    )
+  })
+
+  it('marks refinancing not applicable when a one-time repayment clears the loan early', () => {
+    const result = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      {
+        ...fundedFinancing,
+        additionalRepayments: {
+          annualAdditionalRepayment: '',
+          annualAdditionalRepaymentMonth: '12',
+          oneTimeAdditionalRepayments: [{ amount: '999.999', month: '1' }],
+        },
+      },
+      initialScenarioAnalysisDraft,
+    )
+
+    expect(result.fixedPeriod).toMatchObject({
+      status: 'available',
+      remainingDebtCents: 0,
+      refinancing: { status: 'not-applicable', reason: 'PAID_OFF' },
+    })
+    expect(result.refinancing).toEqual({ status: 'not-applicable', reason: 'PAID_OFF' })
+  })
+
+  it('blocks dependent refinancing when the selected Sondertilgung schedule is invalid', () => {
+    const result = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      {
+        ...fundedFinancing,
+        additionalRepayments: {
+          annualAdditionalRepayment: '',
+          annualAdditionalRepaymentMonth: '12',
+          oneTimeAdditionalRepayments: [{ amount: '', month: '18' }],
+        },
+      },
+      initialScenarioAnalysisDraft,
+    )
+
+    expect(result.baselineFixedPeriod).toMatchObject({ status: 'available' })
+    expect(result.selectedAmortizationBasis).toBe('unavailable')
+    expect(result.fixedPeriod).toMatchObject({
+      status: 'unavailable',
+      reason: 'AMORTIZATION_SCHEDULE_UNAVAILABLE',
+    })
+    expect(result.refinancing).toMatchObject({
+      status: 'unavailable',
+      reason: 'FIXED_PERIOD_UNAVAILABLE',
+    })
+  })
+
+  it('restores baseline refinancing when additional repayments are removed', () => {
+    const result = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      fundedFinancing,
+      initialScenarioAnalysisDraft,
+    )
+
+    expect(result.selectedAmortizationBasis).toBe('baseline')
+    expect(result.fixedPeriod).toBe(result.baselineFixedPeriod)
+    expect(result.refinancing).toMatchObject({
+      status: 'available',
+      remainingDebtCents: 15_218_873,
+    })
+  })
+
+  it('keeps owner and rental analysis on the baseline until PF-004.8', () => {
+    const financingWithAdditionalRepayments = {
+      ...fundedFinancing,
+      additionalRepayments: {
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [],
+      },
+    }
+    const analyses = [
+      {
+        ...initialScenarioAnalysisDraft,
+        currentComparableRent: '1000',
+        monthlyOwnerCosts: '250',
+      },
+      {
+        ...initialScenarioAnalysisDraft,
+        propertyUse: 'rental-investment' as const,
+        monthlyNetColdRent: '1000',
+        monthlyNonRecoverableHausgeld: '150',
+      },
+    ]
+
+    for (const analysis of analyses) {
+      const baseline = calculateScenarioDashboard(
+        completePurchaseDraft(),
+        fundedFinancing,
+        analysis,
+      )
+      const withAdditionalRepayments = calculateScenarioDashboard(
+        completePurchaseDraft(),
+        financingWithAdditionalRepayments,
+        analysis,
+      )
+
+      expect(withAdditionalRepayments.modeSpecific).toEqual(baseline.modeSpecific)
+    }
   })
 
   it('unlocks rent-versus-buy only after the owner-occupier assumptions are explicit', () => {

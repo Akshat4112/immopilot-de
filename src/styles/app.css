@@ -1644,6 +1644,11 @@ h3 {
   margin-top: var(--space-5);
 }
 
+.refinancing-principal-basis {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
 @media (max-width: 38.75rem) {
   .results-section__header {
     display: grid;

@@ -63,7 +63,7 @@ describe('ResultsPage', () => {
       screen.getByRole('heading', { name: 'Anschlussfinanzierung unter Stress' }),
     ).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Mieten oder kaufen' })).toBeVisible()
-    expect(screen.getByText(/152\.188,73/)).toBeVisible()
+    expect(screen.getAllByText(/152\.188,73/)).toHaveLength(2)
     expect(screen.getByText('Nettovermögen Käufer')).toBeVisible()
   })
 
@@ -178,6 +178,14 @@ describe('ResultsPage', () => {
     expect(comparison.getByText(/916,67/)).toBeVisible()
     expect(comparison.getByText(/Jahre.*Monate/)).toBeVisible()
     expect(comparison.getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(2)
+
+    const refinancingHeading = screen.getByRole('heading', {
+      name: 'Anschlussfinanzierung unter Stress',
+    })
+    const refinancingSection = refinancingHeading.closest('section')
+    if (!refinancingSection) throw new Error('Expected the refinancing section')
+    expect(within(refinancingSection).getByText(/Restschuld .* nach Sondertilgung/)).toBeVisible()
+    expect(screen.getByText(/Nach Sondertilgung und 10 Jahren Zinsbindung/)).toBeVisible()
   })
 
   it('marks an invalid additional-repayment comparison as unavailable', () => {
@@ -196,6 +204,16 @@ describe('ResultsPage', () => {
     if (!section) throw new Error('Expected the Sondertilgung result section')
     expect(within(section).getByRole('heading', { name: 'Ergebnis nicht verfügbar' })).toBeVisible()
     expect(within(section).getByText(/unvollständig oder ungültig/i)).toBeVisible()
+    const refinancingHeading = screen.getByRole('heading', {
+      name: 'Anschlussfinanzierung unter Stress',
+    })
+    const refinancingSection = refinancingHeading.closest('section')
+    if (!refinancingSection) throw new Error('Expected the refinancing section')
+    expect(
+      within(refinancingSection).getByText(
+        /Tilgungsverlauf mit Sondertilgung ist nicht verfügbar/i,
+      ),
+    ).toBeVisible()
   })
 
   it('provides the additional-repayment comparison in English', async () => {
@@ -214,6 +232,9 @@ describe('ResultsPage', () => {
     expect(screen.getByText('Additional principal repaid')).toBeVisible()
     expect(screen.getByText('Projected lifetime interest saved')).toBeVisible()
     expect(screen.getAllByText(/Constant-rate projection/)).toHaveLength(2)
+    expect(
+      screen.getByText(/Refinancing basis: remaining debt .* after additional repayments/),
+    ).toBeVisible()
   })
 
   it('marks refinancing as not applicable for a cash purchase', () => {

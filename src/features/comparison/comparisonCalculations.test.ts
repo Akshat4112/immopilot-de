@@ -140,4 +140,25 @@ describe('saved scenario comparison calculations', () => {
     expect(comparison.dashboard.payment).toMatchObject({ status: 'available', cashPurchase: true })
     expect(comparison.values.remainingDebt.status).toBe('not-applicable')
   })
+
+  it('keeps saved-property remaining debt on the baseline until PF-004.9', () => {
+    const saved = scenario('With Sondertilgung')
+    saved.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '5.000',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [],
+    }
+
+    const comparison = calculateSavedScenarioComparison(saved)
+
+    expect(comparison.dashboard.selectedAmortizationBasis).toBe('additional-repayments')
+    expect(comparison.dashboard.fixedPeriod).toMatchObject({
+      status: 'available',
+      remainingDebtCents: 9_337_777,
+    })
+    expect(comparison.values.remainingDebt).toMatchObject({
+      status: 'available',
+      cents: 15_218_873,
+    })
+  })
 })
