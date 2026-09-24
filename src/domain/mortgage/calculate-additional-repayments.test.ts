@@ -147,6 +147,7 @@ describe('Sondertilgung schedules and comparisons', () => {
     ).toBe(true)
     expect(result.withAdditionalRepayments.payoffMonth).toBeLessThan(result.baseline.payoffMonth)
     expect(result.interestSavedThroughFixedPeriodCents).toBeGreaterThan(0)
+    expect(result.remainingDebtReductionAtFixedPeriodCents).toBeGreaterThan(0)
     expect(result.projectedLifetimeInterestSavedCents).toBeGreaterThan(0)
     expect(result.timeSavedMonths).toBeGreaterThan(0)
   })
@@ -179,6 +180,7 @@ describe('Sondertilgung schedules and comparisons', () => {
       status: 'available',
       cashPurchase: true,
       interestSavedThroughFixedPeriodCents: 0,
+      remainingDebtReductionAtFixedPeriodCents: 0,
       projectedLifetimeInterestSavedCents: 0,
       timeSavedMonths: 0,
       baseline: {

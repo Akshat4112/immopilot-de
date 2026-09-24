@@ -10,6 +10,7 @@ import {
   useScenarioWorkspaceStore,
   type ConfigurableDashboardResult,
   type ScenarioAnalysisDraft,
+  type ScenarioWorkspaceCalculationResult,
 } from '../scenario-workspace'
 
 function languageForFormatting(language: string): SupportedLanguage {
@@ -128,6 +129,92 @@ function formatSignedEuro(cents: number, language: SupportedLanguage) {
   return `${prefix}${formatEuroFromCents(cents, language)}`
 }
 
+function AdditionalRepaymentResults({
+  comparison,
+  fixedInterestYears,
+  language,
+}: {
+  comparison: ScenarioWorkspaceCalculationResult['additionalRepaymentComparison']
+  fixedInterestYears: string
+  language: SupportedLanguage
+}) {
+  const { t } = useTranslation()
+  const formatEuro = (cents: number) => formatEuroFromCents(cents, language)
+
+  if (comparison.status !== 'available') {
+    return <UnavailableResult reason={t('results.sondertilgung.unavailableReason')} />
+  }
+
+  if (comparison.cashPurchase) {
+    return (
+      <article className="result-card summary">
+        <h3>{t('results.sondertilgung.notApplicableTitle')}</h3>
+        <p>{t('results.sondertilgung.notApplicableMessage')}</p>
+      </article>
+    )
+  }
+
+  const savedYears = Math.floor(comparison.timeSavedMonths / 12)
+  const savedMonths = comparison.timeSavedMonths % 12
+  const timeSaved = t('results.sondertilgung.timeSavedValue', {
+    years: savedYears,
+    yearUnit: t(
+      savedYears === 1
+        ? 'results.sondertilgung.duration.year'
+        : 'results.sondertilgung.duration.years',
+    ),
+    months: savedMonths,
+    monthUnit: t(
+      savedMonths === 1
+        ? 'results.sondertilgung.duration.month'
+        : 'results.sondertilgung.duration.months',
+    ),
+  })
+
+  return (
+    <>
+      <p className="result-detail sondertilgung-comparison__summary">
+        {t('results.sondertilgung.summary')}
+      </p>
+      <div className="result-grid sondertilgung-comparison__grid">
+        <ResultCard
+          detail={t('results.sondertilgung.monthlyPaymentDetail')}
+          emphasis="summary"
+          title={t('results.sondertilgung.monthlyPayment')}
+          value={formatEuro(comparison.baseline.contractualMonthlyPaymentCents)}
+        />
+        <ResultCard
+          detail={t('results.sondertilgung.fixedPeriodDetail', { years: fixedInterestYears })}
+          title={t('results.sondertilgung.additionalPrincipal')}
+          value={formatEuro(
+            comparison.withAdditionalRepayments.additionalPrincipalThroughFixedPeriodCents,
+          )}
+        />
+        <ResultCard
+          detail={t('results.sondertilgung.fixedPeriodDetail', { years: fixedInterestYears })}
+          title={t('results.sondertilgung.fixedPeriodInterestSaved')}
+          value={formatEuro(comparison.interestSavedThroughFixedPeriodCents)}
+        />
+        <ResultCard
+          detail={t('results.sondertilgung.remainingDebtDetail', { years: fixedInterestYears })}
+          title={t('results.sondertilgung.remainingDebtReduction')}
+          value={formatEuro(comparison.remainingDebtReductionAtFixedPeriodCents)}
+        />
+        <ResultCard
+          detail={t('results.sondertilgung.constantRateProjection')}
+          title={t('results.sondertilgung.lifetimeInterestSaved')}
+          value={formatEuro(comparison.projectedLifetimeInterestSavedCents)}
+        />
+        <ResultCard
+          detail={t('results.sondertilgung.constantRateProjection')}
+          title={t('results.sondertilgung.timeSaved')}
+          value={timeSaved}
+        />
+      </div>
+    </>
+  )
+}
+
 export function ResultsPage() {
   const { t, i18n } = useTranslation()
   const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
@@ -210,6 +297,23 @@ export function ResultsPage() {
               ) : (
                 <UnavailableResult reason={t('results.reasons.financing')} />
               )}
+            </section>
+
+            <section className="results-section sondertilgung-comparison" aria-live="polite">
+              <div className="results-section__header">
+                <div>
+                  <p className="eyebrow">{t('results.sondertilgung.eyebrow')}</p>
+                  <h2>{t('results.sondertilgung.title')}</h2>
+                </div>
+                <Link className="inline-link" to="/financing">
+                  {t('results.sondertilgung.edit')}
+                </Link>
+              </div>
+              <AdditionalRepaymentResults
+                comparison={dashboard.additionalRepaymentComparison}
+                fixedInterestYears={financingDraft.fixedInterestYears}
+                language={language}
+              />
             </section>
 
             <section className="form-section results-assumptions">

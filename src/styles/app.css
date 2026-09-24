@@ -1575,6 +1575,21 @@ h3 {
     linear-gradient(135deg, var(--color-brand-alpha), transparent 42%), var(--color-surface-card);
 }
 
+.sondertilgung-comparison {
+  border-color: var(--color-brand);
+  background:
+    linear-gradient(135deg, var(--color-brand-alpha), transparent 34%), var(--color-surface-card);
+}
+
+.sondertilgung-comparison__summary {
+  max-width: 52rem;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-5);
+}
+
+.sondertilgung-comparison__grid {
+  margin-bottom: 0;
+}
+
 .results-section__header {
   display: flex;
   gap: var(--space-4);

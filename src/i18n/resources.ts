@@ -536,6 +536,35 @@ export const resources = {
           message:
             'Die Berechnung kann mit den aktuellen Eingaben nicht ausgeführt werden ({{reason}}).',
         },
+        sondertilgung: {
+          eyebrow: 'Tilgungswirkung',
+          title: 'Sondertilgung im Vergleich',
+          edit: 'Sondertilgung bearbeiten',
+          summary:
+            'Verglichen werden zwei identische Darlehensverläufe – einmal ohne und einmal mit deinen Sondertilgungen.',
+          monthlyPayment: 'Vertragliche Monatsrate',
+          monthlyPaymentDetail: 'In beiden Verläufen unverändert',
+          additionalPrincipal: 'Zusätzliche Tilgung',
+          fixedPeriodInterestSaved: 'Gesparte Zinsen',
+          remainingDebtReduction: 'Niedrigere Restschuld',
+          fixedPeriodDetail: 'Innerhalb von {{years}} Jahren Zinsbindung',
+          remainingDebtDetail: 'Am Ende von {{years}} Jahren Zinsbindung',
+          lifetimeInterestSaved: 'Projizierte Zinsersparnis gesamt',
+          timeSaved: 'Projizierte Zeitersparnis',
+          constantRateProjection:
+            'Projektion bei konstantem Sollzins nach Ende der Zinsbindung – kein Vertragsangebot.',
+          timeSavedValue: '{{years}} {{yearUnit}} · {{months}} {{monthUnit}}',
+          duration: {
+            year: 'Jahr',
+            years: 'Jahre',
+            month: 'Monat',
+            months: 'Monate',
+          },
+          notApplicableTitle: 'Keine Sondertilgung anwendbar',
+          notApplicableMessage:
+            'Bei einem Barkauf gibt es kein Darlehen und damit keinen Tilgungsvergleich.',
+          unavailableReason: 'Die Eingaben zur Sondertilgung sind unvollständig oder ungültig.',
+        },
         refinancing: {
           title: 'Anschlussfinanzierung unter Stress',
           assumptionsTitle: 'Zinsstress nach Zinsbindung',
@@ -1166,6 +1195,35 @@ export const resources = {
         unavailable: {
           title: 'Result unavailable',
           message: 'The calculation cannot run with the current inputs ({{reason}}).',
+        },
+        sondertilgung: {
+          eyebrow: 'Repayment impact',
+          title: 'Additional repayment comparison',
+          edit: 'Edit additional repayments',
+          summary:
+            'This compares two otherwise identical loan schedules: one without and one with your additional repayments.',
+          monthlyPayment: 'Contractual monthly payment',
+          monthlyPaymentDetail: 'Unchanged in both schedules',
+          additionalPrincipal: 'Additional principal repaid',
+          fixedPeriodInterestSaved: 'Interest saved',
+          remainingDebtReduction: 'Lower remaining debt',
+          fixedPeriodDetail: 'During the {{years}}-year fixed-interest period',
+          remainingDebtDetail: 'At the end of {{years}} years of fixed interest',
+          lifetimeInterestSaved: 'Projected lifetime interest saved',
+          timeSaved: 'Projected time saved',
+          constantRateProjection:
+            'Constant-rate projection after the fixed-interest period — not a contractual offer.',
+          timeSavedValue: '{{years}} {{yearUnit}} · {{months}} {{monthUnit}}',
+          duration: {
+            year: 'year',
+            years: 'years',
+            month: 'month',
+            months: 'months',
+          },
+          notApplicableTitle: 'Additional repayment does not apply',
+          notApplicableMessage:
+            'A cash purchase has no mortgage and therefore no repayment comparison.',
+          unavailableReason: 'The additional-repayment inputs are incomplete or invalid.',
         },
         refinancing: {
           title: 'Refinancing stress test',

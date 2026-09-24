@@ -169,6 +169,10 @@ describe('PD-007 and PD-010 Sondertilgung fixtures', () => {
     expect(result.interestSavedThroughFixedPeriodCents).toBe(
       expectedValue(fixture.expected, 'interestSavedThroughFixedPeriodCents'),
     )
+    expect(result.remainingDebtReductionAtFixedPeriodCents).toBe(
+      result.baseline.remainingDebtAtFixedPeriodCents -
+        result.withAdditionalRepayments.remainingDebtAtFixedPeriodCents,
+    )
     expect(result.projectedLifetimeInterestSavedCents).toBe(
       expectedValue(fixture.expected, 'projectedLifetimeInterestSavedCents'),
     )

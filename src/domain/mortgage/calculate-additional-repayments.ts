@@ -53,6 +53,10 @@ export function calculateAdditionalRepaymentComparison(
       baseline.interestThroughFixedPeriodCents,
       withAdditionalRepayments.interestThroughFixedPeriodCents,
     ),
+    remainingDebtReductionAtFixedPeriodCents: subtractMoney(
+      baseline.remainingDebtAtFixedPeriodCents,
+      withAdditionalRepayments.remainingDebtAtFixedPeriodCents,
+    ),
     projectedLifetimeInterestSavedCents: subtractMoney(
       baseline.projectedLifetimeInterestCents,
       withAdditionalRepayments.projectedLifetimeInterestCents,
