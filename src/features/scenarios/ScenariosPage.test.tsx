@@ -28,6 +28,13 @@ describe('ScenariosPage', () => {
       ...useScenarioWorkspaceStore.getState().purchaseCosts,
       purchasePrice: '350000',
     })
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        ...useScenarioWorkspaceStore.getState().financing.additionalRepayments,
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '6',
+      },
+    })
     renderPage()
 
     await user.type(screen.getByLabelText('Szenarioname'), 'Altbau Köln')
@@ -46,9 +53,20 @@ describe('ScenariosPage', () => {
       ...useScenarioWorkspaceStore.getState().purchaseCosts,
       purchasePrice: '1',
     })
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        ...useScenarioWorkspaceStore.getState().financing.additionalRepayments,
+        annualAdditionalRepayment: '',
+        annualAdditionalRepaymentMonth: '12',
+      },
+    })
     const firstCard = screen.getAllByRole('listitem')[0]!
     await user.click(within(firstCard).getByRole('button', { name: 'Laden' }))
     expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('350000')
+    expect(useScenarioWorkspaceStore.getState().financing.additionalRepayments).toMatchObject({
+      annualAdditionalRepayment: '5.000',
+      annualAdditionalRepaymentMonth: '6',
+    })
 
     const nameInput = within(firstCard).getByLabelText('Szenarioname')
     await user.clear(nameInput)
