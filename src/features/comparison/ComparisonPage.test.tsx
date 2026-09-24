@@ -99,6 +99,33 @@ describe('ComparisonPage', () => {
     expect(screen.queryByRole('columnheader', { name: /Berlin/ })).not.toBeInTheDocument()
   })
 
+  it('labels selected Sondertilgung results in German and English', async () => {
+    const baseline = savedScenario('Ohne Sondertilgung', 'baseline', '250000')
+    const withRepayments = savedScenario('Mit Plan', 'repayments', '250000')
+    withRepayments.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '5.000',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [],
+    }
+    writeScenarioLibrary(window.localStorage, [baseline, withRepayments])
+
+    renderPage()
+
+    expect(screen.getByRole('columnheader', { name: /Mit Plan.*Mit Sondertilgung/ })).toBeVisible()
+    const debtRow = screen.getByRole('row', { name: /^Restschuld/ })
+    expect(within(debtRow).getByText(/nach Sondertilgung und 10 Jahren/)).toBeVisible()
+    const returnRow = screen.getByRole('row', { name: /^Prognostiziertes Ergebnis/ })
+    expect(
+      within(returnRow).getByText(/Sondertilgungen werden im jeweiligen Zahlungsmonat/),
+    ).toBeVisible()
+
+    await i18n.changeLanguage('en')
+    expect(
+      screen.getByRole('columnheader', { name: /Mit Plan.*With additional repayments/ }),
+    ).toBeVisible()
+    expect(within(debtRow).getByText(/after additional repayments and a 10-year/)).toBeVisible()
+  })
+
   it('handles corrupted scenario data safely and switches to English', async () => {
     window.localStorage.setItem(SCENARIO_LIBRARY_STORAGE_KEY, '{broken')
     renderPage()

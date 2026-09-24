@@ -190,6 +190,10 @@ export const resources = {
           'owner-occupier': 'Eigennutzung',
           'rental-investment': 'Vermietung',
         },
+        repayment: {
+          additionalRepayments: 'Mit Sondertilgung',
+          invalid: 'Sondertilgung ungültig',
+        },
         groups: {
           purchase: 'Kauf',
           financing: 'Finanzierung',
@@ -223,8 +227,11 @@ export const resources = {
           range: '{{low}} bis {{high}}',
           yieldBasis: '{{numerator}} ÷ {{denominator}}',
           afterYears: 'nach {{years}} Jahren Zinsbindung',
+          afterYearsWithAdditionalRepayments: 'nach Sondertilgung und {{years}} Jahren Zinsbindung',
           ownerReturn: 'Vorteil ggü. Miete nach {{years}} Jahren',
           rentalReturn: 'Gewinn vor Steuern nach {{years}} Jahren',
+          additionalRepaymentsIncluded:
+            'Sondertilgungen werden im jeweiligen Zahlungsmonat berücksichtigt.',
         },
         nonComparable: {
           remainingDebt: 'Unterschiedliche Zinsbindungszeiträume',
@@ -866,6 +873,10 @@ export const resources = {
           'owner-occupier': 'Owner occupation',
           'rental-investment': 'Rental investment',
         },
+        repayment: {
+          additionalRepayments: 'With additional repayments',
+          invalid: 'Invalid additional repayments',
+        },
         groups: {
           purchase: 'Purchase',
           financing: 'Financing',
@@ -899,8 +910,12 @@ export const resources = {
           range: '{{low}} to {{high}}',
           yieldBasis: '{{numerator}} ÷ {{denominator}}',
           afterYears: 'after {{years}}-year fixed period',
+          afterYearsWithAdditionalRepayments:
+            'after additional repayments and a {{years}}-year fixed period',
           ownerReturn: 'advantage over renting after {{years}} years',
           rentalReturn: 'pre-tax profit after {{years}} years',
+          additionalRepaymentsIncluded:
+            'Additional repayments are included in their respective payment months.',
         },
         nonComparable: {
           remainingDebt: 'Different fixed-interest periods',

@@ -141,7 +141,8 @@ describe('saved scenario comparison calculations', () => {
     expect(comparison.values.remainingDebt.status).toBe('not-applicable')
   })
 
-  it('keeps saved-property remaining debt on the baseline until PF-004.9', () => {
+  it('uses the selected Sondertilgung schedule for debt and owner projected return', () => {
+    const baseline = calculateSavedScenarioComparison(scenario('Baseline'))
     const saved = scenario('With Sondertilgung')
     saved.inputs.financing.additionalRepayments = {
       annualAdditionalRepayment: '5.000',
@@ -158,7 +159,67 @@ describe('saved scenario comparison calculations', () => {
     })
     expect(comparison.values.remainingDebt).toMatchObject({
       status: 'available',
-      cents: 15_218_873,
+      cents: 9_337_777,
+      repaymentBasis: 'additional-repayments',
     })
+    expect(comparison.values.monthlyPayment).toEqual(baseline.values.monthlyPayment)
+    expect(comparison.values.projectedReturn).toMatchObject({
+      status: 'available',
+      repaymentBasis: 'additional-repayments',
+    })
+    expect(comparison.values.projectedReturn).not.toEqual(baseline.values.projectedReturn)
+  })
+
+  it('includes a due one-time repayment in rental cash flow and projected return', () => {
+    const baselineSaved = scenario('Rental baseline', { mode: 'rental-investment' })
+    const repaymentSaved = scenario('Rental repayment', { mode: 'rental-investment' })
+    repaymentSaved.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [{ amount: '2.500', month: '1' }],
+    }
+
+    const baseline = calculateSavedScenarioComparison(baselineSaved)
+    const repayment = calculateSavedScenarioComparison(repaymentSaved)
+    const baselineCashFlow = baseline.values.monthlyCashFlow
+    const repaymentCashFlow = repayment.values.monthlyCashFlow
+
+    expect(baselineCashFlow).toMatchObject({ status: 'available', format: 'euro' })
+    expect(repaymentCashFlow).toMatchObject({
+      status: 'available',
+      format: 'euro',
+      repaymentBasis: 'additional-repayments',
+    })
+    if (
+      baselineCashFlow.status !== 'available' ||
+      baselineCashFlow.format !== 'euro' ||
+      repaymentCashFlow.status !== 'available' ||
+      repaymentCashFlow.format !== 'euro'
+    ) {
+      throw new Error('Expected available rental cash-flow values')
+    }
+    expect(repaymentCashFlow.cents).toBe(baselineCashFlow.cents - 250_000)
+    expect(repayment.values.projectedReturn).toMatchObject({
+      status: 'available',
+      repaymentBasis: 'additional-repayments',
+    })
+    expect(repayment.values.grossYield).toEqual(baseline.values.grossYield)
+    expect(repayment.values.netYield).toEqual(baseline.values.netYield)
+  })
+
+  it('marks schedule-dependent comparison metrics unavailable for invalid repayments', () => {
+    const saved = scenario('Invalid repayment', { mode: 'rental-investment' })
+    saved.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [{ amount: '', month: '18' }],
+    }
+
+    const comparison = calculateSavedScenarioComparison(saved)
+
+    expect(comparison.dashboard.selectedAmortizationBasis).toBe('unavailable')
+    expect(comparison.values.remainingDebt.status).toBe('unavailable')
+    expect(comparison.values.monthlyCashFlow.status).toBe('unavailable')
+    expect(comparison.values.projectedReturn.status).toBe('unavailable')
   })
 })
