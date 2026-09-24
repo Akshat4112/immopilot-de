@@ -401,6 +401,24 @@ export const resources = {
           20: '20 Jahre',
           30: '30 Jahre',
         },
+        additionalRepayment: {
+          legend: 'Jährliche Sondertilgung',
+          intro:
+            'Lege einen festen Betrag fest, der einmal pro Darlehensjahr im ausgewählten Monat gezahlt wird.',
+          annualAmount: 'Betrag pro Darlehensjahr',
+          annualMonth: 'Monat im Darlehensjahr',
+          amountPlaceholder: '5.000',
+          selectMonth: 'Monat auswählen',
+          monthOption: 'Monat {{month}}',
+          negativeAmountError: 'Die jährliche Sondertilgung darf nicht negativ sein.',
+          invalidAmountError:
+            'Gib einen gültigen Eurobetrag mit höchstens zwei Dezimalstellen ein.',
+          invalidMonthError: 'Wähle für einen positiven Betrag einen Monat von 1 bis 12.',
+          guidance:
+            'Die vertragliche Monatsrate bleibt unverändert. Prüfe zulässige Beträge, Gebühren und erforderliche Zustimmungen mit deinem Darlehensgeber.',
+          cashPurchaseDisabled:
+            'Bei einem Kauf ohne Darlehen ist keine Sondertilgung möglich. Deine Eingaben bleiben für einen späteren Wechsel zur Finanzierung erhalten.',
+        },
         results: {
           requiredEquity: 'Benötigtes Eigenkapital',
           cashForCostsAndDownPayment: 'Anzahlung, bar finanzierte Kaufnebenkosten und Budgets',
@@ -995,6 +1013,23 @@ export const resources = {
           15: '15 years',
           20: '20 years',
           30: '30 years',
+        },
+        additionalRepayment: {
+          legend: 'Annual additional repayment',
+          intro:
+            'Set a fixed amount paid once in every loan year during the selected loan-year month.',
+          annualAmount: 'Amount per loan year',
+          annualMonth: 'Month in the loan year',
+          amountPlaceholder: '5,000',
+          selectMonth: 'Select a month',
+          monthOption: 'Month {{month}}',
+          negativeAmountError: 'The annual additional repayment cannot be negative.',
+          invalidAmountError: 'Enter a valid euro amount with no more than two decimal places.',
+          invalidMonthError: 'Select a month from 1 through 12 for a positive amount.',
+          guidance:
+            'The contractual monthly payment remains unchanged. Confirm permitted amounts, fees and required approval with your lender.',
+          cashPurchaseDisabled:
+            'Additional repayment does not apply to a cash purchase. Your entries are retained if you switch back to loan financing.',
         },
         results: {
           requiredEquity: 'Required equity',
