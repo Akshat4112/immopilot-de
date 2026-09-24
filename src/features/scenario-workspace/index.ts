@@ -1,5 +1,6 @@
 export {
   acquisitionCostInputFromDraft,
+  additionalRepaymentPlanFromDraft,
   calculateScenarioDashboard,
   calculateScenarioWorkspace,
   financingInputFromDraft,

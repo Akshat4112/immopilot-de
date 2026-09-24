@@ -136,8 +136,8 @@ export function ResultsPage() {
   const analysis = useScenarioWorkspaceStore((state) => state.analysis)
   const updateAnalysis = useScenarioWorkspaceStore((state) => state.updateAnalysis)
   const dashboard = useMemo(
-    () => calculateScenarioDashboard(purchaseCosts, financingDraft, analysis),
-    [analysis, financingDraft, purchaseCosts],
+    () => calculateScenarioDashboard(purchaseCosts, financingDraft, analysis, language),
+    [analysis, financingDraft, language, purchaseCosts],
   )
   const formatEuro = (cents: number) => formatEuroFromCents(cents, language)
   const formatRate = (value: { toNumber: () => number }) =>
