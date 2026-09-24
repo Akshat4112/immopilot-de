@@ -33,6 +33,10 @@ describe('ScenariosPage', () => {
         ...useScenarioWorkspaceStore.getState().financing.additionalRepayments,
         annualAdditionalRepayment: '5.000',
         annualAdditionalRepaymentMonth: '6',
+        oneTimeAdditionalRepayments: [
+          { amount: '2.000', month: '24' },
+          { amount: '1.000', month: '6' },
+        ],
       },
     })
     renderPage()
@@ -58,6 +62,7 @@ describe('ScenariosPage', () => {
         ...useScenarioWorkspaceStore.getState().financing.additionalRepayments,
         annualAdditionalRepayment: '',
         annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [],
       },
     })
     const firstCard = screen.getAllByRole('listitem')[0]!
@@ -66,6 +71,10 @@ describe('ScenariosPage', () => {
     expect(useScenarioWorkspaceStore.getState().financing.additionalRepayments).toMatchObject({
       annualAdditionalRepayment: '5.000',
       annualAdditionalRepaymentMonth: '6',
+      oneTimeAdditionalRepayments: [
+        { amount: '1.000', month: '6' },
+        { amount: '2.000', month: '24' },
+      ],
     })
 
     const nameInput = within(firstCard).getByLabelText('Szenarioname')

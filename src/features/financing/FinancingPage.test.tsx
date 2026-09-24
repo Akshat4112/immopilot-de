@@ -133,18 +133,80 @@ describe('FinancingPage', () => {
         ...initialFinancingDraft.additionalRepayments,
         annualAdditionalRepayment: '5.000',
         annualAdditionalRepaymentMonth: '6',
+        oneTimeAdditionalRepayments: [{ amount: '10.000', month: '18' }],
       },
     })
     renderPage()
 
     expect(screen.getByLabelText(/Betrag pro Darlehensjahr/)).toBeDisabled()
     expect(screen.getByLabelText(/Monat im Darlehensjahr/)).toBeDisabled()
+    expect(screen.getByLabelText(/Betrag für Einmalzahlung 1/)).toBeDisabled()
+    expect(screen.getByLabelText(/Darlehensmonat für Einmalzahlung 1/)).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Einmalzahlung 1 entfernen/ })).toBeDisabled()
     expect(screen.getByDisplayValue('5.000')).toBeVisible()
     expect(screen.getByText(/für einen späteren Wechsel zur Finanzierung erhalten/i)).toBeVisible()
     expect(useScenarioWorkspaceStore.getState().financing.additionalRepayments).toMatchObject({
       annualAdditionalRepayment: '5.000',
       annualAdditionalRepaymentMonth: '6',
+      oneTimeAdditionalRepayments: [{ amount: '10.000', month: '18' }],
     })
+  })
+
+  it('adds, edits, sorts, and removes one-time repayment rows', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung hinzufügen' }))
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung hinzufügen' }))
+
+    await user.type(screen.getByLabelText('Betrag für Einmalzahlung 1'), '2.000')
+    await user.type(screen.getByLabelText('Darlehensmonat für Einmalzahlung 1'), '24')
+    await user.type(screen.getByLabelText('Betrag für Einmalzahlung 2'), '1.000')
+    await user.type(screen.getByLabelText('Darlehensmonat für Einmalzahlung 2'), '6')
+    await user.tab()
+
+    expect(
+      useScenarioWorkspaceStore.getState().financing.additionalRepayments
+        .oneTimeAdditionalRepayments,
+    ).toEqual([
+      { amount: '1.000', month: '6' },
+      { amount: '2.000', month: '24' },
+    ])
+
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung 1 entfernen' }))
+    expect(
+      useScenarioWorkspaceStore.getState().financing.additionalRepayments
+        .oneTimeAdditionalRepayments,
+    ).toEqual([{ amount: '2.000', month: '24' }])
+  })
+
+  it('requires complete rows and rejects duplicate one-time repayment months', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung hinzufügen' }))
+    expect(screen.getByText(/für diese Einmalzahlung einen Betrag/i)).toBeVisible()
+    expect(screen.getByText(/für diese Einmalzahlung einen Darlehensmonat/i)).toBeVisible()
+
+    await user.type(screen.getByLabelText('Betrag für Einmalzahlung 1'), '1.000')
+    await user.type(screen.getByLabelText('Darlehensmonat für Einmalzahlung 1'), '12')
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung hinzufügen' }))
+    await user.type(screen.getByLabelText('Betrag für Einmalzahlung 2'), '2.000')
+    await user.type(screen.getByLabelText('Darlehensmonat für Einmalzahlung 2'), '12')
+
+    expect(screen.getAllByText(/für diesen Darlehensmonat gibt es bereits/i)).toHaveLength(2)
+  })
+
+  it('allows annual and one-time additional repayments in the same month', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.type(screen.getByLabelText(/Betrag pro Darlehensjahr/), '5.000')
+    await user.click(screen.getByRole('button', { name: 'Einmalzahlung hinzufügen' }))
+    await user.type(screen.getByLabelText('Betrag für Einmalzahlung 1'), '1.000')
+    await user.type(screen.getByLabelText('Darlehensmonat für Einmalzahlung 1'), '12')
+
+    expect(screen.queryByText(/für diesen Darlehensmonat gibt es bereits/i)).not.toBeInTheDocument()
   })
 
   it('provides English labels, guidance, and locale-formatted input', async () => {
@@ -156,6 +218,8 @@ describe('FinancingPage', () => {
     await user.type(amount, '5,000.50')
 
     expect(screen.getByRole('group', { name: 'Annual additional repayment' })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'One-time additional repayments' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Add one-time repayment' })).toBeVisible()
     expect(screen.getByText(/contractual monthly payment remains unchanged/i)).toBeVisible()
     expect(amount).toHaveAttribute('aria-invalid', 'false')
     expect(

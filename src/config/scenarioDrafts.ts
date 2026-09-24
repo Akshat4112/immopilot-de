@@ -33,6 +33,28 @@ export interface AdditionalRepaymentsDraft {
   oneTimeAdditionalRepayments: OneTimeAdditionalRepaymentDraft[]
 }
 
+function sortableOneTimeRepaymentMonth(row: OneTimeAdditionalRepaymentDraft) {
+  if (!row.amount.trim() || !/^[1-9]\d*$/u.test(row.month)) return null
+  const month = Number(row.month)
+  return Number.isSafeInteger(month) && month <= 1_200 ? month : null
+}
+
+export function sortOneTimeAdditionalRepaymentDrafts(
+  rows: readonly OneTimeAdditionalRepaymentDraft[],
+) {
+  return rows
+    .map((row, index) => ({ row: structuredClone(row), index }))
+    .sort((left, right) => {
+      const leftMonth = sortableOneTimeRepaymentMonth(left.row)
+      const rightMonth = sortableOneTimeRepaymentMonth(right.row)
+      if (leftMonth === null && rightMonth === null) return left.index - right.index
+      if (leftMonth === null) return 1
+      if (rightMonth === null) return -1
+      return leftMonth - rightMonth || left.index - right.index
+    })
+    .map(({ row }) => row)
+}
+
 export interface FinancingDraft {
   mode: FinancingMode
   availableEquity: string

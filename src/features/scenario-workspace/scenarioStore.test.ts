@@ -51,6 +51,13 @@ describe('scenario workspace', () => {
       financing: {
         ...initialFinancingDraft,
         downPayment: '50.000',
+        additionalRepayments: {
+          ...initialFinancingDraft.additionalRepayments,
+          oneTimeAdditionalRepayments: [
+            { amount: '2.000', month: '24' },
+            { amount: '1.000', month: '6' },
+          ],
+        },
       },
       analysis: {
         ...useScenarioWorkspaceStore.getState().analysis,
@@ -66,15 +73,22 @@ describe('scenario workspace', () => {
       financing: { downPayment: '50.000' },
       analysis: { currentComparableRent: '1.200' },
     })
+    expect(
+      useScenarioWorkspaceStore.getState().financing.additionalRepayments
+        .oneTimeAdditionalRepayments,
+    ).toEqual([
+      { amount: '1.000', month: '6' },
+      { amount: '2.000', month: '24' },
+    ])
     expect(useScenarioWorkspaceStore.getState()).not.toHaveProperty('results')
   })
 
-  it('resets annual additional repayment inputs to their Version 1 defaults', () => {
+  it('resets all additional repayment inputs to their Version 1 defaults', () => {
     useScenarioWorkspaceStore.getState().updateFinancing({
       additionalRepayments: {
         annualAdditionalRepayment: '5.000',
         annualAdditionalRepaymentMonth: '6',
-        oneTimeAdditionalRepayments: [],
+        oneTimeAdditionalRepayments: [{ amount: '10.000', month: '18' }],
       },
     })
 
