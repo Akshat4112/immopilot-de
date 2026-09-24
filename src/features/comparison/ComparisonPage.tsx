@@ -108,9 +108,12 @@ function Value({
       ) : null}
       {metric === 'remainingDebt' && value.format === 'euro' && value.basis ? (
         <small className="comparison-value-detail">
-          {t('comparison.value.afterYears', {
-            years: Number(value.basis.split(':')[1]) / 12,
-          })}
+          {t(
+            value.repaymentBasis === 'additional-repayments'
+              ? 'comparison.value.afterYearsWithAdditionalRepayments'
+              : 'comparison.value.afterYears',
+            { years: Number(value.basis.split(':')[1]) / 12 },
+          )}
         </small>
       ) : null}
       {metric === 'projectedReturn' && value.format === 'euro' && value.basis ? (
@@ -122,6 +125,13 @@ function Value({
             : t('comparison.value.rentalReturn', {
                 years: Number(value.basis.split(':')[1]) / 12,
               })}
+        </small>
+      ) : null}
+      {metric !== 'remainingDebt' &&
+      value.format === 'euro' &&
+      value.repaymentBasis === 'additional-repayments' ? (
+        <small className="comparison-value-detail">
+          {t('comparison.value.additionalRepaymentsIncluded')}
         </small>
       ) : null}
     </>
@@ -147,6 +157,11 @@ function ScenarioHeader({
     <div className="comparison-column-heading">
       <strong>{comparison.scenario.name}</strong>
       <small>{t(`comparison.mode.${mode}`)}</small>
+      {comparison.dashboard.selectedAmortizationBasis === 'additional-repayments' ? (
+        <small>{t('comparison.repayment.additionalRepayments')}</small>
+      ) : comparison.dashboard.selectedAmortizationBasis === 'unavailable' ? (
+        <small className="comparison-basis-warning">{t('comparison.repayment.invalid')}</small>
+      ) : null}
       <div className="comparison-column-actions">
         <button
           aria-label={t('comparison.actions.moveLeft', { name: comparison.scenario.name })}

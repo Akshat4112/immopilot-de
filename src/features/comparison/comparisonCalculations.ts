@@ -23,7 +23,13 @@ export const comparisonMetricIds = [
 export type ComparisonMetricId = (typeof comparisonMetricIds)[number]
 
 export type ComparisonMetricValue =
-  | { status: 'available'; format: 'euro'; cents: number; basis?: string }
+  | {
+      status: 'available'
+      format: 'euro'
+      cents: number
+      basis?: string
+      repaymentBasis?: 'baseline' | 'additional-repayments'
+    }
   | {
       status: 'available'
       format: 'percentage'
@@ -46,8 +52,18 @@ function missing(count = 0): ComparisonMetricValue {
   return { status: 'missing', count }
 }
 
-function euro(cents: number, basis?: string): ComparisonMetricValue {
-  return { status: 'available', format: 'euro', cents, ...(basis ? { basis } : {}) }
+function euro(
+  cents: number,
+  basis?: string,
+  repaymentBasis?: 'baseline' | 'additional-repayments',
+): ComparisonMetricValue {
+  return {
+    status: 'available',
+    format: 'euro',
+    cents,
+    ...(basis ? { basis } : {}),
+    ...(repaymentBasis ? { repaymentBasis } : {}),
+  }
 }
 
 function acquisitionValue(
@@ -81,7 +97,15 @@ function rentalMetric(
   if (result.status === 'not-configured') return missing(result.missing.length)
   if (result.status !== 'available') return { status: 'unavailable' }
 
-  if (metric === 'monthlyCashFlow') return euro(result.firstMonth.preTaxCashFlowBeforeExtraCents)
+  if (metric === 'monthlyCashFlow') {
+    return euro(
+      result.firstMonth.preTaxCashFlowAfterExtraCents,
+      undefined,
+      dashboard.selectedAmortizationBasis === 'additional-repayments'
+        ? 'additional-repayments'
+        : 'baseline',
+    )
+  }
   const isGross = metric === 'grossYield'
   const basis = isGross ? result.grossYieldBasis : result.netYieldBasis
   return {
@@ -101,6 +125,9 @@ function projectedReturn(dashboard: ScenarioDashboardCalculationResult): Compari
     return euro(
       modeResult.atAnalysisMonth.buyerMinusRenterCents,
       `owner:${modeResult.analysisMonths}`,
+      dashboard.selectedAmortizationBasis === 'additional-repayments'
+        ? 'additional-repayments'
+        : 'baseline',
     )
   }
   const modeResult = dashboard.modeSpecific.result
@@ -110,6 +137,9 @@ function projectedReturn(dashboard: ScenarioDashboardCalculationResult): Compari
   return euro(
     modeResult.sale.estimatedProfitBeforeTaxCents,
     `rental:${modeResult.sale.holdingPeriodMonths}`,
+    dashboard.selectedAmortizationBasis === 'additional-repayments'
+      ? 'additional-repayments'
+      : 'baseline',
   )
 }
 
@@ -179,14 +209,16 @@ export function calculateSavedScenarioComparison(scenario: SavedScenario): Scena
           ? euro(dashboard.payment.monthlyPaymentCents)
           : { status: 'unavailable' },
       remainingDebt:
-        dashboard.baselineFixedPeriod.status === 'available' &&
-        (dashboard.baselineFixedPeriod.cashPurchase ||
-          dashboard.baselineFixedPeriod.fixedInterestMonths === null)
+        dashboard.fixedPeriod.status === 'available' &&
+        (dashboard.fixedPeriod.cashPurchase || dashboard.fixedPeriod.fixedInterestMonths === null)
           ? { status: 'not-applicable' }
-          : dashboard.baselineFixedPeriod.status === 'available'
+          : dashboard.fixedPeriod.status === 'available'
             ? euro(
-                dashboard.baselineFixedPeriod.remainingDebtCents,
-                `fixed:${dashboard.baselineFixedPeriod.fixedInterestMonths}`,
+                dashboard.fixedPeriod.remainingDebtCents,
+                `fixed:${dashboard.fixedPeriod.fixedInterestMonths}`,
+                dashboard.selectedAmortizationBasis === 'additional-repayments'
+                  ? 'additional-repayments'
+                  : 'baseline',
               )
             : { status: 'unavailable' },
       grossYield: rentalMetric(dashboard, 'grossYield'),
