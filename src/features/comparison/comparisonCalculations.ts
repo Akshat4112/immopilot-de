@@ -179,13 +179,14 @@ export function calculateSavedScenarioComparison(scenario: SavedScenario): Scena
           ? euro(dashboard.payment.monthlyPaymentCents)
           : { status: 'unavailable' },
       remainingDebt:
-        dashboard.fixedPeriod.status === 'available' &&
-        (dashboard.fixedPeriod.cashPurchase || dashboard.fixedPeriod.fixedInterestMonths === null)
+        dashboard.baselineFixedPeriod.status === 'available' &&
+        (dashboard.baselineFixedPeriod.cashPurchase ||
+          dashboard.baselineFixedPeriod.fixedInterestMonths === null)
           ? { status: 'not-applicable' }
-          : dashboard.fixedPeriod.status === 'available'
+          : dashboard.baselineFixedPeriod.status === 'available'
             ? euro(
-                dashboard.fixedPeriod.remainingDebtCents,
-                `fixed:${dashboard.fixedPeriod.fixedInterestMonths}`,
+                dashboard.baselineFixedPeriod.remainingDebtCents,
+                `fixed:${dashboard.baselineFixedPeriod.fixedInterestMonths}`,
               )
             : { status: 'unavailable' },
       grossYield: rentalMetric(dashboard, 'grossYield'),

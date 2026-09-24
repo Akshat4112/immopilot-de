@@ -199,6 +199,7 @@ export interface ScenarioWorkspaceCalculationResult {
   payment: MortgagePaymentResult
   amortization: AmortizationScheduleResult
   selectedAmortization: AmortizationScheduleResult
+  selectedAmortizationBasis: 'baseline' | 'additional-repayments' | 'unavailable'
   additionalRepaymentComparison: AdditionalRepaymentComparisonResult
 }
 
@@ -220,6 +221,7 @@ export type ModeSpecificDashboardResult =
     }
 
 export interface ScenarioDashboardCalculationResult extends ScenarioWorkspaceCalculationResult {
+  baselineFixedPeriod: FixedPeriodResult
   fixedPeriod: FixedPeriodResult
   refinancing: ConfigurableDashboardResult<RefinancingStressResult>
   modeSpecific: ModeSpecificDashboardResult
@@ -248,9 +250,16 @@ export function calculateScenarioWorkspace(
   })
   const selectedAmortization =
     additionalRepaymentComparison.status === 'available' &&
+    !additionalRepaymentComparison.cashPurchase &&
     hasAdditionalRepayment(additionalRepayments)
       ? additionalRepaymentComparison.withAdditionalRepayments
       : amortization
+  const selectedAmortizationBasis =
+    additionalRepaymentComparison.status !== 'available'
+      ? 'unavailable'
+      : selectedAmortization === amortization
+        ? 'baseline'
+        : 'additional-repayments'
 
   return {
     acquisition,
@@ -258,6 +267,7 @@ export function calculateScenarioWorkspace(
     payment,
     amortization,
     selectedAmortization,
+    selectedAmortizationBasis,
     additionalRepaymentComparison,
   }
 }
@@ -481,7 +491,13 @@ export function calculateScenarioDashboard(
   locale: NumericInputLocale = 'de',
 ): ScenarioDashboardCalculationResult {
   const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft, locale)
-  const fixedPeriod = calculateFixedPeriod(workspace.amortization)
+  const baselineFixedPeriod = calculateFixedPeriod(workspace.amortization)
+  const fixedPeriod =
+    workspace.additionalRepaymentComparison.status !== 'available'
+      ? calculateFixedPeriod(workspace.additionalRepaymentComparison.schedule)
+      : workspace.selectedAmortizationBasis === 'baseline'
+        ? baselineFixedPeriod
+        : calculateFixedPeriod(workspace.selectedAmortization)
   const refinancing = calculateRefinancingFromDraft(fixedPeriod, workspace.payment, analysisDraft)
   const modeSpecific =
     analysisDraft.propertyUse === 'owner-occupier'
@@ -511,6 +527,7 @@ export function calculateScenarioDashboard(
 
   return {
     ...workspace,
+    baselineFixedPeriod,
     fixedPeriod,
     refinancing,
     modeSpecific,

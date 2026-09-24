@@ -507,6 +507,8 @@ export const resources = {
           cashPurchaseDetail: 'Kein Darlehen erforderlich',
           debt: 'Restschuld',
           debtDetail: 'Nach {{years}} Jahren Zinsbindung',
+          debtAfterAdditionalRepaymentsDetail:
+            'Nach Sondertilgung und {{years}} Jahren Zinsbindung',
         },
         assumptions: {
           title: 'Planungsannahmen',
@@ -576,6 +578,11 @@ export const resources = {
           higherRate: 'Hoher Sollzins',
           disclaimer:
             'Vergleich mit derselben anfänglichen Tilgung. Die Rate basiert auf der Restschuld nach der letzten Zahlung der Zinsbindung.',
+          principalBaseline: 'Refinanzierungsbasis: Restschuld {{value}} ohne Sondertilgung.',
+          principalAfterAdditionalRepayments:
+            'Refinanzierungsbasis: Restschuld {{value}} nach Sondertilgung.',
+          additionalRepaymentUnavailable:
+            'Der Tilgungsverlauf mit Sondertilgung ist nicht verfügbar.',
           paymentChange: 'Änderung gegenüber heute: {{value}} pro Monat',
           notApplicableTitle: 'Keine Anschlussfinanzierung erforderlich',
           notApplicableMessage:
@@ -1169,6 +1176,8 @@ export const resources = {
           cashPurchaseDetail: 'No mortgage required',
           debt: 'Remaining debt',
           debtDetail: 'After {{years}} years of fixed interest',
+          debtAfterAdditionalRepaymentsDetail:
+            'After additional repayments and {{years}} years of fixed interest',
         },
         assumptions: {
           title: 'Planning assumptions',
@@ -1236,6 +1245,12 @@ export const resources = {
           higherRate: 'Higher nominal rate',
           disclaimer:
             'All scenarios use the same initial repayment rate. Payment is based on the remaining debt after the final fixed-period payment.',
+          principalBaseline:
+            'Refinancing basis: remaining debt of {{value}} without additional repayments.',
+          principalAfterAdditionalRepayments:
+            'Refinancing basis: remaining debt of {{value}} after additional repayments.',
+          additionalRepaymentUnavailable:
+            'The amortization schedule with additional repayments is unavailable.',
           paymentChange: 'Change from today: {{value}} per month',
           notApplicableTitle: 'No refinancing is required',
           notApplicableMessage:

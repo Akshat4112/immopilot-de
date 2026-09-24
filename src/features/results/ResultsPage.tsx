@@ -286,9 +286,12 @@ export function ResultsPage() {
                   />
                   {dashboard.fixedPeriod.status === 'available' ? (
                     <ResultCard
-                      detail={t('results.keyDecisions.debtDetail', {
-                        years: financingDraft.fixedInterestYears,
-                      })}
+                      detail={t(
+                        dashboard.selectedAmortizationBasis === 'additional-repayments'
+                          ? 'results.keyDecisions.debtAfterAdditionalRepaymentsDetail'
+                          : 'results.keyDecisions.debtDetail',
+                        { years: financingDraft.fixedInterestYears },
+                      )}
                       title={t('results.keyDecisions.debt')}
                       value={formatEuro(dashboard.fixedPeriod.remainingDebtCents)}
                     />
@@ -634,6 +637,14 @@ export function ResultsPage() {
                 <SetupRequired count={dashboard.refinancing.missing.length} />
               ) : dashboard.refinancing.status === 'available' ? (
                 <>
+                  <p className="result-detail refinancing-principal-basis">
+                    {t(
+                      dashboard.selectedAmortizationBasis === 'additional-repayments'
+                        ? 'results.refinancing.principalAfterAdditionalRepayments'
+                        : 'results.refinancing.principalBaseline',
+                      { value: formatEuro(dashboard.refinancing.remainingDebtCents) },
+                    )}
+                  </p>
                   <p className="result-detail">{t('results.refinancing.disclaimer')}</p>
                   <div className="result-grid results-refinancing-grid">
                     {dashboard.refinancing.scenarios.map((scenario) => (
@@ -656,7 +667,13 @@ export function ResultsPage() {
                   <p>{t('results.refinancing.notApplicableMessage')}</p>
                 </article>
               ) : (
-                <UnavailableResult reason={dashboard.refinancing.reason} />
+                <UnavailableResult
+                  reason={
+                    dashboard.selectedAmortizationBasis === 'unavailable'
+                      ? t('results.refinancing.additionalRepaymentUnavailable')
+                      : dashboard.refinancing.reason
+                  }
+                />
               )}
             </section>
 

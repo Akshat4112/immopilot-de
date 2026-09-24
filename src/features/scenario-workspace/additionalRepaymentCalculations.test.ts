@@ -86,6 +86,7 @@ describe('workspace additional-repayment calculations', () => {
     expect(result.selectedAmortization).toBe(
       result.additionalRepaymentComparison.withAdditionalRepayments,
     )
+    expect(result.selectedAmortizationBasis).toBe('additional-repayments')
   })
 
   it('keeps post-Zinsbindung repayments out of fixed-period savings', () => {
@@ -169,6 +170,7 @@ describe('workspace additional-repayment calculations', () => {
         schedule: { status: 'unavailable', reason: 'VALIDATION_ERROR' },
       })
       expect(result.selectedAmortization).toBe(result.amortization)
+      expect(result.selectedAmortizationBasis).toBe('unavailable')
     }
   })
 
@@ -198,5 +200,6 @@ describe('workspace additional-repayment calculations', () => {
       cashPurchase: true,
       rows: [],
     })
+    expect(result.selectedAmortizationBasis).toBe('baseline')
   })
 })
