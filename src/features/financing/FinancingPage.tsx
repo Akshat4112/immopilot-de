@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
 import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { PageLayout } from '../../components/PageLayout'
@@ -323,6 +324,7 @@ export function FinancingPage() {
             <p className="additional-repayment-fieldset__guidance">
               {t('finance.additionalRepayment.guidance')}
             </p>
+            <AdditionalRepaymentGuidance />
             <section className="one-time-repayment-section">
               <div className="one-time-repayment-section__header">
                 <div>

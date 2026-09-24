@@ -209,6 +209,22 @@ describe('FinancingPage', () => {
     expect(screen.queryByText(/für diesen Darlehensmonat gibt es bereits/i)).not.toBeInTheDocument()
   })
 
+  it('explains timing, payoff treatment, and contractual boundaries bilingually', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByText('So rechnet ImmoPilot mit Sondertilgungen'))
+    expect(screen.getByText('Zeitpunkt im Zahlungsmonat')).toBeVisible()
+    expect(screen.getByText(/Sondertilgung am Monatsende/)).toBeVisible()
+    expect(screen.getByText(/reguläre Monatsrate bleibt unverändert/)).toBeVisible()
+    expect(screen.getByText(/keine vertraglichen Rechte, Höchstbeträge, Gebühren/)).toBeVisible()
+
+    await i18n.changeLanguage('en')
+    expect(screen.getByText('How ImmoPilot calculates additional repayments')).toBeVisible()
+    expect(screen.getByText('Treatment in results')).toBeVisible()
+    expect(screen.getByText(/Cash-on-cash return remains before/)).toBeVisible()
+  })
+
   it('provides English labels, guidance, and locale-formatted input', async () => {
     const user = userEvent.setup()
     await i18n.changeLanguage('en')

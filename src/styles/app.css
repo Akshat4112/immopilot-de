@@ -1420,6 +1420,56 @@ h3 {
   margin: 0;
 }
 
+.additional-repayment-guidance {
+  max-width: 56rem;
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.additional-repayment-guidance summary {
+  color: var(--color-brand);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.additional-repayment-guidance > p {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.additional-repayment-guidance dl {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-5) 0 0;
+}
+
+.additional-repayment-guidance dl > div {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.additional-repayment-guidance dt {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.additional-repayment-guidance dd {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
+}
+
+.additional-repayment-guidance .additional-repayment-guidance__note {
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
 .additional-repayment-fieldset__disabled {
   margin: var(--space-3) 0 0;
   padding: var(--space-3) var(--space-4);
@@ -1559,6 +1609,11 @@ h3 {
   .one-time-repayment-section__header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .additional-repayment-guidance dl > div {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
   }
 }
 

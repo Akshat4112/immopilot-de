@@ -60,6 +60,44 @@ export const resources = {
         assumptions: 'Quellenbasierte Annahmen',
         bilingual: 'Deutsch & English',
       },
+      additionalRepaymentGuidance: {
+        title: 'So rechnet ImmoPilot mit Sondertilgungen',
+        intro:
+          'Diese Regeln gelten einheitlich für Tilgungsplan, Anschlussfinanzierung, Eigennutzung, Vermietung und Immobilienvergleich.',
+        items: {
+          timing: {
+            term: 'Zeitpunkt im Zahlungsmonat',
+            description:
+              'Zuerst werden Monatszinsen und die reguläre Rate berechnet. Danach wird die Sondertilgung am Monatsende von der verbleibenden Restschuld abgezogen.',
+          },
+          annual: {
+            term: 'Jährlicher Betrag',
+            description:
+              'Der gewählte Monat wiederholt sich in jedem Darlehensjahr. Er bezeichnet einen Darlehensmonat, keinen Kalendermonat.',
+          },
+          overlap: {
+            term: 'Mehrere Zahlungen',
+            description:
+              'Jährliche und einmalige Zahlungen im selben Monat werden addiert und auf die verbleibende Restschuld begrenzt. Zahlungen nach vollständiger Tilgung haben keine Wirkung.',
+          },
+          payment: {
+            term: 'Vertragliche Monatsrate',
+            description:
+              'Die reguläre Monatsrate bleibt unverändert; dadurch wird das Darlehen früher zurückgezahlt. Eine spätere Ratensenkung wird nicht modelliert.',
+          },
+          results: {
+            term: 'Darstellung in Ergebnissen',
+            description:
+              'Restschuld, Anschlussfinanzierung und Projektionen verwenden den Tilgungsplan mit Sondertilgung. Lebenszeitwerte nach der Zinsbindung sind klar gekennzeichnete Projektionen bei konstantem Sollzins. Die Cash-on-Cash-Rendite bleibt vor freiwilliger Sondertilgung.',
+          },
+          contract: {
+            term: 'Darlehensvertrag',
+            description:
+              'ImmoPilot prüft keine vertraglichen Rechte, Höchstbeträge, Gebühren, Fristen oder erforderlichen Zustimmungen des Darlehensgebers.',
+          },
+        },
+        note: 'Planungshinweis: Prüfe jede Sondertilgung gegen deinen Darlehensvertrag. Die Berechnung ist weder ein Finanzierungsangebot noch eine Empfehlung.',
+      },
       scenarios: {
         page: {
           eyebrow: 'Szenarien verwalten',
@@ -745,6 +783,44 @@ export const resources = {
         accounts: 'No accounts',
         assumptions: 'Source-based assumptions',
         bilingual: 'German & English',
+      },
+      additionalRepaymentGuidance: {
+        title: 'How ImmoPilot calculates additional repayments',
+        intro:
+          'These rules apply consistently to the amortization schedule, refinancing, owner-occupier analysis, rental analysis, and property comparison.',
+        items: {
+          timing: {
+            term: 'Timing in the payment month',
+            description:
+              'Monthly interest and the regular payment are calculated first. The additional repayment is then deducted from the remaining balance at month-end.',
+          },
+          annual: {
+            term: 'Annual amount',
+            description:
+              'The selected month repeats in every loan year. It identifies a loan month, not a calendar month.',
+          },
+          overlap: {
+            term: 'Multiple payments',
+            description:
+              'Annual and one-time payments in the same month are combined and capped at the remaining balance. Payments after full repayment have no effect.',
+          },
+          payment: {
+            term: 'Contractual monthly payment',
+            description:
+              'The regular monthly payment stays unchanged, so the loan is repaid earlier. A later payment reduction is not modelled.',
+          },
+          results: {
+            term: 'Treatment in results',
+            description:
+              'Remaining debt, refinancing, and projections use the schedule with additional repayments. Lifetime values after the fixed period are clearly labelled constant-rate projections. Cash-on-cash return remains before discretionary additional repayments.',
+          },
+          contract: {
+            term: 'Loan agreement',
+            description:
+              'ImmoPilot does not verify contractual rights, maximum amounts, fees, deadlines, or required lender approvals.',
+          },
+        },
+        note: 'Planning note: check every additional repayment against your loan agreement. The calculation is neither a financing offer nor a recommendation.',
       },
       scenarios: {
         page: {
