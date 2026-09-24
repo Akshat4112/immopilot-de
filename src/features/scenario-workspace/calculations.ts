@@ -9,9 +9,12 @@ import {
   type FinancingResult,
 } from '../../domain/financing'
 import {
+  calculateAdditionalRepaymentComparison,
   calculateAmortizationSchedule,
   calculateFixedPeriod,
   calculateMortgagePayment,
+  type AdditionalRepaymentComparisonResult,
+  type AdditionalRepaymentPlan,
   type AmortizationScheduleResult,
   type FixedPeriodResult,
   type MortgagePaymentInput,
@@ -140,11 +143,63 @@ function fixedInterestMonthsFromDraft(draft: FinancingDraft): number {
   return Number.isSafeInteger(years) ? years * 12 : 0
 }
 
+function parseAdditionalRepaymentAmount(value: string, locale: NumericInputLocale): number {
+  if (!value.trim()) return 0
+
+  const withoutCurrency = value.trim().replace(/[€\s]/gu, '')
+  const format =
+    locale === 'en'
+      ? /^(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?$/u
+      : locale === 'de'
+        ? /^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{1,2})?$/u
+        : /^\d+(?:\.\d{1,2})?$/u
+
+  return format.test(withoutCurrency) ? parseEuroInput(withoutCurrency, locale) : Number.NaN
+}
+
+function parseWholeMonth(value: string): number {
+  return /^[1-9]\d*$/u.test(value) ? Number(value) : Number.NaN
+}
+
+export function additionalRepaymentPlanFromDraft(
+  draft: FinancingDraft,
+  locale: NumericInputLocale = 'de',
+): AdditionalRepaymentPlan {
+  const additionalRepayments = draft.additionalRepayments
+  const annualAmountCents = parseAdditionalRepaymentAmount(
+    additionalRepayments.annualAdditionalRepayment,
+    locale,
+  )
+
+  return {
+    annualAdditionalRepaymentCents: annualAmountCents,
+    annualAdditionalRepaymentMonth:
+      annualAmountCents === 0 && !additionalRepayments.annualAdditionalRepaymentMonth.trim()
+        ? 12
+        : parseWholeMonth(additionalRepayments.annualAdditionalRepaymentMonth),
+    oneTimeAdditionalRepayments: additionalRepayments.oneTimeAdditionalRepayments.map((row) => ({
+      month: parseWholeMonth(row.month),
+      amountCents: row.amount.trim()
+        ? parseAdditionalRepaymentAmount(row.amount, locale)
+        : Number.NaN,
+    })),
+  }
+}
+
+function hasAdditionalRepayment(plan: AdditionalRepaymentPlan): boolean {
+  return (
+    (plan.annualAdditionalRepaymentCents ?? 0) > 0 ||
+    (plan.oneTimeAdditionalRepayments?.some((repayment) => repayment.amountCents > 0) ?? false)
+  )
+}
+
 export interface ScenarioWorkspaceCalculationResult {
   acquisition: AcquisitionCostResult
   financing: FinancingResult
   payment: MortgagePaymentResult
   amortization: AmortizationScheduleResult
+  selectedAmortization: AmortizationScheduleResult
+  additionalRepaymentComparison: AdditionalRepaymentComparisonResult
 }
 
 export interface NotConfiguredDashboardResult {
@@ -185,12 +240,25 @@ export function calculateScenarioWorkspace(
     payment,
     fixedInterestMonths: fixedInterestMonthsFromDraft(financingDraft),
   })
+  const additionalRepayments = additionalRepaymentPlanFromDraft(financingDraft, locale)
+  const additionalRepaymentComparison = calculateAdditionalRepaymentComparison({
+    payment,
+    fixedInterestMonths: fixedInterestMonthsFromDraft(financingDraft),
+    additionalRepayments,
+  })
+  const selectedAmortization =
+    additionalRepaymentComparison.status === 'available' &&
+    hasAdditionalRepayment(additionalRepayments)
+      ? additionalRepaymentComparison.withAdditionalRepayments
+      : amortization
 
   return {
     acquisition,
     financing,
     payment,
     amortization,
+    selectedAmortization,
+    additionalRepaymentComparison,
   }
 }
 
@@ -410,8 +478,9 @@ export function calculateScenarioDashboard(
   purchaseCosts: PurchaseCostsDraft,
   financingDraft: FinancingDraft,
   analysisDraft: ScenarioAnalysisDraft,
+  locale: NumericInputLocale = 'de',
 ): ScenarioDashboardCalculationResult {
-  const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft)
+  const workspace = calculateScenarioWorkspace(purchaseCosts, financingDraft, locale)
   const fixedPeriod = calculateFixedPeriod(workspace.amortization)
   const refinancing = calculateRefinancingFromDraft(fixedPeriod, workspace.payment, analysisDraft)
   const modeSpecific =

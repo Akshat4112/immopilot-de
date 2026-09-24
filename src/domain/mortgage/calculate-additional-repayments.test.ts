@@ -192,6 +192,36 @@ describe('Sondertilgung schedules and comparisons', () => {
     })
   })
 
+  it('ignores even malformed retained repayment values for a cash purchase', () => {
+    const acquisitionResult = acquisition(20_000_000)
+    const cashFinancing = calculateFinancing({
+      mode: 'available-equity',
+      acquisition: acquisitionResult,
+      availableEquityCents: acquisitionResult.totalProjectCostCents,
+      financedAcquisitionCostShare: 0,
+    })
+    const cashPayment = calculateMortgagePayment({
+      paymentMode: 'initial-repayment-rate',
+      financing: cashFinancing,
+    })
+
+    expect(
+      calculateAdditionalRepaymentComparison({
+        payment: cashPayment,
+        additionalRepayments: {
+          annualAdditionalRepaymentCents: -1,
+          annualAdditionalRepaymentMonth: 13,
+          oneTimeAdditionalRepayments: [{ month: 1_201, amountCents: -1 }],
+        },
+      }),
+    ).toMatchObject({
+      status: 'available',
+      cashPurchase: true,
+      baseline: { rows: [], payoffMonth: 0 },
+      withAdditionalRepayments: { rows: [], payoffMonth: 0 },
+    })
+  })
+
   it('rejects invalid recurring and one-time repayment inputs', () => {
     const validPayment = initialPayment()
 
@@ -258,6 +288,22 @@ describe('Sondertilgung schedules and comparisons', () => {
       status: 'unavailable',
       reason: 'VALIDATION_ERROR',
       error: {
+        field: 'oneTimeAdditionalRepayments[0].month',
+      },
+    })
+    expect(
+      calculateAmortizationSchedule({
+        payment: validPayment,
+        fixedInterestMonths: 120,
+        additionalRepayments: {
+          oneTimeAdditionalRepayments: [{ month: 1_201, amountCents: 100_000 }],
+        },
+      }),
+    ).toMatchObject({
+      status: 'unavailable',
+      reason: 'VALIDATION_ERROR',
+      error: {
+        code: 'OUT_OF_RANGE',
         field: 'oneTimeAdditionalRepayments[0].month',
       },
     })

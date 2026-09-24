@@ -163,6 +163,7 @@ export function calculateSavedScenarioComparison(scenario: SavedScenario): Scena
     scenario.inputs.purchaseCosts,
     scenario.inputs.financing,
     scenario.inputs.analysis,
+    scenario.locale === 'en-GB' ? 'en' : 'de',
   )
 
   return {
