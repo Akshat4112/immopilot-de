@@ -566,6 +566,8 @@ export const resources = {
           notApplicableMessage:
             'Bei einem Barkauf gibt es kein Darlehen und damit keinen Tilgungsvergleich.',
           unavailableReason: 'Die Eingaben zur Sondertilgung sind unvollständig oder ungültig.',
+          dependentProjectionUnavailable:
+            'Der Tilgungsverlauf mit Sondertilgung ist unvollständig oder ungültig. Die abhängige Projektion wurde nicht berechnet.',
         },
         refinancing: {
           title: 'Anschlussfinanzierung unter Stress',
@@ -616,6 +618,8 @@ export const resources = {
           notReached: 'Nicht erreicht',
           matchedBudgetDetail:
             'Verglichen wird ein gleicher monatlicher Budgetrahmen. Tilgung bleibt Vermögensaufbau und ist keine Ausgabe.',
+          matchedBudgetAdditionalRepayments:
+            'Verglichen wird ein gleicher monatlicher Budgetrahmen einschließlich aller Sondertilgungen. Tilgung bleibt Vermögensaufbau und ist keine Ausgabe.',
         },
         rental: {
           title: 'Kapitalanlage',
@@ -639,6 +643,8 @@ export const resources = {
           monthlyCashFlow: 'Monatlicher Cashflow vor Steuer',
           beforeExtra: 'Vor Sondertilgung',
           afterExtra: 'Nach Sondertilgung',
+          additionalRepaymentsIncluded:
+            'Cashflow, Restschuld, Schuldenabbau und Verkaufsergebnis berücksichtigen alle eingegebenen Sondertilgungen.',
           debtReduction: 'Schuldenabbau über Haltedauer',
           cashOnCash: 'Cash-on-Cash-Rendite',
           notAvailable: 'Nicht verfügbar',
@@ -1233,6 +1239,8 @@ export const resources = {
           notApplicableMessage:
             'A cash purchase has no mortgage and therefore no repayment comparison.',
           unavailableReason: 'The additional-repayment inputs are incomplete or invalid.',
+          dependentProjectionUnavailable:
+            'The amortization schedule with additional repayments is incomplete or invalid. The dependent projection was not calculated.',
         },
         refinancing: {
           title: 'Refinancing stress test',
@@ -1284,6 +1292,8 @@ export const resources = {
           notReached: 'Not reached',
           matchedBudgetDetail:
             'Both options use an equal monthly budget. Principal repayment remains wealth creation, not an expense.',
+          matchedBudgetAdditionalRepayments:
+            'Both options use an equal monthly budget including every additional repayment. Principal repayment remains wealth creation, not an expense.',
         },
         rental: {
           title: 'Rental investment',
@@ -1307,6 +1317,8 @@ export const resources = {
           monthlyCashFlow: 'Monthly pre-tax cash flow',
           beforeExtra: 'Before additional repayment',
           afterExtra: 'After additional repayment',
+          additionalRepaymentsIncluded:
+            'Cash flow, remaining debt, debt reduction, and sale results include every configured additional repayment.',
           debtReduction: 'Debt reduction over holding period',
           cashOnCash: 'Cash-on-cash return',
           notAvailable: 'Not available',

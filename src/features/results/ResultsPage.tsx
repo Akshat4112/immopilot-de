@@ -717,14 +717,26 @@ export function ResultsPage() {
                         }
                       />
                     </div>
-                    <p className="result-detail">{t('results.owner.matchedBudgetDetail')}</p>
+                    <p className="result-detail">
+                      {t(
+                        dashboard.selectedAmortizationBasis === 'additional-repayments'
+                          ? 'results.owner.matchedBudgetAdditionalRepayments'
+                          : 'results.owner.matchedBudgetDetail',
+                      )}
+                    </p>
                     {dashboard.modeSpecific.result.mortgageProjectionAssumption ===
                     'constant-initial-rate-beyond-fixed-period' ? (
                       <p className="result-detail">{t('results.projection.constantInitialRate')}</p>
                     ) : null}
                   </>
                 ) : (
-                  <UnavailableResult reason={dashboard.modeSpecific.result.reason} />
+                  <UnavailableResult
+                    reason={
+                      dashboard.selectedAmortizationBasis === 'unavailable'
+                        ? t('results.sondertilgung.dependentProjectionUnavailable')
+                        : dashboard.modeSpecific.result.reason
+                    }
+                  />
                 )}
               </section>
             ) : (
@@ -796,6 +808,11 @@ export function ResultsPage() {
                     'constant-initial-rate-beyond-fixed-period' ? (
                       <p className="result-detail">{t('results.projection.constantInitialRate')}</p>
                     ) : null}
+                    {dashboard.selectedAmortizationBasis === 'additional-repayments' ? (
+                      <p className="result-detail">
+                        {t('results.rental.additionalRepaymentsIncluded')}
+                      </p>
+                    ) : null}
                     {dashboard.modeSpecific.result.sale.status === 'available' ? (
                       <article className="result-card summary">
                         <h3>{t('results.rental.saleTitle')}</h3>
@@ -815,7 +832,13 @@ export function ResultsPage() {
                     ) : null}
                   </>
                 ) : (
-                  <UnavailableResult reason={dashboard.modeSpecific.result.reason} />
+                  <UnavailableResult
+                    reason={
+                      dashboard.selectedAmortizationBasis === 'unavailable'
+                        ? t('results.sondertilgung.dependentProjectionUnavailable')
+                        : dashboard.modeSpecific.result.reason
+                    }
+                  />
                 )}
               </section>
             )}
