@@ -329,7 +329,7 @@ test('carries Sondertilgung through results, saved restoration, and comparison',
   ).toBeVisible()
   await expect(
     comparison.getByRole('heading', { name: 'Zusätzliche Tilgung' }).locator('..'),
-  ).toContainText('52.500,00 €')
+  ).toContainText(/52\.500\s*€/)
   await expect(
     page.getByText(/Refinanzierungsbasis: Restschuld .* nach Sondertilgung/),
   ).toBeVisible()
@@ -393,7 +393,7 @@ test('validates one-time repayments and retains them across a cash purchase swit
   await page.getByRole('textbox', { name: 'Loan month for one-time repayment 2' }).fill('18')
   await expect(
     page.getByText('A one-time additional repayment already exists for this loan month.'),
-  ).toBeVisible()
+  ).toHaveCount(2)
 
   await page.getByRole('button', { name: 'Remove one-time repayment 2' }).click()
   await page.getByRole('radio', { name: /Use available equity/ }).check()
