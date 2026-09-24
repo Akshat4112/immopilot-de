@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
 import { PageLayout } from '../../components/PageLayout'
 import { formatEuroFromCents, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
@@ -317,6 +318,7 @@ export function ResultsPage() {
                 fixedInterestYears={financingDraft.fixedInterestYears}
                 language={language}
               />
+              <AdditionalRepaymentGuidance />
             </section>
 
             <section className="form-section results-assumptions">

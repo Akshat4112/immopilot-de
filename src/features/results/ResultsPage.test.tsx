@@ -169,7 +169,7 @@ describe('ResultsPage', () => {
     const comparison = within(section)
 
     expect(comparison.getByText(/zwei identische Darlehensverläufe/i)).toBeVisible()
-    expect(comparison.getByText('Vertragliche Monatsrate')).toBeVisible()
+    expect(comparison.getByRole('heading', { name: 'Vertragliche Monatsrate' })).toBeVisible()
     expect(comparison.getByText('Zusätzliche Tilgung')).toBeVisible()
     expect(comparison.getByText('Gesparte Zinsen')).toBeVisible()
     expect(comparison.getByText('Niedrigere Restschuld')).toBeVisible()
@@ -187,6 +187,7 @@ describe('ResultsPage', () => {
     expect(within(refinancingSection).getByText(/Restschuld .* nach Sondertilgung/)).toBeVisible()
     expect(screen.getByText(/Nach Sondertilgung und 10 Jahren Zinsbindung/)).toBeVisible()
     expect(screen.getByText(/Budgetrahmen einschließlich aller Sondertilgungen/)).toBeVisible()
+    expect(screen.getByText('So rechnet ImmoPilot mit Sondertilgungen')).toBeVisible()
   })
 
   it('explains that rental projections include configured additional repayments', () => {
