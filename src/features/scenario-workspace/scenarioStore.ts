@@ -4,6 +4,7 @@ import {
   initialFinancingDraft,
   initialPurchaseCostsDraft,
   initialScenarioAnalysisDraft,
+  sortOneTimeAdditionalRepaymentDrafts,
   type FinancingDraft,
   type PurchaseCostsDraft,
   type ScenarioAnalysisDraft,
@@ -14,6 +15,7 @@ export {
   initialFinancingDraft,
   initialPurchaseCostsDraft,
   initialScenarioAnalysisDraft,
+  sortOneTimeAdditionalRepaymentDrafts,
   type AdditionalRepaymentsDraft,
   type FinancingDraft,
   type OneTimeAdditionalRepaymentDraft,
@@ -43,10 +45,17 @@ export const useScenarioWorkspaceStore = create<ScenarioWorkspaceState>((set) =>
     set((state) => ({ financing: { ...state.financing, ...financing } })),
   updateAnalysis: (analysis) => set((state) => ({ analysis: { ...state.analysis, ...analysis } })),
   replaceWorkspace: (workspace) =>
-    set({
-      purchaseCosts: structuredClone(workspace.purchaseCosts),
-      financing: structuredClone(workspace.financing),
-      analysis: structuredClone(workspace.analysis),
+    set(() => {
+      const financing = structuredClone(workspace.financing)
+      financing.additionalRepayments.oneTimeAdditionalRepayments =
+        sortOneTimeAdditionalRepaymentDrafts(
+          financing.additionalRepayments.oneTimeAdditionalRepayments,
+        )
+      return {
+        purchaseCosts: structuredClone(workspace.purchaseCosts),
+        financing,
+        analysis: structuredClone(workspace.analysis),
+      }
     }),
   reset: () =>
     set({

@@ -1433,8 +1433,91 @@ h3 {
 }
 
 .additional-repayment-fieldset:disabled input,
-.additional-repayment-fieldset:disabled select {
+.additional-repayment-fieldset:disabled select,
+.additional-repayment-fieldset:disabled button {
   cursor: not-allowed;
+}
+
+.one-time-repayment-section {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.one-time-repayment-section__header,
+.one-time-repayment-row__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.one-time-repayment-section__header h3,
+.one-time-repayment-section__header p,
+.one-time-repayment-section__empty,
+.one-time-repayment-section__guidance {
+  margin: 0;
+}
+
+.one-time-repayment-section__header p,
+.one-time-repayment-section__empty,
+.one-time-repayment-section__guidance {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.one-time-repayment-section__header p {
+  margin-top: var(--space-2);
+}
+
+.one-time-repayment-button {
+  min-height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--color-brand);
+  border-radius: var(--radius-md);
+  color: var(--color-brand);
+  background: transparent;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.one-time-repayment-button--remove {
+  min-height: auto;
+  padding: var(--space-2) var(--space-3);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.one-time-repayment-section__empty,
+.one-time-repayment-list {
+  margin-top: var(--space-5);
+}
+
+.one-time-repayment-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.one-time-repayment-row {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.one-time-repayment-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.5fr);
+  gap: 0 var(--space-4);
+}
+
+.one-time-repayment-section__guidance {
+  margin-top: var(--space-4);
+}
+
+.additional-repayment-fieldset:disabled .one-time-repayment-section {
+  opacity: 0.55;
 }
 
 .form-field__hint {
@@ -1464,12 +1547,18 @@ h3 {
 
 @media (max-width: 53.75rem) {
   .form-fieldset,
-  .financing-input-grid {
+  .financing-input-grid,
+  .one-time-repayment-grid {
     grid-template-columns: 1fr;
   }
 
   .financing-input-grid {
     gap: 0;
+  }
+
+  .one-time-repayment-section__header {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

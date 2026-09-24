@@ -416,6 +416,27 @@ export const resources = {
           invalidMonthError: 'Wähle für einen positiven Betrag einen Monat von 1 bis 12.',
           guidance:
             'Die vertragliche Monatsrate bleibt unverändert. Prüfe zulässige Beträge, Gebühren und erforderliche Zustimmungen mit deinem Darlehensgeber.',
+          oneTimeTitle: 'Einmalige Sondertilgungen',
+          oneTimeIntro:
+            'Füge feste Beträge für einzelne Darlehensmonate hinzu. Darlehensmonat 1 ist der erste monatliche Zahlungszeitraum.',
+          addOneTime: 'Einmalzahlung hinzufügen',
+          emptyOneTime: 'Noch keine einmalige Sondertilgung erfasst.',
+          oneTimeRow: 'Einmalzahlung {{number}}',
+          oneTimeAmount: 'Betrag',
+          oneTimeAmountLabel: 'Betrag für Einmalzahlung {{number}}',
+          oneTimeMonth: 'Darlehensmonat',
+          oneTimeMonthLabel: 'Darlehensmonat für Einmalzahlung {{number}}',
+          oneTimeMonthPlaceholder: 'z. B. 18',
+          removeOneTime: 'Entfernen',
+          removeOneTimeLabel: 'Einmalzahlung {{number}} entfernen',
+          missingOneTimeAmountError: 'Gib für diese Einmalzahlung einen Betrag ein.',
+          negativeOneTimeAmountError: 'Eine einmalige Sondertilgung darf nicht negativ sein.',
+          missingOneTimeMonthError: 'Gib für diese Einmalzahlung einen Darlehensmonat ein.',
+          invalidOneTimeMonthError: 'Der Darlehensmonat muss eine ganze Zahl von 1 bis 1.200 sein.',
+          duplicateOneTimeMonthError:
+            'Für diesen Darlehensmonat gibt es bereits eine einmalige Sondertilgung.',
+          oneTimeGuidance:
+            'Einmalige und jährliche Sondertilgungen dürfen im selben Monat liegen. Darlehensmonate müssen zwischen 1 und 1.200 liegen.',
           cashPurchaseDisabled:
             'Bei einem Kauf ohne Darlehen ist keine Sondertilgung möglich. Deine Eingaben bleiben für einen späteren Wechsel zur Finanzierung erhalten.',
         },
@@ -1028,6 +1049,27 @@ export const resources = {
           invalidMonthError: 'Select a month from 1 through 12 for a positive amount.',
           guidance:
             'The contractual monthly payment remains unchanged. Confirm permitted amounts, fees and required approval with your lender.',
+          oneTimeTitle: 'One-time additional repayments',
+          oneTimeIntro:
+            'Add fixed amounts for individual loan months. Loan month 1 is the first monthly payment period.',
+          addOneTime: 'Add one-time repayment',
+          emptyOneTime: 'No one-time additional repayments have been added.',
+          oneTimeRow: 'One-time repayment {{number}}',
+          oneTimeAmount: 'Amount',
+          oneTimeAmountLabel: 'Amount for one-time repayment {{number}}',
+          oneTimeMonth: 'Loan month',
+          oneTimeMonthLabel: 'Loan month for one-time repayment {{number}}',
+          oneTimeMonthPlaceholder: 'e.g. 18',
+          removeOneTime: 'Remove',
+          removeOneTimeLabel: 'Remove one-time repayment {{number}}',
+          missingOneTimeAmountError: 'Enter an amount for this one-time repayment.',
+          negativeOneTimeAmountError: 'A one-time additional repayment cannot be negative.',
+          missingOneTimeMonthError: 'Enter a loan month for this one-time repayment.',
+          invalidOneTimeMonthError: 'The loan month must be a whole number from 1 through 1,200.',
+          duplicateOneTimeMonthError:
+            'A one-time additional repayment already exists for this loan month.',
+          oneTimeGuidance:
+            'One-time and annual additional repayments may fall in the same month. Loan months must be between 1 and 1,200.',
           cashPurchaseDisabled:
             'Additional repayment does not apply to a cash purchase. Your entries are retained if you switch back to loan financing.',
         },

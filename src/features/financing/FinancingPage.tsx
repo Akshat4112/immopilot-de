@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom'
 import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { PageLayout } from '../../components/PageLayout'
-import type { AdditionalRepaymentsDraft } from '../scenario-workspace'
+import {
+  sortOneTimeAdditionalRepaymentDrafts,
+  type AdditionalRepaymentsDraft,
+} from '../scenario-workspace'
 import { validateAnnualAdditionalRepayment } from './annualAdditionalRepayment'
+import { validateOneTimeAdditionalRepayments } from './oneTimeAdditionalRepayments'
 import { useFinancingCalculator } from './useFinancing'
 
 const fixedInterestPeriods = [5, 10, 15, 20, 30] as const
@@ -42,6 +46,12 @@ export function FinancingPage() {
         additionalRepayments.annualAdditionalRepaymentMonth,
         language,
       )
+  const oneTimeRepaymentValidations = cashPurchase
+    ? []
+    : validateOneTimeAdditionalRepayments(
+        additionalRepayments.oneTimeAdditionalRepayments,
+        language,
+      )
 
   const updateAdditionalRepayments = (updates: Partial<AdditionalRepaymentsDraft>) => {
     updateFinancing({
@@ -50,6 +60,16 @@ export function FinancingPage() {
         ...updates,
       },
     })
+  }
+
+  const updateOneTimeRepayments = (
+    rows: AdditionalRepaymentsDraft['oneTimeAdditionalRepayments'],
+  ) => updateAdditionalRepayments({ oneTimeAdditionalRepayments: rows })
+
+  const sortOneTimeRepayments = () => {
+    updateOneTimeRepayments(
+      sortOneTimeAdditionalRepaymentDrafts(additionalRepayments.oneTimeAdditionalRepayments),
+    )
   }
 
   return (
@@ -303,6 +323,157 @@ export function FinancingPage() {
             <p className="additional-repayment-fieldset__guidance">
               {t('finance.additionalRepayment.guidance')}
             </p>
+            <section className="one-time-repayment-section">
+              <div className="one-time-repayment-section__header">
+                <div>
+                  <h3>{t('finance.additionalRepayment.oneTimeTitle')}</h3>
+                  <p>{t('finance.additionalRepayment.oneTimeIntro')}</p>
+                </div>
+                <button
+                  className="one-time-repayment-button"
+                  onClick={() =>
+                    updateOneTimeRepayments([
+                      ...additionalRepayments.oneTimeAdditionalRepayments,
+                      { amount: '', month: '' },
+                    ])
+                  }
+                  type="button"
+                >
+                  {t('finance.additionalRepayment.addOneTime')}
+                </button>
+              </div>
+
+              {additionalRepayments.oneTimeAdditionalRepayments.length === 0 ? (
+                <p className="one-time-repayment-section__empty">
+                  {t('finance.additionalRepayment.emptyOneTime')}
+                </p>
+              ) : (
+                <div className="one-time-repayment-list">
+                  {additionalRepayments.oneTimeAdditionalRepayments.map((row, index) => {
+                    const validation = oneTimeRepaymentValidations[index]
+                    const amountErrorId = `oneTimeAdditionalRepayment-${index}-amount-error`
+                    const monthErrorId = `oneTimeAdditionalRepayment-${index}-month-error`
+
+                    return (
+                      <div className="one-time-repayment-row" key={index}>
+                        <div className="one-time-repayment-row__header">
+                          <strong>
+                            {t('finance.additionalRepayment.oneTimeRow', { number: index + 1 })}
+                          </strong>
+                          <button
+                            aria-label={t('finance.additionalRepayment.removeOneTimeLabel', {
+                              number: index + 1,
+                            })}
+                            className="one-time-repayment-button one-time-repayment-button--remove"
+                            onClick={() =>
+                              updateOneTimeRepayments(
+                                additionalRepayments.oneTimeAdditionalRepayments.filter(
+                                  (_, rowIndex) => rowIndex !== index,
+                                ),
+                              )
+                            }
+                            type="button"
+                          >
+                            {t('finance.additionalRepayment.removeOneTime')}
+                          </button>
+                        </div>
+                        <div className="one-time-repayment-grid">
+                          <label className="form-field">
+                            <span className="form-field__label">
+                              {t('finance.additionalRepayment.oneTimeAmount')}
+                            </span>
+                            <div className="form-field__input-group">
+                              <input
+                                aria-label={t('finance.additionalRepayment.oneTimeAmountLabel', {
+                                  number: index + 1,
+                                })}
+                                aria-describedby={
+                                  validation?.amountIssue ? amountErrorId : undefined
+                                }
+                                aria-invalid={!!validation?.amountIssue}
+                                className={validation?.amountIssue ? 'error' : undefined}
+                                inputMode="decimal"
+                                onBlur={sortOneTimeRepayments}
+                                onChange={(event) =>
+                                  updateOneTimeRepayments(
+                                    additionalRepayments.oneTimeAdditionalRepayments.map(
+                                      (currentRow, rowIndex) =>
+                                        rowIndex === index
+                                          ? { ...currentRow, amount: event.target.value }
+                                          : currentRow,
+                                    ),
+                                  )
+                                }
+                                placeholder={t('finance.additionalRepayment.amountPlaceholder')}
+                                type="text"
+                                value={row.amount}
+                              />
+                              <span className="form-field__currency" aria-hidden="true">
+                                €
+                              </span>
+                            </div>
+                            {validation?.amountIssue && (
+                              <p className="form-field__error" id={amountErrorId} role="alert">
+                                {t(
+                                  validation.amountIssue === 'missing-amount'
+                                    ? 'finance.additionalRepayment.missingOneTimeAmountError'
+                                    : validation.amountIssue === 'negative-amount'
+                                      ? 'finance.additionalRepayment.negativeOneTimeAmountError'
+                                      : 'finance.additionalRepayment.invalidAmountError',
+                                )}
+                              </p>
+                            )}
+                          </label>
+
+                          <label className="form-field">
+                            <span className="form-field__label">
+                              {t('finance.additionalRepayment.oneTimeMonth')}
+                            </span>
+                            <input
+                              aria-label={t('finance.additionalRepayment.oneTimeMonthLabel', {
+                                number: index + 1,
+                              })}
+                              aria-describedby={validation?.monthIssue ? monthErrorId : undefined}
+                              aria-invalid={!!validation?.monthIssue}
+                              className={validation?.monthIssue ? 'error' : undefined}
+                              inputMode="numeric"
+                              onBlur={sortOneTimeRepayments}
+                              onChange={(event) =>
+                                updateOneTimeRepayments(
+                                  additionalRepayments.oneTimeAdditionalRepayments.map(
+                                    (currentRow, rowIndex) =>
+                                      rowIndex === index
+                                        ? { ...currentRow, month: event.target.value }
+                                        : currentRow,
+                                  ),
+                                )
+                              }
+                              placeholder={t('finance.additionalRepayment.oneTimeMonthPlaceholder')}
+                              type="text"
+                              value={row.month}
+                            />
+                            {validation?.monthIssue && (
+                              <p className="form-field__error" id={monthErrorId} role="alert">
+                                {t(
+                                  validation.monthIssue === 'missing-month'
+                                    ? 'finance.additionalRepayment.missingOneTimeMonthError'
+                                    : validation.monthIssue === 'duplicate-month'
+                                      ? 'finance.additionalRepayment.duplicateOneTimeMonthError'
+                                      : 'finance.additionalRepayment.invalidOneTimeMonthError',
+                                )}
+                              </p>
+                            )}
+                          </label>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              <p className="one-time-repayment-section__guidance">
+                {t('finance.additionalRepayment.oneTimeGuidance')}
+              </p>
+            </section>
             {cashPurchase && (
               <p className="additional-repayment-fieldset__disabled" role="status">
                 {t('finance.additionalRepayment.cashPurchaseDisabled')}

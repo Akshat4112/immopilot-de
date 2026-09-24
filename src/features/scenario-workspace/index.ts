@@ -14,6 +14,7 @@ export {
   initialFinancingDraft,
   initialPurchaseCostsDraft,
   initialScenarioAnalysisDraft,
+  sortOneTimeAdditionalRepaymentDrafts,
   useScenarioWorkspaceStore,
   type AdditionalRepaymentsDraft,
   type PropertyUseDraft,
