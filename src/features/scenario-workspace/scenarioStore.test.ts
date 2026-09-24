@@ -69,6 +69,24 @@ describe('scenario workspace', () => {
     expect(useScenarioWorkspaceStore.getState()).not.toHaveProperty('results')
   })
 
+  it('resets annual additional repayment inputs to their Version 1 defaults', () => {
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '6',
+        oneTimeAdditionalRepayments: [],
+      },
+    })
+
+    useScenarioWorkspaceStore.getState().reset()
+
+    expect(useScenarioWorkspaceStore.getState().financing.additionalRepayments).toEqual({
+      annualAdditionalRepayment: '',
+      annualAdditionalRepaymentMonth: '12',
+      oneTimeAdditionalRepayments: [],
+    })
+  })
+
   it('composes the acquisition, financing, payment and amortization modules for a funded loan', () => {
     const result = calculateScenarioWorkspace(completePurchaseDraft(), {
       ...initialFinancingDraft,
