@@ -186,6 +186,31 @@ describe('ResultsPage', () => {
     if (!refinancingSection) throw new Error('Expected the refinancing section')
     expect(within(refinancingSection).getByText(/Restschuld .* nach Sondertilgung/)).toBeVisible()
     expect(screen.getByText(/Nach Sondertilgung und 10 Jahren Zinsbindung/)).toBeVisible()
+    expect(screen.getByText(/Budgetrahmen einschließlich aller Sondertilgungen/)).toBeVisible()
+  })
+
+  it('explains that rental projections include configured additional repayments', () => {
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [{ amount: '2.500', month: '12' }],
+      },
+    })
+    useScenarioWorkspaceStore.getState().updateAnalysis({
+      ...initialScenarioAnalysisDraft,
+      propertyUse: 'rental-investment',
+      monthlyNetColdRent: '1000',
+      monthlyNonRecoverableHausgeld: '150',
+      rentalPropertyAppreciationRate: '2',
+      rentalSellingCostRate: '3',
+    })
+
+    renderPage()
+
+    expect(
+      screen.getByText(/Cashflow, Restschuld, Schuldenabbau und Verkaufsergebnis/),
+    ).toBeVisible()
   })
 
   it('marks an invalid additional-repayment comparison as unavailable', () => {
@@ -214,6 +239,7 @@ describe('ResultsPage', () => {
         /Tilgungsverlauf mit Sondertilgung ist nicht verfügbar/i,
       ),
     ).toBeVisible()
+    expect(screen.getByText(/abhängige Projektion wurde nicht berechnet/i)).toBeVisible()
   })
 
   it('provides the additional-repayment comparison in English', async () => {
@@ -234,6 +260,9 @@ describe('ResultsPage', () => {
     expect(screen.getAllByText(/Constant-rate projection/)).toHaveLength(2)
     expect(
       screen.getByText(/Refinancing basis: remaining debt .* after additional repayments/),
+    ).toBeVisible()
+    expect(
+      screen.getByText(/equal monthly budget including every additional repayment/i),
     ).toBeVisible()
   })
 

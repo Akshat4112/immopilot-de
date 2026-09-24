@@ -499,13 +499,17 @@ export function calculateScenarioDashboard(
         ? baselineFixedPeriod
         : calculateFixedPeriod(workspace.selectedAmortization)
   const refinancing = calculateRefinancingFromDraft(fixedPeriod, workspace.payment, analysisDraft)
+  const projectionAmortization =
+    workspace.additionalRepaymentComparison.status === 'available'
+      ? workspace.selectedAmortization
+      : workspace.additionalRepaymentComparison.schedule
   const modeSpecific =
     analysisDraft.propertyUse === 'owner-occupier'
       ? {
           mode: 'owner-occupier' as const,
           result: calculateOwnerOccupierFromDraft(
             workspace.financing,
-            workspace.amortization,
+            projectionAmortization,
             analysisDraft,
           ),
         }
@@ -513,7 +517,7 @@ export function calculateScenarioDashboard(
           mode: 'rental-investment' as const,
           result: calculateRentalFromDraft(
             workspace.financing,
-            workspace.amortization,
+            projectionAmortization,
             analysisDraft,
           ),
         }

@@ -157,13 +157,116 @@ describe('single-property dashboard calculations', () => {
     })
   })
 
-  it('keeps owner and rental analysis on the baseline until PF-004.8', () => {
+  it('uses Sondertilgung in the owner matched-budget projection', () => {
     const financingWithAdditionalRepayments = {
       ...fundedFinancing,
       additionalRepayments: {
         annualAdditionalRepayment: '5.000',
         annualAdditionalRepaymentMonth: '12',
         oneTimeAdditionalRepayments: [],
+      },
+    }
+    const analysis = {
+      ...initialScenarioAnalysisDraft,
+      currentComparableRent: '1000',
+      monthlyOwnerCosts: '250',
+    }
+    const baseline = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, analysis)
+    const withAdditionalRepayments = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      financingWithAdditionalRepayments,
+      analysis,
+    )
+
+    expect(baseline.modeSpecific.mode).toBe('owner-occupier')
+    expect(withAdditionalRepayments.modeSpecific.mode).toBe('owner-occupier')
+    if (
+      baseline.modeSpecific.mode !== 'owner-occupier' ||
+      baseline.modeSpecific.result.status !== 'available' ||
+      withAdditionalRepayments.modeSpecific.mode !== 'owner-occupier' ||
+      withAdditionalRepayments.modeSpecific.result.status !== 'available'
+    ) {
+      throw new Error('Expected available owner projections')
+    }
+
+    const baselineMonth12 = baseline.modeSpecific.result.rows[11]!
+    const selectedMonth12 = withAdditionalRepayments.modeSpecific.result.rows[11]!
+    expect(selectedMonth12.additionalRepaymentCents).toBe(500_000)
+    expect(selectedMonth12.buyerHousingOutflowCents).toBe(
+      baselineMonth12.buyerHousingOutflowCents + 500_000,
+    )
+    expect(selectedMonth12.remainingMortgageDebtCents).toBeLessThan(
+      baselineMonth12.remainingMortgageDebtCents,
+    )
+    expect(
+      withAdditionalRepayments.modeSpecific.result.atAnalysisMonth.remainingMortgageDebtCents,
+    ).toBeLessThan(baseline.modeSpecific.result.atAnalysisMonth.remainingMortgageDebtCents)
+  })
+
+  it('uses overlapping repayments in rental cash flow, debt, and sale projections', () => {
+    const analysis = {
+      ...initialScenarioAnalysisDraft,
+      propertyUse: 'rental-investment' as const,
+      monthlyNetColdRent: '1000',
+      monthlyNonRecoverableHausgeld: '150',
+      rentalPropertyAppreciationRate: '2',
+      rentalSellingCostRate: '3',
+    }
+    const baseline = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, analysis)
+    const withAdditionalRepayments = calculateScenarioDashboard(
+      completePurchaseDraft(),
+      {
+        ...fundedFinancing,
+        additionalRepayments: {
+          annualAdditionalRepayment: '5.000',
+          annualAdditionalRepaymentMonth: '12',
+          oneTimeAdditionalRepayments: [{ amount: '2.500', month: '12' }],
+        },
+      },
+      analysis,
+    )
+
+    expect(baseline.modeSpecific.mode).toBe('rental-investment')
+    expect(withAdditionalRepayments.modeSpecific.mode).toBe('rental-investment')
+    if (
+      baseline.modeSpecific.mode !== 'rental-investment' ||
+      baseline.modeSpecific.result.status !== 'available' ||
+      baseline.modeSpecific.result.sale.status !== 'available' ||
+      withAdditionalRepayments.modeSpecific.mode !== 'rental-investment' ||
+      withAdditionalRepayments.modeSpecific.result.status !== 'available' ||
+      withAdditionalRepayments.modeSpecific.result.sale.status !== 'available'
+    ) {
+      throw new Error('Expected available rental projections with a projected sale')
+    }
+
+    const baselineMonth12 = baseline.modeSpecific.result.rows[11]!
+    const selectedMonth12 = withAdditionalRepayments.modeSpecific.result.rows[11]!
+    expect(selectedMonth12.additionalRepaymentCents).toBe(750_000)
+    expect(selectedMonth12.preTaxCashFlowAfterExtraCents).toBe(
+      selectedMonth12.preTaxCashFlowBeforeExtraCents - 750_000,
+    )
+    expect(selectedMonth12.remainingDebtCents).toBeLessThan(baselineMonth12.remainingDebtCents)
+    expect(
+      withAdditionalRepayments.modeSpecific.result.remainingDebtAfterHoldingPeriodCents,
+    ).toBeLessThan(baseline.modeSpecific.result.remainingDebtAfterHoldingPeriodCents)
+    expect(withAdditionalRepayments.modeSpecific.result.sale.netSaleProceedsCents).toBeGreaterThan(
+      baseline.modeSpecific.result.sale.netSaleProceedsCents,
+    )
+    expect(withAdditionalRepayments.modeSpecific.result.grossRentalYield.toString()).toBe(
+      baseline.modeSpecific.result.grossRentalYield.toString(),
+    )
+    expect(withAdditionalRepayments.modeSpecific.result.netRentalYield.toString()).toBe(
+      baseline.modeSpecific.result.netRentalYield.toString(),
+    )
+  })
+
+  it('blocks owner and rental projections when the selected schedule is invalid', () => {
+    const invalidFinancing = {
+      ...fundedFinancing,
+      additionalRepayments: {
+        annualAdditionalRepayment: '',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [{ amount: '', month: '18' }],
       },
     }
     const analyses = [
@@ -181,18 +284,12 @@ describe('single-property dashboard calculations', () => {
     ]
 
     for (const analysis of analyses) {
-      const baseline = calculateScenarioDashboard(
-        completePurchaseDraft(),
-        fundedFinancing,
-        analysis,
-      )
-      const withAdditionalRepayments = calculateScenarioDashboard(
-        completePurchaseDraft(),
-        financingWithAdditionalRepayments,
-        analysis,
-      )
-
-      expect(withAdditionalRepayments.modeSpecific).toEqual(baseline.modeSpecific)
+      const result = calculateScenarioDashboard(completePurchaseDraft(), invalidFinancing, analysis)
+      expect(result.selectedAmortizationBasis).toBe('unavailable')
+      expect(result.modeSpecific.result).toMatchObject({
+        status: 'unavailable',
+        reason: 'AMORTIZATION_UNAVAILABLE',
+      })
     }
   })
 
