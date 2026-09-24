@@ -1391,6 +1391,52 @@ h3 {
   box-shadow: 0 0 0 3px var(--color-brand-alpha);
 }
 
+.additional-repayment-fieldset {
+  margin: var(--space-7) 0 0;
+  padding: var(--space-6) 0 0;
+  border: 0;
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.additional-repayment-fieldset legend {
+  padding: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.additional-repayment-fieldset__intro,
+.additional-repayment-fieldset__guidance,
+.additional-repayment-fieldset__disabled {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.additional-repayment-fieldset__intro {
+  margin: var(--space-2) 0 var(--space-5);
+}
+
+.additional-repayment-fieldset__guidance {
+  margin: 0;
+}
+
+.additional-repayment-fieldset__disabled {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 0.25rem solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.additional-repayment-fieldset:disabled .financing-input-grid,
+.additional-repayment-fieldset:disabled .additional-repayment-fieldset__guidance {
+  opacity: 0.55;
+}
+
+.additional-repayment-fieldset:disabled input,
+.additional-repayment-fieldset:disabled select {
+  cursor: not-allowed;
+}
+
 .form-field__hint {
   align-self: end;
   padding: var(--space-4);
