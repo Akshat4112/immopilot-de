@@ -133,6 +133,11 @@ describe('scenario persistence', () => {
     expect(duplicate.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments).not.toBe(
       source.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments,
     )
+
+    duplicate.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments[0]!.amount = '9.999'
+    expect(
+      source.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments[0]?.amount,
+    ).toBe('2.500')
   })
 
   it('keeps generated duplicate names within the validated limit', () => {
@@ -161,6 +166,50 @@ describe('scenario persistence', () => {
 
     expect(clearScenarioLibrary({ removeItem: (key) => memory.delete(key) })).toBe(true)
     expect(readScenarioLibrary(storage)).toEqual({ scenarios: [] })
+  })
+
+  it('preserves the complete repayment plan across storage, JSON, and share round-trips', () => {
+    const memory = new Map<string, string>()
+    const storage = {
+      getItem: (key: string) => memory.get(key) ?? null,
+      setItem: (key: string, value: string) => memory.set(key, value),
+    }
+    const scenario = createSavedScenario('Boundary plan', inputs, {
+      id: 'boundary-plan',
+      locale: 'de-DE',
+      now: new Date('2026-09-23T12:00:00.000Z'),
+    })
+    scenario.inputs.financing.additionalRepayments = {
+      annualAdditionalRepayment: '1.234,56',
+      annualAdditionalRepaymentMonth: '1',
+      oneTimeAdditionalRepayments: [
+        { amount: '2.500,05', month: '1' },
+        { amount: '10.000', month: '120' },
+        { amount: '500', month: '1200' },
+      ],
+    }
+
+    expect(writeScenarioLibrary(storage, [scenario])).toBe(true)
+    expect(
+      readScenarioLibrary(storage).scenarios[0]?.inputs.financing.additionalRepayments,
+    ).toEqual(scenario.inputs.financing.additionalRepayments)
+
+    const imported = parseScenarioJson(serializeScenario(scenario))
+    expect(imported.status).toBe('valid')
+    if (imported.status !== 'valid') return
+    expect(imported.scenario.inputs.financing.additionalRepayments).toEqual(
+      scenario.inputs.financing.additionalRepayments,
+    )
+
+    const shareUrl = createScenarioShareUrl(scenario, 'https://example.test/#/results')
+    const encoded = new URL(shareUrl).hash.split('scenario=')[1]
+    expect(encoded).toBeDefined()
+    const shared = parseSharedScenario(decodeURIComponent(encoded!))
+    expect(shared.status).toBe('valid')
+    if (shared.status !== 'valid') return
+    expect(shared.scenario.inputs.financing.additionalRepayments).toEqual(
+      scenario.inputs.financing.additionalRepayments,
+    )
   })
 
   it('migrates an entire 1.0.0 local library without rewriting the storage key', () => {
