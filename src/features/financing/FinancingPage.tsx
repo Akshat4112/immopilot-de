@@ -4,9 +4,12 @@ import { Link } from 'react-router-dom'
 import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { PageLayout } from '../../components/PageLayout'
+import type { AdditionalRepaymentsDraft } from '../scenario-workspace'
+import { validateAnnualAdditionalRepayment } from './annualAdditionalRepayment'
 import { useFinancingCalculator } from './useFinancing'
 
 const fixedInterestPeriods = [5, 10, 15, 20, 30] as const
+const annualPaymentMonths = Array.from({ length: 12 }, (_, index) => index + 1)
 
 function inputValue(value: string) {
   return value.replace(/[^\d,.]/g, '')
@@ -30,6 +33,24 @@ export function FinancingPage() {
   const financingReady = financing.status === 'available'
   const paymentReady = payment.status === 'available'
   const scheduleReady = amortization.status === 'available'
+  const cashPurchase = paymentReady && payment.cashPurchase
+  const additionalRepayments = financingDraft.additionalRepayments
+  const annualRepaymentValidation = cashPurchase
+    ? { amountCents: 0 }
+    : validateAnnualAdditionalRepayment(
+        additionalRepayments.annualAdditionalRepayment,
+        additionalRepayments.annualAdditionalRepaymentMonth,
+        language,
+      )
+
+  const updateAdditionalRepayments = (updates: Partial<AdditionalRepaymentsDraft>) => {
+    updateFinancing({
+      additionalRepayments: {
+        ...additionalRepayments,
+        ...updates,
+      },
+    })
+  }
 
   return (
     <PageLayout
@@ -189,6 +210,105 @@ export function FinancingPage() {
               </select>
             </label>
           </div>
+
+          <fieldset className="additional-repayment-fieldset" disabled={cashPurchase}>
+            <legend>{t('finance.additionalRepayment.legend')}</legend>
+            <p className="additional-repayment-fieldset__intro">
+              {t('finance.additionalRepayment.intro')}
+            </p>
+            <div className="financing-input-grid">
+              <label className="form-field" htmlFor="annualAdditionalRepayment">
+                <span className="form-field__label">
+                  {t('finance.additionalRepayment.annualAmount')}
+                </span>
+                <div className="form-field__input-group">
+                  <input
+                    aria-describedby={
+                      annualRepaymentValidation.amountIssue
+                        ? 'annualAdditionalRepayment-error'
+                        : undefined
+                    }
+                    aria-invalid={!!annualRepaymentValidation.amountIssue}
+                    className={annualRepaymentValidation.amountIssue ? 'error' : undefined}
+                    id="annualAdditionalRepayment"
+                    inputMode="decimal"
+                    onChange={(event) =>
+                      updateAdditionalRepayments({
+                        annualAdditionalRepayment: event.target.value,
+                      })
+                    }
+                    placeholder={t('finance.additionalRepayment.amountPlaceholder')}
+                    type="text"
+                    value={additionalRepayments.annualAdditionalRepayment}
+                  />
+                  <span className="form-field__currency" aria-hidden="true">
+                    €
+                  </span>
+                </div>
+                {annualRepaymentValidation.amountIssue && (
+                  <p
+                    className="form-field__error"
+                    id="annualAdditionalRepayment-error"
+                    role="alert"
+                  >
+                    {t(
+                      annualRepaymentValidation.amountIssue === 'negative-amount'
+                        ? 'finance.additionalRepayment.negativeAmountError'
+                        : 'finance.additionalRepayment.invalidAmountError',
+                    )}
+                  </p>
+                )}
+              </label>
+
+              <label className="form-field" htmlFor="annualAdditionalRepaymentMonth">
+                <span className="form-field__label">
+                  {t('finance.additionalRepayment.annualMonth')}
+                </span>
+                <div className="form-field__input-group">
+                  <select
+                    aria-describedby={
+                      annualRepaymentValidation.monthIssue
+                        ? 'annualAdditionalRepaymentMonth-error'
+                        : undefined
+                    }
+                    aria-invalid={!!annualRepaymentValidation.monthIssue}
+                    className={annualRepaymentValidation.monthIssue ? 'error' : undefined}
+                    id="annualAdditionalRepaymentMonth"
+                    onChange={(event) =>
+                      updateAdditionalRepayments({
+                        annualAdditionalRepaymentMonth: event.target.value,
+                      })
+                    }
+                    value={additionalRepayments.annualAdditionalRepaymentMonth}
+                  >
+                    <option value="">{t('finance.additionalRepayment.selectMonth')}</option>
+                    {annualPaymentMonths.map((month) => (
+                      <option key={month} value={month}>
+                        {t('finance.additionalRepayment.monthOption', { month })}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {annualRepaymentValidation.monthIssue && (
+                  <p
+                    className="form-field__error"
+                    id="annualAdditionalRepaymentMonth-error"
+                    role="alert"
+                  >
+                    {t('finance.additionalRepayment.invalidMonthError')}
+                  </p>
+                )}
+              </label>
+            </div>
+            <p className="additional-repayment-fieldset__guidance">
+              {t('finance.additionalRepayment.guidance')}
+            </p>
+            {cashPurchase && (
+              <p className="additional-repayment-fieldset__disabled" role="status">
+                {t('finance.additionalRepayment.cashPurchaseDisabled')}
+              </p>
+            )}
+          </fieldset>
         </section>
 
         <section className="results-section" aria-live="polite">
