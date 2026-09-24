@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml/badge.svg)](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml)
 
-ImmoPilot DE is a planned client-side application for evaluating residential property purchases and financing decisions in the German market.
+ImmoPilot DE is a client-side application for evaluating residential property purchases and financing decisions in the German market.
 
-> Status: foundation implementation. The application is not yet released.
+> Status: Version 1 implementation in progress. The application is not yet released.
 
 ## Version 1 scope
 
@@ -21,14 +21,14 @@ ImmoPilot DE is a planned client-side application for evaluating residential pro
 
 ## Current interactive workflow
 
-The current application flow supports **Kaufkosten** (purchase costs) followed by
-**Finanzierung** (financing and mortgage planning). The pages share one
-in-memory scenario draft: purchase-cost inputs continue into the financing page,
-where the existing calculation engine recomputes acquisition costs, required
-equity, loan amount, annuity payment and amortization results.
+The application supports purchase costs, financing, single-property results, named saved scenarios
+and comparison of up to three properties. These pages share one scenario workspace and always
+recalculate results through the domain engine.
 
-The draft stores only the user's inputs. It is intentionally cleared on a browser
-reload; local storage, share links and JSON import/export are later milestones.
+Saved scenarios persist only versioned user inputs in browser storage. Users can rename, duplicate,
+delete and reset them, import or export validated JSON, and create local share links without a
+backend. PF-004 adds the Sondertilgung controls and connects the existing repayment engine to these
+workflows.
 
 ## Product principles
 
@@ -57,6 +57,7 @@ reload; local storage, share links and JSON import/export are later milestones.
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
 - [Calculation-engine conventions](docs/calculation-engine-conventions.md): cent-exact money, decimal rates, rounding boundaries and validation errors
+- [Sondertilgung product contract](docs/sondertilgung-product-contract.md): approved inputs, timing, comparisons, migration and downstream-calculation behavior for PF-004
 
 ## Planned technology
 
