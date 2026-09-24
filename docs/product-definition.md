@@ -180,6 +180,11 @@ The quick flow must produce useful results without forcing the user to understan
 7. Compare up to three named scenarios.
 8. Save locally, create a shareable link or export the report.
 
+The Version 1 Sondertilgung workflow follows the approved
+[Sondertilgung product contract](sondertilgung-product-contract.md). It supports one recurring
+annual amount and explicit one-time repayment months, keeps the contractual monthly payment
+unchanged and distinguishes fixed-period results from constant-rate projections.
+
 ### Result hierarchy
 
 Every module follows the same order:
