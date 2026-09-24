@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -152,6 +152,70 @@ describe('ResultsPage', () => {
     expect(screen.getByText(/Nach Ende der Zinsbindung/)).toBeVisible()
   })
 
+  it('shows the baseline comparison, fixed-period impact, and constant-rate projections', () => {
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [{ amount: '2.500', month: '12' }],
+      },
+    })
+
+    renderPage()
+
+    const heading = screen.getByRole('heading', { name: 'Sondertilgung im Vergleich' })
+    const section = heading.closest('section')
+    if (!section) throw new Error('Expected the Sondertilgung result section')
+    const comparison = within(section)
+
+    expect(comparison.getByText(/zwei identische Darlehensverläufe/i)).toBeVisible()
+    expect(comparison.getByText('Vertragliche Monatsrate')).toBeVisible()
+    expect(comparison.getByText('Zusätzliche Tilgung')).toBeVisible()
+    expect(comparison.getByText('Gesparte Zinsen')).toBeVisible()
+    expect(comparison.getByText('Niedrigere Restschuld')).toBeVisible()
+    expect(comparison.getByText('Projizierte Zinsersparnis gesamt')).toBeVisible()
+    expect(comparison.getByText('Projizierte Zeitersparnis')).toBeVisible()
+    expect(comparison.getByText(/916,67/)).toBeVisible()
+    expect(comparison.getByText(/Jahre.*Monate/)).toBeVisible()
+    expect(comparison.getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(2)
+  })
+
+  it('marks an invalid additional-repayment comparison as unavailable', () => {
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        annualAdditionalRepayment: '',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [{ amount: '', month: '18' }],
+      },
+    })
+
+    renderPage()
+
+    const heading = screen.getByRole('heading', { name: 'Sondertilgung im Vergleich' })
+    const section = heading.closest('section')
+    if (!section) throw new Error('Expected the Sondertilgung result section')
+    expect(within(section).getByRole('heading', { name: 'Ergebnis nicht verfügbar' })).toBeVisible()
+    expect(within(section).getByText(/unvollständig oder ungültig/i)).toBeVisible()
+  })
+
+  it('provides the additional-repayment comparison in English', async () => {
+    await i18n.changeLanguage('en')
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      additionalRepayments: {
+        annualAdditionalRepayment: '5,000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [],
+      },
+    })
+
+    renderPage()
+
+    expect(screen.getByRole('heading', { name: 'Additional repayment comparison' })).toBeVisible()
+    expect(screen.getByText('Additional principal repaid')).toBeVisible()
+    expect(screen.getByText('Projected lifetime interest saved')).toBeVisible()
+    expect(screen.getAllByText(/Constant-rate projection/)).toHaveLength(2)
+  })
+
   it('marks refinancing as not applicable for a cash purchase', () => {
     useScenarioWorkspaceStore.getState().updateFinancing({
       ...initialFinancingDraft,
@@ -164,5 +228,6 @@ describe('ResultsPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Keine Anschlussfinanzierung erforderlich' }),
     ).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Keine Sondertilgung anwendbar' })).toBeVisible()
   })
 })
