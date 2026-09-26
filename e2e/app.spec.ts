@@ -207,7 +207,7 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   const baselineSchedule = page.getByRole('table', {
     name: 'Tilgungsplan ohne Sondertilgung',
   })
-  await expect(baselineSchedule.getByRole('rowheader', { name: '12' })).toBeVisible()
+  await expect(baselineSchedule.getByRole('rowheader', { name: '12', exact: true })).toBeVisible()
   await expect(baselineSchedule.getByRole('columnheader', { name: 'Zinsen' })).toBeVisible()
 
   await page.getByRole('button', { name: 'English' }).click()
@@ -335,7 +335,7 @@ test('carries Sondertilgung through results, saved restoration, and comparison',
   const selectedSchedule = page.getByRole('table', {
     name: 'Tilgungsplan mit Sondertilgung',
   })
-  const month12 = selectedSchedule.getByRole('rowheader', { name: '12' }).locator('..')
+  const month12 = selectedSchedule.getByRole('rowheader', { name: '12', exact: true }).locator('..')
   await expect(month12).toContainText(/7\.500(?:,00)?\s*€/)
 
   await page.getByRole('link', { name: 'Zur Auswertung →' }).click()
