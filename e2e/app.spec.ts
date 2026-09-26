@@ -1,6 +1,20 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 const applicationPath = '/immopilot-de/'
+
+async function completeFinancedPurchase(page: Page) {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
+
+  const budgetStatuses = page.locator('.budget-field__status-select')
+  await budgetStatuses.nth(0).selectOption('confirmed-zero')
+  await budgetStatuses.nth(1).selectOption('confirmed-zero')
+
+  await page.getByRole('link', { name: 'Zur Finanzierung →' }).click()
+  await page.getByRole('textbox', { name: 'Verfügbares Eigenkapital' }).fill('66250')
+  await page.getByRole('textbox', { name: 'Anzahlung auf den Kaufpreis' }).fill('50000')
+  await expect(page.getByRole('heading', { name: 'Finanzierung gedeckt' })).toBeVisible()
+}
 
 test('loads the desktop shell and keeps route navigation under the Pages path', async ({
   page,
@@ -295,4 +309,116 @@ test('compares three saved properties and supports reorder, remove, and mobile s
   })()`)
   expect(overflow.content).toBeGreaterThan(overflow.container)
   expect(overflow.page).toBeLessThanOrEqual(overflow.viewport)
+})
+
+test('carries Sondertilgung through results, saved restoration, and comparison', async ({
+  page,
+}) => {
+  await completeFinancedPurchase(page)
+
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5.000')
+  await page.getByRole('combobox', { name: 'Monat im Darlehensjahr' }).selectOption('12')
+  await page.getByRole('button', { name: 'Einmalzahlung hinzufügen' }).click()
+  await page.getByRole('textbox', { name: 'Betrag für Einmalzahlung 1' }).fill('2.500')
+  await page.getByRole('textbox', { name: 'Darlehensmonat für Einmalzahlung 1' }).fill('12')
+
+  await page.getByRole('link', { name: 'Zur Auswertung →' }).click()
+  const comparison = page.locator('.sondertilgung-comparison')
+  await expect(
+    comparison.getByRole('heading', { name: 'Sondertilgung im Vergleich' }),
+  ).toBeVisible()
+  await expect(
+    comparison.getByRole('heading', { name: 'Zusätzliche Tilgung' }).locator('..'),
+  ).toContainText(/52\.500\s*€/)
+  await expect(
+    page.getByText(/Refinanzierungsbasis: Restschuld .* nach Sondertilgung/),
+  ).toBeVisible()
+
+  await page.getByRole('link', { name: 'Gespeicherte Szenarien' }).click()
+  await page.getByLabel('Szenarioname').fill('Sondertilgung Plan')
+  await page.getByRole('button', { name: 'Szenario speichern' }).click()
+  await expect(page.getByText('Szenario gespeichert.')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Arbeitsstand zurücksetzen' }).click()
+  await expect(page.getByText('Der aktuelle Arbeitsstand wurde zurückgesetzt.')).toBeVisible()
+
+  const savedRegion = page.getByRole('region', { name: 'Lokal gespeicherte Szenarien' })
+  const savedCard = savedRegion
+    .getByRole('listitem')
+    .filter({ has: page.locator('input[value="Sondertilgung Plan"]') })
+  await savedCard.getByRole('button', { name: 'Laden' }).click()
+  await expect(
+    page.getByText('Szenario geladen. Alle Ergebnisse werden neu berechnet.'),
+  ).toBeVisible()
+
+  await page.goto('./#/financing')
+  await expect(page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' })).toHaveValue('5.000')
+  await expect(page.getByRole('combobox', { name: 'Monat im Darlehensjahr' })).toHaveValue('12')
+  await expect(page.getByRole('textbox', { name: 'Betrag für Einmalzahlung 1' })).toHaveValue(
+    '2.500',
+  )
+  await expect(
+    page.getByRole('textbox', { name: 'Darlehensmonat für Einmalzahlung 1' }),
+  ).toHaveValue('12')
+
+  await page.goto('./#/scenarios')
+  await savedCard.getByRole('link', { name: 'Vergleichen' }).click()
+  await expect(
+    page.getByRole('columnheader', { name: /Sondertilgung Plan.*Mit Sondertilgung/ }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(
+    page.getByRole('columnheader', {
+      name: /Sondertilgung Plan.*With additional repayments/,
+    }),
+  ).toBeVisible()
+})
+
+test('validates one-time repayments and retains them across a cash purchase switch', async ({
+  page,
+}) => {
+  await completeFinancedPurchase(page)
+  await page.getByRole('button', { name: 'English' }).click()
+
+  await page.getByRole('textbox', { name: 'Amount per loan year' }).fill('5,000.50')
+  await page.getByRole('combobox', { name: 'Month in the loan year' }).selectOption('6')
+  await page.getByRole('button', { name: 'Add one-time repayment' }).click()
+  await expect(page.getByText('Enter an amount for this one-time repayment.')).toBeVisible()
+  await expect(page.getByText('Enter a loan month for this one-time repayment.')).toBeVisible()
+
+  await page.getByRole('textbox', { name: 'Amount for one-time repayment 1' }).fill('1,000')
+  await page.getByRole('textbox', { name: 'Loan month for one-time repayment 1' }).fill('18')
+  await page.getByRole('button', { name: 'Add one-time repayment' }).click()
+  await page.getByRole('textbox', { name: 'Amount for one-time repayment 2' }).fill('2,000')
+  await page.getByRole('textbox', { name: 'Loan month for one-time repayment 2' }).fill('18')
+  await expect(
+    page.getByText('A one-time additional repayment already exists for this loan month.'),
+  ).toHaveCount(2)
+
+  await page.getByRole('button', { name: 'Remove one-time repayment 2' }).click()
+  await page.getByRole('radio', { name: /Use available equity/ }).check()
+  await page.getByRole('textbox', { name: 'Available equity' }).fill('266250')
+
+  await expect(page.getByRole('textbox', { name: 'Amount per loan year' })).toBeDisabled()
+  await expect(
+    page.getByRole('textbox', { name: 'Amount for one-time repayment 1' }),
+  ).toBeDisabled()
+  await expect(
+    page.getByText(/entries are retained if you switch back to loan financing/i),
+  ).toBeVisible()
+
+  await page.getByRole('radio', { name: /Set a down payment/ }).check()
+  await expect(page.getByRole('textbox', { name: 'Amount per loan year' })).toHaveValue('5,000.50')
+  await expect(page.getByRole('textbox', { name: 'Amount for one-time repayment 1' })).toHaveValue(
+    '1,000',
+  )
+  await expect(
+    page.getByRole('textbox', { name: 'Loan month for one-time repayment 1' }),
+  ).toHaveValue('18')
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  const hasHorizontalOverflow = await page.evaluate<boolean>(
+    `document.documentElement.scrollWidth > document.documentElement.clientWidth`,
+  )
+  expect(hasHorizontalOverflow).toBe(false)
 })
