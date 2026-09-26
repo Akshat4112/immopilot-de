@@ -46,7 +46,12 @@ describe('single-property dashboard calculations', () => {
     })
     expect(result.modeSpecific).toMatchObject({
       mode: 'owner-occupier',
-      result: { status: 'not-configured' },
+      result: { status: 'not-configured', reason: 'missing-inputs' },
+    })
+    expect(result.offerPrice).toEqual({
+      status: 'not-configured',
+      reason: 'not-requested',
+      missing: [],
     })
   })
 
@@ -342,6 +347,38 @@ describe('single-property dashboard calculations', () => {
       netYieldCeiling: { status: 'available' },
       affordabilityCeiling: { status: 'available' },
       comparableOffer: { status: 'available', openingOffer: { status: 'available' } },
+    })
+  })
+
+  it('names incomplete comparable and opening-offer inputs instead of reporting zero missing fields', () => {
+    const comparables = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, {
+      ...initialScenarioAnalysisDraft,
+      livingAreaSquareMetres: '60',
+    })
+    expect(comparables.offerPrice).toMatchObject({
+      status: 'not-configured',
+      reason: 'missing-inputs',
+      missing: [
+        'askingPrice',
+        'proposedOffer',
+        'comparablePricePerSquareMetreLow',
+        'comparablePricePerSquareMetreHigh',
+      ],
+    })
+
+    const openingOffer = calculateScenarioDashboard(completePurchaseDraft(), fundedFinancing, {
+      ...initialScenarioAnalysisDraft,
+      livingAreaSquareMetres: '60',
+      askingPrice: '250000',
+      proposedOffer: '230000',
+      comparablePricePerSquareMetreLow: '3800',
+      comparablePricePerSquareMetreHigh: '4300',
+      openingOfferLargerDiscount: '12',
+    })
+    expect(openingOffer.offerPrice).toMatchObject({
+      status: 'not-configured',
+      reason: 'missing-inputs',
+      missing: ['openingOfferSmallerDiscount'],
     })
   })
 })

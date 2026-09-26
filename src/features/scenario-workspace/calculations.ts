@@ -205,6 +205,7 @@ export interface ScenarioWorkspaceCalculationResult {
 
 export interface NotConfiguredDashboardResult {
   status: 'not-configured'
+  reason: 'not-requested' | 'missing-inputs'
   missing: readonly (keyof ScenarioAnalysisDraft)[]
 }
 
@@ -284,7 +285,7 @@ function calculateRefinancingFromDraft(
     'refinancingHigherRate',
   ] as const
   const missing = missingInputs(draft, required)
-  if (missing.length) return { status: 'not-configured', missing }
+  if (missing.length) return { status: 'not-configured', reason: 'missing-inputs', missing }
 
   return calculateRefinancingStress({
     fixedPeriod,
@@ -329,7 +330,7 @@ function calculateOwnerOccupierFromDraft(
     'ownerSellingCostRate',
   ] as const
   const missing = missingInputs(draft, required)
-  if (missing.length) return { status: 'not-configured', missing }
+  if (missing.length) return { status: 'not-configured', reason: 'missing-inputs', missing }
 
   return calculateRentVersusBuy({
     financing,
@@ -369,7 +370,7 @@ function calculateRentalFromDraft(
   if (suppliedSaleFields.length === 1) {
     missing.push(saleFields.find((field) => !hasInput(draft[field]))!)
   }
-  if (missing.length) return { status: 'not-configured', missing }
+  if (missing.length) return { status: 'not-configured', reason: 'missing-inputs', missing }
 
   const includeSale = suppliedSaleFields.length === saleFields.length
   return calculateRentalInvestment({
@@ -423,15 +424,23 @@ function calculateOfferPriceFromDraft(
     targetNetYield !== undefined ||
     hasAffordability ||
     suppliedComparableFields.length > 0
-  if (!hasAnyRequest) return { status: 'not-configured', missing: [] }
+  if (!hasAnyRequest) return { status: 'not-configured', reason: 'not-requested', missing: [] }
   if (suppliedComparableFields.length > 0 && !hasComparables) {
-    return { status: 'not-configured', missing: missingInputs(draft, comparableFields) }
+    return {
+      status: 'not-configured',
+      reason: 'missing-inputs',
+      missing: missingInputs(draft, comparableFields),
+    }
   }
 
   const openingOfferFields = ['openingOfferLargerDiscount', 'openingOfferSmallerDiscount'] as const
   const suppliedOpeningOfferFields = openingOfferFields.filter((field) => hasInput(draft[field]))
   if (suppliedOpeningOfferFields.length === 1) {
-    return { status: 'not-configured', missing: missingInputs(draft, openingOfferFields) }
+    return {
+      status: 'not-configured',
+      reason: 'missing-inputs',
+      missing: missingInputs(draft, openingOfferFields),
+    }
   }
 
   const rentalResult = rental?.status === 'not-configured' ? undefined : rental

@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import type { PropertyUseDraft } from '../../config/scenarioDrafts'
 import { formatEuroFromCents } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
+import { useScenarioWorkspaceStore } from '../scenario-workspace/scenarioStore'
 
 function ArrowIcon() {
   return (
@@ -15,6 +17,8 @@ function ArrowIcon() {
 export function HomePage() {
   const { i18n, t } = useTranslation()
   const language = i18n.resolvedLanguage as SupportedLanguage
+  const updateAnalysis = useScenarioWorkspaceStore((state) => state.updateAnalysis)
+  const selectPropertyUse = (propertyUse: PropertyUseDraft) => updateAnalysis({ propertyUse })
   const foundationAreas = [
     {
       number: '01',
@@ -45,9 +49,20 @@ export function HomePage() {
           </h1>
           <p className="hero-summary">{t('hero.summary')}</p>
           <div className="hero-actions">
-            <Link className="primary-action" to="/purchase-costs">
-              {t('hero.primaryAction')}
+            <Link
+              className="primary-action"
+              onClick={() => selectPropertyUse('owner-occupier')}
+              to="/purchase-costs"
+            >
+              {t('hero.ownerAction')}
               <ArrowIcon />
+            </Link>
+            <Link
+              className="secondary-action"
+              onClick={() => selectPropertyUse('rental-investment')}
+              to="/purchase-costs"
+            >
+              {t('hero.rentalAction')}
             </Link>
             <a className="secondary-action" href="https://github.com/Akshat4112/immopilot-de">
               {t('hero.documentation')}

@@ -42,7 +42,8 @@ export const resources = {
         titleLineTwo: 'Sicherer entscheiden.',
         summary:
           'Ein transparenter Rechner für Kaufkosten, Finanzierung und langfristige Immobilienszenarien. Lokal im Browser und ohne Benutzerkonto.',
-        primaryAction: 'Kaufkosten starten',
+        ownerAction: 'Für Eigennutzung rechnen',
+        rentalAction: 'Kapitalanlage bewerten',
         documentation: 'Dokumentation',
       },
       preview: {
@@ -501,6 +502,24 @@ export const resources = {
           payoffProjection: 'Rechnerische Volltilgung',
           months: 'Monate ab Darlehensbeginn · keine garantierte Vertragslaufzeit',
           firstYearInterest: 'Zinsen im ersten Jahr',
+          breakdown: {
+            open: 'Detaillierten Tilgungsplan öffnen',
+            intro:
+              'Die Monatswerte stammen direkt aus dem Rechenmodell. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
+            baseline: 'Tilgungsplan ohne Sondertilgung',
+            withAdditionalRepayments: 'Tilgungsplan mit Sondertilgung',
+            fixedPeriodOnly: 'Gezeigt werden {{months}} Monate innerhalb der Zinsbindung.',
+            projectionBoundary:
+              'Die rechnerische Volltilgung nach der Zinsbindung ist nur eine Projektion bei unverändertem Sollzins und keine garantierte Vertragslaufzeit.',
+            scrollLabel: '{{title}} horizontal scrollen',
+            month: 'Darlehensmonat',
+            regularPayment: 'Reguläre Rate',
+            interest: 'Zinsen',
+            scheduledPrincipal: 'Reguläre Tilgung',
+            additionalPrincipal: 'Sondertilgung',
+            totalPayment: 'Gesamtzahlung',
+            closingBalance: 'Restschuld',
+          },
         },
         funding: {
           fundedTitle: 'Finanzierung gedeckt',
@@ -719,6 +738,11 @@ export const resources = {
           openingOfferRange: 'Eröffnungsangebot',
           openingOfferRangeDetail: 'bis {{high}}',
           offerDifference: 'Abweichung deines Angebots',
+          notConfiguredTitle: 'Angebotsmethode auswählen',
+          notConfiguredMessage:
+            'Öffne die optionalen Angebotsannahmen und gib eine Zielrendite, ein maximales Monatsbudget oder vollständige Vergleichswerte ein.',
+          missingTitle: 'Angebotsannahmen vervollständigen',
+          missingMessage: 'Für die gewählte Angebotsmethode fehlen noch:',
         },
       },
     },
@@ -766,7 +790,8 @@ export const resources = {
         titleLineTwo: 'Decide with confidence.',
         summary:
           'A transparent calculator for acquisition costs, financing and long-term property scenarios. Local in your browser, with no account required.',
-        primaryAction: 'Start purchase costs',
+        ownerAction: 'Calculate for my own home',
+        rentalAction: 'Evaluate a rental investment',
         documentation: 'Documentation',
       },
       preview: {
@@ -1222,6 +1247,24 @@ export const resources = {
           payoffProjection: 'Projected full repayment',
           months: 'months from loan start · not a guaranteed contractual term',
           firstYearInterest: 'First-year interest',
+          breakdown: {
+            open: 'Open detailed amortization schedule',
+            intro:
+              'Monthly values come directly from the calculation engine. When additional repayments are configured, the baseline and comparison schedules are shown separately.',
+            baseline: 'Schedule without additional repayments',
+            withAdditionalRepayments: 'Schedule with additional repayments',
+            fixedPeriodOnly: '{{months}} months within the fixed-interest period are shown.',
+            projectionBoundary:
+              'Projected full repayment after the fixed-interest period assumes the original rate remains unchanged and is not a guaranteed contractual term.',
+            scrollLabel: 'Scroll {{title}} horizontally',
+            month: 'Loan month',
+            regularPayment: 'Regular payment',
+            interest: 'Interest',
+            scheduledPrincipal: 'Scheduled principal',
+            additionalPrincipal: 'Additional principal',
+            totalPayment: 'Total payment',
+            closingBalance: 'Remaining debt',
+          },
         },
         funding: {
           fundedTitle: 'Funding covered',
@@ -1439,6 +1482,11 @@ export const resources = {
           openingOfferRange: 'Opening offer',
           openingOfferRangeDetail: 'to {{high}}',
           offerDifference: 'Your offer difference',
+          notConfiguredTitle: 'Choose an offer method',
+          notConfiguredMessage:
+            'Open the optional offer assumptions and enter a target yield, a maximum monthly budget, or a complete set of comparable values.',
+          missingTitle: 'Complete the offer assumptions',
+          missingMessage: 'The selected offer method still requires:',
         },
       },
     },

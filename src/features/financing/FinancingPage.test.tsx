@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter } from 'react-router-dom'
@@ -74,6 +74,35 @@ describe('FinancingPage', () => {
     expect(screen.getByText(/^66\.250/)).toBeVisible()
     expect(screen.getByText(/916,67/)).toBeVisible()
     expect(screen.getByText(/152\.188,73/)).toBeVisible()
+    expect(screen.getByText('Detaillierten Tilgungsplan öffnen')).toBeVisible()
+  })
+
+  it('shows baseline and Sondertilgung month rows directly from the domain schedules', async () => {
+    const user = userEvent.setup()
+    useScenarioWorkspaceStore.getState().setPurchaseCosts(completePurchaseDraft())
+    useScenarioWorkspaceStore.getState().updateFinancing({
+      ...initialFinancingDraft,
+      availableEquity: '66250',
+      downPayment: '50000',
+      additionalRepayments: {
+        annualAdditionalRepayment: '5.000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [{ amount: '2.500', month: '12' }],
+      },
+    })
+
+    renderPage()
+    await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
+
+    const baseline = screen.getByRole('table', { name: 'Tilgungsplan ohne Sondertilgung' })
+    const selected = screen.getByRole('table', { name: 'Tilgungsplan mit Sondertilgung' })
+    const baselineMonth12 = within(baseline).getByRole('rowheader', { name: '12' }).closest('tr')
+    const selectedMonth12 = within(selected).getByRole('rowheader', { name: '12' }).closest('tr')
+    if (!baselineMonth12 || !selectedMonth12) throw new Error('Expected month 12 schedule rows')
+
+    expect(within(baselineMonth12).getByText(/^0\s*€$/)).toBeVisible()
+    expect(within(selectedMonth12).getByText(/7\.500(?:,00)?\s*€/)).toBeVisible()
+    expect(screen.getByText(/nur eine Projektion bei unverändertem Sollzins/i)).toBeVisible()
   })
 
   it('stores locale-formatted annual repayment inputs without changing the baseline schedule', async () => {

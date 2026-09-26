@@ -67,6 +67,33 @@ describe('ResultsPage', () => {
     expect(screen.getByText('Nettovermögen Käufer')).toBeVisible()
   })
 
+  it('guides an unconfigured offer method without reporting zero missing assumptions', () => {
+    renderPage()
+
+    expect(screen.getByRole('heading', { name: 'Angebotsmethode auswählen' })).toBeVisible()
+    expect(screen.getByText(/Zielrendite.*maximales Monatsbudget.*Vergleichswerte/i)).toBeVisible()
+    expect(screen.queryByText(/0 fehlende Planungsannahme/i)).not.toBeInTheDocument()
+  })
+
+  it('names the fields missing from a partially configured comparable offer', () => {
+    useScenarioWorkspaceStore.getState().updateAnalysis({
+      ...initialScenarioAnalysisDraft,
+      currentComparableRent: '1000',
+      monthlyOwnerCosts: '250',
+      livingAreaSquareMetres: '60',
+    })
+
+    renderPage()
+
+    const heading = screen.getByRole('heading', { name: 'Angebotsannahmen vervollständigen' })
+    const card = heading.closest('article')
+    if (!card) throw new Error('Expected the offer guidance card')
+    expect(within(card).getByText('Angebotspreis')).toBeVisible()
+    expect(within(card).getByText('Dein Kaufangebot')).toBeVisible()
+    expect(within(card).getByText('Vergleichswert niedrig')).toBeVisible()
+    expect(within(card).getByText('Vergleichswert hoch')).toBeVisible()
+  })
+
   it('presents rental, sale, yield, and offer results when investment assumptions are complete', () => {
     useScenarioWorkspaceStore.getState().updateAnalysis({
       ...initialScenarioAnalysisDraft,

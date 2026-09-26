@@ -10,6 +10,7 @@ import {
   calculateScenarioDashboard,
   useScenarioWorkspaceStore,
   type ConfigurableDashboardResult,
+  type NotConfiguredDashboardResult,
   type ScenarioAnalysisDraft,
   type ScenarioWorkspaceCalculationResult,
 } from '../scenario-workspace'
@@ -105,6 +106,40 @@ function SetupRequired({ count }: { count: number }) {
     <article className="result-card warning" role="status">
       <h3>{t('results.setupRequired.title')}</h3>
       <p>{t('results.setupRequired.message', { count })}</p>
+    </article>
+  )
+}
+
+function OfferSetupRequired({ result }: { result: NotConfiguredDashboardResult }) {
+  const { t } = useTranslation()
+  if (result.reason === 'not-requested') {
+    return (
+      <article className="result-card summary" role="status">
+        <h3>{t('results.offer.notConfiguredTitle')}</h3>
+        <p>{t('results.offer.notConfiguredMessage')}</p>
+      </article>
+    )
+  }
+
+  const labels: Partial<Record<keyof ScenarioAnalysisDraft, string>> = {
+    livingAreaSquareMetres: t('results.offer.livingArea'),
+    askingPrice: t('results.offer.askingPrice'),
+    proposedOffer: t('results.offer.proposedOffer'),
+    comparablePricePerSquareMetreLow: t('results.offer.comparableLow'),
+    comparablePricePerSquareMetreHigh: t('results.offer.comparableHigh'),
+    openingOfferLargerDiscount: t('results.offer.largerDiscount'),
+    openingOfferSmallerDiscount: t('results.offer.smallerDiscount'),
+  }
+
+  return (
+    <article className="result-card warning" role="status">
+      <h3>{t('results.offer.missingTitle')}</h3>
+      <p>{t('results.offer.missingMessage')}</p>
+      <ul>
+        {result.missing.map((field) => (
+          <li key={field}>{labels[field] ?? field}</li>
+        ))}
+      </ul>
     </article>
   )
 }
@@ -848,7 +883,7 @@ export function ResultsPage() {
             <section className="results-section">
               <h2>{t('results.offer.title')}</h2>
               {isNotConfigured(dashboard.offerPrice) ? (
-                <SetupRequired count={dashboard.offerPrice.missing.length} />
+                <OfferSetupRequired result={dashboard.offerPrice} />
               ) : dashboard.offerPrice.status === 'available' ? (
                 <div className="result-grid">
                   {dashboard.offerPrice.grossYieldCeiling.status === 'available' ? (
