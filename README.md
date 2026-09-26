@@ -4,7 +4,7 @@
 
 ImmoPilot DE is a client-side application for evaluating residential property purchases and financing decisions in the German market.
 
-> Status: Version 1 implementation in progress. The application is not yet released.
+> Status: Version 1 release readiness in progress. The application is not yet released.
 
 ## Version 1 scope
 
@@ -58,6 +58,7 @@ workflows.
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
 - [Calculation-engine conventions](docs/calculation-engine-conventions.md): cent-exact money, decimal rates, rounding boundaries and validation errors
 - [Sondertilgung product contract](docs/sondertilgung-product-contract.md): approved inputs, timing, comparisons, migration and downstream-calculation behavior for PF-004
+- [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
 
 ## Planned technology
 
