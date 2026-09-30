@@ -16,4 +16,16 @@ describe('German interface voice', () => {
     expect(resources.de.translation.footer.disclaimer).toContain('Prüfe aktuelle Werte')
     expect(resources.de.translation.purchase.nextSteps.message).toContain('Jetzt kannst du')
   })
+
+  it('does not expose obsolete foundation-stage product copy in either language', () => {
+    const allCopy = [
+      ...collectStrings(resources.de.translation),
+      ...collectStrings(resources.en.translation),
+    ].join('\n')
+
+    expect(allCopy).not.toContain('Grundlage · 0.1')
+    expect(allCopy).not.toContain('Foundation · 0.1')
+    expect(allCopy).not.toMatch(/interaktiven Rechner werden schrittweise/i)
+    expect(allCopy).not.toMatch(/interactive calculators will be built step by step/i)
+  })
 })

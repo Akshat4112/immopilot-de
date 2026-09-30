@@ -22,7 +22,7 @@ test('loads the desktop shell and keeps route navigation under the Pages path', 
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('./')
 
-  await expect(page).toHaveTitle('ImmoPilot DE')
+  await expect(page).toHaveTitle('ImmoPilot DE · Immobilien transparent planen')
   expect(new URL(page.url()).pathname).toBe(applicationPath)
   await expect(
     page.getByRole('heading', {

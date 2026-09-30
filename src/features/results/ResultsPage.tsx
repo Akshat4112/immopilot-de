@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
+import { CalculationProvenance } from '../../components/CalculationProvenance'
 import { PageLayout } from '../../components/PageLayout'
 import { formatEuroFromCents, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
@@ -336,6 +337,7 @@ export function ResultsPage() {
               ) : (
                 <UnavailableResult reason={t('results.reasons.financing')} />
               )}
+              <CalculationProvenance scope="financing" />
             </section>
 
             <section className="results-section sondertilgung-comparison" aria-live="polite">
@@ -354,6 +356,7 @@ export function ResultsPage() {
                 language={language}
               />
               <AdditionalRepaymentGuidance />
+              <CalculationProvenance scope="repayment" />
             </section>
 
             <section className="form-section results-assumptions">
@@ -712,6 +715,7 @@ export function ResultsPage() {
                   }
                 />
               )}
+              <CalculationProvenance scope="refinancing" />
             </section>
 
             {dashboard.modeSpecific.mode === 'owner-occupier' ? (
@@ -775,6 +779,7 @@ export function ResultsPage() {
                     }
                   />
                 )}
+                <CalculationProvenance scope="owner" />
               </section>
             ) : (
               <section className="results-section">
@@ -877,6 +882,7 @@ export function ResultsPage() {
                     }
                   />
                 )}
+                <CalculationProvenance scope="rental" />
               </section>
             )}
 
@@ -945,6 +951,7 @@ export function ResultsPage() {
               ) : (
                 <UnavailableResult reason={dashboard.offerPrice.reason} />
               )}
+              <CalculationProvenance scope="offer" />
             </section>
           </>
         )}

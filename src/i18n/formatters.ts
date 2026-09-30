@@ -34,3 +34,12 @@ export function formatNumber(
 ) {
   return new Intl.NumberFormat(locales[language], { maximumFractionDigits }).format(value)
 }
+
+export function formatDate(date: string, language: SupportedLanguage) {
+  return new Intl.DateTimeFormat(locales[language], {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${date}T00:00:00Z`))
+}

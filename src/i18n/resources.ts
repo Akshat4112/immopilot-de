@@ -2,7 +2,7 @@ export const resources = {
   de: {
     translation: {
       language: { selectorLabel: 'Sprache auswählen', german: 'Deutsch', english: 'English' },
-      brand: { homeLabel: 'ImmoPilot DE Startseite', release: 'Grundlage · 0.1' },
+      brand: { homeLabel: 'ImmoPilot DE Startseite', release: 'Version 1 · Release-Prüfung' },
       shell: {
         skipToContent: 'Zum Inhalt springen',
         primaryNavigation: 'Hauptnavigation',
@@ -47,9 +47,9 @@ export const resources = {
         documentation: 'Dokumentation',
       },
       preview: {
-        label: 'Geplanter Beispielüberblick',
+        label: 'Beispielrechnung',
         title: 'Beispielszenario',
-        status: 'Vorbereitet',
+        status: 'Berechnet',
         caption: 'Kaufpreis · Baden-Württemberg',
         remainingDebtAfterYears: 'Restschuld nach {{years}} J.',
         verified: 'Geprüft gegen Berechnungsspezifikation {{version}}',
@@ -286,10 +286,10 @@ export const resources = {
         },
       },
       foundation: {
-        eyebrow: 'Version 1',
-        title: 'Eine klare Grundlage für den Immobilienkauf.',
+        eyebrow: 'Umgesetzte Arbeitsbereiche',
+        title: 'Von Kaufkosten bis Immobilienvergleich.',
         summary:
-          'Die fachlichen Regeln und deutschen Annahmen sind dokumentiert. Die interaktiven Rechner werden schrittweise auf dieser geprüften Grundlage gebaut.',
+          'Berechne Kaufnebenkosten und Finanzierung, plane Sondertilgungen, prüfe Eigennutzung oder Vermietung und vergleiche bis zu drei gespeicherte Szenarien. Version 1 befindet sich in der abschließenden Release-Prüfung.',
         acquisitionDescription:
           'Bundesland, Notar, Grundbuch und Makler transparent aufschlüsseln.',
         financingTitle: 'Finanzierung',
@@ -301,7 +301,127 @@ export const resources = {
       footer: {
         disclaimer:
           'Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfe aktuelle Werte und lass dich vor einer Entscheidung qualifiziert beraten.',
+        privacyNotice: 'Datenschutz & Hinweise',
         copyright: '© 2026 ImmoPilot DE',
+      },
+      provenance: {
+        title: 'Berechnungsgrundlage und Grenzen',
+        fullNotice: 'Datenschutz & vollständige Hinweise',
+        assumptionSet: 'Annahmensatz',
+        verifiedOn: 'Standardwerte geprüft am',
+        calculationSpecification: 'Berechnungsspezifikation',
+        limitation:
+          'Ergebnisse sind unverbindliche Planungswerte, keine Beratung, Bewertung, Garantie, Finanzierungszusage oder Darlehensofferte.',
+        scope: {
+          purchase:
+            'Grunderwerbsteuer und Standardwerte stammen aus dem Annahmensatz. Von dir geänderte Werte sind eigene Eingaben.',
+          financing:
+            'Kaufkosten verwenden den Annahmensatz; Eigenkapital, Zinssatz, Tilgung und Zinsbindung sind deine nicht extern geprüften Eingaben.',
+          repayment:
+            'Tilgungsverläufe folgen der Berechnungsspezifikation. Sondertilgungen und Darlehenskonditionen sind deine Eingaben und werden nicht mit einem Vertrag abgeglichen.',
+          refinancing:
+            'Anschlusszinsen sind frei gewählte Stressannahmen, keine Marktprognosen oder Angebote. Gebühren und Kreditprüfung sind nicht enthalten.',
+          owner:
+            'Miete, Kostenwachstum, Wertentwicklung und Alternativrendite sind deine Szenarioannahmen und keine quellenbasierten Prognosen.',
+          rental:
+            'Miete, Leerstand, Kosten, Wertentwicklung und Verkauf sind deine Vor-Steuer-Annahmen; Steuer- und Rechtsfolgen sind nicht modelliert.',
+          offer:
+            'Preisgrenzen verwenden deine Zielwerte, Budgets und Vergleichswerte. Sie sind weder Wertgutachten noch Kauf- oder Finanzierungsangebot.',
+          comparison:
+            'Alle Szenarien werden mit derselben Spezifikation neu berechnet. Nutzereingaben und unterschiedliche Zeiträume bleiben ausdrücklich eigene Vergleichsgrundlagen.',
+        },
+      },
+      privacy: {
+        page: {
+          eyebrow: 'Transparenz',
+          title: 'Datenschutz und finanzielle Hinweise',
+          summary:
+            'Wie ImmoPilot DE deine Eingaben verarbeitet, welche Daten gespeichert oder geteilt werden und wo die Grenzen der Berechnungen liegen.',
+        },
+        status: {
+          title: 'Stand dieser Hinweise',
+          version: 'Version {{version}}',
+          verified: 'Technisch geprüft am {{date}}',
+        },
+        warning: {
+          title: 'Kein Ersatz für fachliche Beratung',
+          body: 'ImmoPilot DE ist ein Lern- und Planungstool. Ergebnisse sind keine Finanzierungs-, Anlage-, Steuer-, Buchhaltungs- oder Rechtsberatung, kein Wertgutachten, Darlehensangebot, Vertrag oder Garantie. Prüfe wesentliche Werte bei qualifizierten Fachpersonen.',
+        },
+        sections: {
+          purpose: {
+            title: 'Welche Daten verarbeitet werden',
+            body: 'Der Rechner verarbeitet Immobilien- und Finanzplanungswerte wie Kaufpreis, Bundesland, Eigenkapital, Zinsen, Tilgung, Miete und Kosten. Namen, genaue Privatanschriften, Kontodaten, Steuer-IDs oder Dokumente werden nicht benötigt und sollten nicht eingegeben werden.',
+          },
+          local: {
+            title: 'Lokale Berechnung',
+            body: 'Berechnungen laufen im Browser. Nicht gespeicherte Eingaben bleiben im aktuellen Arbeitsstand. Die Anwendung besitzt kein Benutzerkonto und kein eigenes Backend und sendet Szenariowerte nicht für Berechnung, Analyse, Werbung oder Fehlerberichte an den Betreiber.',
+          },
+          saved: {
+            title: 'Speichern und löschen',
+            body: 'Erst nach deiner Auswahl „Szenario speichern“ wird versioniertes Eingabe-JSON im localStorage dieses Browsers abgelegt. Du kannst einzelne Szenarien oder alle lokalen Daten löschen. Andere Personen mit Zugriff auf dasselbe Browserprofil können gespeicherte Daten möglicherweise sehen.',
+          },
+          sharing: {
+            title: 'Freigabelinks und JSON-Dateien',
+            body: 'Freigabelinks enthalten Eingaben nur im URL-Fragment; der Szenarioname wird ausgeschlossen. Jeder mit dem vollständigen Link kann die enthaltenen Finanzdaten lesen. Export und Import erfolgen lokal. Prüfe Links und Dateien vor dem Teilen und lösche Kopien, die nicht mehr benötigt werden.',
+          },
+          hosting: {
+            title: 'GitHub-Pages-Hosting',
+            body: 'GitHub Pages liefert die statischen Dateien aus. GitHub erklärt, dass dabei IP-Adressen zu Sicherheitszwecken protokolliert und gespeichert werden. Die allgemeine GitHub-Datenschutzerklärung beschreibt weitere mögliche Nutzungs- und Verbindungsdaten. Diese Hosting-Verarbeitung ist von deinen lokalen Szenariodaten getrennt.',
+          },
+          limits: {
+            title: 'Quellen und Rechengrenzen',
+            body: 'Quellenbasierte Standardwerte zeigen Version und Prüfdatum, sind aber keine Live-Daten. Zinsen, Mieten, Wachstum, Immobilienwerte, Kosten und Zielrenditen sind editierbare Nutzereingaben. Tatsächliche Steuern, Gebühren, Verträge, Risiken und Ergebnisse können abweichen.',
+          },
+          controls: {
+            title: 'Deine Kontrolle',
+            body: 'Setze den Arbeitsstand zurück, lösche gespeicherte Szenarien, entferne geteilte Daten aus der URL oder lösche die Website-Daten im Browser. Der Betreiber kann lokale Szenarien nicht einsehen, wiederherstellen oder aus der Ferne löschen.',
+          },
+        },
+        sources: {
+          title: 'Quellen und ausführliches Dokument',
+          body: 'Die technischen Hosting-Aussagen wurden gegen die offiziellen GitHub-Unterlagen geprüft. Das ausführliche zweisprachige Dokument enthält zusätzliche rechtliche Grenzen und den Prüfvermerk für die Release-Freigabe.',
+          githubPages: 'GitHub Pages: Datenerhebung',
+          githubPrivacy: 'Allgemeine Datenschutzerklärung von GitHub',
+          fullDocument: 'Vollständiger Finanz- und Datenschutzhinweis im Repository',
+        },
+      },
+      metadata: {
+        pages: {
+          home: {
+            title: 'ImmoPilot DE · Immobilien transparent planen',
+            description:
+              'Plane Kaufkosten, Finanzierung und langfristige Immobilienszenarien für Deutschland transparent im Browser.',
+          },
+          purchaseCosts: {
+            title: 'Kaufnebenkosten berechnen · ImmoPilot DE',
+            description:
+              'Berechne Grunderwerbsteuer, Notar, Grundbuch, Makler und weitere Kaufbudgets mit transparenten Annahmen.',
+          },
+          financing: {
+            title: 'Immobilienfinanzierung planen · ImmoPilot DE',
+            description:
+              'Plane Eigenkapital, Darlehen, Monatsrate, Zinsbindung, Restschuld und Sondertilgungen.',
+          },
+          results: {
+            title: 'Immobilie auswerten · ImmoPilot DE',
+            description:
+              'Prüfe Finanzierung, Anschlussfinanzierung, Eigennutzung, Vermietung und Angebotspreise als transparente Szenarien.',
+          },
+          scenarios: {
+            title: 'Szenarien speichern und teilen · ImmoPilot DE',
+            description:
+              'Speichere Immobilien-Szenarien lokal, importiere oder exportiere JSON und erstelle Freigabelinks ohne Backend.',
+          },
+          comparison: {
+            title: 'Immobilien vergleichen · ImmoPilot DE',
+            description: 'Vergleiche bis zu drei gespeicherte Immobilien-Szenarien nebeneinander.',
+          },
+          privacy: {
+            title: 'Datenschutz und Hinweise · ImmoPilot DE',
+            description:
+              'Informationen zu lokaler Verarbeitung, Speicherung, Freigabelinks, GitHub Pages und den Grenzen der Berechnungen.',
+          },
+        },
       },
       property: { purchasePrice: 'Kaufpreis' },
       purchase: {
@@ -750,7 +870,7 @@ export const resources = {
   en: {
     translation: {
       language: { selectorLabel: 'Choose language', german: 'Deutsch', english: 'English' },
-      brand: { homeLabel: 'ImmoPilot DE home', release: 'Foundation · 0.1' },
+      brand: { homeLabel: 'ImmoPilot DE home', release: 'Version 1 · Release review' },
       shell: {
         skipToContent: 'Skip to content',
         primaryNavigation: 'Primary navigation',
@@ -795,9 +915,9 @@ export const resources = {
         documentation: 'Documentation',
       },
       preview: {
-        label: 'Planned example overview',
+        label: 'Example calculation',
         title: 'Example scenario',
-        status: 'Prepared',
+        status: 'Calculated',
         caption: 'Purchase price · Baden-Württemberg',
         remainingDebtAfterYears: 'Remaining debt after {{years}} years',
         verified: 'Verified against calculation specification {{version}}',
@@ -1032,10 +1152,10 @@ export const resources = {
         },
       },
       foundation: {
-        eyebrow: 'Version 1',
-        title: 'A clear foundation for buying property.',
+        eyebrow: 'Implemented workflows',
+        title: 'From acquisition costs to property comparison.',
         summary:
-          'The financial rules and German assumptions are documented. The interactive calculators will be built step by step on this verified foundation.',
+          'Calculate acquisition costs and financing, plan additional repayments, assess owner occupation or rental investment, and compare up to three saved scenarios. Version 1 is in final release review.',
         acquisitionDescription:
           'Break down the federal state, notary, land-register and broker costs transparently.',
         financingTitle: 'Financing',
@@ -1048,7 +1168,127 @@ export const resources = {
       footer: {
         disclaimer:
           'Educational estimates only. Not financial, mortgage, investment, tax or legal advice, and not a financing offer or approval. Check current figures and obtain qualified advice before making a commitment.',
+        privacyNotice: 'Privacy & notices',
         copyright: '© 2026 ImmoPilot DE',
+      },
+      provenance: {
+        title: 'Calculation basis and limitations',
+        fullNotice: 'Privacy & full notices',
+        assumptionSet: 'Assumption set',
+        verifiedOn: 'Defaults verified on',
+        calculationSpecification: 'Calculation specification',
+        limitation:
+          'Results are non-binding planning estimates, not advice, a valuation, guarantee, financing approval or mortgage offer.',
+        scope: {
+          purchase:
+            'Property transfer tax and defaults come from the assumption set. Values you edit are your own inputs.',
+          financing:
+            'Acquisition costs use the assumption set; equity, interest, repayment and fixed period are your inputs and are not externally verified.',
+          repayment:
+            'Schedules follow the calculation specification. Additional repayments and loan terms are your inputs and are not checked against a contract.',
+          refinancing:
+            'Future rates are user-selected stress assumptions, not market forecasts or offers. Fees and credit assessment are excluded.',
+          owner:
+            'Rent, cost growth, property appreciation and alternative return are your scenario assumptions, not source-backed forecasts.',
+          rental:
+            'Rent, vacancy, costs, appreciation and sale values are your pre-tax assumptions; tax and legal effects are not modelled.',
+          offer:
+            'Price limits use your targets, budgets and comparable values. They are neither a valuation nor a purchase or financing offer.',
+          comparison:
+            'Every scenario is recalculated with the same specification. User inputs and different time horizons remain explicit comparison bases.',
+        },
+      },
+      privacy: {
+        page: {
+          eyebrow: 'Transparency',
+          title: 'Privacy and financial notices',
+          summary:
+            'How ImmoPilot DE processes your inputs, what is saved or shared, and where the calculations have limits.',
+        },
+        status: {
+          title: 'Notice status',
+          version: 'Version {{version}}',
+          verified: 'Technically verified on {{date}}',
+        },
+        warning: {
+          title: 'Not a substitute for professional advice',
+          body: 'ImmoPilot DE is an educational planning tool. Results are not financial, mortgage, investment, tax, accounting or legal advice, a valuation, mortgage offer, contract or guarantee. Check material figures with qualified professionals.',
+        },
+        sections: {
+          purpose: {
+            title: 'Information processed',
+            body: 'The calculator processes property and financial planning values such as purchase price, federal state, equity, interest, repayment, rent and costs. Names, exact private addresses, bank details, tax IDs and documents are not required and should not be entered.',
+          },
+          local: {
+            title: 'Local calculation',
+            body: 'Calculations run in your browser. Unsaved inputs remain in the current workspace. The application has no user accounts or application backend and does not send scenario values to the operator for calculation, analytics, advertising or error reporting.',
+          },
+          saved: {
+            title: 'Saving and deletion',
+            body: 'Versioned input JSON is written to this browser’s localStorage only after you select “Save scenario”. You can delete individual scenarios or all local data. Other people with access to the same browser profile may be able to see saved data.',
+          },
+          sharing: {
+            title: 'Share links and JSON files',
+            body: 'Share links place inputs only in the URL fragment and exclude the scenario name. Anyone with the full link can read the included financial data. Export and import stay local. Review links and files before sharing and delete copies you no longer need.',
+          },
+          hosting: {
+            title: 'GitHub Pages hosting',
+            body: 'GitHub Pages serves the static files. GitHub states that visitor IP addresses are logged and stored for security. Its general privacy statement describes other possible usage and connection data. This hosting processing is separate from your local scenario data.',
+          },
+          limits: {
+            title: 'Sources and calculation limits',
+            body: 'Source-backed defaults show a version and verification date but are not live data. Interest rates, rents, growth, property values, costs and target returns are editable user inputs. Actual taxes, fees, contracts, risks and outcomes may differ.',
+          },
+          controls: {
+            title: 'Your controls',
+            body: 'Reset the workspace, delete saved scenarios, remove shared data from the URL, or clear the site data in your browser. The operator cannot inspect, restore or remotely delete local scenarios.',
+          },
+        },
+        sources: {
+          title: 'Sources and detailed document',
+          body: 'The hosting statements were checked against official GitHub documentation. The detailed bilingual document records further legal limitations and the review note required for release approval.',
+          githubPages: 'GitHub Pages: data collection',
+          githubPrivacy: 'GitHub General Privacy Statement',
+          fullDocument: 'Full financial and privacy notice in the repository',
+        },
+      },
+      metadata: {
+        pages: {
+          home: {
+            title: 'ImmoPilot DE · Plan property decisions transparently',
+            description:
+              'Plan acquisition costs, financing and long-term property scenarios for Germany transparently in your browser.',
+          },
+          purchaseCosts: {
+            title: 'Calculate acquisition costs · ImmoPilot DE',
+            description:
+              'Calculate property transfer tax, notary, land-register, broker and other purchase budgets with transparent assumptions.',
+          },
+          financing: {
+            title: 'Plan property financing · ImmoPilot DE',
+            description:
+              'Plan equity, mortgage amount, monthly payment, fixed interest, remaining debt and additional repayments.',
+          },
+          results: {
+            title: 'Evaluate a property · ImmoPilot DE',
+            description:
+              'Review financing, refinancing, owner occupation, rental investment and offer-price scenarios transparently.',
+          },
+          scenarios: {
+            title: 'Save and share scenarios · ImmoPilot DE',
+            description:
+              'Save property scenarios locally, import or export JSON, and create share links without an application backend.',
+          },
+          comparison: {
+            title: 'Compare properties · ImmoPilot DE',
+            description: 'Compare up to three saved property scenarios side by side.',
+          },
+          privacy: {
+            title: 'Privacy and notices · ImmoPilot DE',
+            description:
+              'Learn about local processing, storage, share links, GitHub Pages hosting and calculation limitations.',
+          },
+        },
       },
       property: { purchasePrice: 'Purchase price' },
       purchase: {

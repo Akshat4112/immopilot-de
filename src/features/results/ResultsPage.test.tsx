@@ -65,6 +65,11 @@ describe('ResultsPage', () => {
     expect(screen.getByRole('heading', { name: 'Mieten oder kaufen' })).toBeVisible()
     expect(screen.getAllByText(/152\.188,73/)).toHaveLength(2)
     expect(screen.getByText('Nettovermögen Käufer')).toBeVisible()
+    expect(screen.getAllByLabelText('Berechnungsgrundlage und Grenzen')).toHaveLength(5)
+    expect(screen.getAllByText('de-2026.09')).toHaveLength(5)
+    expect(screen.getAllByText('1.0.0')).toHaveLength(5)
+    expect(screen.getByText(/Anschlusszinsen sind frei gewählte Stressannahmen/)).toBeVisible()
+    expect(screen.getByText(/keine quellenbasierten Prognosen/)).toBeVisible()
   })
 
   it('guides an unconfigured offer method without reporting zero missing assumptions', () => {

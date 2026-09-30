@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 import { AppFooter } from './AppFooter'
 import { AppHeader } from './AppHeader'
+import { DocumentMetadata } from './DocumentMetadata'
 
 export function AppShell() {
   const { t } = useTranslation()
@@ -15,6 +16,7 @@ export function AppShell() {
 
   return (
     <div className="site-shell">
+      <DocumentMetadata />
       <a className="skip-link" href="#main-content" onClick={moveFocusToContent}>
         {t('shell.skipToContent')}
       </a>

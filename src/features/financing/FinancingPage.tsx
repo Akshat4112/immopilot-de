@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
+import { CalculationProvenance } from '../../components/CalculationProvenance'
 import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { PageLayout } from '../../components/PageLayout'
@@ -638,6 +639,8 @@ export function FinancingPage() {
               </div>
             </div>
           )}
+
+          {purchaseCostsReady ? <CalculationProvenance scope="financing" /> : null}
         </section>
       </div>
     </PageLayout>
