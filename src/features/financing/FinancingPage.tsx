@@ -10,6 +10,7 @@ import {
   type AdditionalRepaymentsDraft,
 } from '../scenario-workspace'
 import { validateAnnualAdditionalRepayment } from './annualAdditionalRepayment'
+import { AmortizationBreakdown } from './AmortizationBreakdown'
 import { validateOneTimeAdditionalRepayments } from './oneTimeAdditionalRepayments'
 import { useFinancingCalculator } from './useFinancing'
 
@@ -27,8 +28,16 @@ function languageForFormatting(language: string): SupportedLanguage {
 export function FinancingPage() {
   const { t, i18n } = useTranslation()
   const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
-  const { acquisition, financing, payment, amortization, financingDraft, updateFinancing } =
-    useFinancingCalculator()
+  const {
+    acquisition,
+    financing,
+    payment,
+    amortization,
+    selectedAmortization,
+    selectedAmortizationBasis,
+    financingDraft,
+    updateFinancing,
+  } = useFinancingCalculator()
 
   const formatEuro = (cents: number) => formatEuroFromCents(cents, language)
   const formatRate = (value: { toNumber: () => number }) =>
@@ -580,28 +589,35 @@ export function FinancingPage() {
           )}
 
           {paymentReady && scheduleReady && !amortization.cashPurchase && (
-            <div className="result-grid financing-results-grid">
-              <article className="result-card">
-                <h3>{t('finance.results.remainingDebt')}</h3>
-                <p className="result-value">
-                  {formatEuro(amortization.remainingDebtAtFixedPeriodCents)}
-                </p>
-                <p className="result-detail">
-                  {t('finance.results.afterFixedPeriod', {
-                    years: financingDraft.fixedInterestYears,
-                  })}
-                </p>
-              </article>
-              <article className="result-card">
-                <h3>{t('finance.results.payoffProjection')}</h3>
-                <p className="result-value">{formatNumber(amortization.payoffMonth, language)}</p>
-                <p className="result-detail">{t('finance.results.months')}</p>
-              </article>
-              <article className="result-card">
-                <h3>{t('finance.results.firstYearInterest')}</h3>
-                <p className="result-value">{formatEuro(amortization.firstYearInterestCents)}</p>
-              </article>
-            </div>
+            <>
+              <div className="result-grid financing-results-grid">
+                <article className="result-card">
+                  <h3>{t('finance.results.remainingDebt')}</h3>
+                  <p className="result-value">
+                    {formatEuro(amortization.remainingDebtAtFixedPeriodCents)}
+                  </p>
+                  <p className="result-detail">
+                    {t('finance.results.afterFixedPeriod', {
+                      years: financingDraft.fixedInterestYears,
+                    })}
+                  </p>
+                </article>
+                <article className="result-card">
+                  <h3>{t('finance.results.payoffProjection')}</h3>
+                  <p className="result-value">{formatNumber(amortization.payoffMonth, language)}</p>
+                  <p className="result-detail">{t('finance.results.months')}</p>
+                </article>
+                <article className="result-card">
+                  <h3>{t('finance.results.firstYearInterest')}</h3>
+                  <p className="result-value">{formatEuro(amortization.firstYearInterestCents)}</p>
+                </article>
+              </div>
+              <AmortizationBreakdown
+                baseline={amortization}
+                selected={selectedAmortization}
+                selectedBasis={selectedAmortizationBasis}
+              />
+            </>
           )}
 
           {paymentReady && !scheduleReady && (

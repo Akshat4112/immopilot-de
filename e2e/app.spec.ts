@@ -59,8 +59,9 @@ test('loads the desktop shell and keeps route navigation under the Pages path', 
     spacing: '1.5rem',
   })
 
-  await page.getByRole('link', { name: 'Kaufkosten starten' }).focus()
-  await expect(page.getByRole('link', { name: 'Kaufkosten starten' })).toHaveCSS(
+  await expect(page.getByRole('link', { name: 'Kapitalanlage bewerten' })).toBeVisible()
+  await page.getByRole('link', { name: 'Für Eigennutzung rechnen' }).focus()
+  await expect(page.getByRole('link', { name: 'Für Eigennutzung rechnen' })).toHaveCSS(
     'outline-style',
     'solid',
   )
@@ -74,7 +75,7 @@ test('loads the desktop shell and keeps route navigation under the Pages path', 
     /^\/immopilot-de\/assets\//,
   )
 
-  await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
+  await page.getByRole('link', { name: 'Für Eigennutzung rechnen' }).click()
 
   await expect(page).toHaveURL(/#\/purchase-costs$/)
   expect(new URL(page.url()).pathname).toBe(applicationPath)
@@ -147,7 +148,7 @@ test('keeps the mobile shell accessible without horizontal overflow', async ({ p
 
 test('calculates acquisition costs after the user enters a purchase price', async ({ page }) => {
   await page.goto('./')
-  await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
+  await page.getByRole('link', { name: 'Für Eigennutzung rechnen' }).click()
 
   await expect(page.getByRole('heading', { name: 'Berechnung fehlgeschlagen' })).toHaveCount(0)
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
@@ -182,7 +183,7 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   page,
 }) => {
   await page.goto('./')
-  await page.getByRole('link', { name: 'Kaufkosten starten' }).click()
+  await page.getByRole('link', { name: 'Für Eigennutzung rechnen' }).click()
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
 
   const budgetStatuses = page.locator('.budget-field__status-select')
@@ -202,6 +203,13 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await expect(page.getByText(/916,67/)).toBeVisible()
   await expect(page.getByText(/152\.188,73/)).toBeVisible()
 
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const baselineSchedule = page.getByRole('table', {
+    name: 'Tilgungsplan ohne Sondertilgung',
+  })
+  await expect(baselineSchedule.getByRole('rowheader', { name: '12', exact: true })).toBeVisible()
+  await expect(baselineSchedule.getByRole('columnheader', { name: 'Zinsen' })).toBeVisible()
+
   await page.getByRole('button', { name: 'English' }).click()
 
   await expect(page.getByRole('heading', { level: 1, name: 'Plan financing' })).toBeVisible()
@@ -212,6 +220,7 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await expect(page).toHaveURL(/#\/results$/)
   await expect(page.getByRole('heading', { level: 1, name: 'Evaluate one property' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Refinancing stress test' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Choose an offer method' })).toBeVisible()
 })
 
 test('persists and manages a named scenario locally without saved results', async ({ page }) => {
@@ -322,6 +331,13 @@ test('carries Sondertilgung through results, saved restoration, and comparison',
   await page.getByRole('textbox', { name: 'Betrag für Einmalzahlung 1' }).fill('2.500')
   await page.getByRole('textbox', { name: 'Darlehensmonat für Einmalzahlung 1' }).fill('12')
 
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const selectedSchedule = page.getByRole('table', {
+    name: 'Tilgungsplan mit Sondertilgung',
+  })
+  const month12 = selectedSchedule.getByRole('rowheader', { name: '12', exact: true }).locator('..')
+  await expect(month12).toContainText(/7\.500(?:,00)?\s*€/)
+
   await page.getByRole('link', { name: 'Zur Auswertung →' }).click()
   const comparison = page.locator('.sondertilgung-comparison')
   await expect(
@@ -421,4 +437,86 @@ test('validates one-time repayments and retains them across a cash purchase swit
     `document.documentElement.scrollWidth > document.documentElement.clientWidth`,
   )
   expect(hasHorizontalOverflow).toBe(false)
+})
+
+test('imports current and legacy JSON while rejecting unsafe files without replacing the workspace', async ({
+  page,
+}) => {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
+  await page.goto('./#/scenarios')
+  await page.getByLabel('Szenarioname').fill('Import source')
+  await page.getByRole('button', { name: 'Szenario speichern' }).click()
+
+  const source = await page.evaluate<Record<string, unknown>>(`(() => {
+    const raw = localStorage.getItem('immopilot-de.scenarios.v1')
+    if (!raw) throw new Error('Missing saved scenario fixture')
+    return JSON.parse(raw).scenarios[0]
+  })()`)
+  const fileInput = page.locator('.scenario-file-action input[type="file"]')
+  type ImportFixture = {
+    schemaVersion: string
+    id: string
+    name: string
+    inputs: {
+      purchaseCosts: { purchasePrice: string }
+      financing: { additionalRepayments?: unknown }
+    }
+  }
+  const current = structuredClone(source) as unknown as ImportFixture
+  current.id = 'browser-import-1-1'
+  current.name = 'Imported 1.1 scenario'
+  current.inputs.purchaseCosts.purchasePrice = '410000'
+
+  await fileInput.setInputFiles({
+    name: 'scenario-1.1.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(current)),
+  })
+  await expect(page.locator('input[value="Imported 1.1 scenario"]')).toBeVisible()
+  await page
+    .getByRole('listitem')
+    .filter({ has: page.locator('input[value="Imported 1.1 scenario"]') })
+    .getByRole('button', { name: 'Laden' })
+    .click()
+  await page.goto('./#/purchase-costs')
+  await expect(page.getByRole('textbox', { name: 'Kaufpreis' })).toHaveValue('410000')
+
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('777000')
+  await page.goto('./#/scenarios')
+  await fileInput.setInputFiles({
+    name: 'corrupted.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{not json'),
+  })
+  await expect(page.getByRole('alert')).toContainText('Ungültige Szenariodaten')
+
+  await fileInput.setInputFiles({
+    name: 'unsupported.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ schemaVersion: '9.0.0' })),
+  })
+  await expect(page.getByRole('alert')).toContainText('Nicht unterstützte Szenarioversion')
+  await page.goto('./#/purchase-costs')
+  await expect(page.getByRole('textbox', { name: 'Kaufpreis' })).toHaveValue('777000')
+
+  const legacy = structuredClone(current)
+  legacy.schemaVersion = '1.0.0'
+  legacy.id = 'browser-import-1-0'
+  legacy.name = 'Imported legacy scenario'
+  delete legacy.inputs.financing.additionalRepayments
+  await page.goto('./#/scenarios')
+  await fileInput.setInputFiles({
+    name: 'scenario-1.0.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(legacy)),
+  })
+  const legacyCard = page
+    .getByRole('listitem')
+    .filter({ has: page.locator('input[value="Imported legacy scenario"]') })
+  await expect(legacyCard).toBeVisible()
+  await legacyCard.getByRole('button', { name: 'Laden' }).click()
+  await page.goto('./#/financing')
+  await expect(page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' })).toHaveValue('')
+  await expect(page.getByRole('combobox', { name: 'Monat im Darlehensjahr' })).toHaveValue('12')
 })

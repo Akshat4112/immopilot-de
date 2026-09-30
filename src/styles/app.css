@@ -610,6 +610,73 @@ h3 {
   border-bottom: 0;
 }
 
+.amortization-breakdown {
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.amortization-breakdown > summary {
+  cursor: pointer;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.amortization-breakdown[open] > summary {
+  margin-bottom: var(--space-4);
+}
+
+.amortization-schedule + .amortization-schedule {
+  margin-top: var(--space-8);
+}
+
+.amortization-table-scroll {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.amortization-table {
+  width: 100%;
+  min-width: 64rem;
+  border-collapse: collapse;
+  background: var(--color-surface);
+}
+
+.amortization-table caption {
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+}
+
+.amortization-table th,
+.amortization-table td {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.amortization-table th:first-child,
+.amortization-table td:first-child {
+  position: sticky;
+  left: 0;
+  text-align: left;
+  background: var(--color-surface);
+}
+
+.amortization-table thead th {
+  background: var(--color-background);
+}
+
+.amortization-table thead th:first-child {
+  z-index: 1;
+  background: var(--color-background);
+}
+
 .comparison-group-row th:first-child {
   position: static;
   width: auto;
