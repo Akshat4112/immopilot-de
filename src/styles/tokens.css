@@ -17,7 +17,7 @@
   /* Semantic colors. */
   --color-text-primary: var(--palette-ink-950);
   --color-text-secondary: var(--palette-ink-500);
-  --color-text-tertiary: var(--palette-ink-400);
+  --color-text-tertiary: var(--palette-ink-500);
   --color-text-eyebrow: var(--palette-ink-700);
   --color-text-trust: var(--palette-ink-600);
   --color-background: var(--palette-paper-100);
