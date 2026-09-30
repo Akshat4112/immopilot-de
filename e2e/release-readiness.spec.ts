@@ -27,6 +27,12 @@ async function expectNoSeriousAccessibilityViolations(page: Page) {
   expect(blockingViolations).toEqual([])
 }
 
+async function openPrimaryNavigationRoute(page: Page, linkName: string) {
+  const menuButton = page.getByRole('button', { name: 'Navigation öffnen' })
+  if (await menuButton.isVisible()) await menuButton.click()
+  await page.getByRole('link', { name: linkName }).click()
+}
+
 test('@accessibility scans every public route and confirmation state', async ({ page }) => {
   for (const route of routes) {
     await page.goto(route)
@@ -92,7 +98,7 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: 'Kapitalanlage' })).toBeVisible()
     await expectNoPageOverflow(page)
 
-    await page.getByRole('link', { name: 'Gespeicherte Szenarien' }).click()
+    await openPrimaryNavigationRoute(page, 'Gespeicherte Szenarien')
     await page.getByLabel('Szenarioname').fill(`Release ${viewport.name}`)
     await page.getByRole('button', { name: 'Szenario speichern' }).click()
     const savedCard = page
