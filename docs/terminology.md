@@ -14,6 +14,9 @@ This document defines the canonical labels and meanings for ImmoPilot DE. Interf
 8. Preserve established German terms such as Hausgeld and Sondertilgung in the German interface. Explain them rather than replacing them with an approximate synonym.
 9. Avoid legal, tax or lending claims that the application does not calculate or verify.
 10. Use inclusive plural wording where possible instead of adding gender markers to compact interface labels.
+11. Address the user consistently with the informal German **du** form. Use lowercase `du`, `dir`,
+    `dich`, `dein` and their inflected forms except where normal sentence capitalization applies. Do
+    not mix this voice with formal `Sie`/`Ihnen` forms in interface, validation, guidance or legal copy.
 
 ## User and property terms
 

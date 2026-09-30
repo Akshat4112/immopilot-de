@@ -462,6 +462,7 @@ h3 {
   align-self: center;
   color: var(--color-warning-text);
   font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 53.75rem) {
@@ -696,6 +697,7 @@ h3 {
 .comparison-column-heading > strong {
   font-family: var(--font-family-display);
   font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
 }
 
 .comparison-column-heading > small,
@@ -928,7 +930,6 @@ h3 {
 
 .form-select:focus {
   border-color: var(--color-brand);
-  outline: none;
   box-shadow: 0 0 0 3px var(--color-brand-alpha);
 }
 
@@ -938,7 +939,6 @@ h3 {
 
 .form-field__input-group input:focus,
 .form-field__input-group select:focus {
-  outline: none;
   border-color: var(--color-brand);
   box-shadow: 0 0 0 3px var(--color-brand-alpha);
 }
@@ -1193,6 +1193,7 @@ h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+  overflow-wrap: anywhere;
 }
 
 .result-value.large {
@@ -1453,7 +1454,6 @@ h3 {
 }
 
 .financing-input-grid select:focus {
-  outline: none;
   border-color: var(--color-brand);
   box-shadow: 0 0 0 3px var(--color-brand-alpha);
 }
