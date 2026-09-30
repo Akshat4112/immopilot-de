@@ -349,14 +349,24 @@ export function ScenariosPage() {
         {pendingSensitiveAction ? (
           <section
             className="scenario-notice scenario-notice--warning"
+            aria-describedby="sensitive-action-description"
             aria-labelledby="sensitive-action-heading"
+            aria-modal="false"
+            role="alertdialog"
           >
             <h2 id="sensitive-action-heading">
               {t(`scenarios.privacy.${pendingSensitiveAction.type}Title`)}
             </h2>
-            <p>{t(`scenarios.privacy.${pendingSensitiveAction.type}Warning`)}</p>
+            <p id="sensitive-action-description">
+              {t(`scenarios.privacy.${pendingSensitiveAction.type}Warning`)}
+            </p>
             <div className="scenario-actions">
-              <button className="primary-action" type="button" onClick={confirmSensitiveAction}>
+              <button
+                autoFocus
+                className="primary-action"
+                type="button"
+                onClick={confirmSensitiveAction}
+              >
                 {t(
                   `scenarios.actions.confirm${pendingSensitiveAction.type === 'share' ? 'Share' : 'Export'}`,
                 )}
@@ -420,7 +430,12 @@ export function ScenariosPage() {
             <div className="scenario-confirmation" role="alert">
               <p>{t('scenarios.saved.clearAllWarning')}</p>
               <div className="scenario-actions">
-                <button className="primary-action" type="button" onClick={clearAllScenarios}>
+                <button
+                  autoFocus
+                  className="primary-action"
+                  type="button"
+                  onClick={clearAllScenarios}
+                >
                   {t('scenarios.actions.confirmClearAll')}
                 </button>
                 <button
@@ -511,6 +526,7 @@ export function ScenariosPage() {
                           {t('scenarios.saved.deleteWarning', { name: scenario.name })}
                         </span>
                         <button
+                          autoFocus
                           className="secondary-action"
                           type="button"
                           onClick={() => removeScenario(scenario)}
@@ -541,7 +557,7 @@ export function ScenariosPage() {
           )}
         </section>
 
-        <p className="scenario-status" aria-live="polite">
+        <p className="scenario-status" role="status">
           {status ? t(`scenarios.status.${status}`) : ''}
         </p>
         <Link className="inline-link" to="/results">

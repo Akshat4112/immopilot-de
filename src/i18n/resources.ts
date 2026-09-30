@@ -300,7 +300,7 @@ export const resources = {
       },
       footer: {
         disclaimer:
-          'Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfen Sie aktuelle Werte und lassen Sie sich vor einer Entscheidung qualifiziert beraten.',
+          'Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfe aktuelle Werte und lass dich vor einer Entscheidung qualifiziert beraten.',
         copyright: '© 2026 ImmoPilot DE',
       },
       property: { purchasePrice: 'Kaufpreis' },
@@ -364,7 +364,7 @@ export const resources = {
         },
         errors: {
           purchasePriceRequired: 'Kaufpreis ist erforderlich und muss größer als 0 sein.',
-          stateRequired: 'Bitte wählen Sie ein Bundesland.',
+          stateRequired: 'Bitte wähle ein Bundesland.',
           calculationFailed: 'Berechnung fehlgeschlagen',
           field: 'Feld',
           code: 'Code',
@@ -372,7 +372,7 @@ export const resources = {
         warnings: {
           unconfirmedBudgets: 'Budgets nach dem Kauf noch nicht bestätigt',
           unconfirmedBudgetsMessage:
-            'Die folgenden Budgets sind noch nicht bestätigt. Bitte setzen Sie sie auf "Bestätigt: 0 €" oder geben Sie ein Budget ein.',
+            'Die folgenden Budgets sind noch nicht bestätigt. Bitte setze sie auf „Bestätigt: 0 €“ oder gib ein Budget ein.',
         },
         budgetFields: {
           renovationBudget: 'Renovierungsbudget',
@@ -402,7 +402,7 @@ export const resources = {
         },
         nextSteps: {
           message:
-            'Die Kaufkosten stehen. Jetzt können Sie die Finanzierung planen oder Szenarien vergleichen.',
+            'Die Kaufkosten stehen. Jetzt kannst du die Finanzierung planen oder Szenarien vergleichen.',
           continueToFinancing: 'Zur Finanzierung →',
           compareScenarios: 'Szenarien vergleichen →',
           financingSoon:

@@ -130,11 +130,18 @@ describe('ScenariosPage', () => {
 
     await user.click(within(savedCard).getByRole('button', { name: 'Teilen' }))
     expect(screen.queryByLabelText('Freigabelink für das Szenario')).not.toBeInTheDocument()
+    expect(screen.getByRole('alertdialog')).toHaveAccessibleName('Finanzdaten im Link teilen?')
     expect(screen.getByText(/Jeder mit dem vollständigen Link/i)).toBeVisible()
-    await user.click(screen.getByRole('button', { name: 'Verstanden, Link erstellen' }))
+    const confirmShare = screen.getByRole('button', { name: 'Verstanden, Link erstellen' })
+    expect(confirmShare).toHaveFocus()
+    await user.click(confirmShare)
     expect(screen.getByLabelText('Freigabelink für das Szenario')).toBeVisible()
 
     await user.click(within(savedCard).getByRole('button', { name: 'JSON exportieren' }))
+    expect(screen.getByRole('alertdialog')).toHaveAccessibleName(
+      'Sensible Finanzdaten exportieren?',
+    )
+    expect(screen.getByRole('button', { name: 'Verstanden, JSON exportieren' })).toHaveFocus()
     expect(screen.getByText(/Kaufpläne und finanzielle Verhältnisse/i)).toBeVisible()
   })
 

@@ -27,6 +27,7 @@
   --color-border: var(--palette-line-200);
   --color-border-decorative: var(--palette-mint-150);
   --color-brand: var(--palette-ink-900);
+  --color-brand-alpha: rgb(23 63 50 / 10%);
   --color-accent: var(--palette-lime-300);
   --color-on-brand: var(--palette-white);
   --color-on-brand-prominent: rgb(255 255 255 / 72%);
@@ -34,7 +35,7 @@
   --color-on-brand-caption: rgb(255 255 255 / 58%);
   --color-on-brand-subtle: rgb(255 255 255 / 50%);
   --color-on-brand-border: rgb(255 255 255 / 12%);
-  --color-focus-ring: rgb(23 63 50 / 28%);
+  --color-focus-ring: var(--palette-ink-900);
   --color-selection: var(--palette-mint-200);
   --color-warning: #9a6700;
   --color-warning-border: #d4a72c;
