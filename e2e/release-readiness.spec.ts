@@ -19,6 +19,9 @@ async function expectNoPageOverflow(page: Page) {
 }
 
 async function expectNoSeriousAccessibilityViolations(page: Page) {
+  // Route changes animate navigation colors for 160 ms. Scan the settled UI rather than an
+  // intermediate color blend that is never the resting visual state.
+  await page.waitForTimeout(200)
   const results = await new AxeBuilder({ page }).analyze()
   const blockingViolations = results.violations.filter(
     ({ impact }) => impact === 'serious' || impact === 'critical',
