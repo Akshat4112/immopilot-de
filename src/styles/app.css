@@ -1359,10 +1359,6 @@ h3 {
   background: var(--color-brand-alpha);
 }
 
-.privacy-notice__warning p {
-  color: var(--color-text-primary);
-}
-
 .privacy-notice :where(h2, p, ul) {
   max-width: 52rem;
 }
@@ -1377,6 +1373,10 @@ h3 {
   margin-bottom: 0;
   color: var(--color-text-secondary);
   line-height: var(--line-height-body);
+}
+
+.privacy-notice .privacy-notice__warning p {
+  color: var(--color-text-primary);
 }
 
 .privacy-notice ul {
