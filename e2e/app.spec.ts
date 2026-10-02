@@ -268,7 +268,7 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
   expect(accessibility.violations).toEqual([])
   await page
     .locator('.amortization-breakdown')
-    .screenshot({ path: testInfo.outputPath('explorer-desktop.png') })
+    .screenshot({ animations: 'disabled', path: testInfo.outputPath('explorer-desktop.png') })
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 844 })
     const scroll = selected.getByRole('region', {
@@ -277,7 +277,17 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
     })
     await scroll.focus()
     await expect(scroll).toBeFocused()
-    await expect(selected.getByRole('button', { name: 'Next' })).toBeVisible()
+    const scrollBounds = await scroll.boundingBox()
+    expect(scrollBounds).not.toBeNull()
+    expect(scrollBounds!.x).toBeGreaterThanOrEqual(0)
+    expect(scrollBounds!.x + scrollBounds!.width).toBeLessThanOrEqual(width)
+    const nextPage = selected.getByRole('button', { name: 'Next' })
+    await nextPage.scrollIntoViewIfNeeded()
+    await expect(nextPage).toBeInViewport()
+    const buttonBounds = await nextPage.boundingBox()
+    expect(buttonBounds).not.toBeNull()
+    expect(buttonBounds!.x).toBeGreaterThanOrEqual(0)
+    expect(buttonBounds!.x + buttonBounds!.width).toBeLessThanOrEqual(width)
     const tableOverflow = await scroll.evaluate(
       (element: { scrollWidth: number; clientWidth: number }) =>
         element.scrollWidth > element.clientWidth,
@@ -288,7 +298,10 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
     expect(tableOverflow).toBe(true)
     expect(documentOverflow).toBe(false)
   }
-  await selected.screenshot({ path: testInfo.outputPath('explorer-mobile.png') })
+  await selected.screenshot({
+    animations: 'disabled',
+    path: testInfo.outputPath('explorer-mobile.png'),
+  })
 })
 
 test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
