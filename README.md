@@ -65,6 +65,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
 - [Version 1 release audit](docs/version-1-release-audit.md): deployed-app evidence, gate scorecard, findings and assigned remediation tasks
 - [PF-005.5 content and provenance audit](docs/pf-0055-content-provenance-audit.md): closure evidence for result provenance, legal/privacy content, metadata and landing copy
+- [PF-005.6 candidate verification](docs/pf-0056-release-candidate-verification.md): exact-commit checks, canonical demos, deployment identity, gate decisions and remaining release blockers
 
 ## Planned technology
 
@@ -169,10 +170,16 @@ the Playwright job fails.
 
 The `Deploy GitHub Pages` workflow publishes the production `dist/` directory after
 the `CI` workflow succeeds for a commit on `main`, preventing failed checks from
-reaching production. It can also be started manually from the workflow's
-`Run workflow` control in GitHub Actions. The build uses the pinned Node.js runtime
+reaching production. Manual starts from `Run workflow` also require a successful push CI run on
+`main` for the exact checked-out commit. The build uses the pinned Node.js runtime
 and lockfile, configures Pages, uploads a one-day Pages artifact, and deploys it
 through the protected `github-pages` environment.
+
+Production builds emit `release.json` with the source commit and SHA-256 digests of all shipped
+static files. CI and Pages verify that inventory before upload. After deployment, run
+`npm run release:verify -- EXACT_MAIN_SHA https://akshat4112.github.io/immopilot-de/` to confirm the
+public bytes against the expected commit. This proves artifact identity alongside CI/deployment
+evidence; it does not approve the remaining release gates or declare Version 1 released.
 
 The workflow grants read-only repository access by default. Only the deployment job
 receives `pages: write` and `id-token: write`; it also receives `actions: read` to
