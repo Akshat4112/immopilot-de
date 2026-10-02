@@ -6,7 +6,7 @@
 - **Deployed baseline:** `f1d34d7d680980ec16ab97ad2d562967359e0c1c` (merged PR #57)
 - **Original PR #58 application source:** `a6f9d6a7be2e1d27026a603e5d8f27adfb9a535a`
 - **Verified deployed main:** `274ec63a2d94a4ded65715bb62b745d5f22b62bf` (merged PR #58)
-- **Budget-transition fix source:** `00eb5f710709b0949fa082231f213e417cc18f1c` (follow-up candidate; not deployed)
+- **Budget-transition fix source:** `c4269622e77770a36d8900d71d629cd1253cfa01` (follow-up candidate; not deployed)
 - **Application:** <https://akshat4112.github.io/immopilot-de/>
 - **Review PR:** [#58](https://github.com/Akshat4112/immopilot-de/pull/58)
 
@@ -174,11 +174,16 @@ a positive amount could also leave an invalid amount/status pair. Explicitly cle
 confirming zero was a safe workaround; no incorrect financial result was displayed.
 
 The follow-up source commit above normalizes non-budgeted and confirmed-zero selections to zero.
-Clearing a positive budget returns it to **not-budgeted**, so zero is not silently confirmed. Entering
-a positive amount selects **budgeted**. The domain formulas and persistence schema are unchanged.
+Clearing a positive budget leaves it **unresolved**, displays a bilingual accessible choice prompt,
+and requires the user to select **not-budgeted** or **confirmed-zero**. No budget status is inferred;
+the unresolved draft omits the optional budget, so a full project total remains unavailable. Entering
+a positive amount selects **budgeted**. This follows the explicit-interaction requirement in
+[`assumptions-schema.md`, section 4.2](assumptions-schema.md#42-renovation-and-setup-states).
+The domain formulas and persistence schema are unchanged. Browser regressions also navigate away
+and back while the status is unresolved to ensure it is not silently replaced with a default.
 Four component regressions (both fields in both languages) failed on the deployed implementation and
 passed with the fix. Local quality checks passed 43 files / 324 tests, build and zero-vulnerability
-full/production audits; coverage is 90.93% statements, 85.73% branches, 90.43% functions and 92.16%
+full/production audits; coverage is 90.99% statements, 86.13% branches, 90.43% functions and 92.22%
 lines. A bilingual transition browser regression runs on all three pinned engines, bringing the suite
 to 33 project/test combinations. The follow-up PR's CI is the authority for their execution, and this
 fix is not claimed to be live before its own merge/deployment verification.
