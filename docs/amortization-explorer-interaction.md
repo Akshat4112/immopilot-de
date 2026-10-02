@@ -22,12 +22,12 @@ a short “No mortgage schedule for a cash purchase” explanation rather than a
 
 ## Controls and default state
 
-| Control | Default | Choices and behavior |
-| --- | --- | --- |
-| Horizon | Fixed-interest period | Zinsbindung or full projected repayment. Zinsbindung uses exactly the selected fixed-interest month count. Full repayment uses the later payoff month of the available baseline and selected schedules. |
-| Detail | Annual | Annual loan-year aggregates or monthly detail; the horizon remains the same when switching. |
-| Schedule | Both, when a valid non-zero repayment plan exists | Baseline only, with additional repayments only, or both. Without a plan, show one baseline schedule and explain that there is no additional-repayment difference. |
-| Table page | First page | At most 24 period rows per schedule per page, with previous/next controls, visible period range and total page count. No infinite scroll is required. |
+| Control    | Default                                           | Choices and behavior                                                                                                                                                                                    |
+| ---------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Horizon    | Fixed-interest period                             | Zinsbindung or full projected repayment. Zinsbindung uses exactly the selected fixed-interest month count. Full repayment uses the later payoff month of the available baseline and selected schedules. |
+| Detail     | Annual                                            | Annual loan-year aggregates or monthly detail; the horizon remains the same when switching.                                                                                                             |
+| Schedule   | Both, when a valid non-zero repayment plan exists | Baseline only, with additional repayments only, or both. Without a plan, show one baseline schedule and explain that there is no additional-repayment difference.                                       |
+| Table page | First page                                        | At most 24 period rows per schedule per page, with previous/next controls, visible period range and total page count. No infinite scroll is required.                                                   |
 
 Use native, labelled radio groups for horizon, detail and schedule. Opening the disclosure reveals all
 controls; none requires a hover or a gesture. Settings are view state only, never scenario inputs,
@@ -65,16 +65,16 @@ Each displayed schedule has a caption and table heading identifying its basis an
 “both” view, render separately captioned tables with common view controls; baseline and selected
 schedule columns must never silently mix.
 
-| Column | Monthly value | Annual loan-year value |
-| --- | --- | --- |
-| Period | Loan month number | Loan year and included month range, e.g. year 2, months 13–24 |
-| Opening debt | `openingBalanceCents` | Opening balance of the first included row |
-| Regular payment | `regularPaymentCents` | Sum of actual regular payments, including any capped final payment |
-| Interest | `interestCents` | Sum of included monthly interest |
-| Scheduled principal | `scheduledPrincipalCents` | Sum of included scheduled principal |
-| Additional principal | `additionalPrincipalCents` | Sum of actual, capped additional principal |
-| Total payment | `totalPaymentCents` | Sum of included actual total payments |
-| Closing debt | `closingBalanceCents` | Closing balance of the last included row |
+| Column               | Monthly value              | Annual loan-year value                                             |
+| -------------------- | -------------------------- | ------------------------------------------------------------------ |
+| Period               | Loan month number          | Loan year and included month range, e.g. year 2, months 13–24      |
+| Opening debt         | `openingBalanceCents`      | Opening balance of the first included row                          |
+| Regular payment      | `regularPaymentCents`      | Sum of actual regular payments, including any capped final payment |
+| Interest             | `interestCents`            | Sum of included monthly interest                                   |
+| Scheduled principal  | `scheduledPrincipalCents`  | Sum of included scheduled principal                                |
+| Additional principal | `additionalPrincipalCents` | Sum of actual, capped additional principal                         |
+| Total payment        | `totalPaymentCents`        | Sum of included actual total payments                              |
+| Closing debt         | `closingBalanceCents`      | Closing balance of the last included row                           |
 
 Annual buckets are loan months 1–12, 13–24 and so on, not calendar years. A partial final bucket shows
 its actual month range. Opening and closing balances are endpoint stocks and must never be summed.
@@ -91,9 +91,9 @@ fixed-period savings with lifetime savings under the same label.
 
 The later chart tasks use the same schedules, horizon and period selectors as the tables:
 
-| Chart | Data and units | Required distinctions |
-| --- | --- | --- |
-| Remaining debt | Closing debt in euros on a loan-month axis; include month 0 opening principal | Baseline and selected paths have labelled solid/dashed strokes and distinct point shapes; mark fixed-period end and each payoff. |
+| Chart               | Data and units                                                                             | Required distinctions                                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remaining debt      | Closing debt in euros on a loan-month axis; include month 0 opening principal              | Baseline and selected paths have labelled solid/dashed strokes and distinct point shapes; mark fixed-period end and each payoff.                                       |
 | Payment composition | Included period totals in euros for interest, scheduled principal and additional principal | Compare aligned loan periods; legend identifies each component with labels/patterns. Regular payment excludes additional principal; stack height equals total payment. |
 
 Annual balance points use each bucket's closing debt, not an average or sum. Charts use all periods in
@@ -119,15 +119,15 @@ This interaction task is complete after review when the default controls, horizo
 columns, aggregation, chart units and mobile behavior above are unambiguous. It introduces no new
 input schema, domain formula, persistence, lender constraint or release approval.
 
-| Original tracker task | Implementation scope |
-| --- | --- |
-| PF-005.2 | Render opening debt and all actual payment periods, handle schedule availability and cash purchase, paginate the tables. |
-| PF-005.3 | Add annual/monthly aggregation, horizon and schedule controls, common period basis and boundary labels. |
-| PF-005.4 | Remaining-debt chart, fixed-period marker, baseline/selected alignment and payoff endpoints. |
-| PF-005.5 | Payment-composition chart with exact period totals and component distinctions. |
-| PF-005.6 | Keyboard inspection, equivalent data views, contrast, focus and reduced-motion verification. |
-| PF-005.7 | Reviewed DE/EN terms, partial-period captions, print and responsive polish. |
-| PF-005.8 | Unit, component and browser coverage for the completed explorer. |
+| Original tracker task | Implementation scope                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| PF-005.2              | Render opening debt and all actual payment periods, handle schedule availability and cash purchase, paginate the tables. |
+| PF-005.3              | Add annual/monthly aggregation, horizon and schedule controls, common period basis and boundary labels.                  |
+| PF-005.4              | Remaining-debt chart, fixed-period marker, baseline/selected alignment and payoff endpoints.                             |
+| PF-005.5              | Payment-composition chart with exact period totals and component distinctions.                                           |
+| PF-005.6              | Keyboard inspection, equivalent data views, contrast, focus and reduced-motion verification.                             |
+| PF-005.7              | Reviewed DE/EN terms, partial-period captions, print and responsive polish.                                              |
+| PF-005.8              | Unit, component and browser coverage for the completed explorer.                                                         |
 
 Required regression cases include the approved 348-month baseline and 203-month annual €5,000 plan,
 fixed-period month 120 versus a payment at month 121, a capped month-1 payoff, a partial final loan
