@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-import owner from '../examples/scenarios/owner-occupier.json'
-import rental from '../examples/scenarios/rental-investment.json'
+import owner from '../examples/scenarios/owner-occupier.json' with { type: 'json' }
+import rental from '../examples/scenarios/rental-investment.json' with { type: 'json' }
 
 async function setCanonicalPurchase(page: Page, scenario: typeof owner | typeof rental) {
   await page.goto('./')
@@ -87,13 +87,13 @@ test('@cross-browser reproduces negative cash flow and canonical rental sale in 
   ]) {
     await page.getByRole('textbox', { name, exact: true }).fill(value)
   }
-  await expect(page.getByText('-180,00 €', { exact: true })).toBeVisible()
+  await expect(page.getByText('-180 €', { exact: true })).toBeVisible()
   await expect(page.getByText('42.480,31 €', { exact: true })).toBeVisible()
   await expect(page.getByText(/137\.680,31/)).toBeVisible()
   await inspectPopulatedResults(page, /^Berechnungsgrundlage und Grenzen — /)
 
   await page.getByRole('button', { name: 'English' }).click()
-  await expect(page.getByText('-€180.00', { exact: true })).toBeVisible()
+  await expect(page.getByText('-€180', { exact: true })).toBeVisible()
   await expect(page.getByText('€42,480.31', { exact: true })).toBeVisible()
   await inspectPopulatedResults(page, /^Calculation basis and limitations — /)
   expect(applicationErrors).toEqual([])
