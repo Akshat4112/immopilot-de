@@ -77,6 +77,7 @@ export function PurchaseCostsPage() {
     const isConfirmedZero = budget?.budgetStatus === 'confirmed-zero'
     const isBudgeted = budget?.budgetStatus === 'budgeted'
     const isNotBudgeted = budget?.budgetStatus === 'not-budgeted'
+    const isUnresolved = budget === undefined
     const amount = budget?.amountCents ?? 0
     const formattedAmount = formatBudgetInput(amount)
     const label = t(`purchase.${labelKey}`)
@@ -110,11 +111,15 @@ export function PurchaseCostsPage() {
         </div>
         <div id={helpId} className="budget-field__status">
           <select
-            value={budget?.budgetStatus || 'not-budgeted'}
+            value={budget?.budgetStatus ?? ''}
             onChange={(event) => setBudgetConfirmed(field, event.target.value as BudgetStatus)}
             className="budget-field__status-select"
             aria-label={t('purchase.budgetStatus.label', { budget: label })}
+            aria-describedby={isUnresolved ? `${field}-choice-required` : undefined}
           >
+            <option value="" disabled>
+              {t('purchase.budgetStatus.chooseStatus')}
+            </option>
             <option value="not-budgeted">{t('purchase.budgetStatus.notBudgeted')}</option>
             <option value="confirmed-zero">{t('purchase.budgetStatus.confirmedZero')}</option>
             <option value="budgeted" disabled={amount === 0}>
@@ -122,8 +127,11 @@ export function PurchaseCostsPage() {
             </option>
           </select>
           <span
-            className={`budget-field__status-badge ${isNotBudgeted ? 'warning' : ''} ${isConfirmedZero ? 'confirmed' : ''} ${isBudgeted ? 'budgeted' : ''}`}
+            id={isUnresolved ? `${field}-choice-required` : undefined}
+            role={isUnresolved ? 'status' : undefined}
+            className={`budget-field__status-badge ${isNotBudgeted || isUnresolved ? 'warning' : ''} ${isConfirmedZero ? 'confirmed' : ''} ${isBudgeted ? 'budgeted' : ''}`}
           >
+            {isUnresolved && t('purchase.budgetStatus.choiceRequired')}
             {isNotBudgeted && t('purchase.budgetStatus.notBudgetedBadge')}
             {isConfirmedZero && t('purchase.budgetStatus.confirmedZeroBadge')}
             {isBudgeted && t('purchase.budgetStatus.budgetedBadge')}

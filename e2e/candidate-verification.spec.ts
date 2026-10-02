@@ -131,8 +131,28 @@ test('@cross-browser keeps budget transitions usable in both languages', async (
     await expect(page.getByRole('alert')).toHaveCount(0)
     await amount.fill('10000')
     await amount.fill('')
-    await expect(status).toHaveValue('not-budgeted')
+    await expect(status).toHaveValue('')
+    await expect(
+      page.getByText(language === 'de' ? 'Wähle einen Budgetstatus.' : 'Choose a budget status.'),
+    ).toBeVisible()
     await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(
+      page.getByRole('link', {
+        name: language === 'de' ? 'Zur Finanzierung →' : 'Continue to financing →',
+      }),
+    ).toHaveCount(0)
+    await page
+      .getByRole('link', { name: language === 'de' ? 'Finanzierung' : 'Financing', exact: true })
+      .click()
+    await page
+      .getByRole('link', { name: language === 'de' ? 'Kaufkosten' : 'Purchase costs', exact: true })
+      .click()
+    await expect(status).toHaveValue('')
+    await status.selectOption('not-budgeted')
+    await expect(status).toHaveValue('not-budgeted')
+    await amount.fill('10000')
+    await amount.fill('')
+    await expect(status).toHaveValue('')
     await status.selectOption('confirmed-zero')
     await expect(
       page.getByRole('link', {

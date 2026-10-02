@@ -82,17 +82,14 @@ export function usePurchaseCostsCalculator() {
   const setBudgetConfirmed = useCallback(
     (field: 'renovationBudget' | 'movingSetupCosts', status: BudgetStatus) => {
       const current = form.getValues(field)
-      if (current) {
-        form.setValue(
-          field,
-          {
-            ...current,
-            budgetStatus: status,
-            amountCents: status === 'budgeted' ? (current.amountCents ?? 0) : 0,
-          },
-          { shouldValidate: true },
-        )
-      }
+      form.setValue(
+        field,
+        {
+          budgetStatus: status,
+          amountCents: status === 'budgeted' ? (current?.amountCents ?? 0) : 0,
+        },
+        { shouldValidate: true },
+      )
     },
     [form],
   )
@@ -102,15 +99,11 @@ export function usePurchaseCostsCalculator() {
       const current = form.getValues(field)
       form.setValue(
         field,
-        {
-          amountCents,
-          budgetStatus:
-            amountCents > 0
-              ? 'budgeted'
-              : current?.budgetStatus === 'confirmed-zero'
-                ? 'confirmed-zero'
-                : 'not-budgeted',
-        },
+        amountCents > 0
+          ? { amountCents, budgetStatus: 'budgeted' }
+          : current?.budgetStatus === 'confirmed-zero' || current?.budgetStatus === 'not-budgeted'
+            ? { amountCents: 0, budgetStatus: current.budgetStatus }
+            : undefined,
         { shouldValidate: true },
       )
     },

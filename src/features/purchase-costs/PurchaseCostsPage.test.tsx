@@ -135,8 +135,30 @@ describe('PurchaseCostsPage', () => {
 
       fireEvent.change(amount, { target: { value: '10000' } })
       fireEvent.change(amount, { target: { value: '' } })
-      expect(status).toHaveValue('not-budgeted')
+      expect(status).toHaveValue('')
+      expect(useScenarioWorkspaceStore.getState().purchaseCosts[field]).toBeUndefined()
+      expect(status).toHaveAccessibleDescription(
+        language === 'de' ? 'Wähle einen Budgetstatus.' : 'Choose a budget status.',
+      )
+      expect(
+        screen.getByText(
+          language === 'de' ? 'Wähle einen Budgetstatus.' : 'Choose a budget status.',
+        ),
+      ).toBeVisible()
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: language === 'de' ? 'Gesamtkosten' : 'Total project cost',
+        }),
+      ).not.toBeInTheDocument()
+      fireEvent.change(status, { target: { value: 'not-budgeted' } })
+      expect(useScenarioWorkspaceStore.getState().purchaseCosts[field]).toEqual({
+        amountCents: 0,
+        budgetStatus: 'not-budgeted',
+      })
+      fireEvent.change(amount, { target: { value: '10000' } })
+      fireEvent.change(amount, { target: { value: '' } })
+      expect(status).toHaveValue('')
       fireEvent.change(status, { target: { value: 'confirmed-zero' } })
       expect(screen.getByText(language === 'de' ? /266\.250,00/ : /€266,250\.00/)).toBeVisible()
     },
