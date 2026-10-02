@@ -4,12 +4,15 @@
 - **Reviewer:** Codex
 - **Disposition:** **No-go for the Version 1 release**
 - **Deployed baseline:** `f1d34d7d680980ec16ab97ad2d562967359e0c1c` (merged PR #57)
-- **Candidate application source:** `a6f9d6a7be2e1d27026a603e5d8f27adfb9a535a`
+- **Original PR #58 application source:** `a6f9d6a7be2e1d27026a603e5d8f27adfb9a535a`
+- **Verified deployed main:** `274ec63a2d94a4ded65715bb62b745d5f22b62bf` (merged PR #58)
+- **Budget-transition fix source:** `c4269622e77770a36d8900d71d629cd1253cfa01` (follow-up candidate; not deployed)
 - **Application:** <https://akshat4112.github.io/immopilot-de/>
 - **Review PR:** [#58](https://github.com/Akshat4112/immopilot-de/pull/58)
 
 This record applies [the release contract](version-1-release-contract.md). It separates evidence for
-the deployed baseline from the unmerged candidate. Successful CI does not waive missing manual
+the original baseline, the deployed PR #58 merge and the budget-transition follow-up candidate.
+Successful CI does not waive missing manual
 browser evidence or the existing operator-detail/legal-review blockers. No release tag or declaration
 is made by PF-005.6.
 
@@ -25,10 +28,10 @@ commit, GitHub's temporary PR merge commit and the final main merge commit are d
 | 1. Scope completeness | Pass for automated scope checks | Owner/rental starts, mortgage breakdown, offer methods, persistence and three-scenario comparison are covered by the domain, component and browser suites. No feature was added outside Version 1. |
 | 2. Calculation correctness and transparency | Pass for deterministic fixture checks | All domain fixtures pass; canonical source-file SHA-256 digests match PD-010. Both demos are reproduced through the composition engine and the deployed UI. Candidate browser tests check both financial endpoints in German and English on Chromium, Firefox and WebKit. |
 | 3. Scenario integrity and privacy | Pass for implemented automated checks | Existing suites cover save/load, rename, duplicate, deletion/reset, comparison, current/legacy JSON import, malformed/unsupported rejection, export/share confirmations and repayment restoration. Static inspection finds no application backend, analytics or remote reporting. The canonical rental browser check rejects non-GET requests and application errors and asserts an empty cookie jar. This is a technical processing check, not legal approval. |
-| 4. German and English quality | Pass for automated checks and reviewed live endpoints | Resource, parser and formatter tests pass. The live owner and rental endpoints preserve their figures when switching language. Browser workflows include bilingual navigation and populated results; formal German-address regressions remain covered. |
-| 5. Accessibility | Partial; not approved | Candidate tests scan all public routes, confirmations and populated owner/rental results, check keyboard/skip-link behavior, and require five distinct provenance landmark names in both languages. The duplicate labels from PR #57 are fixed. Final manual keyboard and screen-reader-oriented evidence must be recorded for the eventual deployed candidate. |
+| 4. German and English quality | Partial; budget remediation pending | Resource, parser and formatter tests pass, and both live demos preserve their figures when switching language. The post-merge review found that an inconsistent budget selection displays an English domain error in the German UI (REL-018). The follow-up fix has bilingual regression coverage and must be merged and deployed. |
+| 5. Accessibility | Partial; not approved | Candidate tests scan all public routes, confirmations and populated owner/rental results, check keyboard/skip-link behavior, and require five distinct provenance landmark names in both languages. The deployed PR #58 merge passed the manual cloud Chrome skip-link and confirmation-cancellation checks below. Final full-workflow manual keyboard and screen-reader-oriented evidence remains required for the eventual deployed candidate. |
 | 6. Responsive and supported browsers | Partial; not approved | Automated complete workflows cover 375, 768 and 1440 px on Chromium, Firefox and WebKit. The available cloud Chrome browser reproduced both deployed demos. Installed stable Chrome, Firefox and Safari manual smoke evidence is still absent; Playwright WebKit is not a branded Safari pass. |
-| 7. Deployment and routing | Pass for deployed baseline; candidate pending | Baseline main CI and Pages deployment succeeded, and all four public files match a clean build byte-for-byte. The candidate adds a commit/digest manifest and prevents manual Pages dispatch from bypassing successful main CI. Candidate changes must be merged and deployed before their live identity/routing gate can pass. |
+| 7. Deployment and routing | Pass for deployed PR #58 merge; follow-up pending | Exact-main CI and Pages deployment succeeded for `274ec63…`. The public manifest and all four static files match a clean local build, and all seven routes pass direct entry/reload. The exact-main-CI guard executed successfully before Pages upload. The budget-transition follow-up changes application bytes and requires its own main CI, deployment, digest verification and smoke after merge. |
 | 8. Legal, privacy and content | Fail; release blocked | Bilingual notices, dates, versions, limits and metadata are present. `legal-and-privacy.md` still requires verified operator name, contact email, postal address, any required Impressum and German legal review. Those details and approval cannot be inferred from GitHub/profile information. |
 | 9. Release operations | Deferred; not approved | README remains at release readiness. Changelog, release tag, approved-deployment smoke and rollback evidence belong to PF-005.7 after blocking gates pass. REL-008 remains open. |
 
@@ -101,8 +104,8 @@ committed lockfile. HTTP responses were 200, and the following SHA-256 hashes ma
 | `assets/index-YjtyW_g2.js` | `f43494d01681e291a10a189432471dcd3afb1b53b2d8d4ce8e3655f735942d8e` |
 | `assets/index-hu8P88S6.css` | `8b8901cf491fc50e60402726f72b282c235fb8b56e5469d7d135d9841dccb23d` |
 
-Candidate assets are `assets/index-BuOxAfTJ.js` and `assets/index-CFMJ0NK6.css`; they are not claimed
-to be live before merge. The
+PR #58 assets are `assets/index-BuOxAfTJ.js` and `assets/index-CFMJ0NK6.css`; their post-merge live
+verification is recorded below. The
 manifest establishes a public artifact inventory and declared source commit, not a signed attestation;
 the successful exact-SHA CI and Pages workflow links are still required.
 
@@ -110,6 +113,89 @@ Direct entry and reload were exercised in the cloud Chrome browser for all seven
 `#/`, `#/purchase-costs`, `#/financing`, `#/results`, `#/scenarios`, `#/comparison` and `#/privacy`.
 Each retained the `/immopilot-de/` base path, loaded its page heading, and exposed its expected German
 route title. This baseline smoke does not approve the unmerged candidate's deployment.
+
+## Post-merge verification of PR #58
+
+- **Reviewed commit:** `274ec63a2d94a4ded65715bb62b745d5f22b62bf`
+- **Date:** 2 October 2026
+- **Reviewer:** Codex
+
+**Live review environment:** cloud Chrome, viewport 1363 × 936 CSS pixels; OS/browser version were
+not exposed by the browser controls. This is not an
+installed stable Chrome/Firefox/Safari certification, and no assistive-technology speech output was
+tested. The document-width check on populated rental results was 1348/1348 CSS pixels (scroll/client).
+
+- [PR #58 final head CI](https://github.com/Akshat4112/immopilot-de/actions/runs/37064635967)
+  passed at `150bc98a48a0284c3848c7012d19cd9960f099f4`.
+- [Merged main CI](https://github.com/Akshat4112/immopilot-de/actions/runs/37065992074) passed
+  formatting, lint, types, 43 files / 320 unit/component tests, coverage, build, manifest verification,
+  both dependency audits and all 30 browser tests, with no failed or flaky browser cases reported.
+- [Pages deployment](https://github.com/Akshat4112/immopilot-de/actions/runs/37066418345) passed,
+  including the exact-main-CI guard, artifact verification and upload/deployment steps.
+- At 21:23:33 UTC, the public manifest matched a clean local build byte-for-byte. Its SHA-256 was
+  `aa7fdc597b1d08a6351eaac9196004a2a52ff2471caba86e4ff63c7a76061b3e`, and it declared the reviewed
+  commit, a clean worktree and `/immopilot-de/` base path.
+- The deployed verifier returned `Verified 4 static files for candidate
+  274ec63a2d94a4ded65715bb62b745d5f22b62bf`. All manifest-listed files returned HTTP 200 and
+  passed digest checks; the local rebuild had the same inventory and digests:
+
+| Public file | Verified SHA-256 |
+| --- | --- |
+| `index.html` | `177deefc4de8909f3a0931d2da4e92f90d1bb74683267a4c8c833cc2c1b16c00` |
+| `favicon.svg` | `19b065bcfcf98bd669e80bbd50f1f888426c4621e3eee82d4d25847af7c85e92` |
+| `assets/index-BuOxAfTJ.js` | `ce8dbe2b569266b7c58c69278cbe2d3b344b3d98cc480427fd748acacdc06ec0` |
+| `assets/index-CFMJ0NK6.css` | `d96270b8cfffca033a49ada9ba3c241311798915e5e31b6c3edfd90d52a90317` |
+
+The canonical fictional rental and owner scenarios were re-entered through the live UI. All financial
+endpoints in the earlier canonical table matched again in both languages. The rental review observed
+two -€180 cash-flow cards, €42,480.31 profit and €137,680.31 net proceeds; the owner review observed
+€144,104.59 buyer wealth, €119,489.86 renter wealth, +€24,614.73 difference and break-even in year 6.
+The owner review required explicitly clearing the previous rental renovation amount; this exposed
+REL-018 rather than silently treating the inconsistent budget as a successful transition.
+
+Both populated result views exposed five distinct scope-specific provenance landmark names in each
+language. The deployed rental sale-detail text used `rgb(20, 37, 31)`, confirming the merged contrast
+remediation. Main CI's populated-result axe scans passed on Chromium, Firefox and WebKit.
+
+Direct entry and reload passed for `#/`, `#/purchase-costs`, `#/financing`, `#/results`, `#/scenarios`,
+`#/comparison` and `#/privacy`; each had one page-level heading, a matching route title and the correct
+application base path. Reload resets the in-memory language choice to German as designed. Keyboard
+Tab focused the visible skip link with a solid outline; Enter moved focus to `main-content`. The
+share confirmation exposed a named/described `alertdialog` with initial focus on its deliberate action.
+Tab moved to **Abbrechen** with a solid outline, and Enter dismissed it without creating a share URL.
+These focused checks supplement the suite; they do not constitute the complete manual gate.
+
+## Budget-transition follow-up (REL-018)
+
+The deployed review reproduced this sequence: enter €10,000 renovation budget, then select
+**Bestätigt: 0 €**. The amount stayed at €10,000, calculation failed with `A confirmed-zero amount must
+be zero`, and the financing continuation disappeared. Selecting **Noch nicht budgetiert** or clearing
+a positive amount could also leave an invalid amount/status pair. Explicitly clearing the amount and
+confirming zero was a safe workaround; no incorrect financial result was displayed.
+
+The follow-up source commit above normalizes non-budgeted and confirmed-zero selections to zero.
+Clearing a positive budget leaves it **unresolved**, displays a bilingual accessible choice prompt,
+and requires the user to select **not-budgeted** or **confirmed-zero**. No budget status is inferred;
+the unresolved draft omits the optional budget, so a full project total remains unavailable. Entering
+a positive amount selects **budgeted**. This follows the explicit-interaction requirement in
+[`assumptions-schema.md`, section 4.2](assumptions-schema.md#42-renovation-and-setup-states).
+The domain formulas and persistence schema are unchanged. Browser regressions also navigate away
+and back while the status is unresolved to ensure it is not silently replaced with a default.
+Four component regressions (both fields in both languages) failed on the deployed implementation and
+passed with the fix. Local quality checks passed 43 files / 324 tests, build and zero-vulnerability
+full/production audits; coverage is 90.99% statements, 86.13% branches, 90.43% functions and 92.22%
+lines. A bilingual transition browser regression runs on all three pinned engines, bringing the suite
+to 33 project/test combinations. The follow-up PR's CI is the authority for their execution, and this
+fix is not claimed to be live before its own merge/deployment verification.
+
+Remaining manual evidence must record the exact deployed SHA, date, browser version, OS, viewport,
+reviewer and expected/actual behavior. Use only the documented fictional demos. On installed stable
+Chrome, Firefox and Safari, exercise purchase → financing → results → save/load → JSON import/export
+and sharing → comparison in both languages; include 375, 768 and 1440 px checks, keyboard focus and
+confirmation dismissal, meaningful announcements/labels, validation and contained table scrolling.
+Record observed failures rather than substituting a Playwright engine pass for an installed-browser
+review. The operator must separately provide verified public name, email, postal address and the
+required German legal-review outcome stated in `legal-and-privacy.md`.
 
 ## Candidate fixes and reproducible verification
 
@@ -154,15 +240,17 @@ original manifest passed again.
 
 | Finding | Severity / disposition | Owner and closure condition |
 | --- | --- | --- |
-| REL-012 — duplicate provenance landmarks | Major accessibility defect; fixed in this PR | Codex; merge fix and repeat populated-result checks on deployed candidate. |
-| REL-013 — manual Pages deployment bypasses CI | Major deployment-control defect; fixed in this PR | Codex; exact-main-CI guard and artifact check must be present in the merged/deployed workflow. |
+| REL-012 — duplicate provenance landmarks | Major accessibility defect; closed on deployed PR #58 merge | Codex; unique bilingual populated-result landmarks and main CI verified on `274ec63…`. |
+| REL-013 — manual Pages deployment bypasses CI | Major deployment-control defect; closed on deployed PR #58 merge | Codex; main CI and deployed workflow guard/artifact steps passed for `274ec63…`. |
 | REL-014 — final manual browser/accessibility evidence missing | Major evidence gap; open | Release reviewer; record versions, OS, viewports, keyboard and screen-reader-oriented results on the eventual deployed candidate, including stable Chrome/Firefox/Safari. |
 | REL-015 — operator details/legal review missing | Major existing release blocker; open | Site operator and legal reviewer; complete the requirements explicitly stated in `legal-and-privacy.md`. |
-| REL-016 — new candidate not deployed | Candidate gate pending; expected before merge | Release reviewer; bind final main SHA, successful CI/deploy, manifest digest verification and live smoke. |
-| REL-017 — rental sale-detail contrast | Major accessibility defect; fixed in this PR | Codex; use primary text color in summary details and require populated-result axe scans in both languages on all three engines. |
+| REL-016 — candidate deployment identity | PR #58 deployment verified; budget follow-up pending | Release reviewer; repeat exact-main CI/deploy, public manifest/digest verification and live smoke after the follow-up merge. |
+| REL-017 — rental sale-detail contrast | Major accessibility defect; closed on deployed PR #58 merge | Codex; primary color observed live and populated-result axe scans passed in both languages on all three engines. |
+| REL-018 — inconsistent purchase budget transitions | Minor usability/localization defect; fixed in follow-up candidate, merge pending | Codex; both fields and locales have component regressions and a three-engine bilingual browser check. Verify the fix again after deployment. |
 | REL-008 — release operations | Deferred to PF-005.7; open | Release owner; publish changelog/tag and deployment/rollback record only after required gates pass. |
 | REL-011 — bundle size | Advisory retained | Post-Version-1 performance owner; measure before setting a loading budget or splitting routes. |
 
 PF-005.6 has produced reviewable fixes and a verification record, but **the release gate remains
-open**. Merge is not equivalent to release approval. Complete REL-014, REL-015 and REL-016 and update
+open**. Merge is not equivalent to release approval. Merge/verify REL-018, complete REL-014, REL-015 and
+the follow-up REL-016 check, and update
 this record against the final deployed SHA before advancing to a Version 1 release declaration.

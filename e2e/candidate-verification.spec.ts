@@ -101,6 +101,67 @@ test('@cross-browser reproduces negative cash flow and canonical rental sale in 
   expect(await page.context().cookies()).toEqual([])
 })
 
+test('@cross-browser keeps budget transitions usable in both languages', async ({ page }) => {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('textbox', { name: 'Kaufpreis', exact: true }).fill('250000')
+  await page
+    .getByRole('combobox', { name: 'Status für Umzugs- und Einrichtungskosten' })
+    .selectOption('confirmed-zero')
+
+  for (const language of ['de', 'en'] as const) {
+    if (language === 'en') await page.getByRole('button', { name: 'English' }).click()
+    const amount = page.getByRole('textbox', {
+      name: language === 'de' ? 'Renovierungsbudget' : 'Renovation budget',
+      exact: true,
+    })
+    const status = page.getByRole('combobox', {
+      name: language === 'de' ? 'Status für Renovierungsbudget' : 'Status for Renovation budget',
+    })
+    await amount.fill('10000')
+    await status.selectOption('confirmed-zero')
+    await expect(amount).toHaveValue('')
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(
+      page.getByText(language === 'de' ? '266.250,00 €' : '€266,250.00', { exact: true }),
+    ).toBeVisible()
+
+    await amount.fill('10000')
+    await status.selectOption('not-budgeted')
+    await expect(amount).toHaveValue('')
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await amount.fill('10000')
+    await amount.fill('')
+    await expect(status).toHaveValue('')
+    await expect(
+      page.getByText(language === 'de' ? 'Wähle einen Budgetstatus.' : 'Choose a budget status.'),
+    ).toBeVisible()
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(
+      page.getByRole('link', {
+        name: language === 'de' ? 'Zur Finanzierung →' : 'Continue to financing →',
+      }),
+    ).toHaveCount(0)
+    await page
+      .getByRole('link', { name: language === 'de' ? 'Finanzierung' : 'Financing', exact: true })
+      .click()
+    await page
+      .getByRole('link', { name: language === 'de' ? 'Kaufkosten' : 'Purchase costs', exact: true })
+      .click()
+    await expect(status).toHaveValue('')
+    await status.selectOption('not-budgeted')
+    await expect(status).toHaveValue('not-budgeted')
+    await amount.fill('10000')
+    await amount.fill('')
+    await expect(status).toHaveValue('')
+    await status.selectOption('confirmed-zero')
+    await expect(
+      page.getByRole('link', {
+        name: language === 'de' ? 'Zur Finanzierung →' : 'Continue to financing →',
+      }),
+    ).toBeVisible()
+  }
+})
+
 test('serves the commit manifest under the Pages base path', async ({ request }) => {
   const response = await request.get('./release.json')
   expect(response.status()).toBe(200)

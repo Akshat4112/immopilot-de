@@ -478,6 +478,8 @@ export const resources = {
           'Gib einen Betrag ein oder bestätige ausdrücklich 0 €. Die Kaufnebenkosten werden sofort berechnet; die Gesamtkosten erst nach der Bestätigung beider Budgets.',
         budgetStatus: {
           label: 'Status für {{budget}}',
+          chooseStatus: 'Budgetstatus auswählen',
+          choiceRequired: 'Wähle einen Budgetstatus.',
           notBudgeted: 'Noch nicht budgetiert',
           confirmedZero: 'Bestätigt: 0 €',
           budgeted: 'Budgetiert',
@@ -1355,6 +1357,8 @@ export const resources = {
           'Enter an amount or explicitly confirm €0. Acquisition costs are calculated immediately; total project cost becomes available after both budgets are confirmed.',
         budgetStatus: {
           label: 'Status for {{budget}}',
+          chooseStatus: 'Select budget status',
+          choiceRequired: 'Choose a budget status.',
           notBudgeted: 'Not yet budgeted',
           confirmedZero: 'Confirmed: €0',
           budgeted: 'Budgeted',
