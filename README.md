@@ -30,6 +30,10 @@ delete and reset them, import or export validated JSON, and create local share l
 backend. PF-004 adds the Sondertilgung controls and connects the existing repayment engine to these
 workflows.
 
+Every result area identifies the assumption-set version, its verification date and the calculation
+specification, while separating source-backed defaults from editable user assumptions. The footer
+links to the bilingual in-application privacy and financial notice from every route.
+
 ## Product principles
 
 - **Deterministic calculations:** Financial outputs come from documented and tested formulas.
@@ -60,6 +64,7 @@ workflows.
 - [Sondertilgung product contract](docs/sondertilgung-product-contract.md): approved inputs, timing, comparisons, migration and downstream-calculation behavior for PF-004
 - [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
 - [Version 1 release audit](docs/version-1-release-audit.md): deployed-app evidence, gate scorecard, findings and assigned remediation tasks
+- [PF-005.5 content and provenance audit](docs/pf-0055-content-provenance-audit.md): closure evidence for result provenance, legal/privacy content, metadata and landing copy
 
 ## Planned technology
 

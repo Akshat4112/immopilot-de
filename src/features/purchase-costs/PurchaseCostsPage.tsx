@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { usePurchaseCostsCalculator } from './usePurchaseCosts'
 import { PageLayout } from '../../components/PageLayout'
+import { CalculationProvenance } from '../../components/CalculationProvenance'
 import { getTransferTaxRate, type BudgetStatus } from '../../domain/acquisition-costs'
 import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
@@ -506,6 +507,7 @@ export function PurchaseCostsPage() {
                   <dd>{costBreakdown.appliedAssumptions.transferTaxRateSourceDate}</dd>
                 </dl>
               </div>
+              <CalculationProvenance scope="purchase" />
             </>
           )}
         </section>

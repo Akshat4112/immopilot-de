@@ -4,11 +4,17 @@
 **Document version:** `1.0.0-draft`  
 **Applies to:** ImmoPilot DE Version 1  
 **Jurisdictional focus:** Germany and the European Union  
-**Verified:** 13 September 2026
+**Legal-source review:** 13 September 2026
+
+**Implementation and GitHub-hosting review:** 30 September 2026
 
 This document contains the public-facing financial disclaimer and privacy statement for ImmoPilot DE, plus the shorter German and English text required in the application interface. It also defines privacy requirements that the implementation must preserve.
 
 > **Release blocker:** Replace `{{OPERATOR_LEGAL_NAME}}`, `{{CONTACT_EMAIL}}` and `{{POSTAL_ADDRESS}}` with the site operator's verified details before publication. Obtain a German legal review before treating this draft as a final Datenschutzerklärung or legal notice. A separate Impressum may be required under § 5 DDG depending on how the site is operated.
+
+PF-005.5 exposes the implemented data-handling summary inside the application in both languages and
+links back to this full document. That technical verification does not remove the operator-detail and
+legal-review blockers above.
 
 ---
 
@@ -304,7 +310,7 @@ These strings are normative copy for Version 1. Translations should stay equival
 
 **Deutsch**
 
-> Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfen Sie aktuelle Werte und lassen Sie sich vor einer Entscheidung qualifiziert beraten.
+> Nur unverbindliche Planungswerte. Keine Finanzierungs-, Anlage-, Steuer- oder Rechtsberatung und kein Darlehensangebot oder Finanzierungszusage. Prüfe aktuelle Werte und lass dich vor einer Entscheidung qualifiziert beraten.
 
 ### Results-screen notice
 
@@ -314,7 +320,7 @@ These strings are normative copy for Version 1. Translations should stay equival
 
 **Deutsch**
 
-> Die Ergebnisse beruhen auf Ihren Eingaben und editierbaren, quellen- und datumsbezogenen Annahmen. Tatsächliche Steuern, Gebühren, Darlehenskonditionen, Wertentwicklungen und Kosten können abweichen. Version: {{ASSUMPTION_SET_VERSION}} / {{CALCULATION_SPECIFICATION_VERSION}}.
+> Die Ergebnisse beruhen auf deinen Eingaben und editierbaren, quellen- und datumsbezogenen Annahmen. Tatsächliche Steuern, Gebühren, Darlehenskonditionen, Wertentwicklungen und Kosten können abweichen. Version: {{ASSUMPTION_SET_VERSION}} / {{CALCULATION_SPECIFICATION_VERSION}}.
 
 ### Local-processing notice
 
@@ -324,7 +330,7 @@ These strings are normative copy for Version 1. Translations should stay equival
 
 **Deutsch**
 
-> Ihre Rechnerdaten bleiben in diesem Browser. Sie werden nur nach Auswahl von Speichern lokal abgelegt, nur nach Auswahl von Teilen in einen Link aufgenommen und nur nach Auswahl von Exportieren in eine Datei geschrieben. GitHub Pages verarbeitet zur Bereitstellung und Absicherung der Website weiterhin technische Verbindungsdaten wie die IP-Adresse.
+> Deine Rechnerdaten bleiben in diesem Browser. Sie werden nur nach Auswahl von Speichern lokal abgelegt, nur nach Auswahl von Teilen in einen Link aufgenommen und nur nach Auswahl von Exportieren in eine Datei geschrieben. GitHub Pages verarbeitet zur Bereitstellung und Absicherung der Website weiterhin technische Verbindungsdaten wie die IP-Adresse.
 
 ### Share warning
 
@@ -334,7 +340,7 @@ These strings are normative copy for Version 1. Translations should stay equival
 
 **Deutsch**
 
-> Jeder mit diesem Link kann das enthaltene Szenario ansehen. Fügen Sie keine Namen, genauen Privatanschriften oder andere vertrauliche Informationen ein.
+> Jeder mit diesem Link kann das enthaltene Szenario ansehen. Füge keine Namen, genauen Privatanschriften oder andere vertrauliche Informationen ein.
 
 ### JSON export warning
 
@@ -344,7 +350,7 @@ These strings are normative copy for Version 1. Translations should stay equival
 
 **Deutsch**
 
-> Diese Datei kann Rückschlüsse auf Ihre Immobilienpläne und finanziellen Verhältnisse zulassen. Prüfen Sie sie vor dem Teilen und bewahren Sie sie sicher auf.
+> Diese Datei kann Rückschlüsse auf deine Immobilienpläne und finanziellen Verhältnisse zulassen. Prüfe sie vor dem Teilen und bewahre sie sicher auf.
 
 ### Not-budgeted warning
 
@@ -378,8 +384,8 @@ These strings are normative copy for Version 1. Translations should stay equival
 | L1 | [Regulation (EU) 2016/679, including Articles 5, 6, 13 and 25](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng) | Transparency, legal basis, data minimisation, privacy by design and information duties | 13 Sep 2026 | Application depends on facts and controller role; this document is not a legal opinion |
 | L2 | [§ 25 TDDDG](https://www.gesetze-im-internet.de/ttdsg/BJNR198210021.html#BJNR198210021BJNE002601116) | Storage or access on a user's device and the requested-service exception | 13 Sep 2026 | Whether a storage operation is strictly necessary depends on the final implementation |
 | L3 | [§ 5 DDG](https://www.gesetze-im-internet.de/ddg/__5.html) | Potential separate provider-information/Impressum duty | 13 Sep 2026 | Applicability depends on the operator and manner of offering the site |
-| H1 | [GitHub Docs: What is GitHub Pages?](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) | GitHub Pages IP-address logging for security | 13 Sep 2026 | GitHub controls this documentation and may change its practices |
-| H2 | [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) | GitHub data categories, purposes, legal bases, transfers, rights and retention approach | 13 Sep 2026 | General Services policy; not every described activity necessarily occurs on every Pages request |
+| H1 | [GitHub Docs: What is GitHub Pages?](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) | GitHub Pages IP-address logging for security | 30 Sep 2026 | GitHub controls this documentation and may change its practices |
+| H2 | [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) | GitHub data categories, purposes, legal bases, transfers, rights and retention approach | 30 Sep 2026 | Statement effective 27 Apr 2026; general Services policy, so not every described activity necessarily occurs on every Pages request |
 | H3 | [GitHub Cookies](https://docs.github.com/en/site-policy/privacy-policies/github-cookies) | Hosting-provider cookie context | 13 Sep 2026 | Requires deployed-site testing; the general table is not proof that a specific Pages site sets a cookie |
 | T1 | [MDN: URI fragment](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment) | Fragment is handled client-side and not included in the server request | 13 Sep 2026 | Extensions, page scripts, history and recipients can still access a fragment |
 

@@ -31,6 +31,8 @@ describe('HomePage audience entry paths', () => {
 
     await user.click(rental)
     expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('rental-investment')
+    expect(screen.getByText(/abschließenden Release-Prüfung/)).toBeVisible()
+    expect(screen.queryByText(/schrittweise.*gebaut/)).not.toBeInTheDocument()
   })
 
   it('provides both entry paths in English and preserves the selected mode', async () => {

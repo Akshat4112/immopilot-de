@@ -8,6 +8,7 @@ const routes = [
   './#/results',
   './#/scenarios',
   './#/comparison',
+  './#/privacy',
 ] as const
 
 async function expectNoPageOverflow(page: Page) {
@@ -69,6 +70,32 @@ test('@accessibility supports the skip link and visible keyboard focus', async (
   const equityInput = page.getByRole('textbox', { name: 'Verfügbares Eigenkapital' })
   await equityInput.focus()
   await expect(equityInput).toHaveCSS('outline-style', 'solid')
+})
+
+test('exposes bilingual provenance, privacy, and route metadata', async ({ page }) => {
+  await page.goto('./#/purchase-costs')
+  await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('250000')
+
+  const budgetStatuses = page.locator('.budget-field__status-select')
+  await budgetStatuses.nth(0).selectOption('confirmed-zero')
+  await budgetStatuses.nth(1).selectOption('confirmed-zero')
+
+  const provenance = page.getByLabel('Berechnungsgrundlage und Grenzen')
+  await expect(provenance.getByText('de-2026.09')).toBeVisible()
+  await expect(provenance.getByText('1.0.0')).toBeVisible()
+  await expect(provenance.getByText('13. September 2026')).toBeVisible()
+
+  await page.getByRole('link', { name: 'Datenschutz & vollständige Hinweise' }).click()
+  await expect(page).toHaveTitle('Datenschutz und Hinweise · ImmoPilot DE')
+  await expect(
+    page.getByRole('heading', { name: 'Datenschutz und finanzielle Hinweise' }),
+  ).toBeVisible()
+  await expect(page.getByText(/kein eigenes Backend/i)).toBeVisible()
+
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(page).toHaveTitle('Privacy and notices · ImmoPilot DE')
+  await expect(page.getByRole('heading', { name: 'Privacy and financial notices' })).toBeVisible()
+  await expect(page.getByText(/no user accounts or application backend/i)).toBeVisible()
 })
 
 for (const viewport of [

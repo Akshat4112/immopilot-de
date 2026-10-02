@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { PageLayout } from '../../components/PageLayout'
+import { CalculationProvenance } from '../../components/CalculationProvenance'
 import { formatEuroFromCents, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { readScenarioLibrary, type SavedScenario, type ScenarioLibraryIssue } from '../../storage'
@@ -328,6 +329,7 @@ export function ComparisonPage() {
                     </tbody>
                   </table>
                 </div>
+                <CalculationProvenance scope="comparison" />
               </section>
             )}
           </>

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatEuroFromCents, formatNumber, formatPercentage } from './formatters'
+import { formatDate, formatEuroFromCents, formatNumber, formatPercentage } from './formatters'
 
 describe('locale formatters', () => {
+  it('formats source verification dates without timezone drift', () => {
+    expect(formatDate('2026-09-13', 'de')).toBe('13. September 2026')
+    expect(formatDate('2026-09-13', 'en')).toBe('13 September 2026')
+  })
   it('formats integer euro amounts for both supported languages', () => {
     expect(formatEuroFromCents(25_000_000, 'de')).toMatch(/^250\.000\s€$/)
     expect(formatEuroFromCents(25_000_000, 'en')).toBe('€250,000')
