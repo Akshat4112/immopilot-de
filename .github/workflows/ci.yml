@@ -48,6 +48,9 @@ jobs:
       - name: Build production application
         run: npm run build
 
+      - name: Verify candidate artifact identity and digests
+        run: npm run release:verify -- "$(git rev-parse HEAD)"
+
       - name: Audit all dependencies
         run: npm audit --audit-level=high
 

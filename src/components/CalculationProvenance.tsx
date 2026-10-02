@@ -20,7 +20,10 @@ export function CalculationProvenance({ scope }: { scope: CalculationProvenanceS
   const language: SupportedLanguage = i18n.resolvedLanguage === 'en' ? 'en' : 'de'
 
   return (
-    <aside className="calculation-provenance" aria-label={t('provenance.title')}>
+    <aside
+      className="calculation-provenance"
+      aria-label={`${t('provenance.title')} — ${t(`provenance.scopeName.${scope}`)}`}
+    >
       <div className="calculation-provenance__heading">
         <strong>{t('provenance.title')}</strong>
         <Link className="inline-link" to="/privacy">
