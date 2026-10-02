@@ -655,7 +655,7 @@ export const resources = {
           breakdown: {
             open: 'Detaillierten Tilgungsplan öffnen',
             intro:
-              'Alle Darlehensmonate bis zur rechnerischen Volltilgung stammen direkt aus dem Rechenmodell. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
+              'Der Tilgungsplan zeigt alle Darlehensmonate bis zur rechnerischen Volltilgung. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
             baseline: 'Tilgungsplan ohne Sondertilgung',
             withAdditionalRepayments: 'Tilgungsplan mit Sondertilgung',
             fullSchedule:
@@ -1568,7 +1568,7 @@ export const resources = {
           breakdown: {
             open: 'Open detailed amortization schedule',
             intro:
-              'Every loan month through projected payoff comes directly from the calculation engine. Month 1 is the first monthly payment. With additional repayments, the baseline and comparison schedules are shown separately.',
+              'The amortization schedule shows every loan month through projected payoff. Month 1 is the first monthly payment. With additional repayments, the baseline and comparison schedules are shown separately.',
             baseline: 'Schedule without additional repayments',
             withAdditionalRepayments: 'Schedule with additional repayments',
             fullSchedule:
