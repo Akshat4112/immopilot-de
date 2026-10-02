@@ -89,4 +89,56 @@ describe('PurchaseCostsPage', () => {
     expect(within(transferTaxCard as HTMLElement).getByText(/€3,750\.00/)).toBeVisible()
     expect(within(transferTaxCard as HTMLElement).getByText(/1\.50%/)).toBeVisible()
   })
+
+  it.each([
+    ['de', 'renovationBudget', 'Renovierungsbudget', 'Umzugs- und Einrichtungskosten'],
+    ['de', 'movingSetupCosts', 'Umzugs- und Einrichtungskosten', 'Renovierungsbudget'],
+    ['en', 'renovationBudget', 'Renovation budget', 'Moving and setup costs'],
+    ['en', 'movingSetupCosts', 'Moving and setup costs', 'Renovation budget'],
+  ] as const)(
+    'keeps %s %s valid when a positive budget is confirmed zero, unconfirmed or cleared',
+    async (language, field, label, otherLabel) => {
+      await i18n.changeLanguage(language)
+      renderPage()
+      const statusLabel = (budget: string) =>
+        language === 'de' ? `Status für ${budget}` : `Status for ${budget}`
+      const amount = screen.getByRole('textbox', { name: label })
+      const status = screen.getByRole('combobox', { name: statusLabel(label) })
+      fireEvent.change(
+        screen.getByRole('textbox', {
+          name: language === 'de' ? 'Kaufpreis' : 'Purchase price',
+        }),
+        { target: { value: '250000' } },
+      )
+      fireEvent.change(screen.getByRole('combobox', { name: statusLabel(otherLabel) }), {
+        target: { value: 'confirmed-zero' },
+      })
+
+      fireEvent.change(amount, { target: { value: '10000' } })
+      fireEvent.change(status, { target: { value: 'confirmed-zero' } })
+      expect(amount).toHaveValue('')
+      expect(useScenarioWorkspaceStore.getState().purchaseCosts[field]).toEqual({
+        amountCents: 0,
+        budgetStatus: 'confirmed-zero',
+      })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(screen.getByText(language === 'de' ? /266\.250,00/ : /€266,250\.00/)).toBeVisible()
+
+      fireEvent.change(amount, { target: { value: '10000' } })
+      fireEvent.change(status, { target: { value: 'not-budgeted' } })
+      expect(amount).toHaveValue('')
+      expect(useScenarioWorkspaceStore.getState().purchaseCosts[field]).toEqual({
+        amountCents: 0,
+        budgetStatus: 'not-budgeted',
+      })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+      fireEvent.change(amount, { target: { value: '10000' } })
+      fireEvent.change(amount, { target: { value: '' } })
+      expect(status).toHaveValue('not-budgeted')
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      fireEvent.change(status, { target: { value: 'confirmed-zero' } })
+      expect(screen.getByText(language === 'de' ? /266\.250,00/ : /€266,250\.00/)).toBeVisible()
+    },
+  )
 })

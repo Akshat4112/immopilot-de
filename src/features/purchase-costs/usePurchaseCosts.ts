@@ -88,7 +88,7 @@ export function usePurchaseCostsCalculator() {
           {
             ...current,
             budgetStatus: status,
-            amountCents: current.amountCents ?? 0,
+            amountCents: status === 'budgeted' ? (current.amountCents ?? 0) : 0,
           },
           { shouldValidate: true },
         )
@@ -104,7 +104,12 @@ export function usePurchaseCostsCalculator() {
         field,
         {
           amountCents,
-          budgetStatus: amountCents > 0 ? 'budgeted' : (current?.budgetStatus ?? 'not-budgeted'),
+          budgetStatus:
+            amountCents > 0
+              ? 'budgeted'
+              : current?.budgetStatus === 'confirmed-zero'
+                ? 'confirmed-zero'
+                : 'not-budgeted',
         },
         { shouldValidate: true },
       )
