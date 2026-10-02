@@ -23,6 +23,7 @@ jobs:
     permissions:
       contents: read
       pages: read
+      actions: read
 
     steps:
       - name: Check out repository
@@ -40,11 +41,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Require successful main CI for the exact deployment commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_SHA=$(git rev-parse HEAD)
+          export RELEASE_SHA
+          CI_PASSED=$(gh api --method GET "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs" \
+            -f head_sha="$RELEASE_SHA" -f branch=main -f event=push -f status=success -f per_page=100 \
+            --jq 'any(.workflow_runs[]; .head_sha == env.RELEASE_SHA and .head_branch == "main" and .event == "push" and .conclusion == "success")')
+          if [ "$CI_PASSED" != "true" ]; then
+            echo "No successful main CI run exists for deployment commit $RELEASE_SHA"
+            exit 1
+          fi
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
       - name: Build production application
         run: npm run build
+
+      - name: Verify candidate artifact identity and digests
+        run: npm run release:verify -- "$(git rev-parse HEAD)"
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v5

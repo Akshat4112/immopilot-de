@@ -306,6 +306,16 @@ export const resources = {
       },
       provenance: {
         title: 'Berechnungsgrundlage und Grenzen',
+        scopeName: {
+          purchase: 'Kaufkosten',
+          financing: 'Finanzierung',
+          repayment: 'Tilgung und Sondertilgung',
+          refinancing: 'Anschlussfinanzierung',
+          owner: 'Eigennutzung',
+          rental: 'Kapitalanlage',
+          offer: 'Angebotspreis',
+          comparison: 'Szenariovergleich',
+        },
         fullNotice: 'Datenschutz & vollständige Hinweise',
         assumptionSet: 'Annahmensatz',
         verifiedOn: 'Standardwerte geprüft am',
@@ -1173,6 +1183,16 @@ export const resources = {
       },
       provenance: {
         title: 'Calculation basis and limitations',
+        scopeName: {
+          purchase: 'Purchase costs',
+          financing: 'Financing',
+          repayment: 'Repayment and additional repayments',
+          refinancing: 'Refinancing',
+          owner: 'Owner occupation',
+          rental: 'Rental investment',
+          offer: 'Offer price',
+          comparison: 'Scenario comparison',
+        },
         fullNotice: 'Privacy & full notices',
         assumptionSet: 'Assumption set',
         verifiedOn: 'Defaults verified on',

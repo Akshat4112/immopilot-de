@@ -65,11 +65,26 @@ describe('ResultsPage', () => {
     expect(screen.getByRole('heading', { name: 'Mieten oder kaufen' })).toBeVisible()
     expect(screen.getAllByText(/152\.188,73/)).toHaveLength(2)
     expect(screen.getByText('Nettovermögen Käufer')).toBeVisible()
-    expect(screen.getAllByLabelText('Berechnungsgrundlage und Grenzen')).toHaveLength(5)
+    const provenancePanels = screen.getAllByRole('complementary', {
+      name: /^Berechnungsgrundlage und Grenzen — /,
+    })
+    expect(provenancePanels).toHaveLength(5)
+    expect(new Set(provenancePanels.map((panel) => panel.getAttribute('aria-label'))).size).toBe(5)
     expect(screen.getAllByText('de-2026.09')).toHaveLength(5)
     expect(screen.getAllByText('1.0.0')).toHaveLength(5)
     expect(screen.getByText(/Anschlusszinsen sind frei gewählte Stressannahmen/)).toBeVisible()
     expect(screen.getByText(/keine quellenbasierten Prognosen/)).toBeVisible()
+  })
+
+  it('keeps result provenance landmarks distinct after switching to English', async () => {
+    await i18n.changeLanguage('en')
+    renderPage()
+
+    const panels = screen.getAllByRole('complementary', {
+      name: /^Calculation basis and limitations — /,
+    })
+    expect(panels).toHaveLength(5)
+    expect(new Set(panels.map((panel) => panel.getAttribute('aria-label'))).size).toBe(5)
   })
 
   it('guides an unconfigured offer method without reporting zero missing assumptions', () => {

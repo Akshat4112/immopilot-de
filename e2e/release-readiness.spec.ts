@@ -80,7 +80,9 @@ test('exposes bilingual provenance, privacy, and route metadata', async ({ page 
   await budgetStatuses.nth(0).selectOption('confirmed-zero')
   await budgetStatuses.nth(1).selectOption('confirmed-zero')
 
-  const provenance = page.getByLabel('Berechnungsgrundlage und Grenzen')
+  const provenance = page.getByRole('complementary', {
+    name: 'Berechnungsgrundlage und Grenzen — Kaufkosten',
+  })
   await expect(provenance.getByText('de-2026.09')).toBeVisible()
   await expect(provenance.getByText('1.0.0')).toBeVisible()
   await expect(provenance.getByText('13. September 2026')).toBeVisible()
