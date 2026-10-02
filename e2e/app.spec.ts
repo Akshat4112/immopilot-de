@@ -278,15 +278,15 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
     await scroll.focus()
     await expect(scroll).toBeFocused()
     await expect(selected.getByRole('button', { name: 'Next' })).toBeVisible()
-    const overflow = await scroll.evaluate<
-      { table: boolean; document: boolean },
-      void
-    >(`element => ({
-      table: element.scrollWidth > element.clientWidth,
-      document: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-    })`)
-    expect(overflow.table).toBe(true)
-    expect(overflow.document).toBe(false)
+    const tableOverflow = await scroll.evaluate(
+      (element: { scrollWidth: number; clientWidth: number }) =>
+        element.scrollWidth > element.clientWidth,
+    )
+    const documentOverflow = await page.evaluate<boolean>(
+      `document.documentElement.scrollWidth > document.documentElement.clientWidth`,
+    )
+    expect(tableOverflow).toBe(true)
+    expect(documentOverflow).toBe(false)
   }
   await selected.screenshot({ path: testInfo.outputPath('explorer-mobile.png') })
 })
