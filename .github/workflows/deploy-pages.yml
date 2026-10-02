@@ -46,10 +46,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           RELEASE_SHA=$(git rev-parse HEAD)
-          export RELEASE_SHA
           CI_PASSED=$(gh api --method GET "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs" \
             -f head_sha="$RELEASE_SHA" -f branch=main -f event=push -f status=success -f per_page=100 \
-            --jq 'any(.workflow_runs[]; .head_sha == env.RELEASE_SHA and .head_branch == "main" and .event == "push" and .conclusion == "success")')
+            --jq "any(.workflow_runs[]; .head_sha == \"$RELEASE_SHA\" and .head_branch == \"main\" and .event == \"push\" and .conclusion == \"success\")")
           if [ "$CI_PASSED" != "true" ]; then
             echo "No successful main CI run exists for deployment commit $RELEASE_SHA"
             exit 1
