@@ -400,7 +400,7 @@ test('carries Sondertilgung through results, saved restoration, and comparison @
   await expect(page.getByRole('row', { name: /^Additional principal during/ })).toContainText(
     '€52,500',
   )
-  await expect(page.getByRole('row', { name: /^Projected payoff with/ })).toContainText(
+  await expect(page.getByRole('row', { name: /^Projected payoff with / })).toContainText(
     /Loan month \d+/,
   )
   await expect(page.getByRole('row', { name: /^Projected time saved/ })).toContainText(
