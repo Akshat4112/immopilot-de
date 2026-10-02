@@ -9,6 +9,13 @@ export const comparisonMetricIds = [
   'loan',
   'monthlyPayment',
   'remainingDebt',
+  'additionalPrincipal',
+  'interestSaved',
+  'remainingDebtReduction',
+  'projectedInterestSaved',
+  'baselinePayoff',
+  'selectedPayoff',
+  'timeSaved',
   'grossYield',
   'netYield',
   'monthlyCashFlow',
@@ -38,9 +45,11 @@ export type ComparisonMetricValue =
       denominatorCents?: number
     }
   | { status: 'available'; format: 'euro-range'; lowCents: number; highCents: number }
+  | { status: 'available'; format: 'loan-month'; months: number; basis: string }
+  | { status: 'available'; format: 'duration'; months: number; basis: string }
   | { status: 'missing'; count: number }
   | { status: 'not-applicable' }
-  | { status: 'unavailable' }
+  | { status: 'unavailable'; reason?: 'repayment-schedule' }
 
 export interface ScenarioComparison {
   scenario: SavedScenario
@@ -86,6 +95,56 @@ function financingValue(
   return dashboard.financing.status === 'available'
     ? euro(dashboard.financing[field])
     : { status: 'unavailable' }
+}
+
+function repaymentMetric(
+  dashboard: ScenarioDashboardCalculationResult,
+  metric:
+    | 'additionalPrincipal'
+    | 'interestSaved'
+    | 'remainingDebtReduction'
+    | 'projectedInterestSaved'
+    | 'baselinePayoff'
+    | 'selectedPayoff'
+    | 'timeSaved',
+): ComparisonMetricValue {
+  const result = dashboard.additionalRepaymentComparison
+  if (result.status !== 'available') return { status: 'unavailable', reason: 'repayment-schedule' }
+  if (result.cashPurchase) return { status: 'not-applicable' }
+
+  const fixedBasis = `fixed:${result.baseline.fixedInterestMonths}`
+  const projectionBasis = 'constant-rate:loan-months'
+  switch (metric) {
+    case 'additionalPrincipal':
+      return euro(
+        result.withAdditionalRepayments.additionalPrincipalThroughFixedPeriodCents,
+        fixedBasis,
+      )
+    case 'interestSaved':
+      return euro(result.interestSavedThroughFixedPeriodCents, fixedBasis)
+    case 'remainingDebtReduction':
+      return euro(result.remainingDebtReductionAtFixedPeriodCents, fixedBasis)
+    case 'projectedInterestSaved':
+      return euro(result.projectedLifetimeInterestSavedCents, projectionBasis)
+    case 'baselinePayoff':
+    case 'selectedPayoff':
+      return {
+        status: 'available',
+        format: 'loan-month',
+        months:
+          metric === 'baselinePayoff'
+            ? result.baseline.payoffMonth
+            : result.withAdditionalRepayments.payoffMonth,
+        basis: projectionBasis,
+      }
+    case 'timeSaved':
+      return {
+        status: 'available',
+        format: 'duration',
+        months: result.timeSavedMonths,
+        basis: projectionBasis,
+      }
+  }
 }
 
 function rentalMetric(
@@ -221,6 +280,13 @@ export function calculateSavedScenarioComparison(scenario: SavedScenario): Scena
                   : 'baseline',
               )
             : { status: 'unavailable' },
+      additionalPrincipal: repaymentMetric(dashboard, 'additionalPrincipal'),
+      interestSaved: repaymentMetric(dashboard, 'interestSaved'),
+      remainingDebtReduction: repaymentMetric(dashboard, 'remainingDebtReduction'),
+      projectedInterestSaved: repaymentMetric(dashboard, 'projectedInterestSaved'),
+      baselinePayoff: repaymentMetric(dashboard, 'baselinePayoff'),
+      selectedPayoff: repaymentMetric(dashboard, 'selectedPayoff'),
+      timeSaved: repaymentMetric(dashboard, 'timeSaved'),
       grossYield: rentalMetric(dashboard, 'grossYield'),
       netYield: rentalMetric(dashboard, 'netYield'),
       monthlyCashFlow: rentalMetric(dashboard, 'monthlyCashFlow'),
@@ -236,13 +302,11 @@ export function calculateSavedScenarioComparison(scenario: SavedScenario): Scena
 
 export function hasMixedComparisonBasis(
   comparisons: readonly ScenarioComparison[],
-  metric: 'remainingDebt' | 'projectedReturn',
+  metric: ComparisonMetricId,
 ) {
   const bases = comparisons.flatMap((comparison) => {
     const value = comparison.values[metric]
-    return value.status === 'available' && value.format === 'euro' && value.basis
-      ? [value.basis]
-      : []
+    return value.status === 'available' && 'basis' in value && value.basis ? [value.basis] : []
   })
   return new Set(bases).size > 1
 }

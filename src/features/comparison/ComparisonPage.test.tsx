@@ -67,7 +67,7 @@ describe('ComparisonPage', () => {
 
     expect(screen.getByRole('columnheader', { name: /Berlin/ })).toBeVisible()
     expect(screen.getByRole('columnheader', { name: /Köln/ })).toBeVisible()
-    expect(screen.getByText('Unterschiedliche Zinsbindungszeiträume')).toBeVisible()
+    expect(screen.getAllByText('Unterschiedliche Zinsbindungszeiträume')).toHaveLength(4)
 
     await user.click(screen.getByRole('button', { name: 'Hinzufügen' }))
     expect(screen.getByRole('columnheader', { name: /Leipzig/ })).toBeVisible()
@@ -112,8 +112,20 @@ describe('ComparisonPage', () => {
     renderPage()
 
     expect(screen.getByRole('columnheader', { name: /Mit Plan.*Mit Sondertilgung/ })).toBeVisible()
-    const debtRow = screen.getByRole('row', { name: /^Restschuld/ })
+    const debtRow = screen.getByRole('row', { name: /^Restschuld / })
     expect(within(debtRow).getByText(/nach Sondertilgung und 10 Jahren/)).toBeVisible()
+    const additionalRow = screen.getByRole('row', { name: /^Zusätzliche Tilgung während/ })
+    expect(
+      within(additionalRow)
+        .getAllByRole('cell')
+        .map((cell) => cell.querySelector('strong')?.textContent?.replaceAll('\u00a0', ' ')),
+    ).toEqual(['0 €', '50.000 €'])
+    expect(within(additionalRow).getAllByText(/Vergleich mit demselben Szenario/)).toHaveLength(2)
+    const payoffRow = screen.getByRole('row', { name: /^Projizierte Volltilgung mit/ })
+    expect(within(payoffRow).getAllByText(/Darlehensmonat \d+/)).toHaveLength(2)
+    expect(within(payoffRow).getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(2)
+    const timeRow = screen.getByRole('row', { name: /^Projizierte Zeitersparnis/ })
+    expect(within(timeRow).getByText('0 Jahre · 0 Monate')).toBeVisible()
     const returnRow = screen.getByRole('row', { name: /^Prognostiziertes Ergebnis/ })
     expect(
       within(returnRow).getByText(/Sondertilgungen werden im jeweiligen Zahlungsmonat/),
@@ -124,6 +136,26 @@ describe('ComparisonPage', () => {
       screen.getByRole('columnheader', { name: /Mit Plan.*With additional repayments/ }),
     ).toBeVisible()
     expect(within(debtRow).getByText(/after additional repayments and a 10-year/)).toBeVisible()
+    expect(within(additionalRow).getByText('€50,000')).toBeVisible()
+    expect(within(payoffRow).getAllByText(/Loan month \d+/)).toHaveLength(2)
+    expect(within(payoffRow).getAllByText(/Constant-rate projection/)).toHaveLength(2)
+    expect(within(timeRow).getByText('0 years · 0 months')).toBeVisible()
+  })
+
+  it('renders unavailable schedules and cash purchases without fabricated zero savings', () => {
+    const invalid = savedScenario('Invalid financing', 'invalid', '250000')
+    invalid.inputs.financing.downPayment = '-1'
+    const cash = savedScenario('Cash', 'cash', '250000')
+    cash.inputs.financing.downPayment = '250000'
+    cash.inputs.financing.availableEquity = '300000'
+    writeScenarioLibrary(window.localStorage, [invalid, cash])
+    renderPage()
+    const row = screen.getByRole('row', { name: /^Zinsersparnis während/ })
+    const [invalidCell, cashCell] = within(row).getAllByRole('cell')
+    expect(invalidCell).toHaveTextContent('Nicht berechenbar')
+    expect(invalidCell).toHaveTextContent('Prüfe Finanzierungs- und Sondertilgungseingaben')
+    expect(cashCell).toHaveTextContent('Für dieses Modell nicht anwendbar')
+    expect(within(row).queryByText('0 €')).not.toBeInTheDocument()
   })
 
   it('handles corrupted scenario data safely and switches to English', async () => {

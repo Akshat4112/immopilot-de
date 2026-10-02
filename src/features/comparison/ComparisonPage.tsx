@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 
 import { PageLayout } from '../../components/PageLayout'
 import { CalculationProvenance } from '../../components/CalculationProvenance'
-import { formatEuroFromCents, formatPercentage } from '../../i18n/formatters'
+import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { readScenarioLibrary, type SavedScenario, type ScenarioLibraryIssue } from '../../storage'
 import {
@@ -17,11 +17,23 @@ import {
 
 const MAX_COMPARISONS = 3
 const metricGroups: Array<{
-  id: 'purchase' | 'financing' | 'performance' | 'offer'
+  id: 'purchase' | 'financing' | 'repayment' | 'performance' | 'offer'
   metrics: ComparisonMetricId[]
 }> = [
   { id: 'purchase', metrics: ['purchasePrice', 'acquisitionCosts'] },
   { id: 'financing', metrics: ['equity', 'loan', 'monthlyPayment', 'remainingDebt'] },
+  {
+    id: 'repayment',
+    metrics: [
+      'additionalPrincipal',
+      'interestSaved',
+      'remainingDebtReduction',
+      'projectedInterestSaved',
+      'baselinePayoff',
+      'selectedPayoff',
+      'timeSaved',
+    ],
+  },
   {
     id: 'performance',
     metrics: ['grossYield', 'netYield', 'monthlyCashFlow', 'projectedReturn'],
@@ -81,12 +93,38 @@ function Value({
     return <span className="comparison-value-status">{t('comparison.status.notApplicable')}</span>
   }
   if (value.status === 'unavailable') {
-    return <span className="comparison-value-status">{t('comparison.status.unavailable')}</span>
+    return (
+      <span className="comparison-value-status">
+        {t('comparison.status.unavailable')}
+        {value.reason === 'repayment-schedule' ? (
+          <small className="comparison-value-detail">
+            {t('comparison.status.repaymentSchedule')}
+          </small>
+        ) : null}
+      </span>
+    )
   }
 
   let formatted: string
   if (value.format === 'percentage') {
     formatted = formatPercentage(value.rate, language)
+  } else if (value.format === 'loan-month') {
+    formatted = t('comparison.value.loanMonth', { month: formatNumber(value.months, language) })
+  } else if (value.format === 'duration') {
+    formatted = t('comparison.value.duration', {
+      years: formatNumber(Math.floor(value.months / 12), language),
+      months: formatNumber(value.months % 12, language),
+      yearUnit: t(
+        Math.floor(value.months / 12) === 1
+          ? 'results.sondertilgung.duration.year'
+          : 'results.sondertilgung.duration.years',
+      ),
+      monthUnit: t(
+        value.months % 12 === 1
+          ? 'results.sondertilgung.duration.month'
+          : 'results.sondertilgung.duration.months',
+      ),
+    })
   } else if (value.format === 'euro-range') {
     formatted = t('comparison.value.range', {
       low: formatEuroFromCents(value.lowCents, language),
@@ -99,6 +137,20 @@ function Value({
   return (
     <>
       <strong className="comparison-value">{formatted}</strong>
+      {'basis' in value && value.basis === 'constant-rate:loan-months' ? (
+        <small className="comparison-value-detail">
+          {t('comparison.value.constantRateProjection')}
+        </small>
+      ) : null}
+      {['additionalPrincipal', 'interestSaved', 'remainingDebtReduction'].includes(metric) &&
+      value.format === 'euro' &&
+      value.basis ? (
+        <small className="comparison-value-detail">
+          {t('comparison.value.fixedPeriodRepayment', {
+            years: Number(value.basis.split(':')[1]) / 12,
+          })}
+        </small>
+      ) : null}
       {value.format === 'percentage' && value.numeratorCents !== undefined ? (
         <small className="comparison-value-detail">
           {t('comparison.value.yieldBasis', {
@@ -297,6 +349,7 @@ export function ComparisonPage() {
                   </Link>
                 </div>
                 <p className="comparison-mobile-hint">{t('comparison.table.mobileHint')}</p>
+                <p className="comparison-limit">{t('comparison.repayment.basis')}</p>
                 <div className="comparison-table-scroll" tabIndex={0}>
                   <table className="comparison-table">
                     <thead>
@@ -357,16 +410,18 @@ function FragmentRows({
         </th>
       </tr>
       {group.metrics.map((metric) => {
-        const mixedBasis =
-          (metric === 'remainingDebt' || metric === 'projectedReturn') &&
-          hasMixedComparisonBasis(comparisons, metric)
+        const mixedBasis = hasMixedComparisonBasis(comparisons, metric)
         return (
           <tr key={metric}>
             <th scope="row">
               {t(`comparison.metrics.${metric}`)}
               {mixedBasis ? (
                 <small className="comparison-basis-warning">
-                  {t(`comparison.nonComparable.${metric}`)}
+                  {t(
+                    metric === 'projectedReturn'
+                      ? 'comparison.nonComparable.projectedReturn'
+                      : 'comparison.nonComparable.remainingDebt',
+                  )}
                 </small>
               ) : null}
             </th>

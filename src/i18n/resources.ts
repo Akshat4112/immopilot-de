@@ -232,10 +232,13 @@ export const resources = {
         repayment: {
           additionalRepayments: 'Mit Sondertilgung',
           invalid: 'Sondertilgung ungültig',
+          basis:
+            'Ersparnisse und Zeitersparnis beziehen sich auf dasselbe Szenario ohne Sondertilgung. Zusätzliche Tilgung umfasst tatsächlich geleistete, auf die Restschuld begrenzte Zahlungen im angegebenen Zeitraum. Volltilgung wird als Darlehensmonat angegeben, nicht als Kalenderdatum.',
         },
         groups: {
           purchase: 'Kauf',
           financing: 'Finanzierung',
+          repayment: 'Sondertilgung und Volltilgung',
           performance: 'Rendite und Cashflow',
           offer: 'Kaufangebot',
         },
@@ -246,6 +249,13 @@ export const resources = {
           loan: 'Darlehen',
           monthlyPayment: 'Monatliche Rate',
           remainingDebt: 'Restschuld',
+          additionalPrincipal: 'Zusätzliche Tilgung während der Zinsbindung',
+          interestSaved: 'Zinsersparnis während der Zinsbindung',
+          remainingDebtReduction: 'Restschuldreduktion am Ende der Zinsbindung',
+          projectedInterestSaved: 'Projizierte gesamte Zinsersparnis',
+          baselinePayoff: 'Projizierte Volltilgung ohne Sondertilgung',
+          selectedPayoff: 'Projizierte Volltilgung mit aktuellem Tilgungsplan',
+          timeSaved: 'Projizierte Zeitersparnis',
           grossYield: 'Bruttomietrendite',
           netYield: 'Nettomietrendite',
           monthlyCashFlow: 'Monatlicher Cashflow vor Steuern',
@@ -261,9 +271,17 @@ export const resources = {
           notConfigured: 'Nicht konfiguriert',
           notApplicable: 'Für dieses Modell nicht anwendbar',
           unavailable: 'Nicht berechenbar',
+          repaymentSchedule:
+            'Der ursprüngliche Tilgungsplan oder der Plan mit Sondertilgung ist nicht berechenbar. Prüfe Finanzierungs- und Sondertilgungseingaben.',
         },
         value: {
           range: '{{low}} bis {{high}}',
+          loanMonth: 'Darlehensmonat {{month}}',
+          duration: '{{years}} {{yearUnit}} · {{months}} {{monthUnit}}',
+          fixedPeriodRepayment:
+            'Zinsbindung: {{years}} Jahre; Vergleich mit demselben Szenario ohne Sondertilgung',
+          constantRateProjection:
+            'Projektion bei konstantem Sollzins auch nach der Zinsbindung; keine garantierte Laufzeit oder Ersparnis.',
           yieldBasis: '{{numerator}} ÷ {{denominator}}',
           afterYears: 'nach {{years}} Jahren Zinsbindung',
           afterYearsWithAdditionalRepayments: 'nach Sondertilgung und {{years}} Jahren Zinsbindung',
@@ -1109,10 +1127,13 @@ export const resources = {
         repayment: {
           additionalRepayments: 'With additional repayments',
           invalid: 'Invalid additional repayments',
+          basis:
+            'Savings and time saved are relative to the same scenario without additional repayments. Additional principal totals actual repayments, capped at the remaining balance, over the stated period. Payoff is shown as a loan month, not a calendar date.',
         },
         groups: {
           purchase: 'Purchase',
           financing: 'Financing',
+          repayment: 'Additional repayments and payoff',
           performance: 'Return and cash flow',
           offer: 'Offer price',
         },
@@ -1123,6 +1144,13 @@ export const resources = {
           loan: 'Loan',
           monthlyPayment: 'Monthly payment',
           remainingDebt: 'Remaining debt',
+          additionalPrincipal: 'Additional principal during the fixed period',
+          interestSaved: 'Interest saved during the fixed period',
+          remainingDebtReduction: 'Debt reduction at the end of the fixed period',
+          projectedInterestSaved: 'Projected lifetime interest saved',
+          baselinePayoff: 'Projected payoff without additional repayments',
+          selectedPayoff: 'Projected payoff with the current repayment plan',
+          timeSaved: 'Projected time saved',
           grossYield: 'Gross rental yield',
           netYield: 'Net rental yield',
           monthlyCashFlow: 'Monthly pre-tax cash flow',
@@ -1138,9 +1166,17 @@ export const resources = {
           notConfigured: 'Not configured',
           notApplicable: 'Not applicable to this model',
           unavailable: 'Cannot be calculated',
+          repaymentSchedule:
+            'The baseline or additional-repayment schedule cannot be calculated. Check financing and additional-repayment inputs.',
         },
         value: {
           range: '{{low}} to {{high}}',
+          loanMonth: 'Loan month {{month}}',
+          duration: '{{years}} {{yearUnit}} · {{months}} {{monthUnit}}',
+          fixedPeriodRepayment:
+            '{{years}}-year fixed period; compared with the same scenario without additional repayments',
+          constantRateProjection:
+            'Constant-rate projection beyond the fixed period; payoff timing and savings are not guaranteed.',
           yieldBasis: '{{numerator}} ÷ {{denominator}}',
           afterYears: 'after {{years}}-year fixed period',
           afterYearsWithAdditionalRepayments:

@@ -8,6 +8,16 @@ import {
 import { createSavedScenario } from '../../storage'
 import { calculateSavedScenarioComparison, hasMixedComparisonBasis } from './comparisonCalculations'
 
+const repaymentMetrics = [
+  'additionalPrincipal',
+  'interestSaved',
+  'remainingDebtReduction',
+  'projectedInterestSaved',
+  'baselinePayoff',
+  'selectedPayoff',
+  'timeSaved',
+] as const
+
 function scenario(
   name: string,
   options: {
@@ -58,6 +68,153 @@ function scenario(
 }
 
 describe('saved scenario comparison calculations', () => {
+  it('reproduces the approved annual repayment vector in comparison cells', () => {
+    const saved = scenario('Annual')
+    saved.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5.000'
+    const { values } = calculateSavedScenarioComparison(saved)
+    expect(values.additionalPrincipal).toEqual({
+      status: 'available',
+      format: 'euro',
+      cents: 5_000_000,
+      basis: 'fixed:120',
+    })
+    expect(values.interestSaved).toEqual({
+      status: 'available',
+      format: 'euro',
+      cents: 881_096,
+      basis: 'fixed:120',
+    })
+    expect(values.remainingDebtReduction).toEqual({
+      status: 'available',
+      format: 'euro',
+      cents: 5_881_096,
+      basis: 'fixed:120',
+    })
+    expect(values.projectedInterestSaved).toEqual({
+      status: 'available',
+      format: 'euro',
+      cents: 5_320_614,
+      basis: 'constant-rate:loan-months',
+    })
+    expect(values.baselinePayoff).toMatchObject({ format: 'loan-month', months: 348 })
+    expect(values.selectedPayoff).toMatchObject({ format: 'loan-month', months: 203 })
+    expect(values.timeSaved).toMatchObject({ format: 'duration', months: 145 })
+  })
+
+  it('retains valid zero savings and identical payoff months without a repayment plan', () => {
+    const { values } = calculateSavedScenarioComparison(scenario('No plan'))
+    for (const metric of [
+      'additionalPrincipal',
+      'interestSaved',
+      'remainingDebtReduction',
+      'projectedInterestSaved',
+    ] as const) {
+      expect(values[metric]).toMatchObject({ status: 'available', cents: 0 })
+    }
+    expect(values.baselinePayoff).toMatchObject({ status: 'available', months: 348 })
+    expect(values.selectedPayoff).toEqual(values.baselinePayoff)
+    expect(values.timeSaved).toMatchObject({ status: 'available', months: 0 })
+  })
+
+  it('excludes later payments from fixed-period totals while retaining projected effects', () => {
+    const saved = scenario('Later payment')
+    saved.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments = [
+      { amount: '10.000', month: '121' },
+    ]
+    const { values } = calculateSavedScenarioComparison(saved)
+    for (const metric of [
+      'additionalPrincipal',
+      'interestSaved',
+      'remainingDebtReduction',
+    ] as const) {
+      expect(values[metric]).toMatchObject({ status: 'available', cents: 0, basis: 'fixed:120' })
+    }
+    expect(values.projectedInterestSaved).toMatchObject({
+      status: 'available',
+      basis: 'constant-rate:loan-months',
+    })
+    if (
+      values.projectedInterestSaved.status !== 'available' ||
+      values.projectedInterestSaved.format !== 'euro'
+    )
+      throw new Error('Expected projected interest saving')
+    expect(values.projectedInterestSaved.cents).toBeGreaterThan(0)
+    if (values.timeSaved.status !== 'available' || values.timeSaved.format !== 'duration')
+      throw new Error('Expected projected time saving')
+    expect(values.timeSaved.months).toBeGreaterThan(0)
+  })
+
+  it('totals applied principal after the balance cap and ignores repayments after payoff', () => {
+    const saved = scenario('Early payoff')
+    saved.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments = [
+      { amount: '500.000', month: '1' },
+      { amount: '5.000', month: '12' },
+    ]
+    const { values } = calculateSavedScenarioComparison(saved)
+    expect(values.additionalPrincipal).toMatchObject({ status: 'available', cents: 19_966_666 })
+    expect(values.remainingDebt).toMatchObject({ status: 'available', cents: 0 })
+    expect(values.selectedPayoff).toMatchObject({ status: 'available', months: 1 })
+    expect(values.timeSaved).toMatchObject({ status: 'available', months: 347 })
+  })
+
+  it('marks all repayment cells unavailable when either schedule cannot be calculated', () => {
+    const invalidPlan = scenario('Invalid plan')
+    invalidPlan.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments = [
+      { amount: '', month: '12' },
+    ]
+    const invalidFinancing = scenario('Invalid financing')
+    invalidFinancing.inputs.financing.downPayment = '-1'
+    for (const saved of [invalidPlan, invalidFinancing]) {
+      const { values } = calculateSavedScenarioComparison(saved)
+      for (const metric of repaymentMetrics)
+        expect(values[metric]).toEqual({ status: 'unavailable', reason: 'repayment-schedule' })
+    }
+  })
+
+  it('keeps cash purchases not applicable even with retained repayment inputs', () => {
+    const saved = scenario('Cash')
+    saved.inputs.financing.availableEquity = '300000'
+    saved.inputs.financing.downPayment = '250000'
+    saved.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5.000'
+    const { values } = calculateSavedScenarioComparison(saved)
+    for (const metric of repaymentMetrics)
+      expect(values[metric]).toEqual({ status: 'not-applicable' })
+  })
+
+  it('flags different fixed periods only for fixed-period repayment metrics', () => {
+    const short = scenario('Short', { fixedYears: '10' })
+    const long = scenario('Long', { fixedYears: '15' })
+    short.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5.000'
+    long.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5.000'
+    const comparisons = [short, long].map(calculateSavedScenarioComparison)
+    for (const metric of [
+      'additionalPrincipal',
+      'interestSaved',
+      'remainingDebtReduction',
+    ] as const)
+      expect(hasMixedComparisonBasis(comparisons, metric)).toBe(true)
+    for (const metric of [
+      'projectedInterestSaved',
+      'baselinePayoff',
+      'selectedPayoff',
+      'timeSaved',
+    ] as const)
+      expect(hasMixedComparisonBasis(comparisons, metric)).toBe(false)
+  })
+
+  it('recalculates equivalent saved repayment inputs in their original locale', () => {
+    const german = scenario('German')
+    german.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5.000'
+    const english = scenario('English')
+    english.locale = 'en-GB'
+    english.inputs.financing.nominalAnnualRate = '3.50'
+    english.inputs.financing.initialRepaymentRate = '2.00'
+    english.inputs.financing.additionalRepayments.annualAdditionalRepayment = '5,000'
+    const de = calculateSavedScenarioComparison(german)
+    const en = calculateSavedScenarioComparison(english)
+    for (const metric of repaymentMetrics) expect(en.values[metric]).toEqual(de.values[metric])
+  })
+
   it('recalculates requested purchase, financing, rental, return, and offer metrics', () => {
     const comparison = calculateSavedScenarioComparison(
       scenario('Rental', { mode: 'rental-investment' }),

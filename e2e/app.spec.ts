@@ -320,7 +320,7 @@ test('compares three saved properties and supports reorder, remove, and mobile s
   expect(overflow.page).toBeLessThanOrEqual(overflow.viewport)
 })
 
-test('carries Sondertilgung through results, saved restoration, and comparison', async ({
+test('carries Sondertilgung through results, saved restoration, and comparison @cross-browser', async ({
   page,
 }) => {
   await completeFinancedPurchase(page)
@@ -382,12 +382,30 @@ test('carries Sondertilgung through results, saved restoration, and comparison',
   await expect(
     page.getByRole('columnheader', { name: /Sondertilgung Plan.*Mit Sondertilgung/ }),
   ).toBeVisible()
+  await expect(page.getByRole('row', { name: /^Zusätzliche Tilgung während/ })).toContainText(
+    /52\.500\s*€/,
+  )
+  await expect(page.getByRole('row', { name: /^Projizierte Volltilgung mit/ })).toContainText(
+    /Darlehensmonat \d+/,
+  )
+  await expect(page.getByRole('row', { name: /^Projizierte Zeitersparnis/ })).toContainText(
+    /Projektion bei konstantem Sollzins/,
+  )
   await page.getByRole('button', { name: 'English' }).click()
   await expect(
     page.getByRole('columnheader', {
       name: /Sondertilgung Plan.*With additional repayments/,
     }),
   ).toBeVisible()
+  await expect(page.getByRole('row', { name: /^Additional principal during/ })).toContainText(
+    '€52,500',
+  )
+  await expect(page.getByRole('row', { name: /^Projected payoff with/ })).toContainText(
+    /Loan month \d+/,
+  )
+  await expect(page.getByRole('row', { name: /^Projected time saved/ })).toContainText(
+    /Constant-rate projection/,
+  )
 })
 
 test('validates one-time repayments and retains them across a cash purchase switch', async ({
