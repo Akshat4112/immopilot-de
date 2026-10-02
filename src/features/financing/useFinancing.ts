@@ -17,6 +17,7 @@ export function useFinancingCalculator() {
 
   return {
     ...calculations,
+    amortizationInputKey: JSON.stringify([purchaseCosts, financingDraft]),
     financingDraft,
     updateFinancing,
   }

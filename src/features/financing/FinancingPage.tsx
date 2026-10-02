@@ -36,6 +36,7 @@ export function FinancingPage() {
     amortization,
     selectedAmortization,
     selectedAmortizationBasis,
+    amortizationInputKey,
     financingDraft,
     updateFinancing,
   } = useFinancingCalculator()
@@ -613,11 +614,6 @@ export function FinancingPage() {
                   <p className="result-value">{formatEuro(amortization.firstYearInterestCents)}</p>
                 </article>
               </div>
-              <AmortizationBreakdown
-                baseline={amortization}
-                selected={selectedAmortization}
-                selectedBasis={selectedAmortizationBasis}
-              />
             </>
           )}
 
@@ -627,6 +623,15 @@ export function FinancingPage() {
               <p>{t('finance.unavailable.scheduleMessage')}</p>
             </div>
           )}
+
+          {financingReady ? (
+            <AmortizationBreakdown
+              baseline={amortization}
+              inputKey={amortizationInputKey}
+              selected={selectedAmortization}
+              selectedBasis={selectedAmortizationBasis}
+            />
+          ) : null}
 
           {paymentReady && scheduleReady && (
             <div className="next-steps">

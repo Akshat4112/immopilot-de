@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 const applicationPath = '/immopilot-de/'
 
@@ -221,6 +222,94 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await expect(page.getByRole('heading', { level: 1, name: 'Evaluate one property' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Refinancing stress test' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Choose an offer method' })).toBeVisible()
+})
+
+test('explores full monthly schedules and payoff with bounded pagination @cross-browser', async ({
+  page,
+}, testInfo) => {
+  await completeFinancedPurchase(page)
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const baseline = page.getByRole('region', {
+    name: 'Tilgungsplan ohne Sondertilgung',
+    exact: true,
+  })
+  await expect(baseline.getByRole('columnheader', { name: 'Anfangsschuld' })).toBeVisible()
+  await expect(baseline.getByRole('row')).toHaveCount(25)
+  await baseline.getByRole('button', { name: 'Letzte Seite' }).click()
+  await expect(baseline.getByRole('rowheader', { name: /348.*Volltilgung/ })).toBeVisible()
+  await expect(baseline.getByText('Monate 337–348 von 348 · Seite 15 von 15')).toBeVisible()
+  await expect(
+    baseline
+      .getByRole('rowheader', { name: /348.*Volltilgung/ })
+      .locator('..')
+      .getByRole('cell')
+      .last(),
+  ).toContainText(/^0\s*€$/)
+  await page.getByRole('button', { name: 'English' }).click()
+  const englishBaseline = page.getByRole('region', {
+    name: 'Schedule without additional repayments',
+    exact: true,
+  })
+  await expect(englishBaseline.getByText('Months 337–348 of 348 · Page 15 of 15')).toBeVisible()
+  await expect(englishBaseline.getByText(/Constant-rate projection/)).toBeVisible()
+
+  await page.getByRole('textbox', { name: 'Amount per loan year' }).fill('5000')
+  await expect(englishBaseline.getByText('Months 1–24 of 348 · Page 1 of 15')).toBeVisible()
+  const selected = page.getByRole('region', {
+    name: 'Schedule with additional repayments',
+    exact: true,
+  })
+  await selected.getByRole('button', { name: 'Last page' }).click()
+  await expect(selected.getByRole('rowheader', { name: /203.*Payoff/ })).toBeVisible()
+  await expect(englishBaseline.getByRole('rowheader', { name: '1', exact: true })).toBeVisible()
+  await expect(selected.getByRole('row')).toHaveCount(12)
+  await selected.getByRole('button', { name: 'First page' }).click()
+  const accessibility = await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()
+  expect(accessibility.violations).toEqual([])
+  await page
+    .locator('.amortization-breakdown')
+    .screenshot({ path: testInfo.outputPath('explorer-desktop.png') })
+  for (const width of [360, 390]) {
+    await page.setViewportSize({ width, height: 844 })
+    const scroll = selected.getByRole('region', {
+      name: 'Scroll Schedule with additional repayments horizontally',
+      exact: true,
+    })
+    await scroll.focus()
+    await expect(scroll).toBeFocused()
+    await expect(selected.getByRole('button', { name: 'Next' })).toBeVisible()
+    const overflow = await scroll.evaluate<
+      { table: boolean; document: boolean },
+      void
+    >(`element => ({
+      table: element.scrollWidth > element.clientWidth,
+      document: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    })`)
+    expect(overflow.table).toBe(true)
+    expect(overflow.document).toBe(false)
+  }
+  await selected.screenshot({ path: testInfo.outputPath('explorer-mobile.png') })
+})
+
+test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
+  page,
+}) => {
+  await completeFinancedPurchase(page)
+  await page.getByRole('button', { name: 'Einmalzahlung hinzufügen' }).click()
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const explorer = page.locator('.amortization-breakdown')
+  await expect(explorer.getByText(/nur der ursprüngliche Verlauf als Referenz/)).toBeVisible()
+  await expect(explorer.getByRole('table')).toHaveCount(1)
+  await page.getByRole('textbox', { name: 'Verfügbares Eigenkapital' }).fill('300000')
+  await page.getByRole('textbox', { name: 'Anzahlung auf den Kaufpreis' }).fill('250000')
+  await expect(
+    explorer.getByText('Bei einem Kauf ohne Darlehen gibt es keinen Tilgungsplan.'),
+  ).toBeVisible()
+  await expect(explorer.getByRole('table')).toHaveCount(0)
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(
+    explorer.getByText('A cash purchase has no mortgage repayment schedule.'),
+  ).toBeVisible()
 })
 
 test('persists and manages a named scenario locally without saved results', async ({ page }) => {

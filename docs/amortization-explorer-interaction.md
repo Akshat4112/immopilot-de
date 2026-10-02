@@ -2,7 +2,7 @@
 
 **Scope:** Original implementation tracker PF-005.1 — Define the amortization explorer interaction  
 **Contract version:** 1.0.0  
-**Status:** Implementation proposal for review
+**Status:** Interaction contract merged in PR #62; implementation proceeds in the original task sequence
 
 The original tracker uses PF-005.1–PF-005.8 for the amortization explorer. The repository's
 `version-1-release-contract.md` reuses PF-005.1–PF-005.7 for release readiness; the reconciled tracker
@@ -139,3 +139,16 @@ the accessible table equivalent. Existing fixed-period browser journeys must rem
 
 The interaction proposal does not claim those later implementation or QA tasks have passed. The
 Version 1 release candidate must refresh affected evidence after the explorer is implemented.
+
+## PF-005.2 implementation milestone
+
+PF-005.2 extends the existing disclosure with complete monthly baseline and selected schedules,
+opening debt, 24-row pagination, exact fixed-period/payoff markers and explicit cash/unavailable
+states. Input revisions reset each table to page 1; a presentation-language change preserves its page.
+Only actual domain rows are rendered, and each schedule stops at its own payoff. The original
+contractual payment and financial calculation engine are unchanged.
+
+At this milestone, the paginated tables expose the full monthly repayment horizon. The approved
+fixed-period annual default, annual aggregation and horizon/schedule selectors are the next
+PF-005.3 implementation. Charts and chart accessibility remain PF-005.4–PF-005.6; complete print and
+bilingual polish remain PF-005.7. This milestone does not close those tasks or the release gate.
