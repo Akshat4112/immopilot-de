@@ -655,14 +655,32 @@ export const resources = {
           breakdown: {
             open: 'Detaillierten Tilgungsplan öffnen',
             intro:
-              'Die Monatswerte stammen direkt aus dem Rechenmodell. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
+              'Der Tilgungsplan zeigt alle Darlehensmonate bis zur rechnerischen Volltilgung. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
             baseline: 'Tilgungsplan ohne Sondertilgung',
             withAdditionalRepayments: 'Tilgungsplan mit Sondertilgung',
-            fixedPeriodOnly: 'Gezeigt werden {{months}} Monate innerhalb der Zinsbindung.',
+            fullSchedule:
+              'Vollständiger Verlauf bis Darlehensmonat {{months}} · Ende der Zinsbindung: Monat {{fixedMonths}}.',
+            payoffWithinFixedPeriod:
+              'Das Darlehen ist spätestens am Ende der Zinsbindung vollständig getilgt. Nach der Volltilgung werden keine weiteren Zahlungen angezeigt.',
+            cashPurchase: 'Bei einem Kauf ohne Darlehen gibt es keinen Tilgungsplan.',
+            baselineReference:
+              'Der Plan mit Sondertilgung ist nicht berechenbar. Gezeigt wird nur der ursprüngliche Verlauf als Referenz, nicht als Ergebnis deiner Sondertilgung. Prüfe die Sondertilgungseingaben.',
+            noAdditionalRepayments:
+              'Ohne Sondertilgung gibt es nur den ursprünglichen Tilgungsplan.',
+            pageRange: 'Monate {{first}}–{{last}} von {{total}} · Seite {{page}} von {{pages}}',
+            paginationLabel: 'Seiten für {{title}}',
+            firstPage: 'Erste Seite',
+            previousPage: 'Zurück',
+            nextPage: 'Weiter',
+            lastPage: 'Letzte Seite',
+            fixedPeriodEnd: 'Ende der Zinsbindung',
+            projectedPeriod: 'Projektion',
+            payoff: 'Volltilgung',
             projectionBoundary:
-              'Die rechnerische Volltilgung nach der Zinsbindung ist nur eine Projektion bei unverändertem Sollzins und keine garantierte Vertragslaufzeit.',
+              'Projektion bei konstantem Sollzins: Nach der Zinsbindung wird der ursprüngliche Sollzins unverändert fortgeführt. Die Volltilgung ist keine garantierte Vertragslaufzeit.',
             scrollLabel: '{{title}} horizontal scrollen',
             month: 'Darlehensmonat',
+            openingBalance: 'Anfangsschuld',
             regularPayment: 'Reguläre Rate',
             interest: 'Zinsen',
             scheduledPrincipal: 'Reguläre Tilgung',
@@ -1550,14 +1568,32 @@ export const resources = {
           breakdown: {
             open: 'Open detailed amortization schedule',
             intro:
-              'Monthly values come directly from the calculation engine. When additional repayments are configured, the baseline and comparison schedules are shown separately.',
+              'The amortization schedule shows every loan month through projected payoff. Month 1 is the first monthly payment. With additional repayments, the baseline and comparison schedules are shown separately.',
             baseline: 'Schedule without additional repayments',
             withAdditionalRepayments: 'Schedule with additional repayments',
-            fixedPeriodOnly: '{{months}} months within the fixed-interest period are shown.',
+            fullSchedule:
+              'Full schedule through loan month {{months}} · Fixed-interest period ends at month {{fixedMonths}}.',
+            payoffWithinFixedPeriod:
+              'The loan is repaid by the end of the fixed-interest period. No further payments are shown after payoff.',
+            cashPurchase: 'A cash purchase has no mortgage repayment schedule.',
+            baselineReference:
+              'The additional-repayment schedule cannot be calculated. Only the original schedule is shown as a reference, not as the result of your additional repayments. Check the additional-repayment inputs.',
+            noAdditionalRepayments:
+              'Without additional repayments, only the original schedule applies.',
+            pageRange: 'Months {{first}}–{{last}} of {{total}} · Page {{page}} of {{pages}}',
+            paginationLabel: 'Pages for {{title}}',
+            firstPage: 'First page',
+            previousPage: 'Previous',
+            nextPage: 'Next',
+            lastPage: 'Last page',
+            fixedPeriodEnd: 'End of fixed interest',
+            projectedPeriod: 'Projection',
+            payoff: 'Payoff',
             projectionBoundary:
-              'Projected full repayment after the fixed-interest period assumes the original rate remains unchanged and is not a guaranteed contractual term.',
+              'Constant-rate projection: beyond the fixed-interest period, the initial nominal rate is assumed unchanged. Payoff timing is not a guaranteed contractual term.',
             scrollLabel: 'Scroll {{title}} horizontally',
             month: 'Loan month',
+            openingBalance: 'Opening debt',
             regularPayment: 'Regular payment',
             interest: 'Interest',
             scheduledPrincipal: 'Scheduled principal',
