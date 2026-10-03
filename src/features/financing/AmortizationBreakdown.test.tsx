@@ -65,7 +65,11 @@ describe('full amortization breakdown', () => {
     const source = result.amortization
     if (source.status !== 'available' || source.cashPurchase) throw new Error('Fixture unavailable')
     const row = { ...source.rows[0]!, regularPaymentCents: moneyCents(Number.MAX_SAFE_INTEGER) }
-    const baseline = { ...source, rows: [row, { ...row, month: 2 }] }
+    const baseline = {
+      ...source,
+      payoffMonth: 2,
+      rows: [row, { ...row, month: 2, closingBalanceCents: moneyCents(0) }],
+    }
     renderWithProviders(explorer({ ...result, amortization: baseline }))
     const user = await open(false)
     expect(screen.getByText(/jährlichen Summen überschreiten/)).toBeVisible()
@@ -262,7 +266,7 @@ describe('full amortization breakdown', () => {
         .map((cell) => cell.textContent?.replaceAll('\u00a0', ' ')),
     ).toEqual(['200.000 €', '916,67 €', '583,33 €', '333,34 €', '0 €', '916,67 €', '199.666,66 €'])
     expect(screen.getByText('Monate 1–24 von 348 · Seite 1 von 15')).toBeVisible()
-    expect(screen.getByText(/Projektion bei konstantem Sollzins/)).toBeVisible()
+    expect(screen.getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(2)
   })
 
   it('reaches the actual final row beyond Zinsbindung and navigates back to the first page', async () => {

@@ -403,6 +403,103 @@ test('switches amortization horizons, annual detail and schedule basis accessibl
   }
 })
 
+test('plots aligned remaining debt and inspects exact payoff months @cross-browser', async ({
+  page,
+}, testInfo) => {
+  await completeFinancedPurchase(page)
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const chart = page.locator('.remaining-debt-chart')
+  const graph = chart.getByRole('img')
+  await expect(graph).toHaveAccessibleName(/Restschuld im Zeitverlauf/)
+  await expect(graph.locator('[data-debt-series]')).toHaveCount(2)
+  await expect(
+    graph.locator('[data-debt-series="baseline"] [data-chart-month="0"]'),
+  ).toHaveAttribute('data-balance-cents', '20000000')
+  await expect(graph.locator('[data-fixed-month="120"]')).toHaveCount(1)
+  await expect(graph.locator('[data-chart-projection]')).toHaveCount(0)
+  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await expect(graph.locator('[data-chart-projection]')).toHaveCount(1)
+  await expect(graph.locator('[data-debt-series="baseline"] [data-chart-payoff]')).toHaveAttribute(
+    'data-chart-month',
+    '348',
+  )
+  await expect(
+    graph.locator('[data-debt-series="additional-repayments"] [data-chart-payoff]'),
+  ).toHaveAttribute('data-chart-month', '203')
+  await expect(
+    graph.locator('[data-debt-series="additional-repayments"] [data-chart-month="348"]'),
+  ).toHaveAttribute('data-balance-cents', '0')
+  const inspect = chart.getByRole('combobox')
+  await inspect.selectOption('203')
+  await expect(chart.locator('.debt-chart-inspector').getByText(/^0\s*€$/)).toBeVisible()
+  const line = graph.locator('[data-debt-series="baseline"] .debt-chart-line')
+  const path = await line.getAttribute('d')
+  await page
+    .getByRole('region', { name: 'Tilgungsplan ohne Sondertilgung', exact: true })
+    .getByRole('button', { name: 'Letzte Seite' })
+    .click()
+  await expect(line).toHaveAttribute('d', path!)
+  await expect(inspect).toHaveValue('203')
+  await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
+  await expect(inspect.locator('option')).toHaveCount(349)
+  await inspect.focus()
+  await page.keyboard.press('Home')
+  await page.keyboard.press('ArrowDown')
+  await expect(inspect).toHaveValue('1')
+  await inspect.selectOption('216')
+  await expect(
+    chart.getByText(/bereits vollständig getilgt; keine weiteren Zahlungen/),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(graph).toHaveAccessibleName(/Remaining debt over time/)
+  await expect(inspect).toHaveAccessibleName('Inspect a loan month in the chart')
+  await expect(inspect).toHaveValue('216')
+  await page.getByRole('radio', { name: 'With additional repayments', exact: true }).check()
+  await expect(graph.locator('[data-debt-series]')).toHaveCount(1)
+  await page.getByRole('radio', { name: 'Both schedules', exact: true }).check()
+  await page.getByRole('radio', { name: 'Annual', exact: true }).check()
+  await inspect.selectOption('203')
+  const accessibility = await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()
+  expect(accessibility.violations).toEqual([])
+  for (const width of [360, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    const scroll = chart.getByRole('region', { name: 'Scroll remaining-debt chart horizontally' })
+    await scroll.focus()
+    await expect(scroll).toBeFocused()
+    const bounds = await scroll.boundingBox()
+    expect(bounds).not.toBeNull()
+    expect(bounds!.x).toBeGreaterThanOrEqual(0)
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+    const selectorBounds = await inspect.boundingBox()
+    expect(selectorBounds!.x + selectorBounds!.width).toBeLessThanOrEqual(width)
+    expect(
+      await page.evaluate<boolean>(
+        'document.documentElement.scrollWidth > document.documentElement.clientWidth',
+      ),
+    ).toBe(false)
+    if (width === 390 || width === 1440) {
+      await chart.getByRole('heading').click()
+      await chart.screenshot({
+        animations: 'disabled',
+        path: testInfo.outputPath(`explorer-debt-${width === 390 ? 'mobile' : 'desktop'}.png`),
+      })
+    }
+  }
+  const previous = await graph
+    .locator('[data-debt-series="baseline"] [data-chart-month="120"]')
+    .getAttribute('data-balance-cents')
+  await page
+    .getByRole('textbox', { name: 'Nominal annual interest rate', exact: true })
+    .fill('4.00')
+  await expect(inspect).toHaveValue('0')
+  await expect(
+    graph.locator('[data-debt-series="baseline"] [data-chart-month="120"]'),
+  ).not.toHaveAttribute('data-balance-cents', previous!)
+  await page.getByRole('textbox', { name: 'Amount per loan year' }).fill('')
+  await expect(graph.locator('[data-debt-series]')).toHaveCount(1)
+})
+
 test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
   page,
 }) => {
