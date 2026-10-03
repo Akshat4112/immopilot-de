@@ -535,6 +535,7 @@ test('carries Sondertilgung through results, saved restoration, and comparison @
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
   await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
   await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page.getByRole('radio', { name: 'Beide Verläufe', exact: true }).check()
   const selectedSchedule = page.getByRole('table', {
     name: 'Tilgungsplan mit Sondertilgung',
   })
