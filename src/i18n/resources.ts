@@ -655,9 +655,36 @@ export const resources = {
           breakdown: {
             open: 'Detaillierten Tilgungsplan öffnen',
             intro:
-              'Der Tilgungsplan zeigt alle Darlehensmonate bis zur rechnerischen Volltilgung. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden Basis- und Vergleichsverlauf getrennt gezeigt.',
+              'Wähle Zeitraum, Darstellung und Verlauf. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden die Verläufe getrennt gezeigt.',
             baseline: 'Tilgungsplan ohne Sondertilgung',
             withAdditionalRepayments: 'Tilgungsplan mit Sondertilgung',
+            horizon: { label: 'Zeitraum', fixed: 'Zinsbindung', full: 'Vollständige Rückzahlung' },
+            detail: { label: 'Darstellung', annual: 'Jährlich', monthly: 'Monatlich' },
+            schedule: {
+              label: 'Verlauf',
+              baseline: 'Ohne Sondertilgung',
+              'additional-repayments': 'Mit Sondertilgung',
+              both: 'Beide Verläufe',
+            },
+            year: 'Darlehensjahr',
+            loanYear: 'Jahr {{year}}',
+            monthRange: 'Monate {{first}}–{{last}}',
+            partialYear: 'Teiljahr',
+            annualPageRange:
+              'Darlehensjahre {{first}}–{{last}} von {{total}} · Seite {{page}} von {{pages}}',
+            annualUnavailable:
+              'Die jährlichen Summen überschreiten den unterstützten Zahlenbereich. Wählen Sie die monatliche Ansicht.',
+            annualBasis:
+              'Darlehensjahre umfassen Monate 1–12, 13–24 usw., keine Kalenderjahre. Zahlungen werden summiert; Schuldbeträge zeigen den Anfangs- und Endstand.',
+            fixedHorizon: 'Betrachtungszeitraum bis zum Ende der Zinsbindung: Monat {{month}}.',
+            fullHorizon:
+              'Gemeinsamer Betrachtungszeitraum bis Monat {{month}}. Jeder Verlauf endet an seiner eigenen rechnerischen Volltilgung.',
+            fixedSchedule:
+              'Zinsbindung: Zahlungen bis Darlehensmonat {{months}} · Ende der Zinsbindung: Monat {{fixedMonths}}.',
+            fixedPeriodOnly:
+              'Alle angezeigten Zahlungen liegen innerhalb der Zinsbindung. Wähle die vollständige Rückzahlung für die Projektion danach.',
+            fixedPeriodEndAt: 'Ende der Zinsbindung: Monat {{month}}',
+            mixedPeriod: 'Zahlungen innerhalb und nach der Zinsbindung',
             fullSchedule:
               'Vollständiger Verlauf bis Darlehensmonat {{months}} · Ende der Zinsbindung: Monat {{fixedMonths}}.',
             payoffWithinFixedPeriod:
@@ -1568,9 +1595,40 @@ export const resources = {
           breakdown: {
             open: 'Open detailed amortization schedule',
             intro:
-              'The amortization schedule shows every loan month through projected payoff. Month 1 is the first monthly payment. With additional repayments, the baseline and comparison schedules are shown separately.',
+              'Choose the period, detail and schedule. Month 1 is the first monthly payment. With additional repayments, the schedules are shown separately.',
             baseline: 'Schedule without additional repayments',
             withAdditionalRepayments: 'Schedule with additional repayments',
+            horizon: {
+              label: 'Period',
+              fixed: 'Fixed-interest period',
+              full: 'Full projected repayment',
+            },
+            detail: { label: 'Detail', annual: 'Annual', monthly: 'Monthly' },
+            schedule: {
+              label: 'Schedule',
+              baseline: 'Baseline',
+              'additional-repayments': 'With additional repayments',
+              both: 'Both schedules',
+            },
+            year: 'Loan year',
+            loanYear: 'Year {{year}}',
+            monthRange: 'Months {{first}}–{{last}}',
+            partialYear: 'Partial year',
+            annualPageRange:
+              'Loan years {{first}}–{{last}} of {{total}} · Page {{page}} of {{pages}}',
+            annualUnavailable:
+              'Annual totals exceed the supported number range. Choose monthly detail.',
+            annualBasis:
+              'Loan years cover months 1–12, 13–24 and so on, rather than calendar years. Payments are summed; debt amounts show the opening and closing balances.',
+            fixedHorizon: 'View through the end of fixed interest: month {{month}}.',
+            fullHorizon:
+              'Common view through month {{month}}. Each schedule ends at its own projected payoff.',
+            fixedSchedule:
+              'Fixed-interest view: payments through loan month {{months}} · Fixed interest ends at month {{fixedMonths}}.',
+            fixedPeriodOnly:
+              'All displayed payments are within the fixed-interest period. Select full projected repayment to see the projection beyond it.',
+            fixedPeriodEndAt: 'End of fixed interest: month {{month}}',
+            mixedPeriod: 'Includes payments within and beyond fixed interest',
             fullSchedule:
               'Full schedule through loan month {{months}} · Fixed-interest period ends at month {{fixedMonths}}.',
             payoffWithinFixedPeriod:

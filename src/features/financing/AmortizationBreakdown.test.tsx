@@ -1,6 +1,7 @@
 import { I18nextProvider } from 'react-i18next'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import { moneyCents } from '../../domain/shared/money'
 import i18n from '../../i18n/config'
 import { renderWithProviders, screen, userEvent, within } from '../../test/render'
 import {
@@ -38,10 +39,19 @@ function explorer(result = workspace(), inputKey = 'initial') {
 
 const baselineTitle = 'Tilgungsplan ohne Sondertilgung'
 const selectedTitle = 'Tilgungsplan mit Sondertilgung'
+const annualPlan = {
+  annualAdditionalRepayment: '5000',
+  annualAdditionalRepaymentMonth: '12',
+  oneTimeAdditionalRepayments: [],
+}
 
-async function open() {
+async function open(fullMonthly = true) {
   const user = userEvent.setup()
   await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
+  if (fullMonthly && screen.queryByRole('radio', { name: 'Monatlich' })) {
+    await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+  }
   return user
 }
 
@@ -50,11 +60,200 @@ describe('full amortization breakdown', () => {
     await i18n.changeLanguage('de')
   })
 
+  it('keeps monthly detail usable when annual totals exceed the safe-money range', async () => {
+    const result = workspace()
+    const source = result.amortization
+    if (source.status !== 'available' || source.cashPurchase) throw new Error('Fixture unavailable')
+    const row = { ...source.rows[0]!, regularPaymentCents: moneyCents(Number.MAX_SAFE_INTEGER) }
+    const baseline = { ...source, rows: [row, { ...row, month: 2 }] }
+    renderWithProviders(explorer({ ...result, amortization: baseline }))
+    const user = await open(false)
+    expect(screen.getByText(/jährlichen Summen überschreiten/)).toBeVisible()
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
+    expect(screen.getAllByRole('row')).toHaveLength(3)
+    expect(screen.queryByText(/jährlichen Summen überschreiten/)).not.toBeInTheDocument()
+  })
+
+  it('preserves chosen views across closing, reopening and a language change', async () => {
+    renderWithProviders(explorer(workspace({ additionalRepayments: annualPlan })))
+    const user = await open(false)
+    await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
+    await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
+    await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
+    await i18n.changeLanguage('en')
+    expect(screen.getByRole('radio', { name: 'Monthly' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Full projected repayment' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'With additional repayments' })).toBeChecked()
+    expect(screen.getAllByRole('table')).toHaveLength(1)
+  })
+
+  it('defaults to annual Zinsbindung with the baseline and disabled absent plan choices', async () => {
+    renderWithProviders(explorer())
+    await open(false)
+    expect(screen.getByRole('radio', { name: 'Zinsbindung' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Jährlich' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Ohne Sondertilgung' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: 'Beide Verläufe' })).toBeDisabled()
+    expect(screen.getByRole('table')).toHaveAccessibleName(
+      'Tilgungsplan ohne Sondertilgung · Zinsbindung · Jährlich',
+    )
+    expect(screen.getAllByRole('row')).toHaveLength(11)
+    expect(
+      screen.getByRole('rowheader', { name: /Jahr 10.*Monate 109–120.*Monat 120/ }),
+    ).toBeVisible()
+    const first = screen.getByRole('rowheader', { name: /^Jahr 1.*Monate 1–12$/ }).closest('tr')!
+    expect(within(first).getAllByText(/11\.000,04\s*€/)).toHaveLength(2)
+    expect(screen.queryByText('Projektion')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Projektion bei konstantem Sollzins/)).not.toBeInTheDocument()
+  })
+
+  it('defaults to both annual schedules and exposes the actual partial payoff year in selected-only view', async () => {
+    renderWithProviders(explorer(workspace({ additionalRepayments: annualPlan })))
+    const user = await open(false)
+    expect(screen.getByRole('radio', { name: 'Beide Verläufe' })).toBeChecked()
+    expect(screen.getAllByRole('table')).toHaveLength(2)
+    const selected = screen.getByRole('region', { name: selectedTitle })
+    expect(within(selected).getByText('Darlehensjahre 1–10 von 10 · Seite 1 von 1')).toBeVisible()
+    const first = within(selected)
+      .getByRole('rowheader', { name: /^Jahr 1.*Monate 1–12$/ })
+      .closest('tr')!
+    expect(within(first).getByText(/5\.000\s*€/)).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
+    expect(screen.queryByRole('region', { name: baselineTitle })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    expect(screen.getAllByRole('row')).toHaveLength(18)
+    const last = screen
+      .getByRole('rowheader', { name: /Jahr 17.*Monate 193–203.*Teiljahr.*Volltilgung/ })
+      .closest('tr')!
+    expect(within(last).getAllByRole('cell').at(-1)).toHaveTextContent(/^0\s*€$/)
+    expect(screen.getByText(/Betrachtungszeitraum bis Monat 348/)).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Ohne Sondertilgung' }))
+    expect(screen.queryByRole('region', { name: selectedTitle })).not.toBeInTheDocument()
+    expect(screen.getAllByRole('table')).toHaveLength(1)
+  })
+
+  it('resets pagination on horizon, detail and schedule changes while preserving input revisions view choices', async () => {
+    const result = workspace({ additionalRepayments: annualPlan })
+    const view = renderWithProviders(explorer(result))
+    const user = await open()
+    await user.click(
+      within(screen.getByRole('region', { name: baselineTitle })).getByRole('button', {
+        name: 'Weiter',
+      }),
+    )
+    await user.click(screen.getByRole('radio', { name: 'Jährlich' }))
+    expect(
+      within(screen.getByRole('region', { name: baselineTitle })).getByText(
+        'Darlehensjahre 1–24 von 29 · Seite 1 von 2',
+      ),
+    ).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
+    expect(
+      within(screen.getByRole('region', { name: baselineTitle })).getByText(
+        'Monate 1–24 von 348 · Seite 1 von 15',
+      ),
+    ).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Zinsbindung' }))
+    expect(
+      within(screen.getByRole('region', { name: baselineTitle })).getByText(
+        'Monate 1–24 von 120 · Seite 1 von 5',
+      ),
+    ).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
+    await user.click(screen.getByRole('button', { name: 'Weiter' }))
+    view.rerender(
+      explorer(
+        workspace({ nominalAnnualRate: '4,00', additionalRepayments: annualPlan }),
+        'changed',
+      ),
+    )
+    expect(screen.getByRole('radio', { name: 'Zinsbindung' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Monatlich' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeChecked()
+    expect(screen.getByText('Monate 1–24 von 120 · Seite 1 von 5')).toBeVisible()
+  })
+
+  it('preserves full annual view and its final page across languages', async () => {
+    renderWithProviders(explorer())
+    const user = await open(false)
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('button', { name: 'Letzte Seite' }))
+    expect(screen.getByText('Darlehensjahre 25–29 von 29 · Seite 2 von 2')).toBeVisible()
+    await i18n.changeLanguage('en')
+    expect(screen.getByRole('radio', { name: 'Full projected repayment' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Annual' })).toBeChecked()
+    expect(screen.getByText('Loan years 25–29 of 29 · Page 2 of 2')).toBeVisible()
+    expect(screen.getByRole('rowheader', { name: /Year 29.*Months 337–348.*Payoff/ })).toBeVisible()
+  })
+
+  it('falls back to the baseline when a selected plan becomes invalid or is removed', async () => {
+    const view = renderWithProviders(explorer(workspace({ additionalRepayments: annualPlan })))
+    const user = await open(false)
+    await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    view.rerender(
+      explorer(
+        workspace({
+          additionalRepayments: {
+            ...annualPlan,
+            oneTimeAdditionalRepayments: [{ amount: '', month: '12' }],
+          },
+        }),
+        'invalid',
+      ),
+    )
+    expect(screen.getByRole('radio', { name: 'Ohne Sondertilgung' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: 'Beide Verläufe' })).toBeDisabled()
+    expect(screen.getByText(/nur der ursprüngliche Verlauf als Referenz/)).toBeVisible()
+    expect(screen.getAllByRole('table')).toHaveLength(1)
+    view.rerender(explorer(workspace({ additionalRepayments: annualPlan }), 'valid-again'))
+    expect(screen.getByRole('radio', { name: 'Ohne Sondertilgung' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeEnabled()
+    await user.click(screen.getByRole('radio', { name: 'Beide Verläufe' }))
+    view.rerender(explorer(workspace(), 'removed'))
+    expect(screen.getByRole('radio', { name: 'Ohne Sondertilgung' })).toBeChecked()
+    expect(screen.queryByRole('region', { name: selectedTitle })).not.toBeInTheDocument()
+  })
+
+  it('identifies mixed annual periods without labelling all their interest as projected', async () => {
+    const result = workspace()
+    if (result.amortization.status !== 'available' || result.amortization.cashPurchase)
+      throw new Error('Fixture unavailable')
+    renderWithProviders(
+      explorer({ ...result, amortization: { ...result.amortization, fixedInterestMonths: 14 } }),
+    )
+    const user = await open(false)
+    expect(
+      screen.getByRole('rowheader', { name: /Jahr 2.*Monate 13–14.*Teiljahr.*Monat 14/ }),
+    ).toBeVisible()
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    expect(
+      screen.getByRole('rowheader', { name: /Jahr 2.*Monate 13–24.*Monat 14.*innerhalb und nach/ }),
+    ).toBeVisible()
+    expect(
+      screen.getByRole('rowheader', { name: /Jahr 3.*Monate 25–36.*Projektion/ }),
+    ).toBeVisible()
+  })
+
+  it('supports native radio keyboard interaction', async () => {
+    renderWithProviders(explorer())
+    const user = await open(false)
+    screen.getByRole('radio', { name: 'Jährlich' }).focus()
+    await user.keyboard('[ArrowRight]')
+    expect(screen.getByRole('radio', { name: 'Monatlich' })).toBeChecked()
+    expect(screen.getByRole('columnheader', { name: 'Darlehensmonat' })).toBeVisible()
+  })
+
   it('opens a bounded first page with exact opening debt and actual payment components', async () => {
     renderWithProviders(explorer())
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     await open()
-    const table = screen.getByRole('table', { name: baselineTitle })
+    const table = screen.getByRole('table', { name: new RegExp(baselineTitle) })
     expect(within(table).getAllByRole('row')).toHaveLength(25)
     const first = within(table).getByRole('rowheader', { name: '1' }).closest('tr')!
     expect(
@@ -195,8 +394,8 @@ describe('full amortization breakdown', () => {
     )
     await open()
     expect(screen.getByText(/nur der ursprüngliche Verlauf als Referenz/)).toBeVisible()
-    expect(screen.getByRole('table', { name: baselineTitle })).toBeVisible()
-    expect(screen.queryByRole('table', { name: selectedTitle })).not.toBeInTheDocument()
+    expect(screen.getByRole('table', { name: new RegExp(baselineTitle) })).toBeVisible()
+    expect(screen.queryByRole('table', { name: new RegExp(selectedTitle) })).not.toBeInTheDocument()
   })
 
   it('explains an unavailable baseline without displaying a numeric schedule', async () => {
