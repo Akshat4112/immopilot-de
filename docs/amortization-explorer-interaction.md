@@ -175,3 +175,26 @@ Financial summaries, mortgage formulas and saved-scenario/share schemas remain u
 
 Charts, chart-specific accessibility, complete print behavior and final explorer QA remain the
 separate PF-005.4–PF-005.8 milestones.
+
+## PF-005.4 implementation milestone
+
+The remaining-debt chart consumes the existing available domain schedules and the shared horizon,
+detail and schedule controls. Month 0 is the opening principal; later points are actual closing debt.
+Annual detail uses loan-year endpoints, with exact fixed-interest and payoff months added for alignment.
+The tables remain independent and available below the chart; pagination never changes chart data.
+
+Baseline paths are solid with circles; additional-repayment paths are dashed with diamonds. An exact
+vertical marker identifies Zinsbindung, and a hatched region identifies the constant-rate projection.
+Payoff points and their exact months are labelled. Full views retain the common available horizon;
+repaid balances stay at zero as presentation only, without creating payment, interest or savings rows.
+A fixed view paid off before Zinsbindung ends at the last displayed payoff and explains why the
+fixed-period marker lies outside the chart. Cash purchases and unavailable baselines show no chart;
+invalid selected plans preserve the baseline-reference warning and one baseline path.
+
+A labelled native month selector inspects exact formatted balances using pointer or keyboard input.
+It includes month-zero principal and identifies already repaid zero balances. Locale changes retain
+inspection; input/control changes reset it. The chart uses a focusable local scroll region at narrow
+widths and has no animation. No charting runtime, input schema or mortgage formula is added.
+
+Payment composition remains PF-005.5; the complete chart-accessibility review, bilingual/print polish
+and final explorer QA remain PF-005.6–PF-005.8. This milestone does not close those tasks or release gates.

@@ -666,6 +666,25 @@ export const resources = {
               'additional-repayments': 'Mit Sondertilgung',
               both: 'Beide Verläufe',
             },
+            debtChart: {
+              title: 'Restschuld im Zeitverlauf',
+              basis:
+                'Monat 0 zeigt die Anfangsschuld. Danach wird die Restschuld nach der jeweiligen Zahlung gezeigt. Die Tabellen bleiben darunter verfügbar.',
+              annualBasis:
+                'Jährliche Punkte zeigen den Endstand des Darlehensjahres. Zinsbindungsende und Volltilgung werden zusätzlich in ihrem genauen Monat gezeigt.',
+              solid: 'durchgezogen, Kreis',
+              dashed: 'gestrichelt, Raute',
+              boundaryAfterPayoff:
+                'Volltilgung vor dem Ende der Zinsbindung in Monat {{month}}; die Markierung liegt außerhalb des Diagramms.',
+              withinFixed: 'Alle dargestellten Monate liegen innerhalb der Zinsbindung.',
+              scroll: 'Restschuld-Diagramm horizontal scrollen',
+              description:
+                'Restschuld in Euro nach Darlehensmonat. Die senkrechte Strichpunktlinie markiert das Ende der Zinsbindung; Schraffierung zeigt die Projektion danach. Volltilgung und genaue Beträge sind unter dem Diagramm angegeben.',
+              yAxis: 'Restschuld (EUR)',
+              endpoint: 'Monat {{month}} · Restschuld {{value}}',
+              inspect: 'Darlehensmonat im Diagramm prüfen',
+              alreadyRepaid: 'bereits vollständig getilgt; keine weiteren Zahlungen',
+            },
             year: 'Darlehensjahr',
             loanYear: 'Jahr {{year}}',
             monthRange: 'Monate {{first}}–{{last}}',
@@ -1609,6 +1628,25 @@ export const resources = {
               baseline: 'Baseline',
               'additional-repayments': 'With additional repayments',
               both: 'Both schedules',
+            },
+            debtChart: {
+              title: 'Remaining debt over time',
+              basis:
+                'Month 0 shows opening debt. Later points show remaining debt after that payment. The data tables remain available below.',
+              annualBasis:
+                'Annual points show closing debt for each loan year. Fixed-interest and payoff endpoints are also shown at their exact months.',
+              solid: 'solid, circle',
+              dashed: 'dashed, diamond',
+              boundaryAfterPayoff:
+                'Payoff before fixed interest ends in month {{month}}; the marker lies outside the chart.',
+              withinFixed: 'All displayed months are within the fixed-interest period.',
+              scroll: 'Scroll remaining-debt chart horizontally',
+              description:
+                'Remaining debt in euros by loan month. The vertical dash-dot line marks the fixed-interest end; hatching shows the projection beyond it. Payoff and exact amounts are listed below the chart.',
+              yAxis: 'Remaining debt (EUR)',
+              endpoint: 'Month {{month}} · Remaining debt {{value}}',
+              inspect: 'Inspect a loan month in the chart',
+              alreadyRepaid: 'already repaid; no further payments',
             },
             year: 'Loan year',
             loanYear: 'Year {{year}}',
