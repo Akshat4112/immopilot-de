@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type {
   AmortizationScheduleResult,
   MortgageAmortizationScheduleResult,
 } from '../../domain/mortgage/amortization-types'
+import { FinancialValidationError } from '../../domain/shared/validation'
 import { formatEuroFromCents, formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
+import {
+  createAmortizationPeriods,
+  type AmortizationDetail,
+  type AmortizationHorizon,
+} from './amortizationPeriods'
 
 interface AmortizationBreakdownProps {
   baseline: AmortizationScheduleResult
@@ -30,25 +36,46 @@ function ScheduleTable({
   title,
   schedule,
   language,
+  horizon,
+  detail,
 }: {
   id: string
   title: string
   schedule: MortgageAmortizationScheduleResult
   language: SupportedLanguage
+  horizon: AmortizationHorizon
+  detail: AmortizationDetail
 }) {
   const { t } = useTranslation()
   const [requestedPage, setPage] = useState(0)
-  const pageCount = Math.ceil(schedule.rows.length / pageSize)
-  const page = Math.min(requestedPage, pageCount - 1)
-  const rows = schedule.rows.slice(page * pageSize, (page + 1) * pageSize)
+  const periods = useMemo(() => {
+    try {
+      return createAmortizationPeriods(schedule, horizon, detail)
+    } catch (error) {
+      if (error instanceof FinancialValidationError && error.code === 'ARITHMETIC_OVERFLOW')
+        return null
+      throw error
+    }
+  }, [schedule, horizon, detail])
   const headingId = `amortization-${id}-heading`
+  if (periods === null)
+    return (
+      <section aria-labelledby={headingId} className="amortization-schedule">
+        <h3 id={headingId}>{title}</h3>
+        <p className="result-detail">{t('finance.results.breakdown.annualUnavailable')}</p>
+      </section>
+    )
+  const pageCount = Math.ceil(periods.length / pageSize)
+  const page = Math.min(requestedPage, pageCount - 1)
+  const rows = periods.slice(page * pageSize, (page + 1) * pageSize)
   const tableId = `amortization-${id}-table`
+  const caption = `${title} · ${t(`finance.results.breakdown.horizon.${horizon}`)} · ${t(`finance.results.breakdown.detail.${detail}`)}`
   return (
     <section aria-labelledby={headingId} className="amortization-schedule">
       <h3 id={headingId}>{title}</h3>
       <p className="result-detail">
-        {t('finance.results.breakdown.fullSchedule', {
-          months: formatNumber(schedule.payoffMonth, language),
+        {t(`finance.results.breakdown.${horizon === 'full' ? 'fullSchedule' : 'fixedSchedule'}`, {
+          months: formatNumber(periods.at(-1)?.lastMonth ?? 0, language),
           fixedMonths: formatNumber(schedule.fixedInterestMonths, language),
         })}
       </p>
@@ -56,7 +83,9 @@ function ScheduleTable({
         {t(
           schedule.payoffMonth <= schedule.fixedInterestMonths
             ? 'finance.results.breakdown.payoffWithinFixedPeriod'
-            : 'finance.results.breakdown.projectionBoundary',
+            : horizon === 'full'
+              ? 'finance.results.breakdown.projectionBoundary'
+              : 'finance.results.breakdown.fixedPeriodOnly',
         )}
       </p>
       <div
@@ -66,10 +95,12 @@ function ScheduleTable({
         tabIndex={0}
       >
         <table className="amortization-table" id={tableId}>
-          <caption>{title}</caption>
+          <caption>{caption}</caption>
           <thead>
             <tr>
-              <th scope="col">{t('finance.results.breakdown.month')}</th>
+              <th scope="col">
+                {t(`finance.results.breakdown.${detail === 'annual' ? 'year' : 'month'}`)}
+              </th>
               <th scope="col">{t('finance.results.breakdown.openingBalance')}</th>
               <th scope="col">{t('finance.results.breakdown.regularPayment')}</th>
               <th scope="col">{t('finance.results.breakdown.interest')}</th>
@@ -81,20 +112,42 @@ function ScheduleTable({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.month}>
+              <tr key={row.firstMonth}>
                 <th scope="row">
-                  {formatNumber(row.month, language)}
-                  {row.month === schedule.fixedInterestMonths ? (
+                  {detail === 'annual'
+                    ? t('finance.results.breakdown.loanYear', {
+                        year: formatNumber(row.loanYear, language),
+                      })
+                    : formatNumber(row.firstMonth, language)}
+                  {detail === 'annual' ? (
                     <small className="amortization-period-marker">
-                      {t('finance.results.breakdown.fixedPeriodEnd')}
+                      {t('finance.results.breakdown.monthRange', {
+                        first: formatNumber(row.firstMonth, language),
+                        last: formatNumber(row.lastMonth, language),
+                      })}
+                      {row.lastMonth - row.firstMonth + 1 < 12
+                        ? ` · ${t('finance.results.breakdown.partialYear')}`
+                        : ''}
                     </small>
                   ) : null}
-                  {row.month > schedule.fixedInterestMonths ? (
+                  {row.firstMonth <= schedule.fixedInterestMonths &&
+                  row.lastMonth >= schedule.fixedInterestMonths ? (
                     <small className="amortization-period-marker">
-                      {t('finance.results.breakdown.projectedPeriod')}
+                      {t('finance.results.breakdown.fixedPeriodEndAt', {
+                        month: formatNumber(schedule.fixedInterestMonths, language),
+                      })}
                     </small>
                   ) : null}
-                  {row.month === schedule.payoffMonth ? (
+                  {row.lastMonth > schedule.fixedInterestMonths ? (
+                    <small className="amortization-period-marker">
+                      {t(
+                        row.firstMonth <= schedule.fixedInterestMonths
+                          ? 'finance.results.breakdown.mixedPeriod'
+                          : 'finance.results.breakdown.projectedPeriod',
+                      )}
+                    </small>
+                  ) : null}
+                  {row.lastMonth === schedule.payoffMonth ? (
                     <small className="amortization-period-marker">
                       {t('finance.results.breakdown.payoff')}
                     </small>
@@ -114,10 +167,16 @@ function ScheduleTable({
       </div>
       <div className="amortization-pagination">
         <p aria-live="polite" role="status">
-          {t('finance.results.breakdown.pageRange', {
-            first: formatNumber(rows[0]?.month ?? 0, language),
-            last: formatNumber(rows.at(-1)?.month ?? 0, language),
-            total: formatNumber(schedule.rows.length, language),
+          {t(`finance.results.breakdown.${detail === 'annual' ? 'annualPageRange' : 'pageRange'}`, {
+            first: formatNumber(
+              (detail === 'annual' ? rows[0]?.loanYear : rows[0]?.firstMonth) ?? 0,
+              language,
+            ),
+            last: formatNumber(
+              (detail === 'annual' ? rows.at(-1)?.loanYear : rows.at(-1)?.lastMonth) ?? 0,
+              language,
+            ),
+            total: formatNumber(periods.length, language),
             page: formatNumber(page + 1, language),
             pages: formatNumber(pageCount, language),
           })}
@@ -172,9 +231,29 @@ export function AmortizationBreakdown({
   const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
   const baselineSchedule = availableLoanSchedule(baseline)
   const selectedSchedule = availableLoanSchedule(selected)
+  const hasSelectedSchedule = selectedBasis === 'additional-repayments' && !!selectedSchedule
+  const [horizon, setHorizon] = useState<AmortizationHorizon>('fixed')
+  const [detail, setDetail] = useState<AmortizationDetail>('annual')
+  const [scheduleChoice, setScheduleChoice] = useState<
+    'baseline' | 'additional-repayments' | 'both'
+  >('both')
+  const [previousAvailability, setPreviousAvailability] = useState(hasSelectedSchedule)
+  if (previousAvailability !== hasSelectedSchedule) {
+    setPreviousAvailability(hasSelectedSchedule)
+    if (!hasSelectedSchedule) setScheduleChoice('baseline')
+  }
+  const effectiveChoice = hasSelectedSchedule ? scheduleChoice : 'baseline'
+  const commonHorizonMonth = baselineSchedule
+    ? horizon === 'fixed'
+      ? baselineSchedule.fixedInterestMonths
+      : Math.max(
+          baselineSchedule.payoffMonth,
+          hasSelectedSchedule ? selectedSchedule.payoffMonth : 0,
+        )
+    : 0
 
   const schedules = [
-    ...(baselineSchedule
+    ...(baselineSchedule && effectiveChoice !== 'additional-repayments'
       ? [
           {
             id: 'baseline',
@@ -183,7 +262,7 @@ export function AmortizationBreakdown({
           },
         ]
       : []),
-    ...(selectedBasis === 'additional-repayments' && selectedSchedule
+    ...(hasSelectedSchedule && selectedSchedule && effectiveChoice !== 'baseline'
       ? [
           {
             id: 'additional-repayments',
@@ -209,6 +288,63 @@ export function AmortizationBreakdown({
           ) : (
             <>
               <p>{t('finance.results.breakdown.intro')}</p>
+              <div className="amortization-controls">
+                <fieldset>
+                  <legend>{t('finance.results.breakdown.horizon.label')}</legend>
+                  {(['fixed', 'full'] as const).map((value) => (
+                    <label key={value}>
+                      <input
+                        checked={horizon === value}
+                        name="amortization-horizon"
+                        onChange={() => setHorizon(value)}
+                        type="radio"
+                        value={value}
+                      />
+                      <span>{t(`finance.results.breakdown.horizon.${value}`)}</span>
+                    </label>
+                  ))}
+                </fieldset>
+                <fieldset>
+                  <legend>{t('finance.results.breakdown.detail.label')}</legend>
+                  {(['annual', 'monthly'] as const).map((value) => (
+                    <label key={value}>
+                      <input
+                        checked={detail === value}
+                        name="amortization-detail"
+                        onChange={() => setDetail(value)}
+                        type="radio"
+                        value={value}
+                      />
+                      <span>{t(`finance.results.breakdown.detail.${value}`)}</span>
+                    </label>
+                  ))}
+                </fieldset>
+                <fieldset>
+                  <legend>{t('finance.results.breakdown.schedule.label')}</legend>
+                  {(['baseline', 'additional-repayments', 'both'] as const).map((value) => (
+                    <label key={value}>
+                      <input
+                        checked={effectiveChoice === value}
+                        disabled={value !== 'baseline' && !hasSelectedSchedule}
+                        name="amortization-schedule"
+                        onChange={() => setScheduleChoice(value)}
+                        type="radio"
+                        value={value}
+                      />
+                      <span>{t(`finance.results.breakdown.schedule.${value}`)}</span>
+                    </label>
+                  ))}
+                </fieldset>
+              </div>
+              <p className="result-detail amortization-view-basis">
+                {t(
+                  `finance.results.breakdown.${horizon === 'fixed' ? 'fixedHorizon' : 'fullHorizon'}`,
+                  {
+                    month: formatNumber(commonHorizonMonth, language),
+                  },
+                )}
+                {detail === 'annual' ? ` ${t('finance.results.breakdown.annualBasis')}` : ''}
+              </p>
               {selectedBasis === 'unavailable' ||
               (selectedBasis === 'additional-repayments' && !selectedSchedule) ? (
                 <p className="amortization-schedule-warning" role="status">
@@ -222,10 +358,12 @@ export function AmortizationBreakdown({
               {schedules.map(({ id, title, schedule }) => (
                 <ScheduleTable
                   id={id}
-                  key={`${id}:${inputKey}`}
+                  key={`${id}:${inputKey}:${horizon}:${detail}:${effectiveChoice}`}
                   language={language}
                   schedule={schedule}
                   title={title}
+                  horizon={horizon}
+                  detail={detail}
                 />
               ))}
             </>

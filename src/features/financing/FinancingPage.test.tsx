@@ -93,9 +93,11 @@ describe('FinancingPage', () => {
 
     renderPage()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
+    await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
 
-    const baseline = screen.getByRole('table', { name: 'Tilgungsplan ohne Sondertilgung' })
-    const selected = screen.getByRole('table', { name: 'Tilgungsplan mit Sondertilgung' })
+    const baseline = screen.getByRole('table', { name: /Tilgungsplan ohne Sondertilgung/ })
+    const selected = screen.getByRole('table', { name: /Tilgungsplan mit Sondertilgung/ })
     const baselineMonth12 = within(baseline).getByRole('rowheader', { name: '12' }).closest('tr')
     const selectedMonth12 = within(selected).getByRole('rowheader', { name: '12' }).closest('tr')
     if (!baselineMonth12 || !selectedMonth12) throw new Error('Expected month 12 schedule rows')

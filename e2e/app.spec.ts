@@ -205,6 +205,8 @@ test('carries completed purchase costs into the financing and mortgage workflow'
   await expect(page.getByText(/152\.188,73/)).toBeVisible()
 
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
+  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
   const baselineSchedule = page.getByRole('table', {
     name: 'Tilgungsplan ohne Sondertilgung',
   })
@@ -229,6 +231,8 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
 }, testInfo) => {
   await completeFinancedPurchase(page)
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
+  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
   const baseline = page.getByRole('region', {
     name: 'Tilgungsplan ohne Sondertilgung',
     exact: true,
@@ -302,6 +306,101 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
     animations: 'disabled',
     path: testInfo.outputPath('explorer-mobile.png'),
   })
+})
+
+test('switches amortization horizons, annual detail and schedule basis accessibly @cross-browser', async ({
+  page,
+}, testInfo) => {
+  await completeFinancedPurchase(page)
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const explorer = page.locator('.amortization-breakdown')
+  const baseline = page.getByRole('region', {
+    name: 'Tilgungsplan ohne Sondertilgung',
+    exact: true,
+  })
+  const selected = page.getByRole('region', { name: 'Tilgungsplan mit Sondertilgung', exact: true })
+  await expect(explorer.getByRole('radio', { name: 'Zinsbindung', exact: true })).toBeChecked()
+  await expect(explorer.getByRole('radio', { name: 'Jährlich', exact: true })).toBeChecked()
+  await expect(explorer.getByRole('radio', { name: 'Beide Verläufe', exact: true })).toBeChecked()
+  await expect(baseline.getByRole('row')).toHaveCount(11)
+  await expect(selected.getByRole('row')).toHaveCount(11)
+  await expect(
+    selected.getByRole('rowheader', { name: /Jahr 10.*Monate 109–120.*Monat 120/ }),
+  ).toBeVisible()
+  const firstYear = selected.getByRole('rowheader', { name: /^Jahr 1.*Monate 1–12$/ }).locator('..')
+  await expect(firstYear.getByRole('cell').nth(4)).toContainText(/^5\.000\s*€$/)
+  await explorer.getByRole('radio', { name: 'Jährlich', exact: true }).focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(explorer.getByRole('radio', { name: 'Monatlich', exact: true })).toBeChecked()
+  await expect(
+    baseline.getByRole('columnheader', { name: 'Darlehensmonat', exact: true }),
+  ).toBeVisible()
+  await explorer.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await baseline.getByRole('button', { name: 'Weiter', exact: true }).click()
+  await explorer.getByRole('radio', { name: 'Jährlich', exact: true }).check()
+  await expect(baseline.getByText('Darlehensjahre 1–24 von 29 · Seite 1 von 2')).toBeVisible()
+  await explorer.getByRole('radio', { name: 'Mit Sondertilgung', exact: true }).check()
+  await expect(baseline).toHaveCount(0)
+  const lastYear = selected
+    .getByRole('rowheader', { name: /Jahr 17.*Monate 193–203.*Teiljahr.*Volltilgung/ })
+    .locator('..')
+  await expect(lastYear.getByRole('cell').last()).toContainText(/^0\s*€$/)
+  await page.getByRole('button', { name: 'English' }).click()
+  const englishSelected = page.getByRole('region', {
+    name: 'Schedule with additional repayments',
+    exact: true,
+  })
+  await expect(
+    explorer.getByRole('radio', { name: 'Full projected repayment', exact: true }),
+  ).toBeChecked()
+  await expect(explorer.getByRole('radio', { name: 'Annual', exact: true })).toBeChecked()
+  await expect(
+    explorer.getByRole('radio', { name: 'With additional repayments', exact: true }),
+  ).toBeChecked()
+  await expect(
+    englishSelected.getByRole('rowheader', {
+      name: /Year 17.*Months 193–203.*Partial year.*Payoff/,
+    }),
+  ).toBeVisible()
+  await explorer.getByRole('radio', { name: 'Both schedules', exact: true }).check()
+  const englishBaseline = page.getByRole('region', {
+    name: 'Schedule without additional repayments',
+    exact: true,
+  })
+  await englishBaseline.getByRole('button', { name: 'Last page', exact: true }).click()
+  await page
+    .getByRole('textbox', { name: 'Nominal annual interest rate', exact: true })
+    .fill('4.00')
+  await expect(
+    englishBaseline.getByRole('rowheader', { name: /^Year 1.*Months 1–12$/ }),
+  ).toBeVisible()
+  await expect(explorer.getByRole('radio', { name: 'Both schedules', exact: true })).toBeChecked()
+  await explorer.getByRole('radio', { name: 'Fixed-interest period', exact: true }).check()
+  await expect(englishBaseline.getByRole('row')).toHaveCount(11)
+  const accessibility = await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()
+  expect(accessibility.violations).toEqual([])
+  for (const width of [360, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const radio of await explorer.getByRole('radio').all()) {
+      const bounds = await radio.boundingBox()
+      expect(bounds).not.toBeNull()
+      expect(bounds!.x).toBeGreaterThanOrEqual(0)
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+    }
+    const scroll = englishSelected.getByRole('region', {
+      name: 'Scroll Schedule with additional repayments horizontally',
+      exact: true,
+    })
+    const bounds = await scroll.boundingBox()
+    expect(bounds).not.toBeNull()
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+    if (width === 390 || width === 1440)
+      await explorer.screenshot({
+        animations: 'disabled',
+        path: testInfo.outputPath(`explorer-controls-${width === 390 ? 'mobile' : 'desktop'}.png`),
+      })
+  }
 })
 
 test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
@@ -434,6 +533,9 @@ test('carries Sondertilgung through results, saved restoration, and comparison @
   await page.getByRole('textbox', { name: 'Darlehensmonat für Einmalzahlung 1' }).fill('12')
 
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
+  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page.getByRole('radio', { name: 'Beide Verläufe', exact: true }).check()
   const selectedSchedule = page.getByRole('table', {
     name: 'Tilgungsplan mit Sondertilgung',
   })

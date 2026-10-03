@@ -152,3 +152,26 @@ At this milestone, the paginated tables expose the full monthly repayment horizo
 fixed-period annual default, annual aggregation and horizon/schedule selectors are the next
 PF-005.3 implementation. Charts and chart accessibility remain PF-005.4–PF-005.6; complete print and
 bilingual polish remain PF-005.7. This milestone does not close those tasks or the release gate.
+
+## PF-005.3 implementation milestone
+
+The explorer now defaults to annual detail within Zinsbindung. Shared native radio groups choose
+the fixed-interest or full projected repayment horizon, annual or monthly detail, and the baseline,
+additional-repayment schedule or both. A valid plan defaults to both schedules. An absent, removed
+or invalid plan falls back to the baseline and disables the unavailable choices; invalid plans retain
+the explicit reference warning.
+
+Annual rows sum actual integer-cent payment flows with the shared safe-money helpers. Opening and
+closing debt come from the first and last included monthly rows. Fixed-interest detail is cut at
+the exact boundary before grouping into loan years. Partial years expose their actual month range;
+full-view years crossing a boundary identify the exact month and their mixed period basis. No rows
+are created after payoff. Full views share the later available payoff horizon while each table ends
+at its own payoff.
+
+View settings remain transient and persist across language changes and closing/reopening the
+disclosure. Input and control changes reset pagination. Removing or invalidating a selected plan
+falls back to the baseline; repairing the plan enables its choices without silently reselecting it.
+Financial summaries, mortgage formulas and saved-scenario/share schemas remain unchanged.
+
+Charts, chart-specific accessibility, complete print behavior and final explorer QA remain the
+separate PF-005.4–PF-005.8 milestones.
