@@ -2131,3 +2131,141 @@ h3 {
   font-size: 12px;
   font-weight: var(--font-weight-medium);
 }
+
+.payment-composition-chart {
+  margin-block: var(--space-5);
+  min-width: 0;
+}
+
+.payment-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.payment-chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.payment-swatch {
+  width: 1.5rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border: 1px solid var(--color-text-primary);
+}
+
+.payment-swatch--interest,
+.payment-fill--interest {
+  background: var(--color-chart-comparison);
+  fill: var(--color-chart-comparison);
+}
+
+.payment-swatch--scheduledPrincipal {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 3px, #fff8 3px 4px), var(--color-brand);
+}
+
+.payment-fill--scheduledPrincipal {
+  fill: var(--color-brand);
+}
+
+.payment-swatch--additionalPrincipal {
+  background:
+    radial-gradient(circle at 3px 3px, #fff 1px, transparent 1px) 0 0 / 6px 6px,
+    var(--color-chart-additional);
+}
+
+.payment-fill--additionalPrincipal {
+  fill: var(--color-chart-additional);
+}
+
+.payment-pattern {
+  stroke: #fff;
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+}
+
+.payment-dot {
+  fill: #fff;
+}
+
+.payment-chart-scroll {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.payment-chart-svg {
+  display: block;
+  width: 100%;
+}
+
+.payment-chart-projection {
+  fill: var(--color-chart-comparison);
+  fill-opacity: 0.08;
+}
+
+.payment-chart-inspection {
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-dasharray: 2 4;
+}
+
+.payment-bar-outline {
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-width: 0.8;
+}
+
+.payment-bar-outline--additional-repayments {
+  stroke-dasharray: 3 2;
+}
+
+.payment-chart-inspector {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.payment-chart-inspector select {
+  width: min(100%, 28rem);
+  min-height: 2.75rem;
+}
+
+.payment-chart-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.payment-chart-details section {
+  min-width: 0;
+  flex: 1 1 18rem;
+}
+
+.payment-chart-details h4 {
+  margin-block: var(--space-2);
+}
+
+.payment-chart-details dl {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.payment-chart-details dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.payment-chart-details dd {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}

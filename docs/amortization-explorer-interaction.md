@@ -198,3 +198,30 @@ widths and has no animation. No charting runtime, input schema or mortgage formu
 
 Payment composition remains PF-005.5; the complete chart-accessibility review, bilingual/print polish
 and final explorer QA remain PF-005.6–PF-005.8. This milestone does not close those tasks or release gates.
+
+## PF-005.5 implementation milestone
+
+The payment-composition chart now consumes `createAmortizationPeriods` from the same available
+schedules and shared controls as the repayment tables. Each stack comprises actual interest,
+scheduled principal and additional principal in integer cents. Its height equals the actual total
+payment; regular payment excludes additional principal. No amounts are inferred from remaining-debt
+points, requested repayment inputs or contractual payment times the number of months.
+
+The two schedules share loan-period slots and one payment scale. Annual bars retain actual loan-year
+sums, including partial payoff or fixed-period years; the inspector states each schedule's own month
+range. Monthly bars preserve each repayment row, including capped final payments and coincident
+recurring/one-time events. The shorter schedule has no fabricated bars or financial rows after payoff.
+Fixed views stop at the actual cutoff or earlier payoff. Full views retain the common horizon even
+when only the earlier-paid schedule is selected, with empty post-payoff periods explained explicitly.
+
+Solid interest, striped scheduled principal and dotted additional principal distinguish components.
+Paired bars use left/solid-outline baseline and right/dashed-outline additional repayments. Exact
+amounts and actual period/projection/payoff labels are available in hover titles and a labelled native
+period selector; changing this selector also brings the period into the local horizontal scroll view.
+DE/EN changes preserve inspection; changed inputs and view controls reset it to the first period.
+Table pagination has no effect on chart data. The fixed-interest end is marked within its loan-period
+slot; a mixed annual bucket keeps its whole sum, is shaded and explicitly labelled. Only actual
+post-fixed-interest payments trigger the constant-rate projection warning. Cash/unavailable loans
+show no chart. Unsafe annual sums produce an explicit monthly-recovery message. No animation or
+new charting dependency is introduced. Full explorer accessibility, bilingual/mobile/print polish
+and final explorer QA remain original PF-005.6–PF-005.8.

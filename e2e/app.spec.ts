@@ -500,6 +500,158 @@ test('plots aligned remaining debt and inspects exact payoff months @cross-brows
   await expect(graph.locator('[data-debt-series]')).toHaveCount(1)
 })
 
+test('reconciles payment composition and inspects aligned loan periods @cross-browser', async ({
+  page,
+}, testInfo) => {
+  await completeFinancedPurchase(page)
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
+  await page.getByText('Detaillierten Tilgungsplan öffnen').click()
+  const chart = page.locator('.payment-composition-chart')
+  const graph = chart.getByRole('img')
+  const inspect = chart.getByRole('combobox')
+  const baseline = chart.getByRole('region', { name: 'Ohne Sondertilgung', exact: true })
+  const selected = chart.getByRole('region', { name: 'Mit Sondertilgung', exact: true })
+  await expect(graph).toHaveAccessibleName(/Zusammensetzung der Zahlungen/)
+  await expect(graph.locator('[data-payment-series]')).toHaveCount(20)
+  await expect(graph.locator('[data-payment-fixed-month="120"]')).toHaveCount(1)
+  await expect(graph.locator('[data-payment-projection]')).toHaveCount(0)
+  await expect(
+    baseline.getByText('Gesamtzahlung', { exact: true }).locator('..').locator('dd'),
+  ).toHaveText('11.000,04 €')
+  await expect(
+    selected.getByText('Gesamtzahlung', { exact: true }).locator('..').locator('dd'),
+  ).toHaveText('16.000,04 €')
+  await expect(
+    selected.getByText('Sondertilgung', { exact: true }).locator('..').locator('dd'),
+  ).toHaveText('5.000 €')
+  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await expect(graph.locator('[data-payment-series]')).toHaveCount(46)
+  await expect(graph.locator('[data-payment-projection]')).toHaveCount(1)
+  await inspect.selectOption('193')
+  await expect(baseline.getByText(/Monate 193–204/)).toBeVisible()
+  await expect(
+    selected.getByText(/Monate 193–203 · Teiljahr · Projektion · Volltilgung/),
+  ).toBeVisible()
+  await expect(
+    graph.locator('[data-payment-series="additional-repayments"][data-first-month="205"]'),
+  ).toHaveCount(0)
+  const bars = await graph
+    .locator('[data-payment-series]')
+    .evaluateAll((elements) =>
+      elements.map((e) => (e as unknown as { outerHTML: string }).outerHTML),
+    )
+  expect(bars).toHaveLength(46)
+  await page
+    .getByRole('region', { name: 'Tilgungsplan ohne Sondertilgung', exact: true })
+    .getByRole('button', { name: 'Letzte Seite' })
+    .click()
+  expect(
+    await graph
+      .locator('[data-payment-series]')
+      .evaluateAll((elements) =>
+        elements.map((e) => (e as unknown as { outerHTML: string }).outerHTML),
+      ),
+  ).toEqual(bars)
+  await expect(inspect).toHaveValue('193')
+  await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
+  await expect(graph.locator('[data-payment-series]')).toHaveCount(551)
+  await expect(inspect.locator('option')).toHaveCount(348)
+  await inspect.focus()
+  await page.keyboard.press('Home')
+  await page.keyboard.press('ArrowDown')
+  await expect(inspect).toHaveValue('2')
+  await inspect.selectOption('12')
+  const table = page.getByRole('table', { name: /Tilgungsplan mit Sondertilgung/ })
+  const row = table.getByRole('rowheader', { name: '12', exact: true }).locator('..')
+  for (const [label, cellIndex] of [
+    ['Zinsen', 2],
+    ['Reguläre Tilgung', 3],
+    ['Sondertilgung', 4],
+    ['Reguläre Rate', 1],
+    ['Gesamtzahlung', 5],
+  ] as const) {
+    await expect(selected.getByText(label, { exact: true }).locator('..').locator('dd')).toHaveText(
+      (await row.getByRole('cell').nth(cellIndex).innerText()).trim(),
+    )
+  }
+  await expect(
+    graph.locator(
+      '[data-payment-series="additional-repayments"][data-first-month="12"] [data-component="additionalPrincipal"]',
+    ),
+  ).toHaveAttribute('data-amount-cents', '500000')
+  const scroll = chart.getByRole('region', { name: 'Zahlungs-Diagramm horizontal scrollen' })
+  await inspect.selectOption('204')
+  expect(
+    await scroll.evaluate((e) => (e as unknown as { scrollLeft: number }).scrollLeft),
+  ).toBeGreaterThan(0)
+  await expect(selected.getByText(/bereits vollständig getilgt/)).toBeVisible()
+  await expect(selected.locator('dd')).toHaveCount(0)
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(graph).toHaveAccessibleName(/Payment composition/)
+  await expect(inspect).toHaveAccessibleName('Inspect a payment period in the chart')
+  await expect(inspect).toHaveValue('204')
+  await page.getByRole('radio', { name: 'With additional repayments', exact: true }).check()
+  await expect(graph.locator('[data-payment-series="baseline"]')).toHaveCount(0)
+  await page.getByRole('radio', { name: 'Baseline', exact: true }).check()
+  await expect(graph.locator('[data-payment-series="additional-repayments"]')).toHaveCount(0)
+  await page.getByRole('radio', { name: 'Both schedules', exact: true }).check()
+  await page.getByRole('radio', { name: 'Annual', exact: true }).check()
+  await inspect.selectOption('193')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  expect(
+    (await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()).violations,
+  ).toEqual([])
+  for (const width of [360, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    const region = chart.getByRole('region', {
+      name: 'Scroll payment-composition chart horizontally',
+    })
+    await region.focus()
+    await page.keyboard.press('Tab')
+    await expect(inspect).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(region).toBeFocused()
+    await expect(region).toHaveCSS('outline-style', 'solid')
+    for (const target of [region, inspect, chart.locator('.payment-chart-details')]) {
+      const bounds = await target.boundingBox()
+      expect(bounds).not.toBeNull()
+      expect(bounds!.x).toBeGreaterThanOrEqual(0)
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+    }
+    expect(
+      await page.evaluate<boolean>(
+        'document.documentElement.scrollWidth > document.documentElement.clientWidth',
+      ),
+    ).toBe(false)
+    if (width === 390 || width === 1440) {
+      await chart.getByRole('heading', { level: 3 }).click()
+      await page
+        .locator(':focus')
+        .evaluateAll((elements) =>
+          elements.forEach((e) => (e as unknown as { blur: () => void }).blur()),
+        )
+      await chart.screenshot({
+        animations: 'disabled',
+        path: testInfo.outputPath(`explorer-payment-${width === 390 ? 'mobile' : 'desktop'}.png`),
+      })
+    }
+  }
+  const original = await graph
+    .locator('[data-payment-series="baseline"][data-first-month="1"] [data-component="interest"]')
+    .getAttribute('data-amount-cents')
+  await page
+    .getByRole('textbox', { name: 'Nominal annual interest rate', exact: true })
+    .fill('4.00')
+  await expect(inspect).toHaveValue('1')
+  await expect(
+    graph.locator(
+      '[data-payment-series="baseline"][data-first-month="1"] [data-component="interest"]',
+    ),
+  ).not.toHaveAttribute('data-amount-cents', original!)
+  await page.getByRole('textbox', { name: 'Amount per loan year' }).fill('')
+  await expect(graph.locator('[data-payment-series="additional-repayments"]')).toHaveCount(0)
+})
+
 test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
   page,
 }) => {

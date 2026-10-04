@@ -171,9 +171,17 @@ describe('remaining-debt explorer chart', () => {
     expect(screen.getByText('Ohne Sondertilgung · durchgezogen, Kreis')).toBeVisible()
     expect(screen.getByText('Mit Sondertilgung · gestrichelt, Raute')).toBeVisible()
     await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
-    expect(screen.getByRole('img').querySelector('[data-chart-projection]')).toBeInTheDocument()
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelector('[data-chart-projection]'),
+    ).toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
-    expect(screen.getByRole('img').querySelectorAll('[data-debt-series]')).toHaveLength(1)
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelectorAll('[data-debt-series]'),
+    ).toHaveLength(1)
     expect(screen.getAllByRole('table')).toHaveLength(1)
   })
 
@@ -193,7 +201,7 @@ describe('remaining-debt explorer chart', () => {
     const baseline = schedules()[0]!.schedule.rows[202]!.closingBalanceCents
     expect(
       screen
-        .getByRole('img')
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
         .querySelector('[data-debt-series="baseline"] [data-chart-month="203"]'),
     ).toHaveAttribute('data-balance-cents', String(baseline))
     await user.selectOptions(
@@ -217,14 +225,21 @@ describe('remaining-debt explorer chart', () => {
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
     await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
-    const before = screen.getByRole('img').querySelector('.debt-chart-line')!.getAttribute('d')
+    const before = screen
+      .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+      .querySelector('.debt-chart-line')!
+      .getAttribute('d')
     await user.click(
       within(screen.getByRole('region', { name: 'Tilgungsplan ohne Sondertilgung' })).getByRole(
         'button',
         { name: 'Letzte Seite' },
       ),
     )
-    expect(screen.getByRole('img').querySelector('.debt-chart-line')).toHaveAttribute('d', before)
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelector('.debt-chart-line'),
+    ).toHaveAttribute('d', before)
     await user.selectOptions(
       screen.getByRole('combobox', { name: 'Darlehensmonat im Diagramm prüfen' }),
       '203',
@@ -235,9 +250,12 @@ describe('remaining-debt explorer chart', () => {
     expect(screen.getByRole('combobox', { name: 'Darlehensmonat im Diagramm prüfen' })).toHaveValue(
       '0',
     )
-    expect(screen.getByRole('img').querySelector('.debt-chart-line')!.getAttribute('d')).not.toBe(
-      before,
-    )
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelector('.debt-chart-line')!
+        .getAttribute('d'),
+    ).not.toBe(before)
   })
 
   it('states when an early payoff makes the fixed-period marker outside the chart', async () => {
@@ -254,17 +272,24 @@ describe('remaining-debt explorer chart', () => {
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
     await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
-    expect(screen.getByRole('img').querySelector('[data-fixed-month]')).not.toBeInTheDocument()
-    expect(screen.getByText(/Volltilgung vor dem Ende der Zinsbindung in Monat 120/)).toBeVisible()
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelector('[data-fixed-month]'),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getAllByText(/Volltilgung vor dem Ende der Zinsbindung in Monat 120/),
+    ).toHaveLength(2)
     expect(
       screen
         .getByRole('combobox', { name: 'Darlehensmonat im Diagramm prüfen' })
         .querySelectorAll('option'),
     ).toHaveLength(2)
-    expect(screen.getByRole('img').querySelector('[data-chart-payoff]')).toHaveAttribute(
-      'data-chart-month',
-      '1',
-    )
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelector('[data-chart-payoff]'),
+    ).toHaveAttribute('data-chart-month', '1')
   })
 
   it('falls back to one baseline path for invalid plans and shows no chart for cash or unavailable baseline', async () => {
@@ -280,7 +305,11 @@ describe('remaining-debt explorer chart', () => {
     )
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
-    expect(screen.getByRole('img').querySelectorAll('[data-debt-series]')).toHaveLength(1)
+    expect(
+      screen
+        .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
+        .querySelectorAll('[data-debt-series]'),
+    ).toHaveLength(1)
     expect(screen.getByText(/nur der ursprüngliche Verlauf als Referenz/)).toBeVisible()
     rerender(explorer(workspace({ availableEquity: '300000', downPayment: '250000' })))
     expect(screen.queryByRole('img')).not.toBeInTheDocument()

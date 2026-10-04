@@ -104,7 +104,7 @@ describe('FinancingPage', () => {
 
     expect(within(baselineMonth12).getByText(/^0\s*€$/)).toBeVisible()
     expect(within(selectedMonth12).getByText(/7\.500(?:,00)?\s*€/)).toBeVisible()
-    expect(screen.getAllByText(/Projektion bei konstantem Sollzins/i)).toHaveLength(3)
+    expect(screen.getAllByText(/Projektion bei konstantem Sollzins/i)).toHaveLength(4)
   })
 
   it('stores locale-formatted annual repayment inputs without changing the baseline schedule', async () => {

@@ -9,6 +9,7 @@ import { FinancialValidationError } from '../../domain/shared/validation'
 import { formatEuroFromCents, formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { RemainingDebtChart } from './RemainingDebtChart'
+import { PaymentCompositionChart } from './PaymentCompositionChart'
 import {
   createAmortizationPeriods,
   type AmortizationDetail,
@@ -357,7 +358,15 @@ export function AmortizationBreakdown({
                 </p>
               ) : null}
               <RemainingDebtChart
-                key={`${inputKey}:${horizon}:${detail}:${effectiveChoice}`}
+                key={`debt:${inputKey}:${horizon}:${detail}:${effectiveChoice}`}
+                schedules={schedules}
+                horizon={horizon}
+                detail={detail}
+                commonHorizonMonth={commonHorizonMonth}
+                language={language}
+              />
+              <PaymentCompositionChart
+                key={`payments:${inputKey}:${horizon}:${detail}:${effectiveChoice}`}
                 schedules={schedules}
                 horizon={horizon}
                 detail={detail}

@@ -666,6 +666,26 @@ export const resources = {
               'additional-repayments': 'Mit Sondertilgung',
               both: 'Beide Verläufe',
             },
+            paymentChart: {
+              title: 'Zusammensetzung der Zahlungen',
+              basis:
+                'Jeder Balken zeigt die tatsächlichen Zahlungen des gewählten Darlehensmonats oder Darlehensjahres. Zinsen und reguläre Tilgung ergeben die reguläre Rate; mit Sondertilgung ergibt sich die Gesamtzahlung. Nach Volltilgung gibt es keine weiteren Balken. Die Tabellen bleiben darunter verfügbar.',
+              paired:
+                'Je Zeitraum: links ohne Sondertilgung (durchgezogener Rand), rechts mit Sondertilgung (gestrichelter Rand). Teiljahre zeigen nur ihre tatsächlichen Zahlungsmonate.',
+              pattern: {
+                interest: 'einfarbig',
+                scheduledPrincipal: 'Streifen',
+                additionalPrincipal: 'Punkte',
+              },
+              mixed:
+                'Das getönte Darlehensjahr am Zinsbindungsende enthält Zahlungen innerhalb und nach der Zinsbindung; sein Balken behält die vollständige Jahressumme.',
+              withinFixed: 'Alle dargestellten Zahlungen liegen innerhalb der Zinsbindung.',
+              scroll: 'Zahlungs-Diagramm horizontal scrollen',
+              inspect: 'Zahlungszeitraum im Diagramm prüfen',
+              description:
+                'Gestapelte Zahlungen in Euro je Darlehenszeitraum. Einfarbig: Zinsen. Streifen: reguläre Tilgung. Punkte: Sondertilgung. Getönte Zeiträume enthalten projizierte Zahlungen. Der genaue Zeitraum und alle Beträge sind über die Auswahl und in den Tabellen verfügbar.',
+              yAxis: 'Zahlungen je Zeitraum (EUR)',
+            },
             debtChart: {
               title: 'Restschuld im Zeitverlauf',
               basis:
@@ -1628,6 +1648,26 @@ export const resources = {
               baseline: 'Baseline',
               'additional-repayments': 'With additional repayments',
               both: 'Both schedules',
+            },
+            paymentChart: {
+              title: 'Payment composition',
+              basis:
+                'Each bar shows actual payments for the selected loan month or loan year. Interest plus scheduled principal equals the regular payment; adding additional principal gives the total payment. There are no bars after payoff. The data tables remain available below.',
+              paired:
+                'In each period: baseline on the left (solid outline), additional repayments on the right (dashed outline). Partial years include only their actual payment months.',
+              pattern: {
+                interest: 'solid fill',
+                scheduledPrincipal: 'stripes',
+                additionalPrincipal: 'dots',
+              },
+              mixed:
+                'The shaded loan year at the fixed-interest boundary includes payments within and beyond fixed interest; its bar retains the entire annual total.',
+              withinFixed: 'All displayed payments are within the fixed-interest period.',
+              scroll: 'Scroll payment-composition chart horizontally',
+              inspect: 'Inspect a payment period in the chart',
+              description:
+                'Stacked payments in euros per loan period. Solid fill: interest. Stripes: scheduled principal. Dots: additional principal. Shaded periods contain projected payments. Exact periods and all amounts are available through the selector and in the data tables.',
+              yAxis: 'Payments per period (EUR)',
             },
             debtChart: {
               title: 'Remaining debt over time',
