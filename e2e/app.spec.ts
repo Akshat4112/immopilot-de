@@ -660,6 +660,7 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
   page,
 }, testInfo) => {
   test.setTimeout(60000)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await completeFinancedPurchase(page)
   await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
   const explorer = page.locator('.amortization-breakdown')
@@ -752,7 +753,8 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
     '11.000,04 €',
     '16.000,04 €',
   ])
-  await paymentData.getByRole('button', { name: 'Letzte Seite' }).click()
+  await paymentData.getByRole('button', { name: 'Letzte Seite' }).focus()
+  await page.keyboard.press('Enter')
   const final = paymentTable
     .getByRole('rowheader', { name: /Jahr 17 · Monate 193–203.*Teiljahr.*Projektion.*Volltilgung/ })
     .locator('..')
@@ -776,7 +778,6 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
   await expect(payments.locator('.chart-inspection-announcement')).toContainText(
     'Months 193–203 · Partial year · Projection · Payoff',
   )
-  await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto')
   expect(
     (await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()).violations,
@@ -896,12 +897,16 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
     ).toBe(false)
   }
   await page.emulateMedia({ forcedColors: 'active' })
-  const forcedColors = await page.evaluate(
-    () =>
-      (globalThis as unknown as { matchMedia: (query: string) => { matches: boolean } }).matchMedia(
-        '(forced-colors: active)',
-      ).matches,
-  )
+  const forcedColors = await page.evaluate(() => {
+    const browser = globalThis as unknown as {
+      matchMedia: (query: string) => { matches: boolean }
+      CSS: { supports: (property: string, value: string) => boolean }
+    }
+    return (
+      browser.matchMedia('(forced-colors: active)').matches &&
+      browser.CSS.supports('forced-color-adjust', 'none')
+    )
+  })
   if (forcedColors) {
     await expect(payments.locator('.payment-fill--interest').first()).toHaveCSS(
       'forced-color-adjust',

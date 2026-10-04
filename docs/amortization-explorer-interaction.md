@@ -253,7 +253,7 @@ these instructions rather than flattening the structured tables into an SVG desc
 solid/dashed paths, circle/diamond points and solid/striped/dotted payment components do not depend
 on colour. Payment segment separators contrast against each fill; projection hatching no longer has
 a low-opacity stroke. Scroll regions draw their focus outline inside their bounds. Forced-colour
-styles retain patterned payment fills and system-colour debt outlines. Charts have no animation;
+styles retain patterned payment fills where supported, and use system-colour debt outlines. Charts have no animation;
 reduced motion disables smooth scrolling through the existing global rule.
 
 The chart-alternative regression journey checks native Enter/Space disclosures, radio and selector

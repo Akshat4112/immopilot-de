@@ -75,7 +75,7 @@ export function PaymentCompositionChart({
       ? t(
           `finance.results.breakdown.${period.firstMonth <= model.fixedMonth ? 'mixedPeriod' : 'projectedPeriod'}`,
         )
-      : t('finance.results.breakdown.debtChart.withinFixed')
+      : t('finance.results.breakdown.chartAccess.withinFixed')
   const projected = [...model.series].some((s) =>
     [...s.periods.values()].some((p) => p.lastMonth > model.fixedMonth),
   )

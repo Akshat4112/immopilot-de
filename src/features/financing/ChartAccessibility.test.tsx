@@ -155,6 +155,7 @@ describe('chart-specific accessible alternatives', () => {
     const first = within(table)
       .getAllByRole('rowheader', { name: /Jahr 1 · Monate 1–12/ })[1]!
       .closest('tr')!
+    expect(within(first).getByRole('rowheader')).toHaveTextContent('Innerhalb der Zinsbindung')
     expect(
       within(first)
         .getAllByRole('cell')
