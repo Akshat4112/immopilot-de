@@ -72,7 +72,7 @@ describe('full amortization breakdown', () => {
     }
     renderWithProviders(explorer({ ...result, amortization: baseline }))
     const user = await open(false)
-    expect(screen.getByText(/jährlichen Summen überschreiten/)).toBeVisible()
+    expect(screen.getAllByText(/jährlichen Summen überschreiten/)).toHaveLength(2)
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
     expect(screen.getAllByRole('row')).toHaveLength(3)
@@ -266,7 +266,7 @@ describe('full amortization breakdown', () => {
         .map((cell) => cell.textContent?.replaceAll('\u00a0', ' ')),
     ).toEqual(['200.000 €', '916,67 €', '583,33 €', '333,34 €', '0 €', '916,67 €', '199.666,66 €'])
     expect(screen.getByText('Monate 1–24 von 348 · Seite 1 von 15')).toBeVisible()
-    expect(screen.getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(2)
+    expect(screen.getAllByText(/Projektion bei konstantem Sollzins/)).toHaveLength(3)
   })
 
   it('reaches the actual final row beyond Zinsbindung and navigates back to the first page', async () => {
