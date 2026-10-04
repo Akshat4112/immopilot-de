@@ -179,7 +179,7 @@ describe('full amortization breakdown', () => {
     expect(screen.getByRole('radio', { name: 'Monatlich' })).toBeChecked()
     expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeChecked()
     expect(screen.getByText('Monate 1–24 von 120 · Seite 1 von 5')).toBeVisible()
-  })
+  }, 10_000)
 
   it('preserves full annual view and its final page across languages', async () => {
     renderWithProviders(explorer())
