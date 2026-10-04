@@ -1422,7 +1422,10 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
       }),
     ).toBe(true)
   await page.addStyleTag({ content: 'html { font-size: 100% }' })
-  await explorer.getByRole('radio', { name: 'Monthly', exact: true }).check()
+  const monthly = explorer.getByRole('radio', { name: 'Monthly', exact: true })
+  await monthly.focus()
+  await page.keyboard.press('Space')
+  await expect(monthly).toBeChecked()
   const selectedSchedule = explorer.locator('.amortization-schedule').last()
   await expect(
     selectedSchedule.getByRole('columnheader', { name: 'Regular payment', exact: true }),
