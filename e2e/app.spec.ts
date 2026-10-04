@@ -581,7 +581,7 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
     ['Zinsen', 2],
     ['Reguläre Tilgung', 3],
     ['Sondertilgung', 4],
-    ['Reguläre Zahlungen (Summe)', 1],
+    ['Reguläre Rate', 1],
     ['Gesamtzahlung', 5],
   ] as const) {
     await expect(selected.getByText(label, { exact: true }).locator('..').locator('dd')).toHaveText(
@@ -1303,7 +1303,11 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
     if (language === 'en') await page.getByRole('button', { name: 'English' }).click()
     for (const summary of await explorer.locator('.chart-data-view > summary').all()) {
       const details = summary.locator('..')
-      if (!(await details.evaluate<boolean, undefined>('e => e.hasAttribute("open")'))) {
+      if (
+        !(await details.evaluate((element) =>
+          (element as unknown as { hasAttribute: (name: string) => boolean }).hasAttribute('open'),
+        ))
+      ) {
         await summary.focus()
         await page.keyboard.press('Enter')
       }
@@ -1325,15 +1329,21 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
         )
         await expect(caption).toContainText('EUR')
         expect(
-          await caption.evaluate<boolean, undefined>(
-            'e => e.closest(".amortization-table-scroll") === null',
+          await caption.evaluate(
+            (element) =>
+              (element as unknown as { closest: (selector: string) => unknown }).closest(
+                '.amortization-table-scroll',
+              ) === null,
           ),
         ).toBe(true)
         const box = await caption.boundingBox()
         expect(box!.x).toBeGreaterThanOrEqual(0)
         expect(box!.x + box!.width).toBeLessThanOrEqual(width)
         expect(
-          await caption.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth'),
+          await caption.evaluate((element) => {
+            const box = element as unknown as { scrollWidth: number; clientWidth: number }
+            return box.scrollWidth <= box.clientWidth
+          }),
         ).toBe(true)
       }
       expect(
@@ -1347,7 +1357,10 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
         )
         .all()) {
         expect(
-          await target.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth'),
+          await target.evaluate((element) => {
+            const box = element as unknown as { scrollWidth: number; clientWidth: number }
+            return box.scrollWidth <= box.clientWidth
+          }),
         ).toBe(true)
       }
       if (width === 360 || width === 1440) {
@@ -1365,20 +1378,29 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
     }
     await page.setViewportSize({ width: 360, height: 900 })
     const region = selectedSchedule.locator('.amortization-table-scroll')
-    await region.evaluate('e => { e.scrollLeft = 0 }')
+    await region.evaluate((element) => {
+      ;(element as unknown as { scrollLeft: number }).scrollLeft = 0
+    })
     await region.focus()
     await page.keyboard.press('Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(region).toBeFocused()
     await expect(region).toHaveCSS('outline-style', 'solid')
-    const before = await region.evaluate<number, undefined>('e => e.scrollLeft')
+    const before = await region.evaluate(
+      (element) => (element as unknown as { scrollLeft: number }).scrollLeft,
+    )
     for (let n = 0; n < 4; n++) await page.keyboard.press('ArrowRight')
     await expect
-      .poll(() => region.evaluate<number, undefined>('e => e.scrollLeft'))
+      .poll(() =>
+        region.evaluate((element) => (element as unknown as { scrollLeft: number }).scrollLeft),
+      )
       .toBeGreaterThan(before)
     const caption = selectedSchedule.locator('.amortization-table-caption')
     const captionX = (await caption.boundingBox())!.x
-    await region.evaluate('e => { e.scrollLeft = e.scrollWidth }')
+    await region.evaluate((element) => {
+      const box = element as unknown as { scrollLeft: number; scrollWidth: number }
+      box.scrollLeft = box.scrollWidth
+    })
     expect((await caption.boundingBox())!.x).toBe(captionX)
     await expect(selectedSchedule.getByRole('table')).toHaveAccessibleName(/EUR$/)
     expect(
@@ -1393,9 +1415,12 @@ test('keeps bilingual explorer captions and payment sums readable on narrow scre
     ),
   ).toBe(false)
   for (const caption of await explorer.locator('.amortization-table-caption').all())
-    expect(await caption.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth')).toBe(
-      true,
-    )
+    expect(
+      await caption.evaluate((element) => {
+        const box = element as unknown as { scrollWidth: number; clientWidth: number }
+        return box.scrollWidth <= box.clientWidth
+      }),
+    ).toBe(true)
   await page.addStyleTag({ content: 'html { font-size: 100% }' })
   await explorer.getByRole('radio', { name: 'Monthly', exact: true }).check()
   const selectedSchedule = explorer.locator('.amortization-schedule').last()
