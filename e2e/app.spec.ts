@@ -856,8 +856,9 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
         data.getByRole('button', { name: 'First page' }),
       ]) {
         await target.focus()
-        // Enter keyboard modality even after programmatic focus.
-        await page.keyboard.press('Shift')
+        // Reach this control through actual sequential keyboard navigation.
+        await page.keyboard.press('Tab')
+        await page.keyboard.press('Shift+Tab')
         await expect(target).toBeFocused()
         expect(await css(target, 'outline-style')).toBe('solid')
         expect(parseFloat(await css(target, 'outline-width'))).toBeGreaterThanOrEqual(3)
