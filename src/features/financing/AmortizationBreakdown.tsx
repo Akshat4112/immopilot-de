@@ -8,6 +8,7 @@ import type {
 import { FinancialValidationError } from '../../domain/shared/validation'
 import { formatEuroFromCents, formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
+import { AmortizationTableFrame } from './AmortizationTableFrame'
 import { RemainingDebtChart } from './RemainingDebtChart'
 import { PaymentCompositionChart } from './PaymentCompositionChart'
 import {
@@ -71,7 +72,7 @@ function ScheduleTable({
   const page = Math.min(requestedPage, pageCount - 1)
   const rows = periods.slice(page * pageSize, (page + 1) * pageSize)
   const tableId = `amortization-${id}-table`
-  const caption = `${title} · ${t(`finance.results.breakdown.horizon.${horizon}`)} · ${t(`finance.results.breakdown.detail.${detail}`)}`
+  const caption = `${title} · ${t(`finance.results.breakdown.horizon.${horizon}`)} · ${t(`finance.results.breakdown.detail.${detail}`)} · EUR`
   return (
     <section aria-labelledby={headingId} className="amortization-schedule">
       <h3 id={headingId}>{title}</h3>
@@ -90,83 +91,79 @@ function ScheduleTable({
               : 'finance.results.breakdown.fixedPeriodOnly',
         )}
       </p>
-      <div
-        aria-label={t('finance.results.breakdown.scrollLabel', { title })}
-        className="amortization-table-scroll"
-        role="region"
-        tabIndex={0}
-      >
-        <table className="amortization-table" id={tableId}>
-          <caption>{caption}</caption>
-          <thead>
-            <tr>
-              <th scope="col">
-                {t(`finance.results.breakdown.${detail === 'annual' ? 'year' : 'month'}`)}
+      <AmortizationTableFrame caption={caption} title={title} tableId={tableId}>
+        <thead>
+          <tr>
+            <th scope="col">
+              {t(`finance.results.breakdown.${detail === 'annual' ? 'year' : 'month'}`)}
+            </th>
+            <th scope="col">{t('finance.results.breakdown.openingBalance')}</th>
+            <th scope="col">
+              {t(
+                `finance.results.breakdown.${detail === 'annual' ? 'regularPaymentAnnual' : 'regularPayment'}`,
+              )}
+            </th>
+            <th scope="col">{t('finance.results.breakdown.interest')}</th>
+            <th scope="col">{t('finance.results.breakdown.scheduledPrincipal')}</th>
+            <th scope="col">{t('finance.results.breakdown.additionalPrincipal')}</th>
+            <th scope="col">{t('finance.results.breakdown.totalPayment')}</th>
+            <th scope="col">{t('finance.results.breakdown.closingBalance')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.firstMonth}>
+              <th scope="row">
+                {detail === 'annual'
+                  ? t('finance.results.breakdown.loanYear', {
+                      year: formatNumber(row.loanYear, language),
+                    })
+                  : formatNumber(row.firstMonth, language)}
+                {detail === 'annual' ? (
+                  <small className="amortization-period-marker">
+                    {t('finance.results.breakdown.monthRange', {
+                      first: formatNumber(row.firstMonth, language),
+                      last: formatNumber(row.lastMonth, language),
+                    })}
+                    {row.lastMonth - row.firstMonth + 1 < 12
+                      ? ` · ${t('finance.results.breakdown.partialYear')}`
+                      : ''}
+                  </small>
+                ) : null}
+                {row.firstMonth <= schedule.fixedInterestMonths &&
+                row.lastMonth >= schedule.fixedInterestMonths ? (
+                  <small className="amortization-period-marker">
+                    {t('finance.results.breakdown.fixedPeriodEndAt', {
+                      month: formatNumber(schedule.fixedInterestMonths, language),
+                    })}
+                  </small>
+                ) : null}
+                {row.lastMonth > schedule.fixedInterestMonths ? (
+                  <small className="amortization-period-marker">
+                    {t(
+                      row.firstMonth <= schedule.fixedInterestMonths
+                        ? 'finance.results.breakdown.mixedPeriod'
+                        : 'finance.results.breakdown.projectedPeriod',
+                    )}
+                  </small>
+                ) : null}
+                {row.lastMonth === schedule.payoffMonth ? (
+                  <small className="amortization-period-marker">
+                    {t('finance.results.breakdown.payoff')}
+                  </small>
+                ) : null}
               </th>
-              <th scope="col">{t('finance.results.breakdown.openingBalance')}</th>
-              <th scope="col">{t('finance.results.breakdown.regularPayment')}</th>
-              <th scope="col">{t('finance.results.breakdown.interest')}</th>
-              <th scope="col">{t('finance.results.breakdown.scheduledPrincipal')}</th>
-              <th scope="col">{t('finance.results.breakdown.additionalPrincipal')}</th>
-              <th scope="col">{t('finance.results.breakdown.totalPayment')}</th>
-              <th scope="col">{t('finance.results.breakdown.closingBalance')}</th>
+              <td>{formatEuroFromCents(row.openingBalanceCents, language)}</td>
+              <td>{formatEuroFromCents(row.regularPaymentCents, language)}</td>
+              <td>{formatEuroFromCents(row.interestCents, language)}</td>
+              <td>{formatEuroFromCents(row.scheduledPrincipalCents, language)}</td>
+              <td>{formatEuroFromCents(row.additionalPrincipalCents, language)}</td>
+              <td>{formatEuroFromCents(row.totalPaymentCents, language)}</td>
+              <td>{formatEuroFromCents(row.closingBalanceCents, language)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.firstMonth}>
-                <th scope="row">
-                  {detail === 'annual'
-                    ? t('finance.results.breakdown.loanYear', {
-                        year: formatNumber(row.loanYear, language),
-                      })
-                    : formatNumber(row.firstMonth, language)}
-                  {detail === 'annual' ? (
-                    <small className="amortization-period-marker">
-                      {t('finance.results.breakdown.monthRange', {
-                        first: formatNumber(row.firstMonth, language),
-                        last: formatNumber(row.lastMonth, language),
-                      })}
-                      {row.lastMonth - row.firstMonth + 1 < 12
-                        ? ` · ${t('finance.results.breakdown.partialYear')}`
-                        : ''}
-                    </small>
-                  ) : null}
-                  {row.firstMonth <= schedule.fixedInterestMonths &&
-                  row.lastMonth >= schedule.fixedInterestMonths ? (
-                    <small className="amortization-period-marker">
-                      {t('finance.results.breakdown.fixedPeriodEndAt', {
-                        month: formatNumber(schedule.fixedInterestMonths, language),
-                      })}
-                    </small>
-                  ) : null}
-                  {row.lastMonth > schedule.fixedInterestMonths ? (
-                    <small className="amortization-period-marker">
-                      {t(
-                        row.firstMonth <= schedule.fixedInterestMonths
-                          ? 'finance.results.breakdown.mixedPeriod'
-                          : 'finance.results.breakdown.projectedPeriod',
-                      )}
-                    </small>
-                  ) : null}
-                  {row.lastMonth === schedule.payoffMonth ? (
-                    <small className="amortization-period-marker">
-                      {t('finance.results.breakdown.payoff')}
-                    </small>
-                  ) : null}
-                </th>
-                <td>{formatEuroFromCents(row.openingBalanceCents, language)}</td>
-                <td>{formatEuroFromCents(row.regularPaymentCents, language)}</td>
-                <td>{formatEuroFromCents(row.interestCents, language)}</td>
-                <td>{formatEuroFromCents(row.scheduledPrincipalCents, language)}</td>
-                <td>{formatEuroFromCents(row.additionalPrincipalCents, language)}</td>
-                <td>{formatEuroFromCents(row.totalPaymentCents, language)}</td>
-                <td>{formatEuroFromCents(row.closingBalanceCents, language)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </AmortizationTableFrame>
       <div className="amortization-pagination">
         <p aria-live="polite" role="status">
           {t(`finance.results.breakdown.${detail === 'annual' ? 'annualPageRange' : 'pageRange'}`, {
@@ -286,7 +283,10 @@ export function AmortizationBreakdown({
           {baseline.status === 'available' && baseline.cashPurchase ? (
             <p role="status">{t('finance.results.breakdown.cashPurchase')}</p>
           ) : !baselineSchedule ? (
-            <p role="status">{t('finance.unavailable.scheduleMessage')}</p>
+            <div role="status">
+              <p>{t('finance.unavailable.scheduleMessage')}</p>
+              <p>{t('finance.results.breakdown.unavailableHelp')}</p>
+            </div>
           ) : (
             <>
               <p>{t('finance.results.breakdown.intro')}</p>

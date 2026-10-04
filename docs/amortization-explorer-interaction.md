@@ -266,3 +266,30 @@ and PF-005.8; print completeness remains a separate task.
 Reference guidance: [WAI complex images](https://www.w3.org/WAI/tutorials/images/complex/),
 [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html), and
 [status messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages).
+
+## PF-005.7 implementation milestone
+
+Both languages now distinguish annual regular-payment **sums** from the monthly regular
+payment. Partial years still sum only their actual payment months. German full repayment
+explicitly says **Projektion**, matching the English full projected repayment option. The
+existing constant-rate caveat, exact period/basis labels and independent payoff dates remain
+visible. German overflow recovery uses the same informal address as the rest of the explorer;
+unavailable schedules offer an explicit input-review next step, while cash purchases and
+absent/invalid plans retain their own explanations.
+
+Repayment schedules and both chart data views share a table frame. The complete caption and
+EUR units wrap outside the horizontal scroll region, so inspecting right-hand columns never
+hides the selected basis. An equivalent native table caption supplies its accessible name;
+the visual copy is hidden from assistive technology to avoid duplicate reading. A visible,
+associated instruction explains horizontal swipe and keyboard-arrow scrolling. Table column
+and row headers remain native; numeric cells stay unbroken inside local scrolling. Narrow
+row headings, wrapping control/legend labels, consistent selector styling and spacing below
+open chart disclosures improve mobile readability without shrinking numbers or clipping text.
+
+Bilingual regressions cover annual/monthly labels, exact localized sums and rates, complete
+captions, EUR units, scrolling instructions, native semantics, cash/unavailable/absent states
+and final zero debt. The browser journey checks both languages at 320/360/390/768/1024/1440px,
+keyboard table scrolling, captions after horizontal scrolling, expanded-explorer axe and large
+text reflow. Financial calculations, scenario schemas, saved view state and dependencies are
+unchanged. This task addresses the original PF-005.7 bilingual/mobile definition; complete
+print/report delivery belongs to PF-006, and final explorer QA remains PF-005.8.

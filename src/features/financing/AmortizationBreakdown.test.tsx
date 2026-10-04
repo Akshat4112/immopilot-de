@@ -50,7 +50,7 @@ async function open(fullMonthly = true) {
   await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
   if (fullMonthly && screen.queryByRole('radio', { name: 'Monatlich' })) {
     await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
   }
   return user
 }
@@ -83,7 +83,7 @@ describe('full amortization breakdown', () => {
     renderWithProviders(explorer(workspace({ additionalRepayments: annualPlan })))
     const user = await open(false)
     await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
@@ -103,7 +103,7 @@ describe('full amortization breakdown', () => {
     expect(screen.getByRole('radio', { name: 'Mit Sondertilgung' })).toBeDisabled()
     expect(screen.getByRole('radio', { name: 'Beide Verläufe' })).toBeDisabled()
     expect(screen.getByRole('table')).toHaveAccessibleName(
-      'Tilgungsplan ohne Sondertilgung · Zinsbindung · Jährlich',
+      'Tilgungsplan ohne Sondertilgung · Zinsbindung · Jährlich · EUR',
     )
     expect(screen.getAllByRole('row')).toHaveLength(11)
     expect(
@@ -128,7 +128,7 @@ describe('full amortization breakdown', () => {
     expect(within(first).getByText(/5\.000\s*€/)).toBeVisible()
     await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
     expect(screen.queryByRole('region', { name: baselineTitle })).not.toBeInTheDocument()
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     expect(screen.getAllByRole('row')).toHaveLength(18)
     const last = screen
       .getByRole('rowheader', { name: /Jahr 17.*Monate 193–203.*Teiljahr.*Volltilgung/ })
@@ -184,7 +184,7 @@ describe('full amortization breakdown', () => {
   it('preserves full annual view and its final page across languages', async () => {
     renderWithProviders(explorer())
     const user = await open(false)
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.click(screen.getByRole('button', { name: 'Letzte Seite' }))
     expect(screen.getByText('Darlehensjahre 25–29 von 29 · Seite 2 von 2')).toBeVisible()
     await i18n.changeLanguage('en')
@@ -198,7 +198,7 @@ describe('full amortization breakdown', () => {
     const view = renderWithProviders(explorer(workspace({ additionalRepayments: annualPlan })))
     const user = await open(false)
     await user.click(screen.getByRole('radio', { name: 'Mit Sondertilgung' }))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     view.rerender(
       explorer(
         workspace({
@@ -235,7 +235,7 @@ describe('full amortization breakdown', () => {
     expect(
       screen.getByRole('rowheader', { name: /Jahr 2.*Monate 13–14.*Teiljahr.*Monat 14/ }),
     ).toBeVisible()
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     expect(
       screen.getByRole('rowheader', { name: /Jahr 2.*Monate 13–24.*Monat 14.*innerhalb und nach/ }),
     ).toBeVisible()

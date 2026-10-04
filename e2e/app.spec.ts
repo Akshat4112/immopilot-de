@@ -206,7 +206,9 @@ test('carries completed purchase costs into the financing and mortgage workflow'
 
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
   await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
-  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   const baselineSchedule = page.getByRole('table', {
     name: 'Tilgungsplan ohne Sondertilgung',
   })
@@ -232,7 +234,9 @@ test('explores full monthly schedules and payoff with bounded pagination @cross-
   await completeFinancedPurchase(page)
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
   await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
-  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   const baseline = page.getByRole('region', {
     name: 'Tilgungsplan ohne Sondertilgung',
     exact: true,
@@ -336,7 +340,9 @@ test('switches amortization horizons, annual detail and schedule basis accessibl
   await expect(
     baseline.getByRole('columnheader', { name: 'Darlehensmonat', exact: true }),
   ).toBeVisible()
-  await explorer.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await explorer
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   await baseline.getByRole('button', { name: 'Weiter', exact: true }).click()
   await explorer.getByRole('radio', { name: 'Jährlich', exact: true }).check()
   await expect(baseline.getByText('Darlehensjahre 1–24 von 29 · Seite 1 von 2')).toBeVisible()
@@ -418,7 +424,9 @@ test('plots aligned remaining debt and inspects exact payoff months @cross-brows
   ).toHaveAttribute('data-balance-cents', '20000000')
   await expect(graph.locator('[data-fixed-month="120"]')).toHaveCount(1)
   await expect(graph.locator('[data-chart-projection]')).toHaveCount(0)
-  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   await expect(graph.locator('[data-chart-projection]')).toHaveCount(1)
   await expect(graph.locator('[data-debt-series="baseline"] [data-chart-payoff]')).toHaveAttribute(
     'data-chart-month',
@@ -528,7 +536,9 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
   await expect(
     selected.getByText('Sondertilgung', { exact: true }).locator('..').locator('dd'),
   ).toHaveText('5.000 €')
-  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   await expect(graph.locator('[data-payment-series]')).toHaveCount(46)
   await expect(graph.locator('[data-payment-projection]')).toHaveCount(1)
   await inspect.selectOption('193')
@@ -571,7 +581,7 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
     ['Zinsen', 2],
     ['Reguläre Tilgung', 3],
     ['Sondertilgung', 4],
-    ['Reguläre Rate', 1],
+    ['Reguläre Zahlungen (Summe)', 1],
     ['Gesamtzahlung', 5],
   ] as const) {
     await expect(selected.getByText(label, { exact: true }).locator('..').locator('dd')).toHaveText(
@@ -670,7 +680,7 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
   await horizon.focus()
   await page.keyboard.press('ArrowRight')
   await expect(
-    explorer.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }),
+    explorer.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true }),
   ).toBeChecked()
   const debt = page.locator('.remaining-debt-chart')
   const payments = page.locator('.payment-composition-chart')
@@ -1065,7 +1075,9 @@ test('carries Sondertilgung through results, saved restoration, and comparison @
 
   await page.getByText('Detaillierten Tilgungsplan öffnen').click()
   await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
-  await page.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }).check()
+  await page
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
   await page.getByRole('radio', { name: 'Beide Verläufe', exact: true }).check()
   const selectedSchedule = page.getByRole('table', {
     name: 'Tilgungsplan mit Sondertilgung',
@@ -1272,4 +1284,125 @@ test('imports current and legacy JSON while rejecting unsafe files without repla
   await page.goto('./#/financing')
   await expect(page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' })).toHaveValue('')
   await expect(page.getByRole('combobox', { name: 'Monat im Darlehensjahr' })).toHaveValue('12')
+})
+
+test('keeps bilingual explorer captions and payment sums readable on narrow screens @cross-browser', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(60000)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await completeFinancedPurchase(page)
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
+  const explorer = page.locator('.amortization-breakdown')
+  await explorer.locator(':scope > summary').focus()
+  await page.keyboard.press('Enter')
+  await explorer
+    .getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)', exact: true })
+    .check()
+  for (const language of ['de', 'en'] as const) {
+    if (language === 'en') await page.getByRole('button', { name: 'English' }).click()
+    for (const summary of await explorer.locator('.chart-data-view > summary').all()) {
+      const details = summary.locator('..')
+      if (!(await details.evaluate<boolean, undefined>('e => e.hasAttribute("open")'))) {
+        await summary.focus()
+        await page.keyboard.press('Enter')
+      }
+    }
+    const selectedSchedule = explorer.locator('.amortization-schedule').last()
+    const annualLabel = language === 'de' ? 'Reguläre Zahlungen (Summe)' : 'Regular payments (sum)'
+    await expect(
+      selectedSchedule.getByRole('columnheader', { name: annualLabel, exact: true }),
+    ).toBeVisible()
+    const first = selectedSchedule.getByRole('row').nth(1)
+    await expect(first.getByRole('cell').nth(1)).toHaveText(
+      language === 'de' ? '11.000,04 €' : '€11,000.04',
+    )
+    for (const width of [320, 360, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      for (const caption of await explorer.locator('.amortization-table-caption').all()) {
+        await expect(caption).toContainText(
+          language === 'de' ? 'Vollständige Rückzahlung (Projektion)' : 'Full projected repayment',
+        )
+        await expect(caption).toContainText('EUR')
+        expect(
+          await caption.evaluate<boolean, undefined>(
+            'e => e.closest(".amortization-table-scroll") === null',
+          ),
+        ).toBe(true)
+        const box = await caption.boundingBox()
+        expect(box!.x).toBeGreaterThanOrEqual(0)
+        expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+        expect(
+          await caption.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth'),
+        ).toBe(true)
+      }
+      expect(
+        await page.evaluate<boolean>(
+          'document.documentElement.scrollWidth > document.documentElement.clientWidth',
+        ),
+      ).toBe(false)
+      for (const target of await explorer
+        .locator(
+          '.amortization-controls label span,.amortization-scroll-help,.payment-chart-details dt,.payment-chart-details dd',
+        )
+        .all()) {
+        expect(
+          await target.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth'),
+        ).toBe(true)
+      }
+      if (width === 360 || width === 1440) {
+        const summary = explorer.locator('.payment-composition-chart .chart-data-view > summary')
+        await summary.focus()
+        await summary.scrollIntoViewIfNeeded()
+        await page.screenshot({
+          fullPage: false,
+          animations: 'disabled',
+          path: testInfo.outputPath(
+            `explorer-polish-${language}-${width === 360 ? 'mobile' : 'desktop'}.png`,
+          ),
+        })
+      }
+    }
+    await page.setViewportSize({ width: 360, height: 900 })
+    const region = selectedSchedule.locator('.amortization-table-scroll')
+    await region.evaluate('e => { e.scrollLeft = 0 }')
+    await region.focus()
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Shift+Tab')
+    await expect(region).toBeFocused()
+    await expect(region).toHaveCSS('outline-style', 'solid')
+    const before = await region.evaluate<number, undefined>('e => e.scrollLeft')
+    for (let n = 0; n < 4; n++) await page.keyboard.press('ArrowRight')
+    await expect
+      .poll(() => region.evaluate<number, undefined>('e => e.scrollLeft'))
+      .toBeGreaterThan(before)
+    const caption = selectedSchedule.locator('.amortization-table-caption')
+    const captionX = (await caption.boundingBox())!.x
+    await region.evaluate('e => { e.scrollLeft = e.scrollWidth }')
+    expect((await caption.boundingBox())!.x).toBe(captionX)
+    await expect(selectedSchedule.getByRole('table')).toHaveAccessibleName(/EUR$/)
+    expect(
+      (await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()).violations,
+    ).toEqual([])
+  }
+  // Large text reflow on a narrow viewport, with complete captions outside table scrolling.
+  await page.addStyleTag({ content: 'html { font-size: 200% }' })
+  expect(
+    await page.evaluate<boolean>(
+      'document.documentElement.scrollWidth > document.documentElement.clientWidth',
+    ),
+  ).toBe(false)
+  for (const caption of await explorer.locator('.amortization-table-caption').all())
+    expect(await caption.evaluate<boolean, undefined>('e => e.scrollWidth <= e.clientWidth')).toBe(
+      true,
+    )
+  await page.addStyleTag({ content: 'html { font-size: 100% }' })
+  await explorer.getByRole('radio', { name: 'Monthly', exact: true }).check()
+  const selectedSchedule = explorer.locator('.amortization-schedule').last()
+  await expect(
+    selectedSchedule.getByRole('columnheader', { name: 'Regular payment', exact: true }),
+  ).toBeVisible()
+  await expect(selectedSchedule.getByRole('row').nth(1).getByRole('cell').nth(1)).toHaveText(
+    '€916.67',
+  )
 })

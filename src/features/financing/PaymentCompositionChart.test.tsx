@@ -260,7 +260,7 @@ describe('payment-composition explorer chart', () => {
       Number(selected.querySelector('.payment-bar-outline')!.getAttribute('height')),
       10,
     )
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     expect(within(chart()).getByRole('img').querySelectorAll('[data-payment-series]')).toHaveLength(
       46,
     )
@@ -285,7 +285,7 @@ describe('payment-composition explorer chart', () => {
     renderWithProviders(explorer())
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     const selector = within(chart()).getByRole('combobox', {
       name: 'Zahlungszeitraum im Diagramm prüfen',
     })
@@ -306,7 +306,7 @@ describe('payment-composition explorer chart', () => {
       ['Zinsen', expected.interestCents],
       ['Reguläre Tilgung', expected.scheduledPrincipalCents],
       ['Sondertilgung', expected.additionalPrincipalCents],
-      ['Reguläre Rate', expected.regularPaymentCents],
+      ['Reguläre Zahlungen (Summe)', expected.regularPaymentCents],
       ['Gesamtzahlung', expected.totalPaymentCents],
     ] as const)
       expect(
@@ -327,7 +327,7 @@ describe('payment-composition explorer chart', () => {
     const { rerender } = renderWithProviders(explorer())
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.selectOptions(within(chart()).getByRole('combobox'), '193')
     const before = within(chart()).getByRole('img').innerHTML
     await user.click(
@@ -366,7 +366,7 @@ describe('payment-composition explorer chart', () => {
     const marker = within(chart()).getByRole('img').querySelector('[data-payment-fixed-month]')!
     expect(marker).toHaveAttribute('data-payment-fixed-month', '14')
     expect(marker).toHaveAttribute('x1', '688')
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.selectOptions(within(chart()).getByRole('combobox'), '13')
     expect(
       within(chart()).getByText(/sein Balken behält die vollständige Jahressumme/),
@@ -399,7 +399,7 @@ describe('payment-composition explorer chart', () => {
     expect(
       within(chart()).getByText(/Volltilgung vor dem Ende der Zinsbindung in Monat 120/),
     ).toBeVisible()
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.selectOptions(within(chart()).getByRole('combobox'), '205')
     expect(
       within(details('Mit Sondertilgung')).getByText(/bereits vollständig getilgt/),

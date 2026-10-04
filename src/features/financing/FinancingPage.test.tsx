@@ -94,7 +94,7 @@ describe('FinancingPage', () => {
     renderPage()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
     await user.click(screen.getByRole('radio', { name: 'Monatlich' }))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
 
     const baseline = screen.getByRole('table', { name: /Tilgungsplan ohne Sondertilgung/ })
     const selected = screen.getByRole('table', { name: /Tilgungsplan mit Sondertilgung/ })
