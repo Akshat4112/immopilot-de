@@ -537,7 +537,10 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
   ).toHaveCount(0)
   const bars = await graph
     .locator('[data-payment-series]')
-    .evaluateAll<string[], undefined>('elements => elements.map(e => e.outerHTML)')
+    .evaluateAll((elements) =>
+      elements.map((e) => (e as unknown as { outerHTML: string }).outerHTML),
+    )
+  expect(bars).toHaveLength(46)
   await page
     .getByRole('region', { name: 'Tilgungsplan ohne Sondertilgung', exact: true })
     .getByRole('button', { name: 'Letzte Seite' })
@@ -545,7 +548,9 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
   expect(
     await graph
       .locator('[data-payment-series]')
-      .evaluateAll<string[], undefined>('elements => elements.map(e => e.outerHTML)'),
+      .evaluateAll((elements) =>
+        elements.map((e) => (e as unknown as { outerHTML: string }).outerHTML),
+      ),
   ).toEqual(bars)
   await expect(inspect).toHaveValue('193')
   await page.getByRole('radio', { name: 'Monatlich', exact: true }).check()
@@ -575,8 +580,10 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
     ),
   ).toHaveAttribute('data-amount-cents', '500000')
   const scroll = chart.getByRole('region', { name: 'Zahlungs-Diagramm horizontal scrollen' })
-  expect(await scroll.evaluate<number, undefined>('e => e.scrollLeft')).toBeGreaterThan(0)
   await inspect.selectOption('204')
+  expect(
+    await scroll.evaluate((e) => (e as unknown as { scrollLeft: number }).scrollLeft),
+  ).toBeGreaterThan(0)
   await expect(selected.getByText(/bereits vollständig getilgt/)).toBeVisible()
   await expect(selected.locator('dd')).toHaveCount(0)
   await page.getByRole('button', { name: 'English' }).click()
@@ -620,7 +627,9 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
       await chart.getByRole('heading', { level: 3 }).click()
       await page
         .locator(':focus')
-        .evaluateAll<void, undefined>('elements => elements.forEach(e => e.blur())')
+        .evaluateAll((elements) =>
+          elements.forEach((e) => (e as unknown as { blur: () => void }).blur()),
+        )
       await chart.screenshot({
         animations: 'disabled',
         path: testInfo.outputPath(`explorer-payment-${width === 390 ? 'mobile' : 'desktop'}.png`),
