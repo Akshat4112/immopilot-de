@@ -197,7 +197,7 @@ describe('remaining-debt explorer chart', () => {
     const inspector = screen
       .getByRole('combobox', { name: 'Darlehensmonat im Diagramm prüfen' })
       .closest('div')!
-    expect(within(inspector).getByText('0 €')).toBeVisible()
+    expect(within(inspector).getByText('0 € · Volltilgung')).toBeVisible()
     const baseline = schedules()[0]!.schedule.rows[202]!.closingBalanceCents
     expect(
       screen

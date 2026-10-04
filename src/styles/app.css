@@ -768,7 +768,8 @@ h3 {
   cursor: pointer;
 }
 
-.amortization-pagination button:disabled {
+.amortization-pagination button:disabled,
+.amortization-pagination button[aria-disabled='true'] {
   color: var(--color-text-secondary);
   cursor: default;
 }
@@ -2066,7 +2067,6 @@ h3 {
 
 .debt-chart-hatch {
   stroke: var(--color-text-secondary);
-  stroke-opacity: 0.15;
 }
 
 .debt-chart-boundary {
@@ -2183,6 +2183,11 @@ h3 {
   fill: var(--color-chart-additional);
 }
 
+.payment-chart-svg [data-component] {
+  stroke: var(--color-surface);
+  stroke-width: 1;
+}
+
 .payment-pattern {
   stroke: #fff;
   stroke-opacity: 0.5;
@@ -2268,4 +2273,53 @@ h3 {
 .payment-chart-details dd {
   margin: 0;
   font-weight: var(--font-weight-medium);
+}
+
+.chart-data-view {
+  margin-block: var(--space-4);
+  min-width: 0;
+}
+
+.chart-data-view summary {
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand);
+  min-height: 2.75rem;
+  padding-block: var(--space-2);
+}
+
+.chart-data-scroll th:first-child {
+  min-width: 14rem;
+  white-space: normal;
+}
+
+:where(.debt-chart-scroll, .payment-chart-scroll, .chart-data-scroll):focus-visible {
+  outline-offset: -3px;
+}
+
+.chart-inspection-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .debt-series,
+  .debt-series--additional-repayments,
+  .debt-chart-boundary,
+  .debt-chart-inspection,
+  .payment-bar-outline,
+  .payment-chart-inspection {
+    stroke: CanvasText;
+  }
+  .payment-fill--interest,
+  .payment-fill--scheduledPrincipal,
+  .payment-fill--additionalPrincipal,
+  .payment-swatch {
+    forced-color-adjust: none;
+  }
 }

@@ -666,6 +666,16 @@ export const resources = {
               'additional-repayments': 'Mit Sondertilgung',
               both: 'Beide Verläufe',
             },
+            chartAccess: {
+              dataView: 'Datenansicht: {{title}}',
+              dataHelp:
+                'Alle dargestellten Werte sind hier ohne Diagramm verfügbar. Die Ansicht folgt den gewählten Einstellungen. Pro Seite werden höchstens 24 Einträge gezeigt; die Tabellen darunter enthalten die vollständigen Zahlungsdetails.',
+              inspectHelp:
+                'Mit den Pfeiltasten einen Zeitraum wählen und genaue Werte darunter lesen. Für alle Werte die Datenansicht öffnen. Die Diagramme lassen sich in ihrem eigenen Bereich horizontal scrollen.',
+              pageRange: 'Einträge {{first}}–{{last}} von {{total}} · Seite {{page}} von {{pages}}',
+              withinFixed: 'Innerhalb der Zinsbindung',
+              period: 'Zeitraum und Einordnung',
+            },
             paymentChart: {
               title: 'Zusammensetzung der Zahlungen',
               basis:
@@ -1648,6 +1658,16 @@ export const resources = {
               baseline: 'Baseline',
               'additional-repayments': 'With additional repayments',
               both: 'Both schedules',
+            },
+            chartAccess: {
+              dataView: 'Data view: {{title}}',
+              dataHelp:
+                'All plotted values are available here without the chart. This view follows the selected controls. Each page shows at most 24 entries; the tables below contain the complete payment details.',
+              inspectHelp:
+                'Use the arrow keys to choose a period and read exact values below. Open the data view for all values. Charts scroll horizontally within their own regions.',
+              pageRange: 'Entries {{first}}–{{last}} of {{total}} · Page {{page}} of {{pages}}',
+              withinFixed: 'Within fixed interest',
+              period: 'Period and basis',
             },
             paymentChart: {
               title: 'Payment composition',

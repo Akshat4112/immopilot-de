@@ -9,6 +9,7 @@ import type {
   AmortizationHorizon,
   AmortizationPeriod,
 } from './amortizationPeriods'
+import { ChartDataView } from './ChartDataView'
 import { createPaymentCompositionChart } from './paymentCompositionChart'
 import type { DebtChartSchedule } from './remainingDebtChart'
 
@@ -32,6 +33,7 @@ export function PaymentCompositionChart({
   const { t } = useTranslation()
   const id = useId()
   const scroll = useRef<HTMLDivElement>(null)
+  const [hasInspected, setHasInspected] = useState(false)
   const [requestedMonth, setRequestedMonth] = useState(1)
   const model = useMemo(() => {
     try {
@@ -73,7 +75,7 @@ export function PaymentCompositionChart({
       ? t(
           `finance.results.breakdown.${period.firstMonth <= model.fixedMonth ? 'mixedPeriod' : 'projectedPeriod'}`,
         )
-      : t('finance.results.breakdown.debtChart.withinFixed')
+      : t('finance.results.breakdown.chartAccess.withinFixed')
   const projected = [...model.series].some((s) =>
     [...s.periods.values()].some((p) => p.lastMonth > model.fixedMonth),
   )
@@ -90,6 +92,25 @@ export function PaymentCompositionChart({
   const ticks = new Set(
     Array.from({ length: 5 }, (_, i) => Math.round(((model.columns.length - 1) * i) / 4)),
   )
+  const actualPeriods = model.columns.flatMap((column) =>
+    model.series.flatMap((series) => {
+      const period = series.periods.get(column.firstMonth)
+      return period ? [{ series, period }] : []
+    }),
+  )
+  const periodStatus = (period: AmortizationPeriod, payoffMonth: number) =>
+    [
+      detail === 'annual' && period.lastMonth - period.firstMonth + 1 < 12
+        ? t('finance.results.breakdown.partialYear')
+        : '',
+      periodBasis(period),
+      period.lastMonth === payoffMonth ? t('finance.results.breakdown.payoff') : '',
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  const dataTitle = t('finance.results.breakdown.chartAccess.dataView', {
+    title: t('finance.results.breakdown.paymentChart.title'),
+  })
   return (
     <section aria-labelledby={`${id}-heading`} className="payment-composition-chart">
       <h3 id={`${id}-heading`}>{t('finance.results.breakdown.paymentChart.title')}</h3>
@@ -97,6 +118,9 @@ export function PaymentCompositionChart({
         {model.series.map((series) => labels[series.id]).join(' · ')}.{' '}
         {t('finance.results.breakdown.paymentChart.basis')}{' '}
         {model.series.length === 2 ? t('finance.results.breakdown.paymentChart.paired') : ''}
+      </p>
+      <p className="result-detail" id={`${id}-help`}>
+        {t('finance.results.breakdown.chartAccess.inspectHelp')}
       </p>
       <ul className="payment-chart-legend">
         {components.map((component) => (
@@ -127,12 +151,13 @@ export function PaymentCompositionChart({
       <div
         aria-label={t('finance.results.breakdown.paymentChart.scroll')}
         className="payment-chart-scroll"
+        aria-describedby={`${id}-help`}
         ref={scroll}
         role="region"
         tabIndex={0}
       >
         <svg
-          aria-describedby={`${id}-basis`}
+          aria-describedby={`${id}-basis ${id}-help`}
           aria-labelledby={`${id}-heading ${id}-description`}
           className="payment-chart-svg"
           role="img"
@@ -289,9 +314,12 @@ export function PaymentCompositionChart({
         <select
           id={`${id}-period`}
           value={inspectedMonth}
+          aria-describedby={`${id}-help`}
+          aria-controls={`${id}-values`}
           onChange={(event) => {
             const month = Number(event.target.value)
             setRequestedMonth(month)
+            setHasInspected(true)
             const index = model.columns.findIndex((p) => p.firstMonth === month)
             if (scroll.current) {
               const scale = Math.max(width, scroll.current.clientWidth) / width
@@ -305,7 +333,7 @@ export function PaymentCompositionChart({
             </option>
           ))}
         </select>
-        <div className="payment-chart-details">
+        <div className="payment-chart-details" id={`${id}-values`}>
           {model.series.map((series) => {
             const period = series.periods.get(inspectedMonth)
             return (
@@ -342,6 +370,54 @@ export function PaymentCompositionChart({
           })}
         </div>
       </div>
+      <p
+        className="chart-inspection-announcement"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {hasInspected
+          ? model.series
+              .map((series) => {
+                const period = series.periods.get(inspectedMonth)
+                return period
+                  ? `${labels[series.id]}: ${periodLabel(period)} · ${periodStatus(period, series.payoffMonth)}. ${inspectionComponents.map((component) => `${t(`finance.results.breakdown.${component}`)}: ${formatEuroFromCents(period[`${component}Cents`], language)}`).join('. ')}`
+                  : `${labels[series.id]}: ${periodLabel(model.columns.find((p) => p.firstMonth === inspectedMonth)!)} · ${t('finance.results.breakdown.debtChart.alreadyRepaid')}`
+              })
+              .join('. ')
+          : ''}
+      </p>
+      <ChartDataView
+        id={`${id}-data`}
+        title={t('finance.results.breakdown.paymentChart.title')}
+        caption={`${dataTitle} · ${t(`finance.results.breakdown.horizon.${horizon}`)} · ${t(`finance.results.breakdown.detail.${detail}`)} · EUR`}
+        columns={[
+          t('finance.results.breakdown.chartAccess.period'),
+          t('finance.results.breakdown.schedule.label'),
+          ...inspectionComponents.map((component) => t(`finance.results.breakdown.${component}`)),
+        ]}
+        rowCount={actualPeriods.length}
+        language={language}
+        getRows={(first, count) =>
+          actualPeriods.slice(first, first + count).map(({ series, period }) => ({
+            key: `${series.id}:${period.firstMonth}`,
+            heading: (
+              <>
+                {periodLabel(period)}
+                <small className="amortization-period-marker">
+                  {periodStatus(period, series.payoffMonth)}
+                </small>
+              </>
+            ),
+            cells: [
+              labels[series.id],
+              ...inspectionComponents.map((component) =>
+                formatEuroFromCents(period[`${component}Cents`], language),
+              ),
+            ],
+          }))
+        }
+      />
     </section>
   )
 }

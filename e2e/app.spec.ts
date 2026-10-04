@@ -432,7 +432,9 @@ test('plots aligned remaining debt and inspects exact payoff months @cross-brows
   ).toHaveAttribute('data-balance-cents', '0')
   const inspect = chart.getByRole('combobox')
   await inspect.selectOption('203')
-  await expect(chart.locator('.debt-chart-inspector').getByText(/^0\s*€$/)).toBeVisible()
+  await expect(
+    chart.locator('.debt-chart-inspector').getByText(/^0\s*€ · Volltilgung$/),
+  ).toBeVisible()
   const line = graph.locator('[data-debt-series="baseline"] .debt-chart-line')
   const path = await line.getAttribute('d')
   await page
@@ -449,7 +451,9 @@ test('plots aligned remaining debt and inspects exact payoff months @cross-brows
   await expect(inspect).toHaveValue('1')
   await inspect.selectOption('216')
   await expect(
-    chart.getByText(/bereits vollständig getilgt; keine weiteren Zahlungen/),
+    chart
+      .locator('.debt-chart-inspector')
+      .getByText(/bereits vollständig getilgt; keine weiteren Zahlungen/),
   ).toBeVisible()
   await page.getByRole('button', { name: 'English' }).click()
   await expect(graph).toHaveAccessibleName(/Remaining debt over time/)
@@ -650,6 +654,284 @@ test('reconciles payment composition and inspects aligned loan periods @cross-br
   ).not.toHaveAttribute('data-amount-cents', original!)
   await page.getByRole('textbox', { name: 'Amount per loan year' }).fill('')
   await expect(graph.locator('[data-payment-series="additional-repayments"]')).toHaveCount(0)
+})
+
+test('provides complete chart alternatives and keyboard inspection @cross-browser', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(60000)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await completeFinancedPurchase(page)
+  await page.getByRole('textbox', { name: 'Betrag pro Darlehensjahr' }).fill('5000')
+  const explorer = page.locator('.amortization-breakdown')
+  await explorer.locator(':scope > summary').focus()
+  await page.keyboard.press('Enter')
+  const horizon = explorer.getByRole('radio', { name: 'Zinsbindung', exact: true })
+  await horizon.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(
+    explorer.getByRole('radio', { name: 'Vollständige Rückzahlung', exact: true }),
+  ).toBeChecked()
+  const debt = page.locator('.remaining-debt-chart')
+  const payments = page.locator('.payment-composition-chart')
+  const debtSelect = debt.getByRole('combobox')
+  const paymentSelect = payments.getByRole('combobox')
+  await expect(debt.locator('.chart-inspection-announcement')).toBeEmpty()
+  await expect(payments.locator('.chart-inspection-announcement')).toBeEmpty()
+  await debtSelect.focus()
+  await page.keyboard.press('ArrowDown')
+  await expect(debtSelect).toHaveValue('12')
+  await expect(debtSelect).toBeFocused()
+  await expect(debt.locator('.chart-inspection-announcement')).toContainText('Darlehensmonat 12')
+  await debtSelect.selectOption('203')
+  await expect(debt.locator('.chart-inspection-announcement')).toContainText(
+    'Mit Sondertilgung: 0 € · Volltilgung',
+  )
+  await debtSelect.focus()
+  await page.keyboard.press('Tab')
+  const debtSummary = debt.locator('.chart-data-view > summary')
+  await expect(debtSummary).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(debtSummary).toBeFocused()
+  const debtData = debt.locator('.chart-data-view')
+  const debtTable = debtData.getByRole('table')
+  await expect(debtTable).toHaveAccessibleName(
+    /Datenansicht: Restschuld im Zeitverlauf.*Vollständige Rückzahlung.*Jährlich.*EUR/,
+  )
+  await expect(debtTable.getByRole('row')).toHaveCount(25)
+  const opening = debtTable
+    .getByRole('rowheader', { name: /Darlehensmonat 0.*Anfangsschuld/ })
+    .locator('..')
+  await expect(opening.getByRole('cell').nth(0)).toHaveText('200.000 €')
+  await expect(opening.getByRole('cell').nth(1)).toHaveText('200.000 €')
+  const payoff = debtTable
+    .getByRole('rowheader', { name: /Darlehensmonat 203.*Projektion/ })
+    .locator('..')
+  await expect(payoff.getByRole('cell').nth(1)).toHaveText('0 € · Volltilgung')
+  await page.keyboard.press('Tab')
+  await expect(debtData.getByRole('region')).toBeFocused()
+  await page.keyboard.press('Tab')
+  const debtNext = debtData.getByRole('button', { name: 'Weiter', exact: true })
+  await expect(debtNext).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(debtData.getByRole('status')).toHaveText('Einträge 25–31 von 31 · Seite 2 von 2')
+  await expect(debtNext).toBeFocused()
+  await expect(debtNext).toHaveAttribute('aria-disabled', 'true')
+  const debtFirst = debtData.getByRole('button', { name: 'Erste Seite' })
+  await debtFirst.focus()
+  await page.keyboard.press('Tab')
+  await expect(debtData.getByRole('button', { name: 'Zurück', exact: true })).toBeFocused()
+  await expect(
+    debtTable
+      .getByRole('rowheader', { name: /Darlehensmonat 348/ })
+      .locator('..')
+      .getByRole('cell')
+      .nth(1),
+  ).toHaveText('0 € · bereits vollständig getilgt; keine weiteren Zahlungen')
+  await paymentSelect.selectOption('193')
+  await expect(payments.locator('.chart-inspection-announcement')).toContainText(
+    'Monate 193–203 · Teiljahr · Projektion · Volltilgung',
+  )
+  await paymentSelect.focus()
+  await page.keyboard.press('Tab')
+  const paymentSummary = payments.locator('.chart-data-view > summary')
+  await expect(paymentSummary).toBeFocused()
+  await page.keyboard.press('Space')
+  const paymentData = payments.locator('.chart-data-view')
+  const paymentTable = paymentData.getByRole('table')
+  await expect(paymentTable.getByRole('columnheader')).toHaveCount(7)
+  const first = paymentTable
+    .getByRole('rowheader', { name: /^Jahr 1 · Monate 1–12/ })
+    .nth(1)
+    .locator('..')
+  const firstCells = first.getByRole('cell')
+  await expect(firstCells).toHaveText([
+    'Mit Sondertilgung',
+    '6.935,21 €',
+    '4.064,83 €',
+    '5.000 €',
+    '11.000,04 €',
+    '16.000,04 €',
+  ])
+  await paymentData.getByRole('button', { name: 'Letzte Seite' }).focus()
+  await page.keyboard.press('Enter')
+  const final = paymentTable
+    .getByRole('rowheader', { name: /Jahr 17 · Monate 193–203.*Teiljahr.*Projektion.*Volltilgung/ })
+    .locator('..')
+  await expect(final.getByRole('cell')).toHaveText([
+    'Mit Sondertilgung',
+    '146,03 €',
+    '9.041,99 €',
+    '0 €',
+    '9.188,02 €',
+    '9.188,02 €',
+  ])
+  await expect(paymentData.getByRole('status')).toHaveText('Einträge 25–46 von 46 · Seite 2 von 2')
+  await expect(paymentSelect).toHaveValue('193')
+  await page.getByRole('button', { name: 'English' }).click()
+  await expect(debtSelect).toHaveValue('203')
+  await expect(paymentSelect).toHaveValue('193')
+  await expect(paymentTable).toHaveAccessibleName(
+    /Data view: Payment composition.*Full projected repayment.*Annual.*EUR/,
+  )
+  await expect(paymentData.getByRole('status')).toHaveText('Entries 25–46 of 46 · Page 2 of 2')
+  await expect(payments.locator('.chart-inspection-announcement')).toContainText(
+    'Months 193–203 · Partial year · Projection · Payoff',
+  )
+  await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto')
+  expect(
+    (await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()).violations,
+  ).toEqual([])
+  const css = async (locator: ReturnType<typeof page.locator>, property: string) =>
+    locator.evaluate(
+      (e, name) =>
+        (
+          globalThis as unknown as {
+            getComputedStyle: (el: unknown) => { getPropertyValue: (key: string) => string }
+          }
+        )
+          .getComputedStyle(e)
+          .getPropertyValue(name),
+      property,
+    )
+  const luminance = (color: string) => {
+    const rgb = color
+      .match(/[\d.]+/g)!
+      .slice(0, 3)
+      .map(Number)
+      .map((v) => v / 255)
+      .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722
+  }
+  const contrast = (a: string, b: string) => {
+    const l = [luminance(a), luminance(b)].sort((x, y) => y - x)
+    return (l[0] + 0.05) / (l[1] + 0.05)
+  }
+  const surface = await css(payments.locator('.payment-chart-scroll'), 'background-color')
+  for (const component of ['interest', 'scheduledPrincipal', 'additionalPrincipal']) {
+    const fill = await css(payments.locator(`.payment-fill--${component}`).first(), 'fill')
+    expect(contrast(fill, surface)).toBeGreaterThanOrEqual(3)
+    const segmentBorder = await css(
+      payments.locator(`[data-component="${component}"]`).first(),
+      'stroke',
+    )
+    expect(contrast(fill, segmentBorder)).toBeGreaterThanOrEqual(3)
+  }
+  for (const selector of [
+    '.debt-series--baseline',
+    '.debt-series--additional-repayments',
+    '.debt-chart-hatch',
+    '.debt-chart-boundary',
+    '.debt-chart-inspection',
+  ])
+    expect(
+      contrast(await css(debt.locator(selector).first(), 'stroke'), surface),
+    ).toBeGreaterThanOrEqual(3)
+  expect(
+    (
+      await css(
+        debt.locator('.debt-series--additional-repayments .debt-chart-line').first(),
+        'stroke-dasharray',
+      )
+    )
+      .split(/[, ]+/)
+      .map(parseFloat),
+  ).toEqual([8, 5])
+  expect(
+    (
+      await css(
+        payments.locator('.payment-bar-outline--additional-repayments').first(),
+        'stroke-dasharray',
+      )
+    )
+      .split(/[, ]+/)
+      .map(parseFloat),
+  ).toEqual([3, 2])
+  for (const width of [360, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const chart of [debt, payments]) {
+      const data = chart.locator('.chart-data-view')
+      for (const target of [
+        chart.getByRole('combobox'),
+        data.locator('summary'),
+        data.getByRole('region'),
+        data.getByRole('button', { name: 'First page' }),
+      ]) {
+        await target.focus()
+        // Reach this control through actual sequential keyboard navigation.
+        await page.keyboard.press('Tab')
+        await page.keyboard.press('Shift+Tab')
+        await expect(target).toBeFocused()
+        expect(await css(target, 'outline-style')).toBe('solid')
+        expect(parseFloat(await css(target, 'outline-width'))).toBeGreaterThanOrEqual(3)
+        expect(contrast(await css(target, 'outline-color'), surface)).toBeGreaterThanOrEqual(3)
+        const bounds = await target.boundingBox()
+        expect(bounds!.x).toBeGreaterThanOrEqual(0)
+        expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+      }
+      for (const scroll of [
+        chart.locator('.debt-chart-scroll,.payment-chart-scroll'),
+        data.getByRole('region'),
+      ]) {
+        await expect(scroll).toHaveCSS('scroll-behavior', 'auto')
+        await expect(scroll).toHaveCSS('animation-name', 'none')
+      }
+      if (width === 390 || width === 1440) {
+        await data.locator('summary').focus()
+        await data.locator('summary').scrollIntoViewIfNeeded()
+        const skipBounds = await page.locator('.skip-link').boundingBox()
+        expect(skipBounds!.y + skipBounds!.height).toBeLessThanOrEqual(0)
+        await page.screenshot({
+          fullPage: false,
+          animations: 'disabled',
+          path: testInfo.outputPath(
+            `explorer-alternative-${chart === debt ? 'debt' : 'payment'}-${width === 390 ? 'mobile' : 'desktop'}.png`,
+          ),
+        })
+      }
+    }
+    expect(
+      await page.evaluate<boolean>(
+        'document.documentElement.scrollWidth > document.documentElement.clientWidth',
+      ),
+    ).toBe(false)
+  }
+  await page.emulateMedia({ forcedColors: 'active' })
+  const forcedColors = await page.evaluate(() => {
+    const browser = globalThis as unknown as {
+      matchMedia: (query: string) => { matches: boolean }
+      CSS: { supports: (property: string, value: string) => boolean }
+    }
+    return (
+      browser.matchMedia('(forced-colors: active)').matches &&
+      browser.CSS.supports('forced-color-adjust', 'none')
+    )
+  })
+  if (forcedColors) {
+    await expect(payments.locator('.payment-fill--interest').first()).toHaveCSS(
+      'forced-color-adjust',
+      'none',
+    )
+  }
+  await page.emulateMedia({ forcedColors: 'none' })
+  await page.addStyleTag({ content: '.debt-chart-svg,.payment-chart-svg { display:none }' })
+  await debtSelect.selectOption('120')
+  await expect(debt.locator('.debt-chart-inspector')).toContainText('End of fixed interest')
+  await expect(paymentTable).toBeVisible()
+  await explorer.getByRole('radio', { name: 'Monthly', exact: true }).check()
+  await expect(explorer.getByRole('table', { name: /Data view/ })).toHaveCount(0)
+  await expect(debtSelect).toHaveValue('0')
+  await expect(paymentSelect).toHaveValue('1')
+  await paymentSummary.focus()
+  await page.keyboard.press('Enter')
+  await paymentData.getByRole('button', { name: 'Next', exact: true }).click()
+  await expect(paymentData.getByRole('button', { name: 'Next', exact: true })).toBeFocused()
+  await expect(paymentData.getByRole('status')).toContainText('Entries 25–48 of 551')
+  await page
+    .getByRole('textbox', { name: 'Nominal annual interest rate', exact: true })
+    .fill('4.00')
+  await expect(explorer.getByRole('table', { name: /Data view/ })).toHaveCount(0)
+  await expect(payments.locator('.chart-inspection-announcement')).toBeEmpty()
 })
 
 test('explains invalid repayment schedules and cash purchases in the explorer @cross-browser', async ({
