@@ -1,9 +1,10 @@
-import { useId, useMemo, useState } from 'react'
+import { useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { formatEuroFromCents, formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import type { AmortizationDetail, AmortizationHorizon } from './amortizationPeriods'
+import { ChartDataView } from './ChartDataView'
 import { createRemainingDebtChart, type DebtChartSchedule } from './remainingDebtChart'
 
 const plot = { left: 100, right: 688, top: 38, bottom: 282 }
@@ -31,6 +32,8 @@ export function RemainingDebtChart({
 }) {
   const { t } = useTranslation()
   const id = useId()
+  const scroll = useRef<HTMLDivElement>(null)
+  const [hasInspected, setHasInspected] = useState(false)
   const [requestedMonth, setRequestedMonth] = useState(0)
   const model = useMemo(
     () => createRemainingDebtChart(schedules, horizon, detail, commonHorizonMonth),
@@ -47,12 +50,41 @@ export function RemainingDebtChart({
   const projected = model.endMonth > model.fixedMonth
   const boundaryVisible = model.fixedMonth <= model.endMonth
   const xTicks = [...new Set([0, ...[1, 2, 3, 4].map((n) => Math.round((model.endMonth * n) / 4))])]
+  const monthLabel = (month: number) =>
+    `${t('finance.results.breakdown.month')} ${formatNumber(month, language)}`
+  const monthBasis = (month: number) =>
+    [
+      month === 0 ? t('finance.results.breakdown.openingBalance') : '',
+      t(
+        `finance.results.breakdown.${month > model.fixedMonth ? 'projectedPeriod' : 'chartAccess.withinFixed'}`,
+      ),
+      month === model.fixedMonth ? t('finance.results.breakdown.fixedPeriodEnd') : '',
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  const balanceLabel = (series: (typeof model.series)[number], month: number) =>
+    [
+      formatEuroFromCents(
+        series.points.find((point) => point.month === month)!.balanceCents,
+        language,
+      ),
+      month === series.payoffMonth ? t('finance.results.breakdown.payoff') : '',
+      month > series.payoffMonth ? t('finance.results.breakdown.debtChart.alreadyRepaid') : '',
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  const dataTitle = t('finance.results.breakdown.chartAccess.dataView', {
+    title: t('finance.results.breakdown.debtChart.title'),
+  })
   return (
     <section aria-labelledby={`${id}-heading`} className="remaining-debt-chart">
       <h3 id={`${id}-heading`}>{t('finance.results.breakdown.debtChart.title')}</h3>
       <p className="result-detail" id={`${id}-basis`}>
         {t('finance.results.breakdown.debtChart.basis')}{' '}
         {detail === 'annual' ? t('finance.results.breakdown.debtChart.annualBasis') : ''}
+      </p>
+      <p className="result-detail" id={`${id}-help`}>
+        {t('finance.results.breakdown.chartAccess.inspectHelp')}
       </p>
       <ul className="debt-chart-legend">
         {model.series.map((series) => (
@@ -91,11 +123,13 @@ export function RemainingDebtChart({
       <div
         aria-label={t('finance.results.breakdown.debtChart.scroll')}
         className="debt-chart-scroll"
+        ref={scroll}
+        aria-describedby={`${id}-help`}
         role="region"
         tabIndex={0}
       >
         <svg
-          aria-describedby={`${id}-basis`}
+          aria-describedby={`${id}-basis ${id}-help`}
           aria-labelledby={`${id}-heading ${id}-description`}
           className="debt-chart-svg"
           role="img"
@@ -235,7 +269,17 @@ export function RemainingDebtChart({
         <label htmlFor={`${id}-month`}>{t('finance.results.breakdown.debtChart.inspect')}</label>
         <select
           id={`${id}-month`}
-          onChange={(event) => setRequestedMonth(Number(event.target.value))}
+          aria-describedby={`${id}-help`}
+          aria-controls={`${id}-values`}
+          onChange={(event) => {
+            const month = Number(event.target.value)
+            setRequestedMonth(month)
+            setHasInspected(true)
+            if (scroll.current) {
+              const scale = scroll.current.scrollWidth / 720
+              scroll.current.scrollLeft = x(month) * scale - scroll.current.clientWidth / 2
+            }
+          }}
           value={inspectedMonth}
         >
           {model.months.map((month) => (
@@ -245,23 +289,51 @@ export function RemainingDebtChart({
             </option>
           ))}
         </select>
-        <dl>
+        <p className="result-detail">
+          {monthLabel(inspectedMonth)} · {monthBasis(inspectedMonth)}
+        </p>
+        <dl id={`${id}-values`}>
           {model.series.map((series) => (
             <div key={series.id}>
               <dt>{labels[series.id]}</dt>
-              <dd>
-                {formatEuroFromCents(
-                  series.points.find((point) => point.month === inspectedMonth)!.balanceCents,
-                  language,
-                )}
-                {inspectedMonth > series.payoffMonth
-                  ? ` · ${t('finance.results.breakdown.debtChart.alreadyRepaid')}`
-                  : ''}
-              </dd>
+              <dd>{balanceLabel(series, inspectedMonth)}</dd>
             </div>
           ))}
         </dl>
       </div>
+      <p
+        className="chart-inspection-announcement"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {hasInspected
+          ? `${monthLabel(inspectedMonth)} · ${monthBasis(inspectedMonth)}. ${model.series.map((series) => `${labels[series.id]}: ${balanceLabel(series, inspectedMonth)}`).join('. ')}`
+          : ''}
+      </p>
+      <ChartDataView
+        id={`${id}-data`}
+        title={t('finance.results.breakdown.debtChart.title')}
+        caption={`${dataTitle} · ${t(`finance.results.breakdown.horizon.${horizon}`)} · ${t(`finance.results.breakdown.detail.${detail}`)} · EUR`}
+        columns={[
+          t('finance.results.breakdown.chartAccess.period'),
+          ...model.series.map((series) => labels[series.id]),
+        ]}
+        rowCount={model.months.length}
+        language={language}
+        getRows={(first, count) =>
+          model.months.slice(first, first + count).map((month) => ({
+            key: month,
+            heading: (
+              <>
+                {monthLabel(month)}
+                <small className="amortization-period-marker">{monthBasis(month)}</small>
+              </>
+            ),
+            cells: model.series.map((series) => balanceLabel(series, month)),
+          }))
+        }
+      />
     </section>
   )
 }

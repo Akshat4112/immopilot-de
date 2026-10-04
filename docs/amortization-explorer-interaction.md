@@ -225,3 +225,44 @@ post-fixed-interest payments trigger the constant-rate projection warning. Cash/
 show no chart. Unsafe annual sums produce an explicit monthly-recovery message. No animation or
 new charting dependency is introduced. Full explorer accessibility, bilingual/mobile/print polish
 and final explorer QA remain original PF-005.6–PF-005.8.
+
+## PF-005.6 implementation milestone
+
+Each chart now has its own native **Data view** disclosure, in addition to its labelled period
+selector and the repayment schedules below. A caption identifies the chart, horizon, detail and
+EUR units. Row and column headers retain native table semantics. Data views share the chart's
+controls, expose at most 24 entries per page and format only the visible page while open. Pagination
+announces the range without moving focus; unavailable buttons use `aria-disabled`, reject activation
+and leave the normal tab order, while a button that reaches the final page can retain focus.
+
+The debt equivalent includes every plotted month: opening principal, loan-year or monthly endpoints,
+exact fixed-interest and payoff months, and labelled zero balances after payoff. Payment equivalents
+include one row per actual bar with the schedule, actual included months, interest, scheduled and
+additional principal, regular payment and total payment. Partial, mixed, projected and payoff periods
+are labelled. There are no synthetic payment rows after payoff. Both alternatives use the chart's
+existing model values; neither changes the domain calculations or repayment tables.
+
+Native keyboard selection exposes the same amounts as pointer selection, announces the inspected
+period, basis and amounts politely, and scrolls the corresponding position into view. Initial render
+and input/control resets leave the inspection announcement empty; changing language retains the
+selection and formats the same values. Opening or paging a data view does not change the inspected
+period or graph. View/input changes reset chart alternatives along with chart inspection.
+
+Visible instructions explain keyboard inspection and locating all data. Graph descriptions refer to
+these instructions rather than flattening the structured tables into an SVG description. Labels,
+solid/dashed paths, circle/diamond points and solid/striped/dotted payment components do not depend
+on colour. Payment segment separators contrast against each fill; projection hatching no longer has
+a low-opacity stroke. Scroll regions draw their focus outline inside their bounds. Forced-colour
+styles retain patterned payment fills and system-colour debt outlines. Charts have no animation;
+reduced motion disables smooth scrolling through the existing global rule.
+
+The chart-alternative regression journey checks native Enter/Space disclosures, radio and selector
+arrows, tab order, pagination focus, exact payoff data, DE/EN state, operation with SVGs hidden,
+expanded-explorer axe results, computed contrast and focus visibility at 360/390/768/1024/1440px.
+These are browser and DOM checks, not a claim of a screen-reader listening audit or whole-site
+WCAG certification. Complete bilingual/mobile/print polish and final explorer QA remain PF-005.7
+and PF-005.8; print completeness remains a separate task.
+
+Reference guidance: [WAI complex images](https://www.w3.org/WAI/tutorials/images/complex/),
+[non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html), and
+[status messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages).
