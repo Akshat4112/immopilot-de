@@ -8,6 +8,7 @@ import type {
 import { FinancialValidationError } from '../../domain/shared/validation'
 import { formatEuroFromCents, formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
+import { RemainingDebtChart } from './RemainingDebtChart'
 import {
   createAmortizationPeriods,
   type AmortizationDetail,
@@ -256,7 +257,7 @@ export function AmortizationBreakdown({
     ...(baselineSchedule && effectiveChoice !== 'additional-repayments'
       ? [
           {
-            id: 'baseline',
+            id: 'baseline' as const,
             title: t('finance.results.breakdown.baseline'),
             schedule: baselineSchedule,
           },
@@ -265,7 +266,7 @@ export function AmortizationBreakdown({
     ...(hasSelectedSchedule && selectedSchedule && effectiveChoice !== 'baseline'
       ? [
           {
-            id: 'additional-repayments',
+            id: 'additional-repayments' as const,
             title: t('finance.results.breakdown.withAdditionalRepayments'),
             schedule: selectedSchedule,
           },
@@ -355,6 +356,14 @@ export function AmortizationBreakdown({
                   {t('finance.results.breakdown.noAdditionalRepayments')}
                 </p>
               ) : null}
+              <RemainingDebtChart
+                key={`${inputKey}:${horizon}:${detail}:${effectiveChoice}`}
+                schedules={schedules}
+                horizon={horizon}
+                detail={detail}
+                commonHorizonMonth={commonHorizonMonth}
+                language={language}
+              />
               {schedules.map(({ id, title, schedule }) => (
                 <ScheduleTable
                   id={id}

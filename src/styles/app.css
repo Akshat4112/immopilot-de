@@ -2007,3 +2007,127 @@ h3 {
     display: grid;
   }
 }
+
+.remaining-debt-chart {
+  margin-block: var(--space-5);
+  min-width: 0;
+}
+
+.debt-chart-legend,
+.debt-chart-endpoints {
+  padding: 0;
+  list-style: none;
+}
+
+.debt-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+}
+
+.debt-chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.debt-chart-legend svg {
+  width: 2.75rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.debt-chart-scroll {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.debt-chart-svg {
+  display: block;
+  width: 100%;
+  min-width: 36rem;
+}
+
+.debt-chart-axis,
+.debt-chart-axis-title {
+  fill: var(--color-text-primary);
+  font-size: 12px;
+}
+
+.debt-chart-axis-title {
+  font-weight: var(--font-weight-medium);
+}
+
+.debt-chart-axis line {
+  stroke: var(--color-border);
+}
+
+.debt-chart-hatch {
+  stroke: var(--color-text-secondary);
+  stroke-opacity: 0.15;
+}
+
+.debt-chart-boundary {
+  stroke: var(--color-text-primary);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 3 2 3;
+}
+
+.debt-chart-inspection {
+  stroke: var(--color-text-secondary);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.debt-series {
+  stroke: var(--color-brand);
+  fill: var(--color-surface);
+  stroke-width: 2.5;
+}
+
+.debt-series--additional-repayments {
+  stroke: var(--color-chart-comparison);
+}
+
+.debt-chart-line {
+  fill: none;
+}
+
+.debt-series--additional-repayments .debt-chart-line {
+  stroke-dasharray: 8 5;
+}
+
+.debt-chart-endpoints li {
+  margin-block: var(--space-2);
+}
+
+.debt-chart-inspector {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.debt-chart-inspector select {
+  width: min(100%, 24rem);
+  min-height: 2.75rem;
+}
+
+.debt-chart-inspector dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  margin: 0;
+}
+
+.debt-chart-inspector dd {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.debt-chart-payoff-label {
+  stroke: none;
+  fill: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+}

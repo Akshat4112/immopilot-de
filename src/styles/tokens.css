@@ -26,6 +26,7 @@
   --color-surface-card: rgb(255 253 248 / 76%);
   --color-border: var(--palette-line-200);
   --color-border-decorative: var(--palette-mint-150);
+  --color-chart-comparison: #345da7;
   --color-brand: var(--palette-ink-900);
   --color-brand-alpha: rgb(23 63 50 / 10%);
   --color-accent: var(--palette-lime-300);
