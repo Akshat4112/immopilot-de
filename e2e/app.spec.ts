@@ -777,6 +777,7 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
     'Months 193–203 · Partial year · Projection · Payoff',
   )
   await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto')
   expect(
     (await new AxeBuilder({ page }).include('.amortization-breakdown').analyze()).violations,
   ).toEqual([])
@@ -876,7 +877,11 @@ test('provides complete chart alternatives and keyboard inspection @cross-browse
       }
       if (width === 390 || width === 1440) {
         await data.locator('summary').focus()
-        await chart.screenshot({
+        await data.locator('summary').scrollIntoViewIfNeeded()
+        const skipBounds = await page.locator('.skip-link').boundingBox()
+        expect(skipBounds!.y + skipBounds!.height).toBeLessThanOrEqual(0)
+        await page.screenshot({
+          fullPage: false,
           animations: 'disabled',
           path: testInfo.outputPath(
             `explorer-alternative-${chart === debt ? 'debt' : 'payment'}-${width === 390 ? 'mobile' : 'desktop'}.png`,
