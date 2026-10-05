@@ -658,7 +658,11 @@ export const resources = {
               'Wähle Zeitraum, Darstellung und Verlauf. Monat 1 ist die erste monatliche Zahlung. Bei Sondertilgungen werden die Verläufe getrennt gezeigt.',
             baseline: 'Tilgungsplan ohne Sondertilgung',
             withAdditionalRepayments: 'Tilgungsplan mit Sondertilgung',
-            horizon: { label: 'Zeitraum', fixed: 'Zinsbindung', full: 'Vollständige Rückzahlung' },
+            horizon: {
+              label: 'Zeitraum',
+              fixed: 'Zinsbindung',
+              full: 'Vollständige Rückzahlung (Projektion)',
+            },
             detail: { label: 'Darstellung', annual: 'Jährlich', monthly: 'Monatlich' },
             schedule: {
               label: 'Verlauf',
@@ -669,7 +673,7 @@ export const resources = {
             chartAccess: {
               dataView: 'Datenansicht: {{title}}',
               dataHelp:
-                'Alle dargestellten Werte sind hier ohne Diagramm verfügbar. Die Ansicht folgt den gewählten Einstellungen. Pro Seite werden höchstens 24 Einträge gezeigt; die Tabellen darunter enthalten die vollständigen Zahlungsdetails.',
+                'Alle Diagrammwerte für die gewählten Einstellungen, mit höchstens 24 Einträgen pro Seite. Die Tilgungspläne darunter enthalten die vollständigen Zahlungsdetails.',
               inspectHelp:
                 'Mit den Pfeiltasten einen Zeitraum wählen und genaue Werte darunter lesen. Für alle Werte die Datenansicht öffnen. Die Diagramme lassen sich in ihrem eigenen Bereich horizontal scrollen.',
               pageRange: 'Einträge {{first}}–{{last}} von {{total}} · Seite {{page}} von {{pages}}',
@@ -722,7 +726,7 @@ export const resources = {
             annualPageRange:
               'Darlehensjahre {{first}}–{{last}} von {{total}} · Seite {{page}} von {{pages}}',
             annualUnavailable:
-              'Die jährlichen Summen überschreiten den unterstützten Zahlenbereich. Wählen Sie die monatliche Ansicht.',
+              'Die jährlichen Summen überschreiten den unterstützten Zahlenbereich. Wähle die monatliche Ansicht.',
             annualBasis:
               'Darlehensjahre umfassen Monate 1–12, 13–24 usw., keine Kalenderjahre. Zahlungen werden summiert; Schuldbeträge zeigen den Anfangs- und Endstand.',
             fixedHorizon: 'Betrachtungszeitraum bis zum Ende der Zinsbindung: Monat {{month}}.',
@@ -758,6 +762,11 @@ export const resources = {
             month: 'Darlehensmonat',
             openingBalance: 'Anfangsschuld',
             regularPayment: 'Reguläre Rate',
+            regularPaymentAnnual: 'Reguläre Zahlungen (Summe)',
+            tableScrollHelp:
+              'Für weitere Spalten horizontal wischen oder den Tabellenbereich fokussieren und die Pfeiltasten verwenden. Alle Beträge in EUR.',
+            unavailableHelp:
+              'Prüfe Sollzins, anfängliche Tilgung und Sondertilgungseingaben. Passe die Finanzierung an, bevor du den Tilgungsplan erneut prüfst.',
             interest: 'Zinsen',
             scheduledPrincipal: 'Reguläre Tilgung',
             additionalPrincipal: 'Sondertilgung',
@@ -1662,7 +1671,7 @@ export const resources = {
             chartAccess: {
               dataView: 'Data view: {{title}}',
               dataHelp:
-                'All plotted values are available here without the chart. This view follows the selected controls. Each page shows at most 24 entries; the tables below contain the complete payment details.',
+                'All chart values for the selected settings, with at most 24 entries per page. The repayment schedules below contain the complete payment details.',
               inspectHelp:
                 'Use the arrow keys to choose a period and read exact values below. Open the data view for all values. Charts scroll horizontally within their own regions.',
               pageRange: 'Entries {{first}}–{{last}} of {{total}} · Page {{page}} of {{pages}}',
@@ -1751,6 +1760,11 @@ export const resources = {
             month: 'Loan month',
             openingBalance: 'Opening debt',
             regularPayment: 'Regular payment',
+            regularPaymentAnnual: 'Regular payments (sum)',
+            tableScrollHelp:
+              'Swipe horizontally for more columns, or focus the table area and use the arrow keys. All amounts in EUR.',
+            unavailableHelp:
+              'Check the nominal interest, initial repayment and additional-repayment inputs. Adjust the financing before checking the schedule again.',
             interest: 'Interest',
             scheduledPrincipal: 'Scheduled principal',
             additionalPrincipal: 'Additional principal',

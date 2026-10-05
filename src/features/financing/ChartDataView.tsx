@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { AmortizationTableFrame } from './AmortizationTableFrame'
 import { formatNumber } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 
@@ -44,35 +45,27 @@ export function ChartDataView({
       {open ? (
         <>
           <p className="result-detail">{t('finance.results.breakdown.chartAccess.dataHelp')}</p>
-          <div
-            aria-label={t('finance.results.breakdown.scrollLabel', { title: summary })}
-            className="amortization-table-scroll chart-data-scroll"
-            role="region"
-            tabIndex={0}
-          >
-            <table className="amortization-table" id={tableId}>
-              <caption>{caption}</caption>
-              <thead>
-                <tr>
-                  {columns.map((column, index) => (
-                    <th scope="col" key={index}>
-                      {column}
-                    </th>
+          <AmortizationTableFrame caption={caption} title={summary} tableId={tableId} chartData>
+            <thead>
+              <tr>
+                {columns.map((column, index) => (
+                  <th scope="col" key={index}>
+                    {column}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {getRows(first, pageSize).map((row) => (
+                <tr key={row.key}>
+                  <th scope="row">{row.heading}</th>
+                  {row.cells.map((cell, index) => (
+                    <td key={index}>{cell}</td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {getRows(first, pageSize).map((row) => (
-                  <tr key={row.key}>
-                    <th scope="row">{row.heading}</th>
-                    {row.cells.map((cell, index) => (
-                      <td key={index}>{cell}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </AmortizationTableFrame>
           <div className="amortization-pagination">
             <p role="status" aria-live="polite" aria-atomic="true">
               {t('finance.results.breakdown.chartAccess.pageRange', {

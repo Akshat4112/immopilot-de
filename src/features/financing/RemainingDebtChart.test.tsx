@@ -170,7 +170,7 @@ describe('remaining-debt explorer chart', () => {
     expect(chart.querySelectorAll('[data-debt-series]')).toHaveLength(2)
     expect(screen.getByText('Ohne Sondertilgung · durchgezogen, Kreis')).toBeVisible()
     expect(screen.getByText('Mit Sondertilgung · gestrichelt, Raute')).toBeVisible()
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     expect(
       screen
         .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
@@ -189,7 +189,7 @@ describe('remaining-debt explorer chart', () => {
     renderWithProviders(explorer())
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     await user.selectOptions(
       screen.getByRole('combobox', { name: 'Darlehensmonat im Diagramm prüfen' }),
       '203',
@@ -224,7 +224,7 @@ describe('remaining-debt explorer chart', () => {
     const { rerender } = renderWithProviders(explorer(result))
     const user = userEvent.setup()
     await user.click(screen.getByText('Detaillierten Tilgungsplan öffnen'))
-    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung' }))
+    await user.click(screen.getByRole('radio', { name: 'Vollständige Rückzahlung (Projektion)' }))
     const before = screen
       .getByRole('img', { name: /Restschuld im Zeitverlauf/ })
       .querySelector('.debt-chart-line')!

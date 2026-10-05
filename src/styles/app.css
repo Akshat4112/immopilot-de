@@ -691,10 +691,28 @@ h3 {
   background: var(--color-surface);
 }
 
-.amortization-table caption {
-  padding: var(--space-3) var(--space-4);
+.amortization-table-frame {
+  min-width: 0;
+}
+
+.amortization-table-caption {
+  margin: 0 0 var(--space-2);
   font-weight: var(--font-weight-medium);
   text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.amortization-scroll-help {
+  margin-block: var(--space-2) var(--space-3);
+}
+
+.amortization-accessible-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .amortization-table th,
@@ -711,6 +729,9 @@ h3 {
   left: 0;
   text-align: left;
   background: var(--color-surface);
+  min-width: 10rem;
+  width: 12rem;
+  white-space: normal;
 }
 
 .amortization-table thead th {
@@ -2288,9 +2309,47 @@ h3 {
   padding-block: var(--space-2);
 }
 
+.chart-data-view[open] > summary {
+  margin-bottom: var(--space-2);
+}
+
 .chart-data-scroll th:first-child {
   min-width: 14rem;
   white-space: normal;
+}
+
+.amortization-table-scroll:focus-visible {
+  outline-offset: -3px;
+}
+
+.amortization-breakdown :where(.debt-chart-inspector, .payment-chart-inspector) select {
+  width: 100%;
+  max-width: 32rem;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+@media (max-width: 38.75rem) {
+  .amortization-breakdown {
+    padding: var(--space-4);
+  }
+
+  .amortization-controls label span,
+  .debt-chart-legend li,
+  .payment-chart-legend li,
+  .debt-chart-inspector dl > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .chart-data-scroll th:first-child {
+    min-width: 10rem;
+    width: 10rem;
+  }
 }
 
 :where(.debt-chart-scroll, .payment-chart-scroll, .chart-data-scroll):focus-visible {

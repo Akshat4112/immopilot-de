@@ -60,6 +60,10 @@ export function PaymentCompositionChart({
   const x = (index: number) => plot.left + index * slotWidth
   const y = (amount: number) =>
     plot.bottom - (amount / model.maximumPaymentCents) * (plot.bottom - plot.top)
+  const componentLabel = (component: (typeof inspectionComponents)[number]) =>
+    t(
+      `finance.results.breakdown.${component === 'regularPayment' && detail === 'annual' ? 'regularPaymentAnnual' : component}`,
+    )
   const labels = {
     baseline: t('finance.results.breakdown.schedule.baseline'),
     'additional-repayments': t('finance.results.breakdown.schedule.additional-repayments'),
@@ -126,7 +130,7 @@ export function PaymentCompositionChart({
         {components.map((component) => (
           <li key={component}>
             <span aria-hidden="true" className={`payment-swatch payment-swatch--${component}`} />
-            {t(`finance.results.breakdown.${component}`)} ·{' '}
+            {componentLabel(component)} ·{' '}
             {t(`finance.results.breakdown.paymentChart.pattern.${component}`)}
           </li>
         ))}
@@ -354,7 +358,7 @@ export function PaymentCompositionChart({
                     <dl>
                       {inspectionComponents.map((component) => (
                         <div key={component}>
-                          <dt>{t(`finance.results.breakdown.${component}`)}</dt>
+                          <dt>{componentLabel(component)}</dt>
                           <dd>{formatEuroFromCents(period[`${component}Cents`], language)}</dd>
                         </div>
                       ))}
@@ -381,7 +385,7 @@ export function PaymentCompositionChart({
               .map((series) => {
                 const period = series.periods.get(inspectedMonth)
                 return period
-                  ? `${labels[series.id]}: ${periodLabel(period)} · ${periodStatus(period, series.payoffMonth)}. ${inspectionComponents.map((component) => `${t(`finance.results.breakdown.${component}`)}: ${formatEuroFromCents(period[`${component}Cents`], language)}`).join('. ')}`
+                  ? `${labels[series.id]}: ${periodLabel(period)} · ${periodStatus(period, series.payoffMonth)}. ${inspectionComponents.map((component) => `${componentLabel(component)}: ${formatEuroFromCents(period[`${component}Cents`], language)}`).join('. ')}`
                   : `${labels[series.id]}: ${periodLabel(model.columns.find((p) => p.firstMonth === inspectedMonth)!)} · ${t('finance.results.breakdown.debtChart.alreadyRepaid')}`
               })
               .join('. ')
@@ -394,7 +398,7 @@ export function PaymentCompositionChart({
         columns={[
           t('finance.results.breakdown.chartAccess.period'),
           t('finance.results.breakdown.schedule.label'),
-          ...inspectionComponents.map((component) => t(`finance.results.breakdown.${component}`)),
+          ...inspectionComponents.map((component) => componentLabel(component)),
         ]}
         rowCount={actualPeriods.length}
         language={language}
