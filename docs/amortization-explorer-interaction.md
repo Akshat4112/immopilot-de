@@ -293,3 +293,13 @@ keyboard table scrolling, captions after horizontal scrolling, expanded-explorer
 text reflow. Financial calculations, scenario schemas, saved view state and dependencies are
 unchanged. This task addresses the original PF-005.7 bilingual/mobile definition; complete
 print/report delivery belongs to PF-006, and final explorer QA remains PF-005.8.
+
+## PF-005.8 coverage milestone
+
+The [coverage audit](amortization-explorer-coverage.md) maps every required regression case to
+existing or newly added model, component and browser evidence. New coverage reconciles every
+period against raw monthly cents, completes bilingual long-loan chart alternatives, and exercises
+the 1,200-month zero-interest loan, capped month-1 payoff, fixed-period 120/121 cutoff and recovery
+from invalid, removed and unavailable inputs in Chromium, Firefox and WebKit. The final PR records
+one audited candidate and its quality/browser results. This testing milestone does not close
+print/report tasks or replace the release/deployment gates.
