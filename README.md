@@ -63,6 +63,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Calculation-engine conventions](docs/calculation-engine-conventions.md): cent-exact money, decimal rates, rounding boundaries and validation errors
 - [Sondertilgung product contract](docs/sondertilgung-product-contract.md): approved inputs, timing, comparisons, migration and downstream-calculation behavior for PF-004
 - [Amortization explorer interaction](docs/amortization-explorer-interaction.md): proposed controls, horizons, annual/monthly detail, chart handoff and mobile behavior for the original tracker PF-005.1
+- [Report content and privacy contract](docs/report-content-and-privacy-contract.md): single-property and comparison report sections, recalculation/provenance, privacy controls and browser print/PDF delivery for PF-006.1
 - [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
 - [Version 1 release audit](docs/version-1-release-audit.md): deployed-app evidence, gate scorecard, findings and assigned remediation tasks
 - [PF-005.5 content and provenance audit](docs/pf-0055-content-provenance-audit.md): closure evidence for result provenance, legal/privacy content, metadata and landing copy
