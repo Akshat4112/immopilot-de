@@ -74,7 +74,8 @@ test('reaches all 1,200 zero-interest months in bilingual tables and chart alter
     '162,67 €',
     '162,67 €',
   ])
-  await schedule.getByRole('button', { name: 'Letzte Seite' }).click()
+  await schedule.getByRole('button', { name: 'Letzte Seite', exact: true }).focus()
+  await page.keyboard.press('Enter')
   await expect(schedule.getByRole('row').last().getByRole('cell').nth(1)).toHaveText('162,67 €')
   await page.getByRole('button', { name: 'English' }).click()
   await expect(
@@ -130,7 +131,9 @@ test('reaches all 1,200 zero-interest months in bilingual tables and chart alter
   await keyboardActivate(page, explorer.getByRole('radio', { name: 'Annual', exact: true }))
   await expect(explorer.getByRole('table')).toHaveCount(1)
   await expect(schedule.getByRole('status')).toHaveText('Loan years 1–24 of 100 · Page 1 of 5')
-  await schedule.getByRole('button', { name: 'Last page' }).click()
+  await schedule.getByRole('button', { name: 'Last page', exact: true }).focus()
+  await page.keyboard.press('Enter')
+  await expect(schedule.getByRole('status')).toHaveText('Loan years 97–100 of 100 · Page 5 of 5')
   await expect(schedule.getByRole('row').last().getByRole('rowheader')).toContainText('Year 100')
   await expect(schedule.getByRole('row').last().getByRole('cell').nth(1)).toHaveText('€1,996.04')
   await expect(schedule.getByRole('row').last().getByRole('cell').last()).toHaveText('€0')
