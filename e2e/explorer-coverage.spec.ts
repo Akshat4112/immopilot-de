@@ -256,7 +256,13 @@ test('applies the 120/121 boundary and clears stale views through invalid, remov
   }
   const explorer = page.locator('.amortization-breakdown')
   await keyboardActivate(page, explorer.locator(':scope > summary'))
-  const selected = explorer.locator('.amortization-schedule').last()
+  // An incomplete entry falls back to the baseline; completing it preserves that choice.
+  await keyboardActivate(page, explorer.getByRole('radio', { name: 'Beide Verläufe', exact: true }))
+  await expect(explorer.getByRole('radio', { name: 'Beide Verläufe', exact: true })).toBeChecked()
+  const selected = explorer.getByRole('region', {
+    name: 'Tilgungsplan mit Sondertilgung',
+    exact: true,
+  })
   await expect(selected.getByRole('row').last().getByRole('cell').nth(4)).toHaveText('6.000 €')
   await expect(selected.getByRole('row').last().getByRole('cell').nth(5)).toHaveText('17.000,04 €')
   await page.getByRole('button', { name: 'English' }).click()
