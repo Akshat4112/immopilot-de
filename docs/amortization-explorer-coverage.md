@@ -11,7 +11,12 @@ present. This task adds missing browser journeys for the longest supported zero-
 capped early payoff and recovery from invalid, removed and unavailable inputs. It also reconciles
 every period of both chart models and the schedule model to raw monthly cents across four fixtures
 and all horizon/detail combinations. Mortgage formulas, application components, localization,
-scenario schemas, dependencies and deployment configuration are unchanged.
+scenario schemas and deployment configuration are unchanged.
+
+Verification also found the existing development dependency `source-map-js` 1.2.1 blocked the
+high-severity audit gate. The lockfile updates only that transitive package to the patched 1.2.2
+release for [GHSA-68fv-2mgg-jv7q](https://github.com/advisories/GHSA-68fv-2mgg-jv7q). Direct dependency
+ranges and CI audit thresholds are unchanged.
 
 ## Requirement map
 
