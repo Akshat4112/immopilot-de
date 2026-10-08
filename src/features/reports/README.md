@@ -30,6 +30,9 @@ Inactive analysis fields, inactive down payment/broker override values, scenario
 timestamps are excluded. Names are omitted by default; opted-in names remain plain text and must be
 escaped by the renderer. Source URLs are bundled methodology citations.
 
+Inactive fields are cleared on schema-created copies before recalculation, so a hidden rental target
+or unused broker override cannot influence owner results or applied-assumption provenance.
+
 Options freeze output language, name inclusion and monthly-appendix intent. Capture records a UTC
 generation instant and a generic suggested filename. Supply `buildIdentity` from the existing
 release manifest when available; otherwise its status is explicitly unavailable. `generatedAt` is

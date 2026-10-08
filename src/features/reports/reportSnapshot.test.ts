@@ -180,6 +180,20 @@ describe('recalculated report snapshots', () => {
     expect(actual.options).toEqual({ includeScenarioNames: true, includeMonthlyAppendix: true })
   })
 
+  it('prevents inactive broker overrides and rental yield targets from changing owner report results', () => {
+    const saved = scenario()
+    const expected = snapshot(single(saved)).properties[0]!
+    saved.inputs.analysis.targetGrossYield = '999'
+    saved.inputs.analysis.targetNetYield = 'invalid inactive target'
+    saved.inputs.purchaseCosts.rateOverrides = { buyerBrokerRate: '99' }
+    const original = structuredClone(saved)
+    const actual = snapshot(single(saved)).properties[0]!
+    expect(actual.results).toEqual(expected.results)
+    expect(actual.provenance).toEqual(expected.provenance)
+    expect(snapshot(comparison([saved])).properties[0]!.results).toEqual(expected.results)
+    expect(saved).toEqual(original)
+  })
+
   it('isolates nested inputs, schedules, metadata and comparison values from subsequent mutations', () => {
     const saved = scenario()
     saved.inputs.financing.additionalRepayments.oneTimeAdditionalRepayments = [

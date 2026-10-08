@@ -194,6 +194,18 @@ function reportInputs(inputs: ScenarioWorkspaceSnapshot): ReportInputs {
   }
 }
 
+/** Clear inactive fields on schema-created copies before they can affect calculation provenance. */
+function clearInactiveInputs(inputs: ScenarioWorkspaceSnapshot) {
+  if (!inputs.purchaseCosts.brokerInvolved && inputs.purchaseCosts.rateOverrides)
+    delete inputs.purchaseCosts.rateOverrides.buyerBrokerRate
+  if (inputs.financing.mode === 'available-equity') inputs.financing.downPayment = ''
+  const inactiveFields =
+    inputs.analysis.propertyUse === 'owner-occupier'
+      ? ([...rentalFields, 'targetGrossYield', 'targetNetYield'] as const)
+      : ownerFields
+  for (const field of inactiveFields) inputs.analysis[field] = ''
+}
+
 /** Syntax guard only: existing domain APIs still own units, bounds, rounding and financial validation. */
 function invalidInputFields(
   inputs: ScenarioWorkspaceSnapshot,
@@ -453,6 +465,7 @@ export function capturePropertyReport(
     const parsed = scenarioInputsSchema.safeParse(source.inputs)
     if (!parsed.success) return { status: 'blocked', issue: 'invalid-schema' }
     const inputs = parsed.data
+    clearInactiveInputs(inputs)
     const issue = inputIssue(inputs, source.inputLocale, 1)
     if (issue) return issue
     const dashboard = calculateScenarioDashboard(
@@ -513,6 +526,7 @@ export function captureComparisonReport(
       const entry = saved.get(id)
       if (!entry) return { status: 'blocked', issue: 'invalid-selection' }
       const { scenario } = entry
+      clearInactiveInputs(scenario.inputs)
       const issue = inputIssue(scenario.inputs, scenario.locale, index + 1)
       if (issue) return issue
       const comparison = calculateSavedScenarioComparison(scenario)
