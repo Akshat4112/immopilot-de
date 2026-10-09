@@ -96,9 +96,10 @@ aliases may be introduced later only when both TypeScript and Vite resolve them 
 - Normative PD-007 and PD-010 fixtures remain under `data/fixtures` and are consumed without
   rewriting their expected results.
 
-## Current foundation boundary
+## Current implementation boundary
 
-Routing, localization, design tokens and the responsive application shell are implemented. The
-calculator routes intentionally remain presentation placeholders until the framework-free domain
-calculations are added by their owning roadmap tasks. Persistence and complete financial workflows
-remain deferred to those tasks.
+Routing, localization, design tokens, the responsive shell and the framework-free Version 1 domain
+calculations are implemented. Purchase costs, financing, results, browser-local scenarios, JSON and
+URL portability, and three-property comparison are connected through the shared scenario workspace.
+PF-004 adds Sondertilgung inputs and selects the existing additional-repayment schedule for affected
+downstream results under the approved product contract.

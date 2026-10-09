@@ -21,7 +21,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "typecheck": "tsc -b",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/build-release-manifest.mjs",
+    "release:verify": "node scripts/verify-release-artifact.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -38,6 +39,7 @@
     "zustand": "5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "7.0.1",

@@ -84,9 +84,19 @@ function normalizeOneTimeRepayment(
   }
 
   const repayment = value as Record<string, unknown>
+  const month = positiveWholeMonth(repayment.month, field + '.month')
+
+  if (month > maximumAmortizationMonths) {
+    return validationFailure(
+      financialValidationErrorCodes.outOfRange,
+      field + '.month',
+      field + '.month must not exceed the supported amortization horizon',
+      repayment.month,
+    )
+  }
 
   return {
-    month: positiveWholeMonth(repayment.month, field + '.month'),
+    month,
     amountCents: nonNegativeMoneyCents(repayment.amountCents, field + '.amountCents'),
   }
 }
@@ -382,7 +392,6 @@ function calculateAmortizationScheduleInternal(
   }
 
   const selectedMonth = optionalSelectedMonth(input.selectedMonth)
-  const additionalRepayments = normalizeAdditionalRepaymentPlan(input.additionalRepayments)
 
   if (input.payment.cashPurchase) {
     if (input.fixedInterestMonths !== undefined) {
@@ -392,6 +401,7 @@ function calculateAmortizationScheduleInternal(
     return cashPurchaseSchedule(input.payment, selectedMonth)
   }
 
+  const additionalRepayments = normalizeAdditionalRepaymentPlan(input.additionalRepayments)
   const fixedInterestMonths = positiveWholeMonth(input.fixedInterestMonths, 'fixedInterestMonths')
 
   return calculateMortgageSchedule(

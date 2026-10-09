@@ -48,6 +48,9 @@ jobs:
       - name: Build production application
         run: npm run build
 
+      - name: Verify candidate artifact identity and digests
+        run: npm run release:verify -- "$(git rev-parse HEAD)"
+
       - name: Audit all dependencies
         run: npm audit --audit-level=high
 
@@ -74,8 +77,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install supported browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Playwright smoke test
         run: npm run test:e2e
@@ -88,5 +91,14 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload explorer visual evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: explorer-visual-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/explorer-*.png
           if-no-files-found: ignore
           retention-days: 7

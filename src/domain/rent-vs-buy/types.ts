@@ -53,7 +53,10 @@ export interface AvailableRentVersusBuyResult {
   appliedSellingCostRate: Rate
   includeAdditionalRepaymentsInMatchedBudget: boolean
   mortgageProjectionAssumption:
-    'cash-purchase' | 'within-fixed-period' | 'constant-initial-rate-beyond-fixed-period'
+    | 'cash-purchase'
+    | 'within-fixed-period'
+    | 'within-fixed-period-or-paid-off'
+    | 'constant-initial-rate-beyond-fixed-period'
   rows: readonly RentVersusBuyMonth[]
   atAnalysisMonth: RentVersusBuyMonth
   breakEven: RentVersusBuyBreakEven

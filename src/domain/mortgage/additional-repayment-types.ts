@@ -40,6 +40,7 @@ export interface AvailableAdditionalRepaymentComparisonResult {
   baseline: AvailableAmortizationScheduleResult
   withAdditionalRepayments: AvailableAmortizationScheduleResult
   interestSavedThroughFixedPeriodCents: MoneyCents
+  remainingDebtReductionAtFixedPeriodCents: MoneyCents
   projectedLifetimeInterestSavedCents: MoneyCents
   timeSavedMonths: number
 }

@@ -192,7 +192,12 @@
 }
 
 .route-page-copy {
+  min-width: 0;
   max-width: 49rem;
+}
+
+.route-page-copy--wide {
+  max-width: none;
 }
 
 .route-page h1 {
@@ -231,8 +236,15 @@
   margin: 0;
 }
 
-.site-footer span {
+.site-footer > span {
   white-space: nowrap;
+}
+
+.site-footer__notice {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
 @media (max-width: 64rem) {

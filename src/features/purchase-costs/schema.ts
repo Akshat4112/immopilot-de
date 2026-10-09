@@ -46,23 +46,19 @@ export const rateOverridesSchema = z
   .object({
     transferTaxRate: z
       .string()
-      .regex(/^\d+(\.\d+)?$/)
+      .regex(/^\d+(?:[.,]\d+)?$/)
       .optional(),
     notaryRate: z
       .string()
-      .regex(/^\d+(\.\d+)?$/)
+      .regex(/^\d+(?:[.,]\d+)?$/)
       .optional(),
     landRegisterRate: z
       .string()
-      .regex(/^\d+(\.\d+)?$/)
+      .regex(/^\d+(?:[.,]\d+)?$/)
       .optional(),
     buyerBrokerRate: z
       .string()
-      .regex(/^\d+(\.\d+)?$/)
-      .optional(),
-    financedAcquisitionCostShare: z
-      .string()
-      .regex(/^\d+(\.\d+)?$/)
+      .regex(/^\d+(?:[.,]\d+)?$/)
       .optional(),
   })
   .optional()

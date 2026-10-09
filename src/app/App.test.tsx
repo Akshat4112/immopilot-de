@@ -40,6 +40,12 @@ describe('App', () => {
     expect(screen.getByRole('link', { name: 'Überblick' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByText('250.000 €')).toBeVisible()
     expect(screen.getByText(/kein Darlehensangebot oder Finanzierungszusage/i)).toBeVisible()
+    expect(screen.getByText('Version 1 · Release-Prüfung')).toBeVisible()
+    expect(screen.queryByText(/interaktiven Rechner werden schrittweise/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Datenschutz & Hinweise' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    )
     expect(screen.getAllByRole('article')).toHaveLength(3)
   })
 
@@ -109,5 +115,49 @@ describe('App', () => {
 
     expect(screen.getByRole('link', { name: 'Überblick' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
+  })
+
+  it('provides the bilingual privacy and financial notice from the application shell', async () => {
+    const user = userEvent.setup()
+    renderApp('/financing')
+
+    await user.click(screen.getByRole('link', { name: 'Datenschutz & Hinweise' }))
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Datenschutz und finanzielle Hinweise' }),
+    ).toBeVisible()
+    expect(screen.getByText(/Erst nach deiner Auswahl „Szenario speichern“/)).toBeVisible()
+    expect(screen.getByRole('link', { name: 'GitHub Pages: Datenerhebung' })).toBeVisible()
+    expect(document.title).toBe('Datenschutz und Hinweise · ImmoPilot DE')
+
+    await user.click(screen.getByRole('button', { name: 'English' }))
+    expect(screen.getByRole('heading', { name: 'Privacy and financial notices' })).toBeVisible()
+    expect(screen.getByText(/only after you select “Save scenario”/)).toBeVisible()
+    expect(document.title).toBe('Privacy and notices · ImmoPilot DE')
+  })
+
+  it('opens the saved-scenarios workspace from the primary navigation', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('link', { name: 'Gespeicherte Szenarien' }))
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Gespeicherte Szenarien' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Gespeicherte Szenarien' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
+
+  it('opens the property comparison workspace from the primary navigation', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('link', { name: 'Vergleich' }))
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Immobilien im direkten Vergleich' }),
+    ).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Vergleich' })).toHaveAttribute('aria-current', 'page')
   })
 })
