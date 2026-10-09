@@ -335,607 +335,11 @@ h3 {
   }
 }
 
-/* Local scenario persistence workspace */
-.scenario-workspace {
-  display: grid;
-  gap: var(--space-6);
-  margin-top: var(--space-9);
-}
-
-.scenario-panel,
-.scenario-notice {
-  padding: clamp(var(--space-5), 4vw, var(--space-7));
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-card);
-}
-
-.scenario-panel h2,
-.scenario-panel p,
-.scenario-notice p {
-  margin-bottom: var(--space-3);
-}
-
-.scenario-notice--warning {
-  border-color: var(--color-warning-border);
-  background: var(--color-warning-surface);
-}
-
-.scenario-create-row,
-.scenario-panel-heading,
-.scenario-share-row,
-.scenario-card-heading {
-  display: flex;
-  gap: var(--space-4);
-  align-items: end;
-  justify-content: space-between;
-}
-
-.scenario-create-row .form-field,
-.scenario-card-heading .form-field,
-.scenario-share-row input {
-  flex: 1 1 20rem;
-  margin: 0;
-}
-
-.scenario-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.scenario-actions .primary-action,
-.scenario-actions .secondary-action,
-.scenario-share-row .secondary-action,
-.scenario-file-action {
-  min-height: var(--control-height);
-  padding-inline: var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  font: inherit;
-  cursor: pointer;
-}
-
-.scenario-actions .primary-action {
-  border-color: var(--color-brand);
-}
-
-.scenario-list {
-  display: grid;
-  gap: var(--space-4);
-  margin: var(--space-5) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.scenario-card {
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-}
-
-.scenario-card small,
-.scenario-empty {
-  color: var(--color-text-secondary);
-}
-
-.scenario-file-action {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.scenario-file-action input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
-
-.scenario-share-row input {
-  min-width: 0;
-  height: var(--control-height);
-  padding-inline: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  font: inherit;
-}
-
-.scenario-status {
-  min-height: 1.5rem;
-  margin: 0;
-  color: var(--color-brand);
-  font-weight: var(--font-weight-medium);
-}
-
-.scenario-confirmation {
-  margin-top: var(--space-5);
-  padding: var(--space-4);
-  border: var(--border-width) solid var(--color-warning-border);
-  border-radius: var(--radius-md);
-  background: var(--color-warning-surface);
-}
-
-.scenario-delete-warning {
-  align-self: center;
-  color: var(--color-warning-text);
-  font-weight: var(--font-weight-medium);
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 53.75rem) {
-  .scenario-create-row,
-  .scenario-panel-heading,
-  .scenario-share-row,
-  .scenario-card-heading {
-    display: grid;
-    align-items: stretch;
-  }
-}
-
-/* Saved property comparison workspace */
-.comparison-workspace {
-  display: grid;
-  min-width: 0;
-  gap: var(--space-7);
-  margin-top: var(--space-9);
-}
-
-.comparison-workspace > section {
-  min-width: 0;
-}
-
-.comparison-picker,
-.comparison-empty {
-  padding: clamp(var(--space-5), 4vw, var(--space-7));
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-card);
-}
-
-.comparison-picker {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
-  gap: var(--space-5);
-  align-items: end;
-}
-
-.comparison-picker h2,
-.comparison-picker p,
-.comparison-empty h2 {
-  margin-bottom: var(--space-3);
-}
-
-.comparison-empty .primary-action {
-  margin-top: var(--space-3);
-}
-
-.comparison-picker-controls {
-  display: flex;
-  gap: var(--space-3);
-  align-items: end;
-}
-
-.comparison-picker-controls .form-field {
-  flex: 1 1 auto;
-  margin: 0;
-}
-
-.comparison-picker-controls select {
-  width: 100%;
-  min-height: var(--control-height);
-  padding-inline: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-  background: var(--color-surface);
-  font: inherit;
-}
-
-.comparison-picker .comparison-limit {
-  grid-column: 1 / -1;
-  margin: calc(var(--space-3) * -1) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.comparison-table-heading {
-  display: flex;
-  gap: var(--space-5);
-  align-items: start;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.comparison-table-heading h2,
-.comparison-table-heading p {
-  margin-bottom: var(--space-2);
-}
-
-.comparison-mobile-hint {
-  display: none;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.comparison-table-scroll {
-  overflow-x: auto;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-card);
-}
-
-.comparison-table {
-  width: 100%;
-  min-width: 48rem;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.comparison-table th,
-.comparison-table td {
-  width: 14rem;
-  padding: var(--space-4);
-  border-right: var(--border-width) solid var(--color-border);
-  border-bottom: var(--border-width) solid var(--color-border);
-  text-align: left;
-  vertical-align: top;
-}
-
-.comparison-table th:first-child {
-  position: sticky;
-  z-index: 1;
-  left: 0;
-  width: 15rem;
-  background: var(--color-surface-card);
-}
-
-.comparison-table thead th {
-  background: var(--color-background);
-}
-
-.comparison-table thead th:first-child {
-  z-index: 2;
-  background: var(--color-background);
-}
-
-.comparison-table th:last-child,
-.comparison-table td:last-child {
-  border-right: 0;
-}
-
-.comparison-table tbody tr:last-child th,
-.comparison-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.amortization-breakdown {
-  min-width: 0;
-  margin-top: var(--space-6);
-  padding: var(--space-5);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-card);
-}
-
-.amortization-breakdown > summary {
-  cursor: pointer;
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-}
-
-.amortization-breakdown[open] > summary {
-  margin-bottom: var(--space-4);
-}
-
-.amortization-schedule + .amortization-schedule {
-  margin-top: var(--space-8);
-}
-
-.amortization-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-block: var(--space-5);
-}
-
-.amortization-controls fieldset {
-  flex: 1 1 12rem;
-  min-width: 0;
-  margin: 0;
-  padding: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.amortization-controls legend {
-  padding-inline: var(--space-2);
-  font-weight: var(--font-weight-medium);
-}
-
-.amortization-controls label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 2.75rem;
-  cursor: pointer;
-}
-
-.amortization-controls label:has(input:disabled) {
-  color: var(--color-text-secondary);
-  cursor: default;
-}
-
-.amortization-controls input {
-  flex-shrink: 0;
-  accent-color: var(--color-brand);
-}
-
-.amortization-view-basis {
-  margin-bottom: var(--space-5);
-}
-
-.amortization-table-scroll {
-  overflow-x: auto;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.amortization-table {
-  width: 100%;
-  min-width: 72rem;
-  border-collapse: collapse;
-  background: var(--color-surface);
-}
-
-.amortization-table-frame {
-  min-width: 0;
-}
-
-.amortization-table-caption {
-  margin: 0 0 var(--space-2);
-  font-weight: var(--font-weight-medium);
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-
-.amortization-scroll-help {
-  margin-block: var(--space-2) var(--space-3);
-}
-
-.amortization-accessible-caption {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.amortization-table th,
-.amortization-table td {
-  padding: var(--space-3) var(--space-4);
-  border-top: var(--border-width) solid var(--color-border);
-  text-align: right;
-  white-space: nowrap;
-}
-
-.amortization-table th:first-child,
-.amortization-table td:first-child {
-  position: sticky;
-  left: 0;
-  text-align: left;
-  background: var(--color-surface);
-  min-width: 10rem;
-  width: 12rem;
-  white-space: normal;
-}
-
-.amortization-table thead th {
-  background: var(--color-background);
-}
-
-.amortization-table thead th:first-child {
-  z-index: 1;
-  background: var(--color-background);
-}
-
-.amortization-period-marker {
-  display: block;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  font-weight: normal;
-}
-
-.amortization-schedule-warning {
-  padding: var(--space-4);
-  border: var(--border-width) solid var(--color-warning-border);
-  border-radius: var(--radius-md);
-  color: var(--color-warning-text);
-  background: var(--color-warning-surface);
-}
-
-.amortization-pagination {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-top: var(--space-4);
-}
-
-.amortization-pagination p {
-  margin: 0;
-  font-size: var(--font-size-sm);
-}
-
-.amortization-pagination nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.amortization-pagination button {
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-brand);
-  background: var(--color-surface);
-  font: inherit;
-  cursor: pointer;
-}
-
-.amortization-pagination button:disabled,
-.amortization-pagination button[aria-disabled='true'] {
-  color: var(--color-text-secondary);
-  cursor: default;
-}
-
-.comparison-group-row th:first-child {
-  position: static;
-  width: auto;
-  padding-block: var(--space-3);
-  color: var(--color-text-eyebrow);
-  background: var(--color-background);
-  font-size: var(--font-size-sm);
-  letter-spacing: var(--letter-spacing-label);
-  text-transform: uppercase;
-}
-
-.comparison-column-heading {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.comparison-column-heading > strong {
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-lg);
-  overflow-wrap: anywhere;
-}
-
-.comparison-column-heading > small,
-.comparison-value-detail {
-  color: var(--color-text-secondary);
-}
-
-.comparison-column-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-
-.comparison-column-actions button {
-  min-height: 2.25rem;
-  padding-inline: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-primary);
-  background: var(--color-surface);
-  font: inherit;
-  cursor: pointer;
-}
-
-.comparison-column-actions button:disabled,
-.comparison-picker-controls button:disabled,
-.comparison-picker-controls select:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.comparison-value,
-.comparison-value-detail,
-.comparison-value-status,
-.comparison-basis-warning {
-  display: block;
-}
-
-.comparison-value {
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-md);
-}
-
-.comparison-value-detail,
-.comparison-basis-warning {
-  margin-top: var(--space-2);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-body);
-}
-
-.comparison-value-status {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-body);
-}
-
-.comparison-value-status--warning,
-.comparison-basis-warning {
-  color: var(--color-warning-text);
-}
-
-@media (max-width: 53.75rem) {
-  .comparison-picker {
-    grid-template-columns: 1fr;
-  }
-
-  .comparison-table-heading {
-    display: grid;
-  }
-
-  .comparison-mobile-hint {
-    display: block;
-  }
-}
-
-@media (max-width: 38.75rem) {
-  .comparison-picker-controls {
-    display: grid;
-  }
-
-  .comparison-picker-controls .primary-action {
-    width: 100%;
-  }
-
-  .comparison-table {
-    min-width: 42rem;
-  }
-
-  .comparison-table th,
-  .comparison-table td {
-    width: 12.5rem;
-    padding: var(--space-3);
-  }
-
-  .comparison-table th:first-child {
-    width: 12rem;
-  }
-}
-
 /* Purchase Costs Calculator Styles */
 .purchase-costs-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-10);
-}
-
-.purchase-input-grid,
-.budget-grid,
-.rate-input-grid,
-.project-total-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-5);
-}
-
-.purchase-input-grid .form-field,
-.budget-grid .budget-field,
-.rate-input-grid .form-field {
-  margin-bottom: 0;
 }
 
 .form-section {
@@ -988,10 +392,6 @@ h3 {
   display: block;
 }
 
-.advanced-fields[hidden] {
-  display: none;
-}
-
 .form-field {
   margin-bottom: var(--space-5);
 }
@@ -1034,28 +434,9 @@ h3 {
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.form-select {
-  width: 100%;
-  height: var(--control-height);
-  padding: 0 var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  font: inherit;
-}
-
-.form-select:focus {
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px var(--color-brand-alpha);
-}
-
-.form-select.error {
-  border-color: var(--color-error);
-}
-
 .form-field__input-group input:focus,
 .form-field__input-group select:focus {
+  outline: none;
   border-color: var(--color-brand);
   box-shadow: 0 0 0 3px var(--color-brand-alpha);
 }
@@ -1163,28 +544,26 @@ h3 {
 }
 
 .budget-field {
-  display: grid;
-  align-content: start;
-  gap: var(--space-2);
-  min-width: 0;
   margin-bottom: var(--space-4);
 }
 
 .budget-field__label {
-  font-weight: var(--font-weight-medium);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .budget-field__input-group {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: var(--space-2);
 }
 
 .budget-field__input-group input {
   flex: 1;
-  min-width: 0;
+  max-width: 15rem;
   height: var(--control-height);
-  padding: 0 var(--space-9) 0 var(--space-4);
+  padding: 0 var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-background);
@@ -1194,23 +573,19 @@ h3 {
 }
 
 .budget-field__currency {
-  position: absolute;
-  right: var(--space-4);
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
-  pointer-events: none;
 }
 
 .budget-field__status {
-  display: grid;
-  justify-items: start;
-  gap: var(--space-2);
-  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .budget-field__status-select {
-  width: 100%;
-  min-width: 0;
+  min-width: 12rem;
   height: var(--control-height);
   padding: 0 var(--space-4);
   border: var(--border-width) solid var(--color-border);
@@ -1224,12 +599,12 @@ h3 {
 .budget-field__status-badge {
   display: inline-flex;
   align-items: center;
-  max-width: 100%;
-  padding: var(--space-1) var(--space-3);
+  padding: 0.125rem var(--space-2);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-body);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
 }
 
 .budget-field__status-badge.warning {
@@ -1292,22 +667,9 @@ h3 {
   color: var(--color-text-primary);
 }
 
-.result-card.error h3 {
-  color: var(--color-error);
-}
-
+.result-card.error h3,
 .result-card.warning h3 {
-  color: var(--color-warning-text);
-}
-
-.results-section > .result-card + .result-card,
-.results-section > .result-card + .project-total-grid,
-.project-total-grid + .result-card {
-  margin-top: var(--space-4);
-}
-
-.project-total-grid .result-card {
-  min-width: 0;
+  color: var(--color-error);
 }
 
 .result-value {
@@ -1316,7 +678,6 @@ h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  overflow-wrap: anywhere;
 }
 
 .result-value.large {
@@ -1345,10 +706,6 @@ h3 {
 .result-card.summary {
   border-color: var(--color-brand);
   background: var(--color-brand-alpha);
-}
-
-.result-card.summary .result-detail {
-  color: var(--color-text-primary);
 }
 
 .result-card.total {
@@ -1390,137 +747,6 @@ h3 {
 .result-card.metadata dd {
   margin: 0;
   color: var(--color-text-primary);
-}
-
-.calculation-provenance {
-  display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-6);
-  padding: var(--space-5);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-body);
-}
-
-.calculation-provenance__heading {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.calculation-provenance__heading strong {
-  color: var(--color-text-primary);
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-md);
-}
-
-.calculation-provenance dl {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin: 0;
-}
-
-.calculation-provenance dl div {
-  min-width: 0;
-}
-
-.calculation-provenance dt {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-}
-
-.calculation-provenance dd {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-  overflow-wrap: anywhere;
-}
-
-.calculation-provenance p {
-  margin: 0;
-}
-
-.calculation-provenance__limitation {
-  padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.privacy-notice {
-  display: grid;
-  gap: var(--space-6);
-}
-
-.privacy-notice__status {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-6);
-  align-items: center;
-  padding: var(--space-4) var(--space-5);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  font-size: var(--font-size-sm);
-}
-
-.privacy-notice__status strong {
-  color: var(--color-text-primary);
-}
-
-.privacy-notice__warning,
-.privacy-notice__section {
-  padding: var(--space-6);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-card);
-}
-
-.privacy-notice__warning {
-  border-color: var(--color-brand);
-  background: var(--color-brand-alpha);
-}
-
-.privacy-notice :where(h2, p, ul) {
-  max-width: 52rem;
-}
-
-.privacy-notice h2 {
-  margin-bottom: var(--space-3);
-  font-size: var(--font-size-xl);
-}
-
-.privacy-notice p,
-.privacy-notice ul {
-  margin-bottom: 0;
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
-}
-
-.privacy-notice .privacy-notice__warning p {
-  color: var(--color-text-primary);
-}
-
-.privacy-notice ul {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-
-.privacy-notice a {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-@media (max-width: 45rem) {
-  .calculation-provenance dl {
-    grid-template-columns: 1fr;
-  }
 }
 
 .next-steps {
@@ -1585,13 +811,6 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .purchase-input-grid,
-  .budget-grid,
-  .rate-input-grid,
-  .project-total-grid {
-    grid-template-columns: 1fr;
-  }
-
   .form-field__input-group {
     flex-direction: column;
     align-items: stretch;
@@ -1599,6 +818,11 @@ h3 {
 
   .form-field__currency {
     display: none;
+  }
+
+  .budget-field__status {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .result-card.metadata dl {
@@ -1629,756 +853,240 @@ h3 {
   }
 }
 
-/* Scenario workspace and financing workflow */
-.financing-page {
+/* Financing Calculator Styles */
+.financing-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-10);
 }
 
-.form-section__intro {
-  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-}
-
-.form-fieldset {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin: 0 0 var(--space-7);
-  padding: 0;
-  border: 0;
-}
-
-.form-fieldset legend {
-  margin-bottom: var(--space-3);
-  font-weight: var(--font-weight-medium);
-}
-
-.choice-card {
+.radio-group {
   display: flex;
+  flex-direction: column;
   gap: var(--space-3);
-  min-height: 6.5rem;
-  padding: var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   cursor: pointer;
 }
 
-.choice-card:has(input:checked) {
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px var(--color-brand-alpha);
-}
-
-.choice-card input {
-  width: 1.125rem;
-  height: 1.125rem;
-  margin-top: 0.125rem;
+.radio-input {
+  width: 1.25rem;
+  height: 1.25rem;
   accent-color: var(--color-brand);
 }
 
-.choice-card span {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.choice-card small {
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-}
-
-.financing-input-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 var(--space-6);
-}
-
-.financing-input-grid select {
-  width: 100%;
-  height: var(--control-height);
-  padding: 0 var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
+.radio-text {
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
-  font: inherit;
 }
 
-.financing-input-grid select:focus {
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px var(--color-brand-alpha);
-}
-
-.additional-repayment-fieldset {
-  margin: var(--space-7) 0 0;
-  padding: var(--space-6) 0 0;
-  border: 0;
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.additional-repayment-fieldset legend {
-  padding: 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-}
-
-.additional-repayment-fieldset__intro,
-.additional-repayment-fieldset__guidance,
-.additional-repayment-fieldset__disabled {
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-}
-
-.additional-repayment-fieldset__intro {
-  margin: var(--space-2) 0 var(--space-5);
-}
-
-.additional-repayment-fieldset__guidance {
-  margin: 0;
-}
-
-.additional-repayment-guidance {
-  max-width: 56rem;
-  margin-top: var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.additional-repayment-guidance summary {
-  color: var(--color-brand);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-}
-
-.additional-repayment-guidance > p {
-  margin: var(--space-4) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-}
-
-.additional-repayment-guidance dl {
-  display: grid;
-  gap: var(--space-4);
-  margin: var(--space-5) 0 0;
-}
-
-.additional-repayment-guidance dl > div {
-  display: grid;
-  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
-  gap: var(--space-4);
-}
-
-.additional-repayment-guidance dt {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.additional-repayment-guidance dd {
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
-}
-
-.additional-repayment-guidance .additional-repayment-guidance__note {
-  padding-top: var(--space-4);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.additional-repayment-fieldset__disabled {
-  margin: var(--space-3) 0 0;
-  padding: var(--space-3) var(--space-4);
-  border-left: 0.25rem solid var(--color-border);
-  background: var(--color-surface);
-}
-
-.additional-repayment-fieldset:disabled .financing-input-grid,
-.additional-repayment-fieldset:disabled .additional-repayment-fieldset__guidance {
-  opacity: 0.55;
-}
-
-.additional-repayment-fieldset:disabled input,
-.additional-repayment-fieldset:disabled select,
-.additional-repayment-fieldset:disabled button {
-  cursor: not-allowed;
-}
-
-.one-time-repayment-section {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.one-time-repayment-section__header,
-.one-time-repayment-row__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.one-time-repayment-section__header h3,
-.one-time-repayment-section__header p,
-.one-time-repayment-section__empty,
-.one-time-repayment-section__guidance {
-  margin: 0;
-}
-
-.one-time-repayment-section__header p,
-.one-time-repayment-section__empty,
-.one-time-repayment-section__guidance {
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-}
-
-.one-time-repayment-section__header p {
-  margin-top: var(--space-2);
-}
-
-.one-time-repayment-button {
-  min-height: var(--control-height);
-  padding: 0 var(--space-4);
-  border: var(--border-width) solid var(--color-brand);
-  border-radius: var(--radius-md);
-  color: var(--color-brand);
-  background: transparent;
-  font: inherit;
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-}
-
-.one-time-repayment-button--remove {
-  min-height: auto;
-  padding: var(--space-2) var(--space-3);
-  border-color: var(--color-border);
-  color: var(--color-text-secondary);
-}
-
-.one-time-repayment-section__empty,
-.one-time-repayment-list {
-  margin-top: var(--space-5);
-}
-
-.one-time-repayment-list {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.one-time-repayment-row {
-  padding: var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.one-time-repayment-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.5fr);
-  gap: 0 var(--space-4);
-}
-
-.one-time-repayment-section__guidance {
-  margin-top: var(--space-4);
-}
-
-.additional-repayment-fieldset:disabled .one-time-repayment-section {
-  opacity: 0.55;
-}
-
-.form-field__hint {
-  align-self: end;
-  padding: var(--space-4);
-  border-left: 0.25rem solid var(--color-brand);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  color: var(--color-text-secondary);
-  background: var(--color-brand-alpha);
-  line-height: var(--line-height-relaxed);
-}
-
-.financing-results-grid {
-  margin-top: var(--space-6);
-}
-
-.funding-status {
-  margin-top: var(--space-6);
-}
-
-.inline-link {
-  display: inline-flex;
-  margin-top: var(--space-3);
-  color: var(--color-brand);
-  font-weight: var(--font-weight-medium);
-}
-
-@media (max-width: 53.75rem) {
-  .form-fieldset,
-  .financing-input-grid,
-  .one-time-repayment-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .financing-input-grid {
-    gap: 0;
-  }
-
-  .one-time-repayment-section__header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .additional-repayment-guidance dl > div {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
-  }
-}
-
-/* Single-property results workspace */
-.results-workspace {
+.repeating-fields {
   display: flex;
   flex-direction: column;
-  gap: var(--space-10);
+  gap: var(--space-3);
 }
 
-.results-section--key-decisions {
-  border-color: var(--color-brand);
-  background:
-    linear-gradient(135deg, var(--color-brand-alpha), transparent 42%), var(--color-surface-card);
-}
-
-.sondertilgung-comparison {
-  border-color: var(--color-brand);
-  background:
-    linear-gradient(135deg, var(--color-brand-alpha), transparent 34%), var(--color-surface-card);
-}
-
-.sondertilgung-comparison__summary {
-  max-width: 52rem;
-  margin: calc(-1 * var(--space-2)) 0 var(--space-5);
-}
-
-.sondertilgung-comparison__grid {
-  margin-bottom: 0;
-}
-
-.results-section__header {
+.repeating-fields__row {
   display: flex;
-  gap: var(--space-4);
-  align-items: start;
-  justify-content: space-between;
-  margin-bottom: var(--space-6);
-}
-
-.results-section__header .eyebrow {
-  margin-bottom: var(--space-2);
-}
-
-.results-section__header h2 {
-  margin-bottom: 0;
-}
-
-.results-section__header .inline-link {
-  flex: 0 0 auto;
-  margin-top: 0;
-}
-
-.results-assumptions {
-  display: flow-root;
-}
-
-.results-subheading {
-  margin: var(--space-9) 0 var(--space-3);
-  font-size: var(--font-size-md);
-}
-
-.results-details {
-  margin-top: var(--space-9);
-  padding-top: var(--space-6);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.results-details summary {
-  color: var(--color-brand);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-}
-
-.results-details > p {
-  max-width: 48rem;
-  margin: var(--space-3) 0 var(--space-5);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-}
-
-.results-refinancing-grid {
-  margin-top: var(--space-5);
-}
-
-.refinancing-principal-basis {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-@media (max-width: 38.75rem) {
-  .results-section__header {
-    display: grid;
-  }
-}
-
-.remaining-debt-chart {
-  margin-block: var(--space-5);
-  min-width: 0;
-}
-
-.debt-chart-legend,
-.debt-chart-endpoints {
-  padding: 0;
-  list-style: none;
-}
-
-.debt-chart-legend {
-  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
   flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
 }
 
-.debt-chart-legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+.repeating-fields__row .form-field__input-group {
+  flex: 1;
+  min-width: 8rem;
 }
 
-.debt-chart-legend svg {
-  width: 2.75rem;
-  height: 1rem;
-  flex-shrink: 0;
-}
-
-.debt-chart-scroll {
-  overflow-x: auto;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.debt-chart-svg {
-  display: block;
-  width: 100%;
-  min-width: 36rem;
-}
-
-.debt-chart-axis,
-.debt-chart-axis-title {
-  fill: var(--color-text-primary);
-  font-size: 12px;
-}
-
-.debt-chart-axis-title {
-  font-weight: var(--font-weight-medium);
-}
-
-.debt-chart-axis line {
-  stroke: var(--color-border);
-}
-
-.debt-chart-hatch {
-  stroke: var(--color-text-secondary);
-}
-
-.debt-chart-boundary {
-  stroke: var(--color-text-primary);
-  stroke-width: 1.5;
-  stroke-dasharray: 8 3 2 3;
-}
-
-.debt-chart-inspection {
-  stroke: var(--color-text-secondary);
-  stroke-width: 1;
-  stroke-dasharray: 2 4;
-}
-
-.debt-series {
-  stroke: var(--color-brand);
-  fill: var(--color-surface);
-  stroke-width: 2.5;
-}
-
-.debt-series--additional-repayments {
-  stroke: var(--color-chart-comparison);
-}
-
-.debt-chart-line {
-  fill: none;
-}
-
-.debt-series--additional-repayments .debt-chart-line {
-  stroke-dasharray: 8 5;
-}
-
-.debt-chart-endpoints li {
-  margin-block: var(--space-2);
-}
-
-.debt-chart-inspector {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.debt-chart-inspector select {
-  width: min(100%, 24rem);
-  min-height: 2.75rem;
-}
-
-.debt-chart-inspector dl {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
-  margin: 0;
-}
-
-.debt-chart-inspector dd {
-  margin: 0;
-  font-weight: var(--font-weight-medium);
-}
-
-.debt-chart-payoff-label {
-  stroke: none;
-  fill: var(--color-text-primary);
-  font-size: 12px;
-  font-weight: var(--font-weight-medium);
-}
-
-.payment-composition-chart {
-  margin-block: var(--space-5);
-  min-width: 0;
-}
-
-.payment-chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
-  padding: 0;
-  list-style: none;
-}
-
-.payment-chart-legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.payment-swatch {
-  width: 1.5rem;
-  height: 1rem;
-  flex-shrink: 0;
-  border: 1px solid var(--color-text-primary);
-}
-
-.payment-swatch--interest,
-.payment-fill--interest {
-  background: var(--color-chart-comparison);
-  fill: var(--color-chart-comparison);
-}
-
-.payment-swatch--scheduledPrincipal {
-  background:
-    repeating-linear-gradient(135deg, transparent 0 3px, #fff8 3px 4px), var(--color-brand);
-}
-
-.payment-fill--scheduledPrincipal {
-  fill: var(--color-brand);
-}
-
-.payment-swatch--additionalPrincipal {
-  background:
-    radial-gradient(circle at 3px 3px, #fff 1px, transparent 1px) 0 0 / 6px 6px,
-    var(--color-chart-additional);
-}
-
-.payment-fill--additionalPrincipal {
-  fill: var(--color-chart-additional);
-}
-
-.payment-chart-svg [data-component] {
-  stroke: var(--color-surface);
-  stroke-width: 1;
-}
-
-.payment-pattern {
-  stroke: #fff;
-  stroke-opacity: 0.5;
-  stroke-width: 1;
-}
-
-.payment-dot {
-  fill: #fff;
-}
-
-.payment-chart-scroll {
-  overflow-x: auto;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.payment-chart-svg {
-  display: block;
-  width: 100%;
-}
-
-.payment-chart-projection {
-  fill: var(--color-chart-comparison);
-  fill-opacity: 0.08;
-}
-
-.payment-chart-inspection {
-  fill: none;
-  stroke: var(--color-text-primary);
-  stroke-dasharray: 2 4;
-}
-
-.payment-bar-outline {
-  fill: none;
-  stroke: var(--color-text-primary);
-  stroke-width: 0.8;
-}
-
-.payment-bar-outline--additional-repayments {
-  stroke-dasharray: 3 2;
-}
-
-.payment-chart-inspector {
-  display: grid;
-  gap: var(--space-2);
-  margin-block-start: var(--space-3);
-}
-
-.payment-chart-inspector select {
-  width: min(100%, 28rem);
-  min-height: 2.75rem;
-}
-
-.payment-chart-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-}
-
-.payment-chart-details section {
-  min-width: 0;
-  flex: 1 1 18rem;
-}
-
-.payment-chart-details h4 {
-  margin-block: var(--space-2);
-}
-
-.payment-chart-details dl {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.payment-chart-details dl > div {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
-}
-
-.payment-chart-details dd {
-  margin: 0;
-  font-weight: var(--font-weight-medium);
-}
-
-.chart-data-view {
-  margin-block: var(--space-4);
-  min-width: 0;
-}
-
-.chart-data-view summary {
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-brand);
-  min-height: 2.75rem;
-  padding-block: var(--space-2);
-}
-
-.chart-data-view[open] > summary {
-  margin-bottom: var(--space-2);
-}
-
-.chart-data-scroll th:first-child {
-  min-width: 14rem;
-  white-space: normal;
-}
-
-.amortization-table-scroll:focus-visible {
-  outline-offset: -3px;
-}
-
-.amortization-breakdown :where(.debt-chart-inspector, .payment-chart-inspector) select {
-  width: 100%;
-  max-width: 32rem;
-  padding: var(--space-2) var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  font: inherit;
-}
-
-@media (max-width: 38.75rem) {
-  .amortization-breakdown {
-    padding: var(--space-4);
-  }
-
-  .amortization-controls label span,
-  .debt-chart-legend li,
-  .payment-chart-legend li,
-  .debt-chart-inspector dl > div {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .chart-data-scroll th:first-child {
-    min-width: 10rem;
-    width: 10rem;
-  }
-}
-
-:where(.debt-chart-scroll, .payment-chart-scroll, .chart-data-scroll):focus-visible {
-  outline-offset: -3px;
-}
-
-.chart-inspection-announcement {
+.visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
+  margin: -1px;
   overflow: hidden;
-  clip-path: inset(50%);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  border: 0;
 }
 
-@media (forced-colors: active) {
-  .debt-series,
-  .debt-series--additional-repayments,
-  .debt-chart-boundary,
-  .debt-chart-inspection,
-  .payment-bar-outline,
-  .payment-chart-inspection {
-    stroke: CanvasText;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.btn--primary {
+  color: var(--color-on-brand);
+  background: var(--color-brand);
+  border: var(--border-width) solid var(--color-brand);
+}
+
+.btn--primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn--secondary {
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+}
+
+.btn--secondary:hover {
+  background: var(--color-background);
+  transform: translateY(-2px);
+}
+
+.btn--ghost {
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: var(--border-width) solid transparent;
+}
+
+.btn--ghost:hover {
+  background: var(--color-background);
+}
+
+.btn--danger {
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.btn--danger:hover {
+  background: var(--color-error-alpha);
+}
+
+.btn--small {
+  height: calc(var(--control-height) - 0.5rem);
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.amortization-table-wrapper {
+  overflow-x: auto;
+  margin-top: var(--space-4);
+}
+
+.amortization-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.amortization-table th,
+.amortization-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: right;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.amortization-table th {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+}
+
+.amortization-table td:first-child,
+.amortization-table th:first-child {
+  text-align: left;
+}
+
+.amortization-table tbody tr:hover {
+  background: var(--color-background);
+}
+
+.impact-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.impact-details dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.impact-details dd {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand);
+}
+
+.refinancing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-3);
+}
+
+.refinancing-table th,
+.refinancing-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: right;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.refinancing-table th {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+}
+
+.refinancing-table td:first-child,
+.refinancing-table th:first-child {
+  text-align: left;
+}
+
+.refinancing-table .increase {
+  color: var(--color-error);
+}
+
+.refinancing-table .decrease {
+  color: var(--color-success);
+}
+
+/* Mobile adjustments for financing */
+@media (max-width: 53.75rem) {
+  .repeating-fields__row {
+    flex-direction: column;
+    align-items: stretch;
   }
-  .payment-fill--interest,
-  .payment-fill--scheduledPrincipal,
-  .payment-fill--additionalPrincipal,
-  .payment-swatch {
-    forced-color-adjust: none;
+
+  .repeating-fields__row .form-field__input-group {
+    width: 100%;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,653 +1,746 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { Controller, useFieldArray } from 'react-hook-form'
+import * as z from 'zod'
 
-import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
-import { CalculationProvenance } from '../../components/CalculationProvenance'
-import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/formatters'
-import type { SupportedLanguage } from '../../i18n/resources'
-import { PageLayout } from '../../components/PageLayout'
-import {
-  sortOneTimeAdditionalRepaymentDrafts,
-  type AdditionalRepaymentsDraft,
-} from '../scenario-workspace'
-import { validateAnnualAdditionalRepayment } from './annualAdditionalRepayment'
-import { AmortizationBreakdown } from './AmortizationBreakdown'
-import { validateOneTimeAdditionalRepayments } from './oneTimeAdditionalRepayments'
 import { useFinancingCalculator } from './useFinancing'
-
-const fixedInterestPeriods = [5, 10, 15, 20, 30] as const
-const annualPaymentMonths = Array.from({ length: 12 }, (_, index) => index + 1)
-
-function inputValue(value: string) {
-  return value.replace(/[^\d,.]/g, '')
-}
-
-function languageForFormatting(language: string): SupportedLanguage {
-  return language === 'en' ? 'en' : 'de'
-}
+import { PageLayout } from '../../components/PageLayout'
+import type { AvailableFinancingResult } from '../../domain/financing'
+import { financingFormSchema } from './schema'
 
 export function FinancingPage() {
-  const { t, i18n } = useTranslation()
-  const language = languageForFormatting(i18n.resolvedLanguage ?? i18n.language)
+  const { t } = useTranslation()
   const {
-    acquisition,
-    financing,
-    payment,
-    amortization,
-    selectedAmortization,
-    selectedAmortizationBasis,
-    amortizationInputKey,
-    financingDraft,
-    updateFinancing,
-  } = useFinancingCalculator()
+    form,
+    result,
+    isAvailable,
+    financingModes,
+    formatEuroInput,
+    formatRateInput,
+    parseRateInput,
+  } = useFinancingCalculator(null)
 
-  const formatEuro = (cents: number) => formatEuroFromCents(cents, language)
-  const formatRate = (value: { toNumber: () => number }) =>
-    formatPercentage(value.toNumber(), language)
+  const {
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form
 
-  const purchaseCostsReady = acquisition.status === 'available'
-  const financingReady = financing.status === 'available'
-  const paymentReady = payment.status === 'available'
-  const scheduleReady = amortization.status === 'available'
-  const cashPurchase = paymentReady && payment.cashPurchase
-  const additionalRepayments = financingDraft.additionalRepayments
-  const annualRepaymentValidation = cashPurchase
-    ? { amountCents: 0 }
-    : validateAnnualAdditionalRepayment(
-        additionalRepayments.annualAdditionalRepayment,
-        additionalRepayments.annualAdditionalRepaymentMonth,
-        language,
-      )
-  const oneTimeRepaymentValidations = cashPurchase
-    ? []
-    : validateOneTimeAdditionalRepayments(
-        additionalRepayments.oneTimeAdditionalRepayments,
-        language,
-      )
+  const {
+    fields: oneTimeFields,
+    append: appendOneTime,
+    remove: removeOneTime,
+  } = useFieldArray({
+    control,
+    name: 'oneTimeAdditionalRepayments',
+  })
 
-  const updateAdditionalRepayments = (updates: Partial<AdditionalRepaymentsDraft>) => {
-    updateFinancing({
-      additionalRepayments: {
-        ...additionalRepayments,
-        ...updates,
-      },
-    })
+  const {
+    fields: refinancingFields,
+    append: appendRefinancing,
+    remove: removeRefinancing,
+  } = useFieldArray({
+    control,
+    name: 'refinancingScenarios',
+  })
+
+  const mode = watch('mode')
+
+  const hasErrors = result?.status === 'unavailable' && result.reason === 'VALIDATION_ERROR'
+
+  const handleEuroChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof z.infer<typeof financingFormSchema>,
+  ) => {
+    const digits = e.target.value.replace(/[^\d]/g, '')
+    const cents = digits ? Math.round(parseFloat(digits) * 100) : 0
+    setValue(field, cents, { shouldValidate: true })
   }
 
-  const updateOneTimeRepayments = (
-    rows: AdditionalRepaymentsDraft['oneTimeAdditionalRepayments'],
-  ) => updateAdditionalRepayments({ oneTimeAdditionalRepayments: rows })
-
-  const sortOneTimeRepayments = () => {
-    updateOneTimeRepayments(
-      sortOneTimeAdditionalRepaymentDrafts(additionalRepayments.oneTimeAdditionalRepayments),
-    )
+  const handleRateChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof z.infer<typeof financingFormSchema>,
+  ) => {
+    const cleaned = e.target.value.replace(/[^\d,]/g, '')
+    setValue(field, cleaned, { shouldValidate: true })
   }
+
+  const handleMonthChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    field: keyof z.infer<typeof financingFormSchema>,
+  ) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : 0
+    setValue(field, value, { shouldValidate: true })
+  }
+
+  // Narrow the result type to available for rendering
+  const availableResult = isAvailable ? (result as AvailableFinancingResult) : null
 
   return (
     <PageLayout
-      eyebrow={t('finance.page.eyebrow')}
+      eyebrow={t('shell.pages.eyebrow')}
       title={t('shell.pages.financing.title')}
-      summary={t('finance.page.summary')}
+      summary={t('shell.pages.financing.summary')}
     >
-      <div className="financing-page">
+      <form onSubmit={(e) => e.preventDefault()} className="financing-form">
+        {/* Quick Inputs */}
         <section className="form-section">
-          <h2>{t('finance.section.inputs')}</h2>
-          <p className="form-section__intro">{t('finance.inputIntro')}</p>
+          <h2>{t('financing.section.quickInputs')}</h2>
 
-          <fieldset className="form-fieldset">
-            <legend>{t('finance.allocationLegend')}</legend>
-            <label className="choice-card">
-              <input
-                checked={financingDraft.mode === 'selected-down-payment'}
-                name="financing-mode"
-                onChange={() => updateFinancing({ mode: 'selected-down-payment' })}
-                type="radio"
-                value="selected-down-payment"
-              />
-              <span>
-                <strong>{t('finance.mode.downPayment')}</strong>
-                <small>{t('finance.mode.downPaymentDescription')}</small>
-              </span>
-            </label>
-            <label className="choice-card">
-              <input
-                checked={financingDraft.mode === 'available-equity'}
-                name="financing-mode"
-                onChange={() => updateFinancing({ mode: 'available-equity' })}
-                type="radio"
-                value="available-equity"
-              />
-              <span>
-                <strong>{t('finance.mode.availableEquity')}</strong>
-                <small>{t('finance.mode.availableEquityDescription')}</small>
-              </span>
-            </label>
-          </fieldset>
-
-          <div className="financing-input-grid">
-            <label className="form-field" htmlFor="availableEquity">
-              <span className="form-field__label">{t('finance.availableEquity')}</span>
-              <div className="form-field__input-group">
-                <input
-                  id="availableEquity"
-                  inputMode="decimal"
-                  onChange={(event) =>
-                    updateFinancing({ availableEquity: inputValue(event.target.value) })
-                  }
-                  placeholder="50.000"
-                  type="text"
-                  value={financingDraft.availableEquity}
-                />
-                <span className="form-field__currency" aria-hidden="true">
-                  €
-                </span>
-              </div>
-            </label>
-
-            {financingDraft.mode === 'selected-down-payment' ? (
-              <label className="form-field" htmlFor="downPayment">
-                <span className="form-field__label">{t('finance.downPayment')}</span>
-                <div className="form-field__input-group">
-                  <input
-                    id="downPayment"
-                    inputMode="decimal"
-                    onChange={(event) =>
-                      updateFinancing({ downPayment: inputValue(event.target.value) })
-                    }
-                    placeholder="50.000"
-                    type="text"
-                    value={financingDraft.downPayment}
-                  />
-                  <span className="form-field__currency" aria-hidden="true">
-                    €
-                  </span>
-                </div>
-              </label>
-            ) : (
-              <p className="form-field form-field__hint">{t('finance.availableEquityHint')}</p>
-            )}
-
-            <label className="form-field" htmlFor="financedAcquisitionCostShare">
-              <span className="form-field__label">{t('finance.financedAcquisitionCostShare')}</span>
-              <div className="form-field__input-group">
-                <input
-                  id="financedAcquisitionCostShare"
-                  inputMode="decimal"
-                  onChange={(event) =>
-                    updateFinancing({
-                      financedAcquisitionCostShare: inputValue(event.target.value),
-                    })
-                  }
-                  placeholder="0,00"
-                  type="text"
-                  value={financingDraft.financedAcquisitionCostShare}
-                />
-                <span className="form-field__currency" aria-hidden="true">
-                  %
-                </span>
-              </div>
-            </label>
-
-            <label className="form-field" htmlFor="nominalAnnualRate">
-              <span className="form-field__label">{t('finance.nominalAnnualRate')}</span>
-              <div className="form-field__input-group">
-                <input
-                  id="nominalAnnualRate"
-                  inputMode="decimal"
-                  onChange={(event) =>
-                    updateFinancing({ nominalAnnualRate: inputValue(event.target.value) })
-                  }
-                  placeholder="3,50"
-                  type="text"
-                  value={financingDraft.nominalAnnualRate}
-                />
-                <span className="form-field__currency" aria-hidden="true">
-                  %
-                </span>
-              </div>
-            </label>
-
-            <label className="form-field" htmlFor="initialRepaymentRate">
-              <span className="form-field__label">{t('finance.initialRepaymentRate')}</span>
-              <div className="form-field__input-group">
-                <input
-                  id="initialRepaymentRate"
-                  inputMode="decimal"
-                  onChange={(event) =>
-                    updateFinancing({ initialRepaymentRate: inputValue(event.target.value) })
-                  }
-                  placeholder="2,00"
-                  type="text"
-                  value={financingDraft.initialRepaymentRate}
-                />
-                <span className="form-field__currency" aria-hidden="true">
-                  %
-                </span>
-              </div>
-            </label>
-
-            <label className="form-field" htmlFor="fixedInterestYears">
-              <span className="form-field__label">{t('finance.fixedInterestPeriod')}</span>
-              <select
-                id="fixedInterestYears"
-                onChange={(event) => updateFinancing({ fixedInterestYears: event.target.value })}
-                value={financingDraft.fixedInterestYears}
-              >
-                {fixedInterestPeriods.map((years) => (
-                  <option key={years} value={years}>
-                    {t(`finance.fixedPeriod.${years}`)}
-                  </option>
+          {/* Financing Mode */}
+          <div className="form-field">
+            <fieldset>
+              <legend>{t('financing.modeLabel')}</legend>
+              <div className="radio-group">
+                {financingModes.map((financingMode) => (
+                  <label key={financingMode} className="radio-label">
+                    <Controller
+                      name="mode"
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          type="radio"
+                          {...field}
+                          value={financingMode}
+                          checked={field.value === financingMode}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="radio-input"
+                        />
+                      )}
+                    />
+                    <span className="radio-text">
+                      {financingMode === 'selected-down-payment'
+                        ? t('financing.mode.selectedDownPayment')
+                        : t('financing.mode.availableEquity')}
+                    </span>
+                  </label>
                 ))}
-              </select>
-            </label>
+              </div>
+            </fieldset>
           </div>
 
-          <fieldset className="additional-repayment-fieldset" disabled={cashPurchase}>
-            <legend>{t('finance.additionalRepayment.legend')}</legend>
-            <p className="additional-repayment-fieldset__intro">
-              {t('finance.additionalRepayment.intro')}
-            </p>
-            <div className="financing-input-grid">
-              <label className="form-field" htmlFor="annualAdditionalRepayment">
-                <span className="form-field__label">
-                  {t('finance.additionalRepayment.annualAmount')}
-                </span>
+          {/* Available Equity */}
+          <div className="form-field">
+            <label htmlFor="availableEquity">
+              {t('financing.availableEquityLabel')}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <Controller
+              name="availableEquityCents"
+              control={control}
+              render={({ field }) => (
                 <div className="form-field__input-group">
                   <input
-                    aria-describedby={
-                      annualRepaymentValidation.amountIssue
-                        ? 'annualAdditionalRepayment-error'
-                        : undefined
-                    }
-                    aria-invalid={!!annualRepaymentValidation.amountIssue}
-                    className={annualRepaymentValidation.amountIssue ? 'error' : undefined}
-                    id="annualAdditionalRepayment"
-                    inputMode="decimal"
-                    onChange={(event) =>
-                      updateAdditionalRepayments({
-                        annualAdditionalRepayment: event.target.value,
-                      })
-                    }
-                    placeholder={t('finance.additionalRepayment.amountPlaceholder')}
+                    {...field}
                     type="text"
-                    value={additionalRepayments.annualAdditionalRepayment}
+                    id="availableEquity"
+                    inputMode="numeric"
+                    value={field.value ? formatEuroInput(field.value) : ''}
+                    onChange={(e) => handleEuroChange(e, 'availableEquityCents')}
+                    placeholder="50.000"
+                    className={errors.availableEquityCents ? 'error' : ''}
+                    aria-invalid={!!errors.availableEquityCents}
+                    aria-describedby={
+                      errors.availableEquityCents ? 'availableEquity-error' : undefined
+                    }
                   />
                   <span className="form-field__currency" aria-hidden="true">
                     €
                   </span>
                 </div>
-                {annualRepaymentValidation.amountIssue && (
-                  <p
-                    className="form-field__error"
-                    id="annualAdditionalRepayment-error"
-                    role="alert"
-                  >
-                    {t(
-                      annualRepaymentValidation.amountIssue === 'negative-amount'
-                        ? 'finance.additionalRepayment.negativeAmountError'
-                        : 'finance.additionalRepayment.invalidAmountError',
-                    )}
-                  </p>
-                )}
-              </label>
+              )}
+            />
+            {errors.availableEquityCents && (
+              <p id="availableEquity-error" className="form-field__error" role="alert">
+                {t('financing.errors.availableEquityRequired')}
+              </p>
+            )}
+          </div>
 
-              <label className="form-field" htmlFor="annualAdditionalRepaymentMonth">
-                <span className="form-field__label">
-                  {t('finance.additionalRepayment.annualMonth')}
+          {/* Down Payment (conditional) */}
+          {mode === 'selected-down-payment' && (
+            <div className="form-field">
+              <label htmlFor="downPayment">
+                {t('financing.downPaymentLabel')}
+                <span className="required" aria-hidden="true">
+                  *
                 </span>
+              </label>
+              <Controller
+                name="downPaymentCents"
+                control={control}
+                render={({ field }) => (
+                  <div className="form-field__input-group">
+                    <input
+                      {...field}
+                      type="text"
+                      id="downPayment"
+                      inputMode="numeric"
+                      value={field.value ? formatEuroInput(field.value) : ''}
+                      onChange={(e) => handleEuroChange(e, 'downPaymentCents')}
+                      placeholder="50.000"
+                      className={errors.downPaymentCents ? 'error' : ''}
+                      aria-invalid={!!errors.downPaymentCents}
+                      aria-describedby={errors.downPaymentCents ? 'downPayment-error' : undefined}
+                    />
+                    <span className="form-field__currency" aria-hidden="true">
+                      €
+                    </span>
+                  </div>
+                )}
+              />
+              {errors.downPaymentCents && (
+                <p id="downPayment-error" className="form-field__error" role="alert">
+                  {t('financing.errors.downPaymentRequired')}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Financed Acquisition Cost Share */}
+          <div className="form-field">
+            <label htmlFor="financedAcquisitionCostShare">
+              {t('financing.financedAcquisitionCostShareLabel')}
+            </label>
+            <Controller
+              name="financedAcquisitionCostShare"
+              control={control}
+              render={({ field }) => (
                 <div className="form-field__input-group">
-                  <select
+                  <input
+                    {...field}
+                    type="text"
+                    id="financedAcquisitionCostShare"
+                    inputMode="decimal"
+                    value={field.value || '0'}
+                    onChange={(e) => handleRateChange(e, 'financedAcquisitionCostShare')}
+                    placeholder="0,00"
+                    className="rate-input"
+                  />
+                  <span className="form-field__currency" aria-hidden="true">
+                    %
+                  </span>
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Nominal Annual Rate */}
+          <div className="form-field">
+            <label htmlFor="nominalAnnualRate">
+              {t('financing.nominalRateLabel')}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <Controller
+              name="nominalAnnualRate"
+              control={control}
+              render={({ field }) => (
+                <div className="form-field__input-group">
+                  <input
+                    {...field}
+                    type="text"
+                    id="nominalAnnualRate"
+                    inputMode="decimal"
+                    value={field.value || formatRateInput(parseRateInput('3,5'))}
+                    onChange={(e) => handleRateChange(e, 'nominalAnnualRate')}
+                    placeholder="3,50"
+                    className={errors.nominalAnnualRate ? 'error rate-input' : 'rate-input'}
+                    aria-invalid={!!errors.nominalAnnualRate}
+                    aria-describedby={errors.nominalAnnualRate ? 'nominalRate-error' : undefined}
+                  />
+                  <span className="form-field__currency" aria-hidden="true">
+                    %
+                  </span>
+                </div>
+              )}
+            />
+            {errors.nominalAnnualRate && (
+              <p id="nominalRate-error" className="form-field__error" role="alert">
+                {t('financing.errors.nominalRateRequired')}
+              </p>
+            )}
+          </div>
+
+          {/* Initial Repayment Rate */}
+          <div className="form-field">
+            <label htmlFor="initialRepaymentRate">
+              {t('financing.initialRepaymentRateLabel')}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <Controller
+              name="initialRepaymentRate"
+              control={control}
+              render={({ field }) => (
+                <div className="form-field__input-group">
+                  <input
+                    {...field}
+                    type="text"
+                    id="initialRepaymentRate"
+                    inputMode="decimal"
+                    value={field.value || formatRateInput(parseRateInput('2,0'))}
+                    onChange={(e) => handleRateChange(e, 'initialRepaymentRate')}
+                    placeholder="2,00"
+                    className={errors.initialRepaymentRate ? 'error rate-input' : 'rate-input'}
+                    aria-invalid={!!errors.initialRepaymentRate}
                     aria-describedby={
-                      annualRepaymentValidation.monthIssue
-                        ? 'annualAdditionalRepaymentMonth-error'
-                        : undefined
+                      errors.initialRepaymentRate ? 'initialRepaymentRate-error' : undefined
                     }
-                    aria-invalid={!!annualRepaymentValidation.monthIssue}
-                    className={annualRepaymentValidation.monthIssue ? 'error' : undefined}
+                  />
+                  <span className="form-field__currency" aria-hidden="true">
+                    %
+                  </span>
+                </div>
+              )}
+            />
+            {errors.initialRepaymentRate && (
+              <p id="initialRepaymentRate-error" className="form-field__error" role="alert">
+                {t('financing.errors.initialRepaymentRateRequired')}
+              </p>
+            )}
+          </div>
+
+          {/* Fixed Interest Period */}
+          <div className="form-field">
+            <label htmlFor="fixedInterestMonths">{t('financing.fixedInterestPeriodLabel')}</label>
+            <Controller
+              name="fixedInterestMonths"
+              control={control}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  id="fixedInterestMonths"
+                  value={field.value || '120'}
+                  className="rate-input"
+                  onChange={(e) => handleMonthChange(e, 'fixedInterestMonths')}
+                >
+                  <option value="60">{t('financing.fixedPeriod.5')}</option>
+                  <option value="120">{t('financing.fixedPeriod.10')}</option>
+                  <option value="180">{t('financing.fixedPeriod.15')}</option>
+                  <option value="240">{t('financing.fixedPeriod.20')}</option>
+                  <option value="360">{t('financing.fixedPeriod.30')}</option>
+                </select>
+              )}
+            />
+          </div>
+        </section>
+
+        {/* Advanced Section */}
+        <section className="form-section form-section--advanced">
+          <h2>
+            <button
+              type="button"
+              className="advanced-toggle"
+              onClick={() => {
+                const el = document.querySelector('.advanced-fields')
+                el?.classList.toggle('expanded')
+                const btn = document.querySelector('.advanced-toggle')
+                btn?.setAttribute(
+                  'aria-expanded',
+                  el?.classList.contains('expanded') ? 'true' : 'false',
+                )
+              }}
+              aria-expanded="false"
+            >
+              {t('financing.section.advancedInputs')}
+            </button>
+          </h2>
+          <div className="advanced-fields">
+            {/* Annual Additional Repayment */}
+            <div className="form-field">
+              <label htmlFor="annualAdditionalRepayment">
+                {t('financing.annualAdditionalRepaymentLabel')}
+              </label>
+              <Controller
+                name="annualAdditionalRepaymentCents"
+                control={control}
+                render={({ field }) => (
+                  <div className="form-field__input-group">
+                    <input
+                      {...field}
+                      type="text"
+                      id="annualAdditionalRepayment"
+                      inputMode="numeric"
+                      value={field.value ? formatEuroInput(field.value) : ''}
+                      onChange={(e) => handleEuroChange(e, 'annualAdditionalRepaymentCents')}
+                      placeholder="0"
+                      className="rate-input"
+                    />
+                    <span className="form-field__currency" aria-hidden="true">
+                      €
+                    </span>
+                  </div>
+                )}
+              />
+            </div>
+
+            {/* Annual Additional Repayment Month */}
+            <div className="form-field">
+              <label htmlFor="annualAdditionalRepaymentMonth">
+                {t('financing.annualAdditionalRepaymentMonthLabel')}
+              </label>
+              <Controller
+                name="annualAdditionalRepaymentMonth"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
                     id="annualAdditionalRepaymentMonth"
-                    onChange={(event) =>
-                      updateAdditionalRepayments({
-                        annualAdditionalRepaymentMonth: event.target.value,
-                      })
-                    }
-                    value={additionalRepayments.annualAdditionalRepaymentMonth}
+                    value={field.value || '12'}
+                    className="rate-input"
+                    onChange={(e) => handleMonthChange(e, 'annualAdditionalRepaymentMonth')}
                   >
-                    <option value="">{t('finance.additionalRepayment.selectMonth')}</option>
-                    {annualPaymentMonths.map((month) => (
-                      <option key={month} value={month}>
-                        {t('finance.additionalRepayment.monthOption', { month })}
+                    {[...Array.from({ length: 12 })].map((_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        {t(`financing.month.${i + 1}`)}
                       </option>
                     ))}
                   </select>
-                </div>
-                {annualRepaymentValidation.monthIssue && (
-                  <p
-                    className="form-field__error"
-                    id="annualAdditionalRepaymentMonth-error"
-                    role="alert"
-                  >
-                    {t('finance.additionalRepayment.invalidMonthError')}
-                  </p>
                 )}
-              </label>
+              />
             </div>
-            <p className="additional-repayment-fieldset__guidance">
-              {t('finance.additionalRepayment.guidance')}
-            </p>
-            <AdditionalRepaymentGuidance />
-            <section className="one-time-repayment-section">
-              <div className="one-time-repayment-section__header">
-                <div>
-                  <h3>{t('finance.additionalRepayment.oneTimeTitle')}</h3>
-                  <p>{t('finance.additionalRepayment.oneTimeIntro')}</p>
-                </div>
+
+            {/* One-time Additional Repayments - using useFieldArray */}
+            <div className="form-field">
+              <label>{t('financing.oneTimeAdditionalRepaymentsLabel')}</label>
+              <div className="repeating-fields">
+                {oneTimeFields.map((field, index) => (
+                  <div key={field.id} className="repeating-fields__row">
+                    <div className="form-field__input-group">
+                      <label htmlFor={`oneTimeMonth-${index}`} className="visually-hidden">
+                        {t('financing.oneTimeMonthLabel')}
+                      </label>
+                      <Controller
+                        name={`oneTimeAdditionalRepayments.${index}.paymentMonth`}
+                        control={control}
+                        render={({ field: fieldProps }) => (
+                          <input
+                            {...fieldProps}
+                            type="number"
+                            id={`oneTimeMonth-${index}`}
+                            inputMode="numeric"
+                            value={fieldProps.value}
+                            onChange={(e) => fieldProps.onChange(parseInt(e.target.value, 10) || 1)}
+                            min="1"
+                            max="1200"
+                            className="rate-input"
+                            placeholder={t('financing.oneTimeMonthPlaceholder')}
+                          />
+                        )}
+                      />
+                      <span className="form-field__currency" aria-hidden="true">
+                        {t('financing.monthSuffix')}
+                      </span>
+                    </div>
+                    <div className="form-field__input-group">
+                      <label htmlFor={`oneTimeAmount-${index}`} className="visually-hidden">
+                        {t('financing.oneTimeAmountLabel')}
+                      </label>
+                      <Controller
+                        name={`oneTimeAdditionalRepayments.${index}.amountCents`}
+                        control={control}
+                        render={({ field: fieldProps }) => (
+                          <input
+                            {...fieldProps}
+                            type="text"
+                            id={`oneTimeAmount-${index}`}
+                            inputMode="numeric"
+                            value={fieldProps.value ? formatEuroInput(fieldProps.value) : ''}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/[^\d]/g, '')
+                              const cents = digits ? Math.round(parseFloat(digits) * 100) : 0
+                              fieldProps.onChange(cents)
+                            }}
+                            className="rate-input"
+                            placeholder={t('financing.oneTimeAmountPlaceholder')}
+                          />
+                        )}
+                      />
+                      <span className="form-field__currency" aria-hidden="true">
+                        €
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--small btn--danger"
+                      onClick={() => removeOneTime(index)}
+                      aria-label={t('financing.removeOneTimeRepayment')}
+                    >
+                      {t('common.remove')}
+                    </button>
+                  </div>
+                ))}
                 <button
-                  className="one-time-repayment-button"
-                  onClick={() =>
-                    updateOneTimeRepayments([
-                      ...additionalRepayments.oneTimeAdditionalRepayments,
-                      { amount: '', month: '' },
-                    ])
-                  }
                   type="button"
+                  className="btn btn--secondary btn--small"
+                  onClick={() => appendOneTime({ paymentMonth: 12, amountCents: 0 })}
                 >
-                  {t('finance.additionalRepayment.addOneTime')}
+                  {t('financing.addOneTimeRepayment')}
                 </button>
               </div>
+            </div>
 
-              {additionalRepayments.oneTimeAdditionalRepayments.length === 0 ? (
-                <p className="one-time-repayment-section__empty">
-                  {t('finance.additionalRepayment.emptyOneTime')}
-                </p>
-              ) : (
-                <div className="one-time-repayment-list">
-                  {additionalRepayments.oneTimeAdditionalRepayments.map((row, index) => {
-                    const validation = oneTimeRepaymentValidations[index]
-                    const amountErrorId = `oneTimeAdditionalRepayment-${index}-amount-error`
-                    const monthErrorId = `oneTimeAdditionalRepayment-${index}-month-error`
-
-                    return (
-                      <div className="one-time-repayment-row" key={index}>
-                        <div className="one-time-repayment-row__header">
-                          <strong>
-                            {t('finance.additionalRepayment.oneTimeRow', { number: index + 1 })}
-                          </strong>
-                          <button
-                            aria-label={t('finance.additionalRepayment.removeOneTimeLabel', {
-                              number: index + 1,
-                            })}
-                            className="one-time-repayment-button one-time-repayment-button--remove"
-                            onClick={() =>
-                              updateOneTimeRepayments(
-                                additionalRepayments.oneTimeAdditionalRepayments.filter(
-                                  (_, rowIndex) => rowIndex !== index,
-                                ),
-                              )
-                            }
-                            type="button"
-                          >
-                            {t('finance.additionalRepayment.removeOneTime')}
-                          </button>
-                        </div>
-                        <div className="one-time-repayment-grid">
-                          <label className="form-field">
-                            <span className="form-field__label">
-                              {t('finance.additionalRepayment.oneTimeAmount')}
-                            </span>
+            {/* Refinancing Scenarios - using useFieldArray */}
+            <div className="form-field">
+              <label>{t('financing.refinancingScenariosLabel')}</label>
+              <div className="repeating-fields">
+                {refinancingFields.map((field, index) => (
+                  <div key={field.id} className="repeating-fields__row">
+                    <div className="form-field__input-group">
+                      <label htmlFor={`refiId-${index}`} className="visually-hidden">
+                        {t('financing.refinancingIdLabel')}
+                      </label>
+                      <Controller
+                        name={`refinancingScenarios.${index}.id`}
+                        control={control}
+                        render={({ field: fieldProps }) => (
+                          <input
+                            {...fieldProps}
+                            type="text"
+                            id={`refiId-${index}`}
+                            value={fieldProps.value}
+                            onChange={(e) => fieldProps.onChange(e.target.value)}
+                            className="rate-input"
+                            placeholder={t('financing.refinancingIdPlaceholder')}
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className="form-field__input-group">
+                      <label htmlFor={`refiRate-${index}`} className="visually-hidden">
+                        {t('financing.refinancingNominalRateLabel')}
+                      </label>
+                      <Controller
+                        name={`refinancingScenarios.${index}.nominalAnnualRate`}
+                        control={control}
+                        render={({ field: fieldProps }) => (
+                          <input
+                            {...fieldProps}
+                            type="text"
+                            id={`refiRate-${index}`}
+                            inputMode="decimal"
+                            value={fieldProps.value || ''}
+                            onChange={(e) => fieldProps.onChange(e.target.value)}
+                            className="rate-input"
+                            placeholder={t('financing.refinancingNominalRatePlaceholder')}
+                          />
+                        )}
+                      />
+                      <span className="form-field__currency" aria-hidden="true">
+                        %
+                      </span>
+                    </div>
+                    <div className="form-field__input-group">
+                      <label htmlFor={`refiRepayment-${index}`} className="visually-hidden">
+                        {t('financing.refinancingRepaymentRateLabel')}
+                      </label>
+                      <Controller
+                        name={`refinancingScenarios.${index}.initialRepaymentRate`}
+                        control={control}
+                        render={({ field: fieldProps }) => (
+                          <input
+                            {...fieldProps}
+                            type="text"
+                            id={`refiRepayment-${index}`}
+                            inputMode="decimal"
+                            value={fieldProps.value || ''}
+                            onChange={(e) => fieldProps.onChange(e.target.value)}
+                            className="rate-input"
+                            placeholder={t('financing.refinancingRepaymentRatePlaceholder')}
+                          />
+                        )}
+                      />
+                      <span className="form-field__currency" aria-hidden="true">
+                        %
+                      </span>
+                    </div>
+                    <Controller
+                      name={`refinancingScenarios.${index}.fullRepaymentTermMonths`}
+                      control={control}
+                      render={({ field: fieldProps }) => (
+                        <>
+                          {fieldProps.value !== undefined && (
                             <div className="form-field__input-group">
+                              <label htmlFor={`refiTerm-${index}`} className="visually-hidden">
+                                {t('financing.refinancingFullTermLabel')}
+                              </label>
                               <input
-                                aria-label={t('finance.additionalRepayment.oneTimeAmountLabel', {
-                                  number: index + 1,
-                                })}
-                                aria-describedby={
-                                  validation?.amountIssue ? amountErrorId : undefined
-                                }
-                                aria-invalid={!!validation?.amountIssue}
-                                className={validation?.amountIssue ? 'error' : undefined}
-                                inputMode="decimal"
-                                onBlur={sortOneTimeRepayments}
-                                onChange={(event) =>
-                                  updateOneTimeRepayments(
-                                    additionalRepayments.oneTimeAdditionalRepayments.map(
-                                      (currentRow, rowIndex) =>
-                                        rowIndex === index
-                                          ? { ...currentRow, amount: event.target.value }
-                                          : currentRow,
-                                    ),
+                                {...fieldProps}
+                                type="number"
+                                id={`refiTerm-${index}`}
+                                inputMode="numeric"
+                                value={fieldProps.value}
+                                onChange={(e) =>
+                                  fieldProps.onChange(
+                                    e.target.value ? parseInt(e.target.value, 10) : undefined,
                                   )
                                 }
-                                placeholder={t('finance.additionalRepayment.amountPlaceholder')}
-                                type="text"
-                                value={row.amount}
+                                min="1"
+                                max="1200"
+                                className="rate-input"
+                                placeholder={t('financing.refinancingFullTermPlaceholder')}
                               />
                               <span className="form-field__currency" aria-hidden="true">
-                                €
+                                {t('financing.monthSuffix')}
                               </span>
                             </div>
-                            {validation?.amountIssue && (
-                              <p className="form-field__error" id={amountErrorId} role="alert">
-                                {t(
-                                  validation.amountIssue === 'missing-amount'
-                                    ? 'finance.additionalRepayment.missingOneTimeAmountError'
-                                    : validation.amountIssue === 'negative-amount'
-                                      ? 'finance.additionalRepayment.negativeOneTimeAmountError'
-                                      : 'finance.additionalRepayment.invalidAmountError',
-                                )}
-                              </p>
-                            )}
-                          </label>
-
-                          <label className="form-field">
-                            <span className="form-field__label">
-                              {t('finance.additionalRepayment.oneTimeMonth')}
-                            </span>
-                            <input
-                              aria-label={t('finance.additionalRepayment.oneTimeMonthLabel', {
-                                number: index + 1,
-                              })}
-                              aria-describedby={validation?.monthIssue ? monthErrorId : undefined}
-                              aria-invalid={!!validation?.monthIssue}
-                              className={validation?.monthIssue ? 'error' : undefined}
-                              inputMode="numeric"
-                              onBlur={sortOneTimeRepayments}
-                              onChange={(event) =>
-                                updateOneTimeRepayments(
-                                  additionalRepayments.oneTimeAdditionalRepayments.map(
-                                    (currentRow, rowIndex) =>
-                                      rowIndex === index
-                                        ? { ...currentRow, month: event.target.value }
-                                        : currentRow,
-                                  ),
-                                )
-                              }
-                              placeholder={t('finance.additionalRepayment.oneTimeMonthPlaceholder')}
-                              type="text"
-                              value={row.month}
-                            />
-                            {validation?.monthIssue && (
-                              <p className="form-field__error" id={monthErrorId} role="alert">
-                                {t(
-                                  validation.monthIssue === 'missing-month'
-                                    ? 'finance.additionalRepayment.missingOneTimeMonthError'
-                                    : validation.monthIssue === 'duplicate-month'
-                                      ? 'finance.additionalRepayment.duplicateOneTimeMonthError'
-                                      : 'finance.additionalRepayment.invalidOneTimeMonthError',
-                                )}
-                              </p>
-                            )}
-                          </label>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              <p className="one-time-repayment-section__guidance">
-                {t('finance.additionalRepayment.oneTimeGuidance')}
-              </p>
-            </section>
-            {cashPurchase && (
-              <p className="additional-repayment-fieldset__disabled" role="status">
-                {t('finance.additionalRepayment.cashPurchaseDisabled')}
-              </p>
-            )}
-          </fieldset>
+                          )}
+                        </>
+                      )}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--small btn--danger"
+                      onClick={() => removeRefinancing(index)}
+                      aria-label={t('financing.removeRefinancingScenario')}
+                    >
+                      {t('common.remove')}
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--small"
+                  onClick={() =>
+                    appendRefinancing({
+                      id: `scenario-${Date.now()}`,
+                      nominalAnnualRate: '0.04',
+                      initialRepaymentRate: '0.02',
+                    })
+                  }
+                >
+                  {t('financing.addRefinancingScenario')}
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
+        {/* Results */}
         <section className="results-section" aria-live="polite">
-          <h2>{t('finance.section.results')}</h2>
+          <h2>{t('financing.section.results')}</h2>
 
-          {!purchaseCostsReady && (
-            <div className="result-card warning" role="status">
-              <h3>{t('finance.unavailable.purchaseCostsTitle')}</h3>
-              <p>{t('finance.unavailable.purchaseCostsMessage')}</p>
-              <Link className="inline-link" to="/purchase-costs">
-                {t('finance.backToPurchaseCosts')}
-              </Link>
+          {hasErrors && (
+            <div className="result-card error" role="alert">
+              <h3>{t('financing.errors.calculationFailed')}</h3>
+              <p>{result?.error?.message}</p>
+              <p className="error-detail">
+                {t('financing.errors.field')}: {result?.error?.field} | {t('financing.errors.code')}
+                : {result?.error?.code}
+              </p>
             </div>
           )}
 
-          {financingReady && (
+          {!isAvailable && !hasErrors && (
+            <div className="result-card info" role="status">
+              <p>{t('financing.results.enterDataToCalculate')}</p>
+            </div>
+          )}
+
+          {isAvailable && availableResult && (
             <>
               <div className="result-grid">
                 <article className="result-card">
-                  <h3>{t('finance.results.requiredEquity')}</h3>
-                  <p className="result-value">{formatEuro(financing.requiredEquityCents)}</p>
-                  <p className="result-detail">{t('finance.results.cashForCostsAndDownPayment')}</p>
-                </article>
-                <article className="result-card">
-                  <h3>{t('finance.results.loanAmount')}</h3>
-                  <p className="result-value">{formatEuro(financing.loanAmountCents)}</p>
-                  <p className="result-detail">
-                    {t('finance.results.financingRatio', {
-                      value: formatRate(financing.purchasePriceFinancingRatio),
-                    })}
-                  </p>
-                </article>
-                <article className="result-card">
-                  <h3>{t('finance.results.totalProjectCost')}</h3>
-                  <p className="result-value">{formatEuro(financing.totalProjectCostCents)}</p>
-                  <p className="result-detail">{t('finance.results.includesAllCosts')}</p>
-                </article>
-              </div>
-
-              <article
-                className={`result-card funding-status ${financing.fundingStatus === 'underfunded' ? 'warning' : 'summary'}`}
-              >
-                <h3>
-                  {financing.fundingStatus === 'underfunded'
-                    ? t('finance.funding.underfundedTitle')
-                    : t('finance.funding.fundedTitle')}
-                </h3>
-                <p className="result-detail">
-                  {financing.fundingStatus === 'underfunded'
-                    ? t('finance.funding.underfundedMessage', {
-                        value: formatEuro(financing.cashGapCents),
-                      })
-                    : t('finance.funding.fundedMessage', {
-                        value: formatEuro(financing.cashRemainingCents),
-                      })}
-                </p>
-              </article>
-            </>
-          )}
-
-          {financingReady && paymentReady && (
-            <>
-              {payment.cashPurchase ? (
-                <article className="result-card summary">
-                  <h3>{t('finance.cashPurchase.title')}</h3>
-                  <p className="result-value">{formatEuro(0)}</p>
-                  <p className="result-detail">{t('finance.cashPurchase.message')}</p>
-                </article>
-              ) : (
-                <div className="result-grid financing-results-grid">
-                  <article className="result-card total">
-                    <h3>{t('finance.results.monthlyPayment')}</h3>
-                    <p className="result-value large">{formatEuro(payment.monthlyPaymentCents)}</p>
-                    <p className="result-detail">{t('finance.results.initialRepaymentPayment')}</p>
-                  </article>
-                  <article className="result-card">
-                    <h3>{t('finance.results.firstMonthInterest')}</h3>
-                    <p className="result-value">{formatEuro(payment.firstMonthInterestCents)}</p>
-                  </article>
-                  <article className="result-card">
-                    <h3>{t('finance.results.firstMonthPrincipal')}</h3>
-                    <p className="result-value">
-                      {formatEuro(payment.firstMonthScheduledPrincipalCents)}
-                    </p>
-                  </article>
-                </div>
-              )}
-            </>
-          )}
-
-          {financingReady && !paymentReady && (
-            <div className="result-card warning" role="status">
-              <h3>{t('finance.unavailable.paymentTitle')}</h3>
-              <p>{t('finance.unavailable.paymentMessage')}</p>
-            </div>
-          )}
-
-          {paymentReady && scheduleReady && !amortization.cashPurchase && (
-            <>
-              <div className="result-grid financing-results-grid">
-                <article className="result-card">
-                  <h3>{t('finance.results.remainingDebt')}</h3>
+                  <h3>{t('financing.results.loanAmount')}</h3>
                   <p className="result-value">
-                    {formatEuro(amortization.remainingDebtAtFixedPeriodCents)}
+                    {formatEuroInput(availableResult.loanAmountCents)} €
                   </p>
                   <p className="result-detail">
-                    {t('finance.results.afterFixedPeriod', {
-                      years: financingDraft.fixedInterestYears,
-                    })}
+                    {t('financing.results.financingRatio')}:{' '}
+                    {(availableResult.purchasePriceFinancingRatio.toNumber?.() * 100 || 0).toFixed(
+                      2,
+                    )}
+                    %
+                    <span className="origin-badge">
+                      {t(`financing.classification.${availableResult.financingClassification}`)}
+                    </span>
                   </p>
                 </article>
+
                 <article className="result-card">
-                  <h3>{t('finance.results.payoffProjection')}</h3>
-                  <p className="result-value">{formatNumber(amortization.payoffMonth, language)}</p>
-                  <p className="result-detail">{t('finance.results.months')}</p>
+                  <h3>{t('financing.results.requiredEquity')}</h3>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.requiredEquityCents)} €
+                  </p>
+                  <p className="result-detail">
+                    {t('financing.results.downPaymentPlusCosts')}
+                    <span className="origin-badge">
+                      {availableResult.fundingStatus === 'funded'
+                        ? t('financing.funded')
+                        : t('financing.underfunded')}
+                    </span>
+                  </p>
                 </article>
+
                 <article className="result-card">
-                  <h3>{t('finance.results.firstYearInterest')}</h3>
-                  <p className="result-value">{formatEuro(amortization.firstYearInterestCents)}</p>
+                  <h3>{t('financing.results.cashGap')}</h3>
+                  <p className="result-value">{formatEuroInput(availableResult.cashGapCents)} €</p>
+                  <p className="result-detail">
+                    {availableResult.cashGapCents > 0
+                      ? t('financing.results.needsAdditionalFunds')
+                      : t('financing.results.sufficientFunds')}
+                  </p>
                 </article>
+
+                <article className="result-card">
+                  <h3>{t('financing.results.cashRemaining')}</h3>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.cashRemainingCents)} €
+                  </p>
+                  <p className="result-detail">{t('financing.results.availableAfterPurchase')}</p>
+                </article>
+
+                <article className="result-card">
+                  <h3>{t('financing.results.downPayment')}</h3>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.downPaymentCents)} €
+                  </p>
+                  <p className="result-detail">{t('financing.results.userSelectedOrCalculated')}</p>
+                </article>
+
+                <article className="result-card">
+                  <h3>{t('financing.results.financedAcquisitionCosts')}</h3>
+                  <p className="result-value">
+                    {formatEuroInput(availableResult.financedAcquisitionCostsCents)} €
+                  </p>
+                  <p className="result-detail">{t('financing.results.shareOfTransactionCosts')}</p>
+                </article>
+              </div>
+
+              <div className="result-card metadata">
+                <h4>{t('financing.results.assumptions')}</h4>
+                <dl>
+                  <dt>{t('financing.results.assumptionSetVersion')}</dt>
+                  <dd>{availableResult.acquisition.appliedAssumptions.assumptionSetVersion}</dd>
+                  <dt>{t('financing.results.transferTaxRateSourceDate')}</dt>
+                  <dd>
+                    {availableResult.acquisition.appliedAssumptions.transferTaxRateSourceDate}
+                  </dd>
+                </dl>
               </div>
             </>
           )}
-
-          {paymentReady && !scheduleReady && (
-            <div className="result-card warning" role="status">
-              <h3>{t('finance.unavailable.scheduleTitle')}</h3>
-              <p>{t('finance.unavailable.scheduleMessage')}</p>
-            </div>
-          )}
-
-          {financingReady ? (
-            <AmortizationBreakdown
-              baseline={amortization}
-              inputKey={amortizationInputKey}
-              selected={selectedAmortization}
-              selectedBasis={selectedAmortizationBasis}
-            />
-          ) : null}
-
-          {paymentReady && scheduleReady && (
-            <div className="next-steps">
-              <h3>{t('finance.nextSteps.title')}</h3>
-              <p>{t('finance.nextSteps.message')}</p>
-              <div className="next-steps__links">
-                <Link className="next-steps__link primary" to="/results">
-                  {t('finance.nextSteps.continueToResults')}
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {purchaseCostsReady ? <CalculationProvenance scope="financing" /> : null}
         </section>
-      </div>
+
+        {/* Next Steps */}
+        {isAvailable && availableResult && (
+          <section className="next-steps">
+            <h3>{t('financing.section.nextSteps')}</h3>
+            <p>{t('financing.nextSteps.message')}</p>
+            <nav className="next-steps__links">
+              <Link to="/comparison" className="next-steps__link primary">
+                {t('financing.nextSteps.compareScenarios')}
+              </Link>
+            </nav>
+          </section>
+        )}
+      </form>
     </PageLayout>
   )
 }
