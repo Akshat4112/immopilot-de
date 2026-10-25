@@ -514,10 +514,10 @@ function Decision({
         rows={[
           [t('Analysis horizon (months)'), f.number(result.holdingPeriodMonths)],
           [t('Gross rental yield'), f.rate(result.grossRentalYield)],
-          [t('Annual numerator'), f.money(result.grossYieldBasis.numeratorCents)],
-          [t('Investment cost denominator'), f.money(result.grossYieldBasis.denominatorCents)],
+          [t('Annual net cold rent'), f.money(result.grossYieldBasis.numeratorCents)],
+          [t('Purchase-price denominator'), f.money(result.grossYieldBasis.denominatorCents)],
           [t('Net rental yield'), f.rate(result.netRentalYield)],
-          [t('Annual numerator'), f.money(result.netYieldBasis.numeratorCents)],
+          [t('Net operating income'), f.money(result.netYieldBasis.numeratorCents)],
           [t('Investment cost denominator'), f.money(result.netYieldBasis.denominatorCents)],
           [
             t('First-month pre-tax cash flow after additional repayments'),
@@ -532,7 +532,7 @@ function Decision({
             f.money(result.firstYearPreTaxCashFlowAfterExtraCents),
           ],
           [
-            t('Cash-on-cash return'),
+            t('Cash-on-cash return before additional repayments'),
             result.cashOnCash.status === 'available' ? (
               f.rate(result.cashOnCash.annualBeforeExtraReturn)
             ) : (
@@ -726,7 +726,7 @@ export function PropertyReport({ snapshot }: { snapshot: ReportValue<ReportSnaps
               [
                 t('Build identity'),
                 snapshot.buildIdentity.status === 'available'
-                  ? snapshot.buildIdentity.commit
+                  ? `${snapshot.buildIdentity.commit}${snapshot.buildIdentity.workingTreeDirty ? ` · ${t('Uncommitted changes')}` : ''}`
                   : t('Unavailable'),
               ],
             ]}

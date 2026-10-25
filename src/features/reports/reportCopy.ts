@@ -5,6 +5,12 @@ import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/
 import type { SupportedLanguage } from '../../i18n/resources'
 
 const german = {
+  'Purchase-price denominator': 'Kaufpreis als Nenner',
+  'Annual net cold rent': 'Jährliche Nettokaltmiete',
+  'Net operating income': 'Betriebsergebnis',
+  'Cash-on-cash return before additional repayments':
+    'Eigenkapital-Cashflow-Rendite vor Sondertilgungen',
+  'Uncommitted changes': 'Nicht eingecheckte Änderungen',
   'Repayment basis': 'Tilgungsgrundlage',
   'Cash-on-cash return is undefined when required equity is zero.':
     'Ohne erforderliches Eigenkapital ist die Eigenkapital-Cashflow-Rendite nicht definiert.',
