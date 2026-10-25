@@ -184,6 +184,38 @@
   margin-block: 0.8rem;
 }
 
+.comparison-report > .property-report {
+  margin-block-start: 2.5rem;
+}
+
+.property-report .report-comparison-table {
+  min-width: 60rem;
+}
+
+.report-comparison-group th {
+  background: #eaf0e9;
+}
+
+.property-report .comparison-value {
+  font: inherit;
+  font-weight: 700;
+}
+
+.property-report .comparison-value-status {
+  font-size: inherit;
+  color: #3d5148;
+}
+
+.property-report .comparison-value-detail {
+  color: #3d5148;
+  margin-block-start: 0.4rem;
+}
+
+.property-report .comparison-basis-warning {
+  color: #72500d;
+  margin-block-start: 0.4rem;
+}
+
 @media (max-width: 480px) {
   .report-metrics > div {
     grid-template-columns: minmax(0, 1fr);
@@ -195,6 +227,16 @@
 }
 
 @page {
+  size: A4 portrait;
+  margin: 14mm 11mm;
+}
+
+@page comparison-summary {
+  size: A4 landscape;
+  margin: 14mm 11mm;
+}
+
+@page property-detail {
   size: A4 portrait;
   margin: 14mm 11mm;
 }
@@ -232,7 +274,8 @@
   }
 
   .property-report table,
-  .property-report table:has(thead th:nth-child(6)) {
+  .property-report table:has(thead th:nth-child(6)),
+  .property-report .report-comparison-table {
     min-width: 0;
     width: 100%;
     table-layout: fixed;
@@ -262,5 +305,16 @@
   .property-report a {
     color: #111;
     text-decoration: underline;
+  }
+
+  .report-comparison-summary {
+    page: comparison-summary;
+    break-after: page;
+  }
+
+  .comparison-report > .property-report {
+    page: property-detail;
+    break-before: page;
+    margin: 0;
   }
 }

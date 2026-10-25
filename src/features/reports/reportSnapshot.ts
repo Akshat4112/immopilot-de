@@ -16,7 +16,7 @@ import {
   hasMixedComparisonBasis,
   type ComparisonMetricId,
   type ComparisonMetricValue,
-} from '../comparison'
+} from '../comparison/comparisonCalculations'
 
 export const REPORT_CONTRACT_VERSION = '1.0.0'
 

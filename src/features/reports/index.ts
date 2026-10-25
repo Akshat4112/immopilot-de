@@ -10,3 +10,4 @@ export {
   type ReportValue,
 } from './reportSnapshot'
 export { PropertyReport } from './PropertyReport'
+export { ComparisonReport } from './ComparisonReport'

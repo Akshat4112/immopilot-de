@@ -5,6 +5,14 @@ import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/
 import type { SupportedLanguage } from '../../i18n/resources'
 
 const german = {
+  'Property comparison': 'Immobilienvergleich',
+  'View comparison report': 'Vergleichsbericht ansehen',
+  'Comparison summary': 'Vergleichsübersicht',
+  'Saved properties are captured in the visible order. Names are omitted.':
+    'Gespeicherte Immobilien werden in der sichtbaren Reihenfolge erfasst. Namen werden ausgelassen.',
+  'The saved selection is missing, changed or unreadable. Reload the comparison and correct the selection before capturing again.':
+    'Die gespeicherte Auswahl fehlt, wurde geändert oder ist nicht lesbar. Lade den Vergleich neu und korrigiere die Auswahl vor der erneuten Erfassung.',
+
   'Swipe horizontally for more table columns, or focus the table region and use the arrow keys.':
     'Wische waagerecht für weitere Tabellenspalten oder fokussiere den Tabellenbereich und nutze die Pfeiltasten.',
   'Purchase-price denominator': 'Kaufpreis als Nenner',
