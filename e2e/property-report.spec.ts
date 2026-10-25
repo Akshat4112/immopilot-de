@@ -83,9 +83,22 @@ test('previews both property modes in DE/EN with complete data, safe lifecycle a
           })
         }
         // Check the standalone A4 document without exposing a production print action.
-        await report.evaluate(
-          'element => { const clone = element.cloneNode(true); clone.setAttribute("data-report-print-probe", ""); clone.style.width = "188mm"; element.ownerDocument.body.append(clone) }',
-        )
+        await page.evaluate(`(() => {
+          const clone = document.querySelector('.property-report').cloneNode(true);
+          const ids = [...clone.querySelectorAll('[id]')].map(element => [element.id, element.id + '-print-probe']);
+          for (const element of clone.querySelectorAll('*')) {
+            for (const attribute of ['id', 'fill', 'aria-labelledby', 'aria-describedby']) {
+              const value = element.getAttribute(attribute);
+              if (value === null) continue;
+              let updated = value;
+              for (const [before, after] of ids) updated = updated.replaceAll(before, after);
+              element.setAttribute(attribute, updated);
+            }
+          }
+          clone.setAttribute('data-report-print-probe', '');
+          clone.style.width = '188mm';
+          document.body.append(clone);
+        })()`)
       }
       await page.emulateMedia({ media: 'print' })
       await expect(preview).toBeHidden()
@@ -93,13 +106,13 @@ test('previews both property modes in DE/EN with complete data, safe lifecycle a
         const probe = page.locator('[data-report-print-probe]')
         await expect(probe).toBeVisible()
         expect(
-          await probe.evaluate(
-            'element => [...element.querySelectorAll("table")].every(table => table.scrollWidth <= table.clientWidth + 1)',
+          await page.evaluate<boolean>(
+            '(() => [...document.querySelectorAll("[data-report-print-probe] table")].every(table => table.scrollWidth <= table.clientWidth + 1))()',
           ),
         ).toBe(true)
         expect(
-          await probe.evaluate(
-            'element => [...element.querySelectorAll("thead")].every(head => getComputedStyle(head).display === "table-header-group")',
+          await page.evaluate<boolean>(
+            '(() => [...document.querySelectorAll("[data-report-print-probe] thead")].every(head => getComputedStyle(head).display === "table-header-group"))()',
           ),
         ).toBe(true)
         await probe.scrollIntoViewIfNeeded()
@@ -107,7 +120,7 @@ test('previews both property modes in DE/EN with complete data, safe lifecycle a
           animations: 'disabled',
           path: testInfo.outputPath(`report-print-${language}.png`),
         })
-        await probe.evaluate('element => element.remove()')
+        await page.evaluate('document.querySelector("[data-report-print-probe]").remove()')
       }
       await page.emulateMedia({ media: 'screen' })
       await preview.getByRole('button', { name: 'Bericht schließen' }).click()
