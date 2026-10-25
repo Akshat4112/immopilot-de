@@ -160,6 +160,10 @@ describe('comparison report contract', () => {
       expect(root.querySelector('button, input, select')).toBeNull()
       const ids = [...root.querySelectorAll('[id]')].map((element) => element.id)
       expect(new Set(ids).size).toBe(ids.length)
+      const landmarks = [...root.querySelectorAll('[role="region"]')].map((element) =>
+        element.getAttribute('aria-label'),
+      )
+      expect(new Set(landmarks).size).toBe(landmarks.length)
       expect(JSON.stringify(documents)).toBe(before)
     },
   )

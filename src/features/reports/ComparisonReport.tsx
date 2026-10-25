@@ -4,6 +4,7 @@ import { ComparisonValue } from '../comparison/ComparisonValue'
 import { comparisonMetricGroups } from '../comparison/comparisonMetricGroups'
 import { ReportPropertyDocument } from './PropertyReport'
 import { reportText } from './reportCopy'
+import { ReportPropertyLabel } from './reportPropertyLabel'
 import type { ReportSnapshot, ReportValue } from './reportSnapshot'
 
 /** Pure presentation of the ordered, freshly recalculated capture; no storage access. */
@@ -127,7 +128,9 @@ export function ComparisonReport({ snapshot }: { snapshot: ReportValue<ReportSna
         </div>
       </section>
       {properties.map((property) => (
-        <ReportPropertyDocument key={property.ordinal} snapshot={snapshot} property={property} />
+        <ReportPropertyLabel key={property.ordinal} value={label(property.ordinal)}>
+          <ReportPropertyDocument snapshot={snapshot} property={property} />
+        </ReportPropertyLabel>
       ))}
     </article>
   )

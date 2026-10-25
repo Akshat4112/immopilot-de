@@ -50,7 +50,8 @@ The summary is one semantic table with column and row headers, repeated print he
 keyboard-focusable horizontal scroll region. Long values and method labels wrap without expanding
 the page on mobile. Print styles use a named A4 landscape summary page and named portrait property
 pages. The summary and each property begin on a new page. Both SVG chart models retain their own
-unique IDs and non-colour distinctions.
+unique IDs and non-colour distinctions. Each table scroll region includes the anonymous property
+ordinal in its accessible name so equivalent sections remain distinct in landmark navigation.
 
 As in PF-006.3, the preview is hidden during ordinary application printing. This task supplies the
 comparison document and print layout, without claiming completion of the acknowledged print action
