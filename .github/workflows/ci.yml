@@ -99,6 +99,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: explorer-visual-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: test-results/**/explorer-*.png
+          path: |
+            test-results/**/explorer-*.png
+            test-results/**/report-*.png
           if-no-files-found: ignore
           retention-days: 7

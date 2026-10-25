@@ -19,9 +19,6 @@ export default defineConfig(({ mode }) => ({
         'src/**/*.spec.{ts,tsx}',
         'src/main.tsx',
         'src/test/**',
-        'src/features/financing/**',
-        'src/features/purchase-costs/**',
-        'src/features/foundation/**',
       ],
       thresholds: {
         branches: 80,

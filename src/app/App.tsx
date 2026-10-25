@@ -1,9 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { FeaturePlaceholderPage } from '../features/foundation/FeaturePlaceholderPage'
+import { FinancingPage } from '../features/financing'
 import { HomePage } from '../features/home/HomePage'
 import { PurchaseCostsPage } from '../features/purchase-costs/PurchaseCostsPage'
-import { FinancingPage } from '../features/financing/FinancingPage'
 import { ComparisonPage } from '../features/comparison'
 import { PrivacyPage } from '../features/privacy'
 import { ResultsPage } from '../features/results'

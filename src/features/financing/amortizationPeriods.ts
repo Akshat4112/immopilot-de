@@ -7,6 +7,12 @@ import { sumMoney } from '../../domain/shared/money'
 export type AmortizationHorizon = 'fixed' | 'full'
 export type AmortizationDetail = 'annual' | 'monthly'
 
+/** Only immutable schedule data is needed by presentation models, including report snapshots. */
+export type AmortizationScheduleData = Pick<
+  MortgageAmortizationScheduleResult,
+  'rows' | 'fixedInterestMonths' | 'payoffMonth' | 'principalCents'
+>
+
 export interface AmortizationPeriod extends Pick<
   AmortizationScheduleRow,
   | 'openingBalanceCents'
@@ -24,7 +30,7 @@ export interface AmortizationPeriod extends Pick<
 
 /** Presentation only: sums actual payment flows; balances remain endpoint stocks. */
 export function createAmortizationPeriods(
-  schedule: MortgageAmortizationScheduleResult,
+  schedule: Pick<AmortizationScheduleData, 'rows' | 'fixedInterestMonths'>,
   horizon: AmortizationHorizon,
   detail: AmortizationDetail,
 ): AmortizationPeriod[] {

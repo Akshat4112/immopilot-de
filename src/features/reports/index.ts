@@ -9,3 +9,4 @@ export {
   type ReportSnapshot,
   type ReportValue,
 } from './reportSnapshot'
+export { PropertyReport } from './PropertyReport'
