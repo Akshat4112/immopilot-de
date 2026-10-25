@@ -5,6 +5,8 @@ import { formatEuroFromCents, formatNumber, formatPercentage } from '../../i18n/
 import type { SupportedLanguage } from '../../i18n/resources'
 
 const german = {
+  'Swipe horizontally for more table columns, or focus the table region and use the arrow keys.':
+    'Wische waagerecht für weitere Tabellenspalten oder fokussiere den Tabellenbereich und nutze die Pfeiltasten.',
   'Purchase-price denominator': 'Kaufpreis als Nenner',
   'Annual net cold rent': 'Jährliche Nettokaltmiete',
   'Net operating income': 'Betriebsergebnis',

@@ -113,10 +113,15 @@
 
 .property-report table {
   width: 100%;
-  min-width: 44rem;
+  min-width: 40rem;
+  table-layout: fixed;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
+}
+
+.property-report table:has(thead th:nth-child(6)) {
+  min-width: 60rem;
 }
 
 .property-report table:has(thead th:nth-child(2):last-child) {
@@ -200,6 +205,10 @@
     display: none !important;
   }
 
+  .report-screen-hint {
+    display: none;
+  }
+
   .property-report {
     color: #111;
     background: #fff;
@@ -222,7 +231,8 @@
     outline: 0;
   }
 
-  .property-report table {
+  .property-report table,
+  .property-report table:has(thead th:nth-child(6)) {
     min-width: 0;
     width: 100%;
     table-layout: fixed;

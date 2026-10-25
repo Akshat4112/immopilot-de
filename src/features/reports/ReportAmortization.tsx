@@ -380,6 +380,11 @@ export function ReportAmortizationSection({
         </p>
       ) : null}
       <p>{t('Amounts sum actual monthly payments in cents; debt uses period endpoints.')}</p>
+      <p className="report-screen-hint">
+        {t(
+          'Swipe horizontally for more table columns, or focus the table region and use the arrow keys.',
+        )}
+      </p>
       <p>
         {t(
           'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
