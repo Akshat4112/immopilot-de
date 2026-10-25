@@ -1,0 +1,256 @@
+.property-report-preview {
+  margin-block: 1.5rem;
+  min-width: 0;
+}
+
+.report-preview-controls,
+.report-preview-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+
+.report-preview-controls label {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 100%;
+}
+
+.report-preview-controls select,
+.report-preview-controls button,
+.report-preview-heading button {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: inherit;
+  padding: 0.65rem 0.8rem;
+  white-space: normal;
+}
+
+.report-preview-controls .report-preview-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.report-preview-heading {
+  justify-content: space-between;
+}
+
+.property-report {
+  padding: clamp(1rem, 3vw, 2.5rem);
+  background: #fffefa;
+  color: #182e26;
+  border: 1px solid #c9d3cc;
+  border-radius: 0.75rem;
+  line-height: 1.55;
+  text-align: start;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.report-header {
+  border-bottom: 3px solid #234f3d;
+  margin-bottom: 1.5rem;
+}
+
+.report-header h2 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-block: 0.4rem;
+}
+
+.report-brand {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.report-section {
+  margin-block: 2rem;
+}
+
+.report-section h3 {
+  border-bottom: 1px solid #c9d3cc;
+  padding-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.report-metrics {
+  margin: 1rem 0;
+}
+
+.report-metrics > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+  border-bottom: 1px solid #e0e5df;
+  padding-block: 0.5rem;
+}
+
+.report-metrics dt {
+  color: #3d5148;
+}
+
+.report-metrics dd {
+  margin: 0;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.report-warning {
+  border-inline-start: 3px solid #896518;
+  padding: 0.6rem 0.8rem;
+  background: #fcf4de;
+}
+
+.report-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+  margin-block: 1.25rem;
+  outline-offset: -3px;
+}
+
+.property-report table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+.property-report table:has(thead th:nth-child(2):last-child) {
+  min-width: 0;
+}
+
+.property-report caption,
+.property-report figcaption {
+  text-align: start;
+  font-weight: 700;
+  padding-block: 0.5rem;
+}
+
+.property-report th,
+.property-report td {
+  border-bottom: 1px solid #d4dcd5;
+  padding: 0.65rem 0.5rem;
+  vertical-align: top;
+}
+
+.property-report thead {
+  background: #eaf0e9;
+}
+
+.property-report th {
+  text-align: start;
+}
+
+.property-report td {
+  text-align: end;
+}
+
+.property-report small {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.property-report figure {
+  margin: 1.5rem 0;
+  break-inside: avoid;
+}
+
+.property-report svg {
+  width: 100%;
+  height: auto;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.report-chart-key {
+  font-size: 0.85rem;
+}
+
+.report-sources {
+  padding-inline-start: 1.25rem;
+}
+
+.report-sources li {
+  margin-block: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .report-metrics > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .report-metrics dd {
+    text-align: start;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 14mm 11mm;
+}
+
+@media print {
+  /* A preview is not export authorization. PF-006.6 supplies the dedicated print host. */
+  .property-report-preview {
+    display: none !important;
+  }
+
+  .property-report {
+    color: #111;
+    background: #fff;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    font-size: 10pt;
+    line-height: 1.4;
+  }
+
+  .property-report h2,
+  .property-report h3,
+  .property-report h4,
+  .property-report caption {
+    break-after: avoid;
+  }
+
+  .property-report .report-table-scroll {
+    overflow: visible;
+    outline: 0;
+  }
+
+  .property-report table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 7.5pt;
+  }
+
+  .property-report thead {
+    display: table-header-group;
+  }
+
+  .property-report tr,
+  .report-metrics > div {
+    break-inside: avoid;
+  }
+
+  .property-report th,
+  .property-report td {
+    padding: 1.6mm 1mm;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .property-report svg {
+    max-height: 75mm;
+  }
+
+  .property-report a {
+    color: #111;
+    text-decoration: underline;
+  }
+}

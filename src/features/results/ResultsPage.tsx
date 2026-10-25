@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { AdditionalRepaymentGuidance } from '../../components/AdditionalRepaymentGuidance'
 import { CalculationProvenance } from '../../components/CalculationProvenance'
 import { PageLayout } from '../../components/PageLayout'
+import { PropertyReportPreview } from '../reports/PropertyReportPreview'
 import { formatEuroFromCents, formatPercentage } from '../../i18n/formatters'
 import type { SupportedLanguage } from '../../i18n/resources'
 import {
@@ -278,6 +279,12 @@ export function ResultsPage() {
       summary={t('results.page.summary')}
     >
       <div className="results-workspace">
+        <PropertyReportPreview
+          key={JSON.stringify([purchaseCosts, financingDraft, analysis, language])}
+          inputs={{ purchaseCosts, financing: financingDraft, analysis }}
+          inputLocale={language === 'de' ? 'de-DE' : 'en-GB'}
+          language={language}
+        />
         {!purchaseCostsReady ? (
           <section className="results-section">
             <UnavailableResult reason={t('results.reasons.purchaseCosts')} />

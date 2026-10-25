@@ -39,6 +39,9 @@ release manifest when available; otherwise its status is explicitly unavailable.
 optional, allowing deterministic capture in tests. Schema and calculation versions come from their
 authoritative modules; supported legacy captures record source and migrated versions separately.
 
-The model has no preview store or print action. Follow-up report UI must discard its reference on
-close and recapture after inputs, selection, language or options change. Rendering, annual/chart
-models, sensitive-data acknowledgement and browser printing belong to PF-006.3 through PF-006.7.
+PF-006.3 adds a single-property preview in the results workspace and the reusable `PropertyReport`
+document. It discards captured data on close or input/option/language changes, renders complete
+annual and optional monthly tables and both static chart/data alternatives, and preserves the
+captured output language. See [property-report-layout.md](../../../docs/property-report-layout.md)
+for layout, verification and task boundaries. The preview does not expose a print action;
+PF-006.6 owns acknowledgement and the authorized browser-print lifecycle.

@@ -1,10 +1,13 @@
-import type { MortgageAmortizationScheduleResult } from '../../domain/mortgage/amortization-types'
 import type { MoneyCents } from '../../domain/shared/money'
-import type { AmortizationDetail, AmortizationHorizon } from './amortizationPeriods'
+import type {
+  AmortizationDetail,
+  AmortizationHorizon,
+  AmortizationScheduleData,
+} from './amortizationPeriods'
 
 export interface DebtChartSchedule {
   id: 'baseline' | 'additional-repayments'
-  schedule: MortgageAmortizationScheduleResult
+  schedule: AmortizationScheduleData
 }
 
 /** Chart presentation only. Zero after payoff never creates payment or savings rows. */
