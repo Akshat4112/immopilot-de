@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises'
+
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
@@ -133,11 +135,41 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     await expect(preview).toBeHidden()
     const probe = page.locator('[data-comparison-print-probe]')
     await expect(probe).toBeVisible()
-    expect(
-      await page.evaluate<boolean>(
-        '(() => {const root=document.querySelector("[data-comparison-print-probe]");return getComputedStyle(root.querySelector(".report-comparison-summary")).page === "comparison-summary" && [...root.querySelectorAll(":scope > article")].every(article=>getComputedStyle(article).page === "property-detail") && [...root.querySelectorAll("table")].every(table=>table.scrollWidth<=table.clientWidth+1)})()',
-      ),
-    ).toBe(true)
+    const printLayout = await page.evaluate<{
+      supportsNamedPages: boolean
+      summaryPage: string
+      propertyPages: string[]
+      width: number
+      overflowingTables: { caption: string; client: number; scroll: number }[]
+    }>(`(() => {
+      const root = document.querySelector('[data-comparison-print-probe]');
+      const supportsNamedPages = CSS.supports('page', 'comparison-summary');
+      if (!supportsNamedPages) root.style.width = '188mm';
+      return {
+        supportsNamedPages,
+        summaryPage: getComputedStyle(root.querySelector('.report-comparison-summary')).getPropertyValue('page'),
+        propertyPages: [...root.querySelectorAll(':scope > article')].map(article => getComputedStyle(article).getPropertyValue('page')),
+        width: root.clientWidth,
+        overflowingTables: [...root.querySelectorAll('table')].filter(table => table.scrollWidth > table.clientWidth + 1).map(table => ({caption: table.caption.textContent, client: table.clientWidth, scroll: table.scrollWidth})),
+      };
+    })()`)
+    await writeFile(
+      testInfo.outputPath(`report-comparison-print-layout-${language}.json`),
+      JSON.stringify(printLayout, null, 2),
+    )
+    if (printLayout.supportsNamedPages) {
+      expect(printLayout.summaryPage).toBe('comparison-summary')
+      expect(printLayout.propertyPages).toEqual([
+        'property-detail',
+        'property-detail',
+        'property-detail',
+      ])
+    } else {
+      // Unsupported CSS is recorded; the existing A4 portrait rule remains the fallback.
+      expect(printLayout.summaryPage).toBe('')
+      expect(printLayout.width).toBeLessThanOrEqual(712)
+    }
+    expect(printLayout.overflowingTables).toEqual([])
     await probe.locator('.report-comparison-table').scrollIntoViewIfNeeded()
     await page.screenshot({
       animations: 'disabled',

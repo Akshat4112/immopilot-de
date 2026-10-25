@@ -49,7 +49,9 @@ each included schedule, independently of live explorer pagination.
 The summary is one semantic table with column and row headers, repeated print headers, and a
 keyboard-focusable horizontal scroll region. Long values and method labels wrap without expanding
 the page on mobile. Print styles use a named A4 landscape summary page and named portrait property
-pages. The summary and each property begin on a new page. Both SVG chart models retain their own
+pages where named pages are supported. If the browser does not expose the CSS `page` property,
+the base A4 portrait rule remains the fallback and the comparison must still fit its narrower width.
+The summary and each property begin on a new page. Both SVG chart models retain their own
 unique IDs and non-colour distinctions. Each table scroll region includes the anonymous property
 ordinal in its accessible name so equivalent sections remain distinct in landmark navigation.
 
@@ -71,4 +73,7 @@ check per-property annual charts and optional monthly tables, inspect both outpu
 360px and 1440px, check keyboard scrolling and accessibility, and exercise a standalone test-only
 landscape/portrait style probe. They also verify one selection, a deleted saved library, zero
 selections, no report-driven requests or writes, language invalidation and close/focus behavior.
-The style probe does not open a print dialog or claim that a PDF was saved.
+The style probe uses the CSSOM `getPropertyValue` API for named-page assignments and records
+capability, assignment and table-overflow diagnostics as JSON visual evidence. Unsupported named
+pages are recorded explicitly; table overflow remains a failure in every engine. The probe does
+not open a print dialog or claim that a PDF was saved.
