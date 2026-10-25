@@ -51,5 +51,7 @@ in visible order. It shares all metric groups and value formatting with the live
 reuses each complete property document. Capture revalidates saved selections without writes;
 missing or changed selected data blocks the entire report. See
 [comparison-report-layout.md](../../../docs/comparison-report-layout.md) for lifecycle, privacy,
-layout and verification. Summary pages use landscape print styles; property detail pages use portrait.
-The authorized print action remains PF-006.6.
+layout and verification. Summary pages use landscape print styles and property detail pages use portrait where named pages
+are implemented. The base A4 portrait layout is the fallback in engines without that implementation;
+the browser checks retain independent capability and overflow diagnostics. Real print/PDF verification
+remains PF-006.7. The authorized print action remains PF-006.6.
