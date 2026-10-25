@@ -136,17 +136,26 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     const probe = page.locator('[data-comparison-print-probe]')
     await expect(probe).toBeVisible()
     const printLayout = await page.evaluate<{
+      parsesNamedPages: boolean
       supportsNamedPages: boolean
+      namedPageProbe: string
       summaryPage: string
       propertyPages: string[]
       width: number
       overflowingTables: { caption: string; client: number; scroll: number }[]
     }>(`(() => {
       const root = document.querySelector('[data-comparison-print-probe]');
-      const supportsNamedPages = CSS.supports('page', 'comparison-summary');
+      const capabilityProbe = document.createElement('div');
+      capabilityProbe.style.setProperty('page', 'immopilot-capability-probe');
+      document.body.append(capabilityProbe);
+      const namedPageProbe = getComputedStyle(capabilityProbe).getPropertyValue('page');
+      capabilityProbe.remove();
+      const supportsNamedPages = namedPageProbe === 'immopilot-capability-probe';
       if (!supportsNamedPages) root.style.width = '188mm';
       return {
+        parsesNamedPages: CSS.supports('page', 'comparison-summary'),
         supportsNamedPages,
+        namedPageProbe,
         summaryPage: getComputedStyle(root.querySelector('.report-comparison-summary')).getPropertyValue('page'),
         propertyPages: [...root.querySelectorAll(':scope > article')].map(article => getComputedStyle(article).getPropertyValue('page')),
         width: root.clientWidth,
@@ -166,7 +175,9 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
       ])
     } else {
       // Unsupported CSS is recorded; the existing A4 portrait rule remains the fallback.
+      expect(printLayout.namedPageProbe).toBe('')
       expect(printLayout.summaryPage).toBe('')
+      expect(printLayout.propertyPages).toEqual(['', '', ''])
       expect(printLayout.width).toBeLessThanOrEqual(712)
     }
     expect(printLayout.overflowingTables).toEqual([])

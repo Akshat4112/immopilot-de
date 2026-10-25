@@ -74,6 +74,21 @@ check per-property annual charts and optional monthly tables, inspect both outpu
 landscape/portrait style probe. They also verify one selection, a deleted saved library, zero
 selections, no report-driven requests or writes, language invalidation and close/focus behavior.
 The style probe uses the CSSOM `getPropertyValue` API for named-page assignments and records
-capability, assignment and table-overflow diagnostics as JSON visual evidence. Unsupported named
+parser acceptance, an independent inline named-page capability probe, report assignments and
+table-overflow diagnostics as JSON visual evidence. Unsupported named
 pages are recorded explicitly; table overflow remains a failure in every engine. The probe does
 not open a print dialog or claim that a PDF was saved.
+
+### Named-page compatibility
+
+Parser acceptance alone does not establish that named-page styles are implemented. The independent
+probe assigns a custom page name to a temporary block and reads its computed value before inspecting
+the actual report assignments. A functioning implementation must preserve the requested summary and
+property page names. An implementation without computed named-page support must pass the narrower
+A4 portrait fallback and all the same overflow checks; its limitation is retained in the JSON evidence.
+
+The [WebKit property registry](https://github.com/WebKit/WebKit/blob/main/Source/WebCore/css/CSSProperties.json)
+currently defines a `page` parser grammar while skipping its style builder, style extractor and
+computed style. This is why the test probes implementation separately from `CSS.supports`. Do not
+claim mixed page orientation in that engine based on CSS parsing. Actual print/PDF capabilities
+remain subject to PF-006.7.
