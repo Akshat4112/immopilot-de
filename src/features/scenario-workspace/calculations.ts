@@ -406,6 +406,7 @@ function calculateOfferPriceFromDraft(
   financingDraft: FinancingDraft,
   rental: ConfigurableDashboardResult<RentalInvestmentResult> | undefined,
   draft: ScenarioAnalysisDraft,
+  locale: NumericInputLocale,
 ): ConfigurableDashboardResult<OfferPriceResult> {
   const targetGrossYield = parseOptionalRateInput(draft.targetGrossYield)
   const targetNetYield = parseOptionalRateInput(draft.targetNetYield)
@@ -445,14 +446,14 @@ function calculateOfferPriceFromDraft(
 
   const rentalResult = rental?.status === 'not-configured' ? undefined : rental
   return calculateOfferPrice({
-    acquisitionTemplate: acquisitionCostInputFromDraft(purchaseCosts),
+    acquisitionTemplate: acquisitionCostInputFromDraft(purchaseCosts, locale),
     ...(rentalResult ? { rental: rentalResult } : {}),
     ...(targetGrossYield === undefined ? {} : { targetGrossYield }),
     ...(targetNetYield === undefined ? {} : { targetNetYield }),
     ...(hasAffordability
       ? {
           affordability: {
-            availableEquityCents: parseEuroInput(financingDraft.availableEquity),
+            availableEquityCents: parseEuroInput(financingDraft.availableEquity, locale),
             maximumMonthlyPaymentCents: parseEuroInput(draft.maximumMonthlyPayment, 'canonical'),
             financedAcquisitionCostShare: parseRateInput(
               financingDraft.financedAcquisitionCostShare,
@@ -536,6 +537,7 @@ export function calculateScenarioDashboard(
     financingDraft,
     rental,
     analysisDraft,
+    locale,
   )
 
   return {
