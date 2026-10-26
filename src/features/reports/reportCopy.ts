@@ -7,6 +7,18 @@ import type { SupportedLanguage } from '../../i18n/resources'
 const german = {
   'Property comparison': 'Immobilienvergleich',
   'View comparison report': 'Vergleichsbericht ansehen',
+  'Include scenario names': 'Szenarionamen aufnehmen',
+  'Scenario names may contain personal information. Review them before export.':
+    'Szenarionamen können persönliche Angaben enthalten. Prüfen Sie sie vor dem Export.',
+  'This report contains financial information. Review it and the privacy warning before printing or sharing.':
+    'Dieser Bericht enthält Finanzangaben. Prüfen Sie den Bericht und den Datenschutzhinweis vor dem Drucken oder Teilen.',
+  'In the browser print dialog, disable headers and footers to avoid exposing the page URL or share link.':
+    'Deaktivieren Sie im Druckdialog die Kopf- und Fußzeilen, damit Seiten-URL oder Freigabelink nicht offengelegt werden.',
+  'I have reviewed the contents and privacy warning.':
+    'Ich habe den Inhalt und den Datenschutzhinweis geprüft.',
+  'Print / Save as PDF': 'Drucken / Als PDF speichern',
+  'Printing is unavailable. Keep the preview open and try the browser print command.':
+    'Drucken ist nicht verfügbar. Lassen Sie die Vorschau geöffnet und versuchen Sie den Browser-Druckbefehl.',
   'Comparison summary': 'Vergleichsübersicht',
   'Saved properties are captured in the visible order. Names are omitted.':
     'Gespeicherte Immobilien werden in der sichtbaren Reihenfolge erfasst. Namen werden ausgelassen.',
