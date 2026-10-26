@@ -48,7 +48,11 @@ export function ReportPrintControls({
   return (
     <>
       <div className="report-print-controls">
-        <p>{t('This report contains financial information. Review it and the privacy warning before printing or sharing.')}</p>
+        <p>
+          {t(
+            'This report contains financial information. Review it and the privacy warning before printing or sharing.',
+          )}
+        </p>
         <p>
           {t(
             'In the browser print dialog, disable headers and footers to avoid exposing the page URL or share link.',
