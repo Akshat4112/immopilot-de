@@ -222,6 +222,7 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: false,
+        preferCSSPageSize: true,
       })
       expect(exported.subarray(0, 5).toString()).toBe('%PDF-')
       expect(exported.length).toBeGreaterThan(10000)
