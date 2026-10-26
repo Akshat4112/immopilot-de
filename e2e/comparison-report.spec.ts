@@ -193,7 +193,9 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     await expect(trigger).toBeFocused()
   }
   await preview.getByRole('combobox').selectOption('de')
-  await preview.getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' }).check()
+  await preview
+    .getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' })
+    .check()
   await trigger.click()
   await expect(
     report.getByRole('table', {
@@ -207,7 +209,9 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
       exact: true,
     }),
   ).toHaveCount(1)
-  await preview.getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' }).uncheck()
+  await preview
+    .getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' })
+    .uncheck()
   await expect(report).toHaveCount(0)
   await trigger.click()
   await page.getByRole('button', { name: 'Private owner address nach links verschieben' }).click()
