@@ -102,5 +102,6 @@ jobs:
           path: |
             test-results/**/explorer-*.png
             test-results/**/report-*.png
+            test-results/**/report-*.json
           if-no-files-found: ignore
           retention-days: 7

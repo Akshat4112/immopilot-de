@@ -45,3 +45,13 @@ annual and optional monthly tables and both static chart/data alternatives, and 
 captured output language. See [property-report-layout.md](../../../docs/property-report-layout.md)
 for layout, verification and task boundaries. The preview does not expose a print action;
 PF-006.6 owns acknowledgement and the authorized browser-print lifecycle.
+
+PF-006.4 adds `ComparisonReport` and a comparison-workspace preview for one to three saved properties,
+in visible order. It shares all metric groups and value formatting with the live comparison and
+reuses each complete property document. Capture revalidates saved selections without writes;
+missing or changed selected data blocks the entire report. See
+[comparison-report-layout.md](../../../docs/comparison-report-layout.md) for lifecycle, privacy,
+layout and verification. Summary pages use landscape print styles and property detail pages use portrait where named pages
+are implemented. The base A4 portrait layout is the fallback in engines without that implementation;
+the browser checks retain independent capability and overflow diagnostics. Real print/PDF verification
+remains PF-006.7. The authorized print action remains PF-006.6.

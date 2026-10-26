@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
+
+import { ReportPropertyLabel } from './reportPropertyLabel'
 
 export function ReportTable({
   caption,
@@ -9,8 +11,14 @@ export function ReportTable({
   headers: readonly string[]
   rows: readonly (readonly ReactNode[])[]
 }) {
+  const propertyLabel = useContext(ReportPropertyLabel)
   return (
-    <div className="report-table-scroll" role="region" aria-label={caption} tabIndex={0}>
+    <div
+      className="report-table-scroll"
+      role="region"
+      aria-label={propertyLabel ? `${propertyLabel} · ${caption}` : caption}
+      tabIndex={0}
+    >
       <table>
         <caption>{caption}</caption>
         <thead>

@@ -633,6 +633,22 @@ export function PropertyReport({ snapshot }: { snapshot: ReportValue<ReportSnaps
   const property = snapshot.properties[0]
   if (snapshot.kind !== 'property' || snapshot.properties.length !== 1 || !property)
     return <p>{t('Correct the required inputs before creating a report.')}</p>
+  return <ReportPropertyDocument snapshot={snapshot} property={property} />
+}
+
+/** Reuses every property section without changing or rebuilding the captured comparison. */
+export function ReportPropertyDocument({
+  snapshot,
+  property,
+}: {
+  snapshot: ReportValue<ReportSnapshot>
+  property: ReportProperty
+}) {
+  const language = snapshot.language
+  const t = reportText(language)
+  const label = `${language === 'de' ? 'Objekt' : 'Property'} ${property.ordinal}`
+  const identity = property.name ? `${label} · ${property.name}` : label
+  const comparison = snapshot.kind === 'comparison'
   const section = (title: ReportLabel, content: ReactNode) => (
     <section className="report-section">
       <h3>{t(title)}</h3>
@@ -640,12 +656,16 @@ export function PropertyReport({ snapshot }: { snapshot: ReportValue<ReportSnaps
     </section>
   )
   return (
-    <article className="property-report" lang={language} aria-label={t('Property report')}>
+    <article
+      className="property-report"
+      lang={language}
+      aria-label={comparison ? identity : t('Property report')}
+    >
       <header className="report-header">
         <p className="report-brand">ImmoPilot DE · EUR</p>
-        <h2>{t('Property report')}</h2>
+        <h2>{comparison ? identity : t('Property report')}</h2>
         <p>
-          {property.name ?? t('Property 1')} ·{' '}
+          {comparison ? label : (property.name ?? t('Property 1'))} ·{' '}
           {t(
             property.inputs.analysis.propertyUse === 'owner-occupier'
               ? 'Owner-occupier'
@@ -653,7 +673,7 @@ export function PropertyReport({ snapshot }: { snapshot: ReportValue<ReportSnaps
           )}
         </p>
         <p>
-          <strong>{t(snapshot.status === 'complete' ? 'Complete' : 'Incomplete')}</strong> ·{' '}
+          <strong>{t(property.status === 'complete' ? 'Complete' : 'Incomplete')}</strong> ·{' '}
           {t('Generated')}:{' '}
           <time dateTime={snapshot.generatedAt}>
             {new Intl.DateTimeFormat(language === 'de' ? 'de-DE' : 'en-GB', {
@@ -665,7 +685,7 @@ export function PropertyReport({ snapshot }: { snapshot: ReportValue<ReportSnaps
           </time>
         </p>
       </header>
-      {snapshot.status === 'incomplete' ? (
+      {property.status === 'incomplete' ? (
         <p className="report-warning">
           {t('Some results are missing or unavailable. Review the marked sections.')}
         </p>
