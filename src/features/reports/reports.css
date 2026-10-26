@@ -38,6 +38,41 @@
   justify-content: space-between;
 }
 
+.report-print-controls {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+  margin-block: 1rem;
+}
+
+.report-print-controls p {
+  margin: 0;
+}
+
+.report-print-controls .report-preview-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.report-print-controls button {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: inherit;
+  padding: 0.65rem 0.8rem;
+}
+
+.report-print-controls button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Only the authorized, transient portal becomes visible in print media. */
+.report-print-root {
+  display: none;
+}
+
 .property-report {
   padding: clamp(1rem, 3vw, 2.5rem);
   background: #fffefa;
@@ -242,7 +277,15 @@
 }
 
 @media print {
-  /* A preview is not export authorization. PF-006.6 supplies the dedicated print host. */
+  /* Do not include navigation, previews or hidden app state in an authorized export. */
+  body > :not(.report-print-root) {
+    display: none !important;
+  }
+
+  body > .report-print-root {
+    display: block !important;
+  }
+
   .property-report-preview {
     display: none !important;
   }
