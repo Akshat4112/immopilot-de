@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ScenarioWorkspaceSnapshot } from '../../config/scenarioDrafts'
 import type { SupportedLanguage } from '../../i18n/resources'
 import { PropertyReport } from './PropertyReport'
+import { ReportPrintControls } from './ReportPrintControls'
 import { reportText } from './reportCopy'
 import {
   capturePropertyReport,
@@ -91,6 +92,11 @@ export function PropertyReportPreview({
             </button>
           </div>
           <PropertyReport snapshot={capture.snapshot} />
+          <ReportPrintControls
+            key={capture.snapshot.generatedAt}
+            snapshot={capture.snapshot}
+            report={<PropertyReport snapshot={capture.snapshot} />}
+          />
         </>
       ) : null}
     </section>
