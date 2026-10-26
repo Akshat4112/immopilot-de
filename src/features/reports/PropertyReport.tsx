@@ -510,10 +510,10 @@ function Decision({
         />
         {hasPostFixedProjection(property) ? (
           <p>
-          {t(
-            'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
-          )}
-        </p>
+            {t(
+              'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
+            )}
+          </p>
         ) : null}
       </>
     )
@@ -582,12 +582,12 @@ function Decision({
         <Status result={result.sale} language={language} />
       )}
       {hasPostFixedProjection(property) ? (
-          <p>
-        {t(
-          'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
-        )}
-      </p>
-        ) : null}
+        <p>
+          {t(
+            'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
+          )}
+        </p>
+      ) : null}
     </>
   )
 }
@@ -777,10 +777,14 @@ export function ReportPropertyDocument({
             {t('Sources retain their recorded verification dates; generation does not renew them.')}
           </p>
           <p>
-            {t('Acquisition cost defaults are planning estimates unless explicitly statutory; user overrides have not been independently verified.')}
+            {t(
+              'Acquisition cost defaults are planning estimates unless explicitly statutory; user overrides have not been independently verified.',
+            )}
           </p>
           <p>
-            {t('Fixed-interest results and projected lifetime or payoff results use different calculation horizons; projections are not lender commitments.')}
+            {t(
+              'Fixed-interest results and projected lifetime or payoff results use different calculation horizons; projections are not lender commitments.',
+            )}
           </p>
           <ul className="report-sources">
             {property.provenance.sources.map((source) => (
