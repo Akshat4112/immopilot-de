@@ -360,9 +360,7 @@ describe('comparison capture lifecycle', () => {
     await user.selectOptions(screen.getByRole('combobox'), 'de')
     expect(screen.queryByRole('article')).toBeNull()
     await user.click(trigger)
-    await user.click(
-      screen.getByRole('checkbox', { name: 'Include complete monthly appendix' }),
-    )
+    await user.click(screen.getByRole('checkbox', { name: 'Include complete monthly appendix' }))
     expect(screen.queryByRole('article')).toBeNull()
     await user.click(trigger)
     fireEvent(window, new StorageEvent('storage', { key: SCENARIO_LIBRARY_STORAGE_KEY }))
