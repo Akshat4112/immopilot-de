@@ -36,8 +36,10 @@ export function ReportPrintControls({
       if (typeof window.print !== 'function') throw new Error('print unavailable')
       window.print()
     } catch {
-      setPrintError(true)
-      setPrinting(false)
+      Promise.resolve().then(() => {
+        setPrintError(true)
+        setPrinting(false)
+      })
     }
     return () => {
       window.removeEventListener('afterprint', finished)
