@@ -31,6 +31,7 @@ export function ComparisonReportPreview({
   const [capture, setCapture] = useState<ReportCaptureResult | null>(null)
   const trigger = useRef<HTMLButtonElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
+  const capturedLibrary = useRef<string | null>(null)
   useEffect(() => {
     if (capture?.status === 'captured') heading.current?.focus()
   }, [capture])
@@ -39,9 +40,24 @@ export function ComparisonReportPreview({
     const onStorage = (event: StorageEvent) => {
       if (event.key === null || event.key === SCENARIO_LIBRARY_STORAGE_KEY) invalidate()
     }
+    const onFocus = () => {
+      try {
+        // A cancelled print dialog can return focus without changing source data.
+        // Keep that preview, but discard it if saved data has actually changed.
+        if (
+          capturedLibrary.current !== null &&
+          window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY) !== capturedLibrary.current
+        )
+          invalidate()
+      } catch {
+        invalidate()
+      }
+    }
     window.addEventListener('storage', onStorage)
+    window.addEventListener('focus', onFocus)
     return () => {
       window.removeEventListener('storage', onStorage)
+      window.removeEventListener('focus', onFocus)
     }
   }, [])
   const generate = () => {
@@ -62,6 +78,7 @@ export function ComparisonReportPreview({
         return
       }
       const documents = raw === null ? [] : (JSON.parse(raw) as { scenarios: unknown[] }).scenarios
+      capturedLibrary.current = raw
       setCapture(
         captureComparisonReport(
           { documents, selectedIds },
