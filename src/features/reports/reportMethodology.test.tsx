@@ -59,7 +59,7 @@ describe('PF-006.5 methodology and provenance disclosures', () => {
     const schedule = paidOff.properties[0]!.results.amortization
     expect(schedule.status).toBe('available')
     if (schedule.status !== 'available') throw new Error('Missing schedule')
-    expect(schedule.payoffMonth).toBeLessThan(schedule.fixedInterestMonths)
+    expect(schedule.payoffMonth).toBeLessThan(schedule.fixedInterestMonths!)
     const { unmount } = render(<PropertyReport snapshot={paidOff} />)
     const inside = screen.getByRole('article')
     expect(inside).toHaveTextContent(
@@ -74,7 +74,7 @@ describe('PF-006.5 methodology and provenance disclosures', () => {
     const projected = longer.properties[0]!.results.amortization
     expect(projected.status).toBe('available')
     if (projected.status !== 'available') throw new Error('Missing projected schedule')
-    expect(projected.payoffMonth).toBeGreaterThan(projected.fixedInterestMonths)
+    expect(projected.payoffMonth).toBeGreaterThan(projected.fixedInterestMonths!)
     render(<PropertyReport snapshot={longer} />)
     expect(screen.getByRole('article')).toHaveTextContent(
       'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged.',
