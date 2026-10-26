@@ -36,7 +36,7 @@ export function ReportPrintControls({
       if (typeof window.print !== 'function') throw new Error('print unavailable')
       window.print()
     } catch {
-      Promise.resolve().then(() => {
+      queueMicrotask(() => {
         setPrintError(true)
         setPrinting(false)
       })
