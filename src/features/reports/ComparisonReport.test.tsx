@@ -367,7 +367,7 @@ describe('comparison capture lifecycle', () => {
     expect(screen.queryByRole('article')).toBeNull()
     await user.click(trigger)
     fireEvent.focus(window)
-    expect(screen.getByRole('article')).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: 'Immobilienvergleich' })).toBeInTheDocument()
     documents[0]!.inputs.purchaseCosts.purchasePrice = ''
     writeScenarioLibrary(localStorage, documents)
     fireEvent.focus(window)
