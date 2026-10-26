@@ -23,10 +23,7 @@ describe('PF-006.6 acknowledged local printing', () => {
       const print = vi.spyOn(window, 'print').mockImplementation(() => {})
       const user = userEvent.setup()
       render(
-        <ReportPrintControls
-          snapshot={snapshot}
-          report={<PropertyReport snapshot={snapshot} />}
-        />,
+        <ReportPrintControls snapshot={snapshot} report={<PropertyReport snapshot={snapshot} />} />,
       )
       const action = screen.getByRole('button', {
         name: language === 'de' ? 'Drucken / Als PDF speichern' : 'Print / Save as PDF',
@@ -81,7 +78,11 @@ describe('PF-006.6 acknowledged local printing', () => {
     const user = userEvent.setup()
     render(<PropertyReportPreview inputs={reportInputs()} inputLocale="de-DE" language="en" />)
     await user.click(screen.getByRole('button', { name: 'View property report' }))
-    await user.click(screen.getByRole('checkbox', { name: 'I have reviewed the contents and privacy warning.' }))
+    await user.click(
+      screen.getByRole('checkbox', {
+        name: 'I have reviewed the contents and privacy warning.',
+      }),
+    )
     await user.click(screen.getByRole('button', { name: 'Print / Save as PDF' }))
     expect(print).toHaveBeenCalledOnce()
     fireEvent(window, new Event('afterprint'))
