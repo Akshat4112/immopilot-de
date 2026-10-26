@@ -97,8 +97,9 @@ describe('PF-006.5 methodology and provenance disclosures', () => {
     const report = articles.find((article) => article.classList.contains('comparison-report'))
     expect(report).toBeDefined()
     expect(capture.snapshot.properties.map((property) => property.ordinal)).toEqual([1, 2])
-    expect(capture.snapshot.properties.map((property) => property.provenance.stateTaxEffectiveFrom))
-      .toEqual(['1998-01-01', '2011-11-05'])
+    expect(
+      capture.snapshot.properties.map((property) => property.provenance.stateTaxEffectiveFrom),
+    ).toEqual(['1998-01-01', '2011-11-05'])
     const properties = within(report!).getAllByRole('article')
     expect(properties[0]).toHaveTextContent('1998-01-01')
     expect(properties[1]).toHaveTextContent('2011-11-05')
