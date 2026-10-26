@@ -78,7 +78,9 @@ jobs:
         run: npm ci
 
       - name: Install supported browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+        # GitHub ubuntu runners ship the browser system libraries. Avoid downloading
+        # hundreds of additional apt packages from a slow mirror on each PR.
+        run: npx playwright install chromium firefox webkit
 
       - name: Run Playwright smoke test
         run: npm run test:e2e
