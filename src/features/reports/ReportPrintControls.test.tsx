@@ -42,9 +42,7 @@ describe('PF-006.6 acknowledged local printing', () => {
       await user.click(action)
       expect(print).toHaveBeenCalledTimes(1)
       expect(document.querySelector('[data-report-print-root]')).not.toBeNull()
-      expect(document.title).toBe(
-        snapshot.suggestedFilename.replace(/\\.pdf$/u, ''),
-      )
+      expect(document.title).toBe(snapshot.suggestedFilename.replace(/\.pdf$/u, ''))
       expect(document.title).not.toContain('€')
       fireEvent(window, new Event('afterprint'))
       expect(document.title).toBe(before)
@@ -100,11 +98,7 @@ describe('PF-006.6 acknowledged local printing', () => {
     writeScenarioLibrary(localStorage, [scenario])
     const user = userEvent.setup()
     render(
-      <ComparisonReportPreview
-        selectedIds={[scenario.id]}
-        scenarios={[scenario]}
-        language="en"
-      />,
+      <ComparisonReportPreview selectedIds={[scenario.id]} scenarios={[scenario]} language="en" />,
     )
     await user.click(screen.getByRole('button', { name: 'View comparison report' }))
     expect(screen.getByRole('article', { name: 'Property comparison' })).not.toHaveTextContent(
