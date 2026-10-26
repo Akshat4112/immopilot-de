@@ -278,7 +278,7 @@
 
 @media print {
   /* Do not include navigation, previews or hidden app state in an authorized export. */
-  body > :not(.report-print-root) {
+  body:has(> .report-print-root) > :not(.report-print-root) {
     display: none !important;
   }
 
