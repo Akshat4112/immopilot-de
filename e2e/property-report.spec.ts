@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises'
+
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
@@ -133,8 +135,8 @@ test('previews both property modes in DE/EN with complete data, safe lifecycle a
 
 test('reaches the complete long-loan appendix through the actual preview @cross-browser', async ({
   page,
-}) => {
-  test.setTimeout(90000)
+}, testInfo) => {
+  test.setTimeout(180000)
   await completeFinancedPurchase(page)
   await page.getByRole('textbox', { name: 'Sollzinssatz p.a.', exact: true }).fill('0')
   await page.getByRole('textbox', { name: 'Anfängliche Tilgung p.a.', exact: true }).fill('1')
@@ -156,6 +158,54 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
   await expect(appendix.getByRole('row')).toHaveCount(1201)
   await expect(appendix.getByRole('row').last()).toContainText('1,200')
   await expect(appendix.getByRole('row').last()).toContainText('€162.67')
+  const originalTitle = await page.title()
+  const beforeStorage = await page.evaluate(() => JSON.stringify(localStorage))
+  const printRequests: string[] = []
+  page.on('request', (request) => printRequests.push(request.url()))
+  await page.evaluate(() => {
+    window.print = () => {}
+  })
+  const controls = preview.locator('.report-print-controls')
+  const printButton = controls.getByRole('button', { name: 'Print / Save as PDF' })
+  await expect(printButton).toBeDisabled()
+  await controls.getByRole('checkbox').check()
+  await printButton.click()
+  const printRoot = page.locator('[data-report-print-root]')
+  await expect(printRoot).toHaveCount(1)
+  const printAppendix = printRoot.getByRole('table', {
+    name: 'Monthly appendix · Baseline · EUR',
+    exact: true,
+  })
+  await expect(printAppendix.getByRole('row')).toHaveCount(1201)
+  await page.emulateMedia({ media: 'print' })
+  await expect(preview).toBeHidden()
+  await expect(printRoot.locator('.property-report')).toBeVisible()
+  await expect(printRoot.locator('thead').first()).toHaveCSS('display', 'table-header-group')
+  if (testInfo.project.name === 'chromium') {
+    const exported = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      displayHeaderFooter: false,
+    })
+    expect(exported.subarray(0, 5).toString()).toBe('%PDF-')
+    expect(exported.length).toBeGreaterThan(10000)
+    await writeFile(testInfo.outputPath('report-long-loan-1200-months.pdf'), exported)
+  } else {
+    await writeFile(
+      testInfo.outputPath('report-long-loan-pdf-capability.json'),
+      JSON.stringify({
+        browser: testInfo.project.name,
+        pdfApi: 'unsupported by Playwright in this browser',
+        monthlyRows: await printAppendix.getByRole('row').count(),
+      }),
+    )
+  }
+  await page.emulateMedia({ media: 'screen' })
+  await page.evaluate(() => window.dispatchEvent(new Event('afterprint')))
+  await expect(printRoot).toHaveCount(0)
+  expect(await page.title()).toBe(originalTitle)
+  expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(beforeStorage)
+  expect(printRequests).toEqual([])
   await preview
     .getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' })
     .uncheck()
