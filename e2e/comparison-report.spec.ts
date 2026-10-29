@@ -189,9 +189,7 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     await page.evaluate('document.querySelector("[data-comparison-print-probe]").remove()')
     await page.emulateMedia({ media: 'screen' })
     // Exercise the authorized print portal rather than only a synthetic style probe.
-    await page.evaluate(() => {
-      window.print = () => {}
-    })
+    await page.evaluate('window.print = () => {}')
     const printControls = preview.locator('.report-print-controls')
     const printButton = printControls.getByRole('button', {
       name: language === 'de' ? 'Drucken / Als PDF speichern' : 'Print / Save as PDF',
@@ -211,10 +209,10 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     await page.emulateMedia({ media: 'print' })
     await expect(preview).toBeHidden()
     await expect(printRoot.locator('.comparison-report')).toBeVisible()
-    const overflowingExportTables = await printRoot.locator('table').evaluateAll((tables) =>
-      tables
+    const overflowingExportTables = await printRoot.locator('table').evaluateAll<string[]>(
+      `(tables) => tables
         .filter((table) => table.scrollWidth > table.clientWidth + 1)
-        .map((table) => table.querySelector('caption')?.textContent),
+        .map((table) => table.querySelector('caption')?.textContent ?? 'Unnamed table')`,
     )
     expect(overflowingExportTables).toEqual([])
     if (testInfo.project.name === 'chromium') {
@@ -239,7 +237,7 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
       )
     }
     await page.emulateMedia({ media: 'screen' })
-    await page.evaluate(() => window.dispatchEvent(new Event('afterprint')))
+    await page.evaluate('window.dispatchEvent(new Event("afterprint"))')
     await expect(printRoot).toHaveCount(0)
     await expect(printButton).toBeEnabled()
     await preview.getByRole('button', { name: 'Bericht schließen' }).click()
