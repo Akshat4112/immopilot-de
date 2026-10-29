@@ -8,6 +8,7 @@ import {
   type ScenarioLibraryIssue,
 } from '../../storage'
 import { ComparisonReport } from './ComparisonReport'
+import { ReportPrintControls } from './ReportPrintControls'
 import { reportText } from './reportCopy'
 import { captureComparisonReport, type ReportCaptureResult } from './reportSnapshot'
 
@@ -26,9 +27,11 @@ export function ComparisonReportPreview({
   const t = reportText(language)
   const [outputLanguage, setOutputLanguage] = useState(language)
   const [monthly, setMonthly] = useState(false)
+  const [includeNames, setIncludeNames] = useState(false)
   const [capture, setCapture] = useState<ReportCaptureResult | null>(null)
   const trigger = useRef<HTMLButtonElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
+  const capturedLibrary = useRef<string | null>(null)
   useEffect(() => {
     if (capture?.status === 'captured') heading.current?.focus()
   }, [capture])
@@ -37,11 +40,24 @@ export function ComparisonReportPreview({
     const onStorage = (event: StorageEvent) => {
       if (event.key === null || event.key === SCENARIO_LIBRARY_STORAGE_KEY) invalidate()
     }
+    const onFocus = () => {
+      try {
+        // A cancelled print dialog can return focus without changing source data.
+        // Keep that preview, but discard it if saved data has actually changed.
+        if (
+          capturedLibrary.current !== null &&
+          window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY) !== capturedLibrary.current
+        )
+          invalidate()
+      } catch {
+        invalidate()
+      }
+    }
     window.addEventListener('storage', onStorage)
-    window.addEventListener('focus', invalidate)
+    window.addEventListener('focus', onFocus)
     return () => {
       window.removeEventListener('storage', onStorage)
-      window.removeEventListener('focus', invalidate)
+      window.removeEventListener('focus', onFocus)
     }
   }, [])
   const generate = () => {
@@ -62,12 +78,14 @@ export function ComparisonReportPreview({
         return
       }
       const documents = raw === null ? [] : (JSON.parse(raw) as { scenarios: unknown[] }).scenarios
+      capturedLibrary.current = raw
       setCapture(
         captureComparisonReport(
           { documents, selectedIds },
           {
             language: outputLanguage,
             includeMonthlyAppendix: monthly,
+            includeScenarioNames: includeNames,
           },
         ),
       )
@@ -80,7 +98,11 @@ export function ComparisonReportPreview({
       className="property-report-preview comparison-report-preview"
       aria-label={t('Report preview')}
     >
-      <p>{t('Saved properties are captured in the visible order. Names are omitted.')}</p>
+      <p>
+        {includeNames
+          ? t('Scenario names may contain personal information. Review them before export.')
+          : t('Saved properties are captured in the visible order. Names are omitted.')}
+      </p>
       <div className="report-preview-controls">
         <label>
           {t('Report language')}
@@ -105,6 +127,17 @@ export function ComparisonReportPreview({
             }}
           />
           {t('Include complete monthly appendix')}
+        </label>
+        <label className="report-preview-checkbox">
+          <input
+            type="checkbox"
+            checked={includeNames}
+            onChange={(event) => {
+              setIncludeNames(event.target.checked)
+              setCapture(null)
+            }}
+          />
+          {t('Include scenario names')}
         </label>
         <button type="button" ref={trigger} onClick={generate}>
           {t('View comparison report')}
@@ -139,6 +172,11 @@ export function ComparisonReportPreview({
             </button>
           </div>
           <ComparisonReport snapshot={capture.snapshot} />
+          <ReportPrintControls
+            key={capture.snapshot.generatedAt}
+            snapshot={capture.snapshot}
+            report={<ComparisonReport snapshot={capture.snapshot} />}
+          />
         </>
       ) : null}
     </section>

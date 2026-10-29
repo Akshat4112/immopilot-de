@@ -141,7 +141,9 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
   await page.getByRole('link', { name: 'Auswertung', exact: true }).click()
   const preview = page.locator('.property-report-preview')
   await preview.getByRole('combobox').selectOption('en')
-  await preview.getByRole('checkbox').check()
+  await preview
+    .getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' })
+    .check()
   await preview.getByRole('button', { name: 'Immobilienbericht ansehen' }).click()
   const report = preview.getByRole('article')
   const annual = report.getByRole('table', { name: 'Baseline · EUR', exact: true })
@@ -154,7 +156,9 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
   await expect(appendix.getByRole('row')).toHaveCount(1201)
   await expect(appendix.getByRole('row').last()).toContainText('1,200')
   await expect(appendix.getByRole('row').last()).toContainText('€162.67')
-  await preview.getByRole('checkbox').uncheck()
+  await preview
+    .getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' })
+    .uncheck()
   await expect(report).toHaveCount(0)
   await preview.getByRole('button', { name: 'Immobilienbericht ansehen' }).click()
   await expect(preview.getByRole('article')).toHaveCount(1)
