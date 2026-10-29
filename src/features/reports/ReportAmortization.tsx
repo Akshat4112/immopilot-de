@@ -387,7 +387,11 @@ export function ReportAmortizationSection({
       </p>
       <p>
         {t(
-          'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
+          model.schedules.some(
+            ({ schedule }) => schedule.payoffMonth > schedule.fixedInterestMonths,
+          )
+            ? 'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.'
+            : 'Mortgage schedule ends within the fixed-interest period; no post-fixation rate is assumed.',
         )}
       </p>
       <ReportSchedule
@@ -402,7 +406,7 @@ export function ReportAmortizationSection({
         caption={`${t('Remaining-debt data')} · EUR`}
         headers={[t('Loan month'), ...debt.series.map((series) => title(series.id))]}
         rows={debt.months.map((month, index) => [
-          `${f.number(month)}${month === debt.fixedMonth ? ` · ${t('Fixed-interest boundary')}` : ''}${month > debt.fixedMonth ? ` · ${t('Projection')}` : ''}`,
+          `${f.number(month)}${month === debt.fixedMonth ? ` · ${t('Fixed-interest boundary')}` : ''}${month > debt.fixedMonth && model.schedules.some(({ schedule }) => month <= schedule.payoffMonth) ? ` · ${t('Projection')}` : ''}`,
           ...debt.series.map(
             (series) =>
               `${f.money(series.points[index]!.balanceCents)}${month === series.payoffMonth ? ` · ${t('Payoff')}` : month > series.payoffMonth ? ` · ${t('Already repaid; no further payments')}` : ''}`,

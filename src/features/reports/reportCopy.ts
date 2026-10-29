@@ -246,6 +246,16 @@ const german = {
   'Source schema': 'Ursprüngliches Schema',
   'Input locale': 'Zahlenformat der Eingabe',
   'Assumption set': 'Annahmensatz',
+  'Assumption schema': 'Annahmenschema',
+  'Transfer-tax source date': 'Stand der Grunderwerbsteuerquelle',
+  'State tax rate effective from': 'Landessteuersatz gültig ab',
+  'Source date': 'Quelldatum',
+  'Acquisition cost defaults are planning estimates unless explicitly statutory; user overrides have not been independently verified.':
+    'Die Standardwerte der Kaufnebenkosten sind Planungsannahmen, sofern nicht ausdrücklich gesetzlich festgelegt; eigene Änderungen wurden nicht unabhängig geprüft.',
+  'Fixed-interest results and projected lifetime or payoff results use different calculation horizons; projections are not lender commitments.':
+    'Werte innerhalb der Zinsbindung und projizierte Gesamtlaufzeit- oder Volltilgungswerte haben unterschiedliche Betrachtungszeiträume; Projektionen sind keine Kreditzusagen.',
+  'Mortgage schedule ends within the fixed-interest period; no post-fixation rate is assumed.':
+    'Die Rückzahlung endet innerhalb der Zinsbindung; es wird kein Sollzins nach der Zinsbindung unterstellt.',
   'Assumptions verified on': 'Annahmen geprüft am',
   'Calculation specification': 'Berechnungsspezifikation',
   'Effective from': 'Gültig ab',

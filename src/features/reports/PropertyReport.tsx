@@ -451,6 +451,21 @@ function Refinancing({
   )
 }
 
+/** Disclose rate extrapolation only when an included repayment schedule actually extends past fixation. */
+function hasPostFixedProjection(property: ReportProperty): boolean {
+  const { amortization, selectedAmortization, selectedAmortizationBasis } = property.results
+  const schedules = [
+    amortization,
+    ...(selectedAmortizationBasis === 'additional-repayments' ? [selectedAmortization] : []),
+  ]
+  return schedules.some(
+    (schedule) =>
+      schedule.status === 'available' &&
+      !schedule.cashPurchase &&
+      schedule.payoffMonth > schedule.fixedInterestMonths,
+  )
+}
+
 function Decision({
   property,
   language,
@@ -493,11 +508,13 @@ function Decision({
             [t('Renter alternative portfolio'), f.money(last.renterAlternativePortfolioCents)],
           ]}
         />
-        <p>
-          {t(
-            'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
-          )}
-        </p>
+        {hasPostFixedProjection(property) ? (
+          <p>
+            {t(
+              'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
+            )}
+          </p>
+        ) : null}
       </>
     )
   }
@@ -564,11 +581,13 @@ function Decision({
       ) : (
         <Status result={result.sale} language={language} />
       )}
-      <p>
-        {t(
-          'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
-        )}
-      </p>
+      {hasPostFixedProjection(property) ? (
+        <p>
+          {t(
+            'Projection beyond the fixed-interest period assumes the initial nominal rate remains unchanged. Payoff timing is not a contractual term.',
+          )}
+        </p>
+      ) : null}
     </>
   )
 }
@@ -737,7 +756,10 @@ export function ReportPropertyDocument({
               [t('Source schema'), property.sourceSchemaVersion],
               [t('Input locale'), property.inputLocale],
               [t('Assumption set'), snapshot.calculationMetadata.assumptionSetVersion],
+              [t('Assumption schema'), property.provenance.assumptionSchemaVersion],
               [t('Assumptions verified on'), snapshot.calculationMetadata.assumptionSetVerifiedOn],
+              [t('Transfer-tax source date'), property.provenance.transferTaxRateSourceDate],
+              [t('State tax rate effective from'), property.provenance.stateTaxEffectiveFrom],
               [
                 t('Calculation specification'),
                 snapshot.calculationMetadata.calculationSpecificationVersion,
@@ -754,12 +776,23 @@ export function ReportPropertyDocument({
           <p>
             {t('Sources retain their recorded verification dates; generation does not renew them.')}
           </p>
+          <p>
+            {t(
+              'Acquisition cost defaults are planning estimates unless explicitly statutory; user overrides have not been independently verified.',
+            )}
+          </p>
+          <p>
+            {t(
+              'Fixed-interest results and projected lifetime or payoff results use different calculation horizons; projections are not lender commitments.',
+            )}
+          </p>
           <ul className="report-sources">
             {property.provenance.sources.map((source) => (
               <li key={source.id}>
                 <a href={source.url}>{source.title}</a>
                 <br />
-                <span>{source.url}</span> · {t('Verified on')}: {source.verifiedOn}
+                <span>{source.url}</span> · {source.publisher} · {t('Source date')}:{' '}
+                {source.sourceDate ?? t('Not provided')} · {t('Verified on')}: {source.verifiedOn}
               </li>
             ))}
           </ul>
