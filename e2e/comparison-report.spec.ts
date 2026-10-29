@@ -209,7 +209,7 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     await page.emulateMedia({ media: 'print' })
     await expect(preview).toBeHidden()
     await expect(printRoot.locator('.comparison-report')).toBeVisible()
-    const overflowingExportTables = await printRoot.locator('table').evaluateAll<string[]>(
+    const overflowingExportTables = await printRoot.locator('table').evaluateAll<string[], void>(
       `(tables) => tables
         .filter((table) => table.scrollWidth > table.clientWidth + 1)
         .map((table) => table.querySelector('caption')?.textContent ?? 'Unnamed table')`,
