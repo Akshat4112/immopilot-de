@@ -162,9 +162,7 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
   const beforeStorage = await page.evaluate(() => JSON.stringify(localStorage))
   const printRequests: string[] = []
   page.on('request', (request) => printRequests.push(request.url()))
-  await page.evaluate(() => {
-    window.print = () => {}
-  })
+  await page.evaluate('window.print = () => {}')
   const controls = preview.locator('.report-print-controls')
   const printButton = controls.getByRole('button', { name: 'Print / Save as PDF' })
   await expect(printButton).toBeDisabled()
@@ -202,7 +200,7 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
     )
   }
   await page.emulateMedia({ media: 'screen' })
-  await page.evaluate(() => window.dispatchEvent(new Event('afterprint')))
+  await page.evaluate('window.dispatchEvent(new Event("afterprint"))')
   await expect(printRoot).toHaveCount(0)
   expect(await page.title()).toBe(originalTitle)
   expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(beforeStorage)
