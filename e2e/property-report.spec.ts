@@ -174,8 +174,8 @@ test('reaches the complete long-loan appendix through the actual preview @cross-
     name: 'Monthly appendix · Baseline · EUR',
     exact: true,
   })
-  await expect(printAppendix.getByRole('row')).toHaveCount(1201)
   await page.emulateMedia({ media: 'print' })
+  await expect(printAppendix.getByRole('row')).toHaveCount(1201)
   await expect(preview).toBeHidden()
   await expect(printRoot.locator('.property-report')).toBeVisible()
   await expect(printRoot.locator('thead').first()).toHaveCSS('display', 'table-header-group')
