@@ -214,7 +214,9 @@ describe('report preview lifecycle', () => {
     expect(screen.queryByRole('article')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Immobilienbericht ansehen' })).toHaveFocus()
     await user.click(screen.getByRole('button', { name: 'Immobilienbericht ansehen' }))
-    await user.click(screen.getByRole('checkbox', { name: 'Include complete monthly appendix' }))
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Vollständigen monatlichen Anhang aufnehmen' }),
+    )
     expect(screen.queryByRole('article')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Immobilienbericht ansehen' }))
     expect(
