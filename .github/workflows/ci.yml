@@ -33,11 +33,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Diagnose PF-006.7 formatting
-        run: |
-          npx prettier e2e/comparison-report.spec.ts --write
-          git diff -- e2e/comparison-report.spec.ts
-
       - name: Check formatting
         run: npm run format:check
 
