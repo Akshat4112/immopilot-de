@@ -67,6 +67,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Recalculated report snapshot](src/features/reports/README.md): validated, immutable in-memory captures, locale handling, migration and version metadata for PF-006.2
 - [Report methodology and provenance audit](docs/pf-0065-methodology-audit.md): verified report labeling of source dates, fixed-versus-projected horizons and pre-tax calculation boundaries for PF-006.5
 - [Authorized browser print](docs/pf-0066-authorized-print.md): snapshot-scoped privacy acknowledgement and user-controlled Print / Save as PDF without remote processing for PF-006.6
+- [Report print/PDF browser validation](docs/pf-0067-pdf-browser-validation.md): actual Chromium PDF evidence, print-layout verification and explicit Firefox/WebKit PDF API limitations for PF-006.7
 - [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
 - [Version 1 release audit](docs/version-1-release-audit.md): deployed-app evidence, gate scorecard, findings and assigned remediation tasks
 - [PF-005.5 content and provenance audit](docs/pf-0055-content-provenance-audit.md): closure evidence for result provenance, legal/privacy content, metadata and landing copy

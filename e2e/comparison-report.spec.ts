@@ -188,6 +188,58 @@ test('captures three ordered bilingual reports, preserves live metrics, and clea
     })
     await page.evaluate('document.querySelector("[data-comparison-print-probe]").remove()')
     await page.emulateMedia({ media: 'screen' })
+    // Exercise the authorized print portal rather than only a synthetic style probe.
+    await page.evaluate('window.print = () => {}')
+    const printControls = preview.locator('.report-print-controls')
+    const printButton = printControls.getByRole('button', {
+      name: language === 'de' ? 'Drucken / Als PDF speichern' : 'Print / Save as PDF',
+    })
+    await expect(printButton).toBeDisabled()
+    await printControls.getByRole('checkbox').check()
+    await printButton.click()
+    const printRoot = page.locator('[data-report-print-root]')
+    await expect(printRoot).toHaveCount(1)
+    await expect(printRoot.locator('.comparison-report > article')).toHaveCount(3)
+    await expect
+      .poll(() => page.title())
+      .toMatch(/^immopilot-de-comparison-report-(de|en)-[0-9]{4}-[0-9]{2}-[0-9]{2}$/u)
+    await expect(printRoot).not.toContainText('Private owner address')
+    await expect(printRoot).not.toContainText('Private rental address')
+    await expect(printRoot).not.toContainText('Private cash address')
+    await page.emulateMedia({ media: 'print' })
+    await expect(preview).toBeHidden()
+    await expect(printRoot.locator('.comparison-report')).toBeVisible()
+    const overflowingExportTables = await printRoot.locator('table').evaluateAll<string[], void>(
+      `(tables) => tables
+        .filter((table) => table.scrollWidth > table.clientWidth + 1)
+        .map((table) => table.querySelector('caption')?.textContent ?? 'Unnamed table')`,
+    )
+    expect(overflowingExportTables).toEqual([])
+    if (testInfo.project.name === 'chromium') {
+      const exported = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: false,
+        preferCSSPageSize: true,
+      })
+      expect(exported.subarray(0, 5).toString()).toBe('%PDF-')
+      expect(exported.length).toBeGreaterThan(10000)
+      await writeFile(testInfo.outputPath(`report-comparison-authorized-${language}.pdf`), exported)
+    } else {
+      await writeFile(
+        testInfo.outputPath(`report-pdf-api-capability-${language}.json`),
+        JSON.stringify({
+          browser: testInfo.project.name,
+          pdfApi: 'unsupported by Playwright in this browser',
+          authorizedPortal: true,
+          tableOverflow: overflowingExportTables.length,
+        }),
+      )
+    }
+    await page.emulateMedia({ media: 'screen' })
+    await page.evaluate('window.dispatchEvent(new Event("afterprint"))')
+    await expect(printRoot).toHaveCount(0)
+    await expect(printButton).toBeEnabled()
     await preview.getByRole('button', { name: 'Bericht schließen' }).click()
     await expect(report).toHaveCount(0)
     await expect(trigger).toBeFocused()
