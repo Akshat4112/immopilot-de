@@ -103,5 +103,6 @@ jobs:
             test-results/**/explorer-*.png
             test-results/**/report-*.png
             test-results/**/report-*.json
+            test-results/**/report-*.pdf
           if-no-files-found: ignore
           retention-days: 7
