@@ -1,0 +1,26 @@
+name: PF-007.1 temporary formatting diagnostics
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/pf0071-format-diagnostics.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  format-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - name: Print exact Prettier patch
+        run: |
+          npx prettier e2e/demo-scenarios.spec.ts src/app/App.test.tsx src/features/demos/demoScenarios.ts src/features/home/HomePage.test.tsx src/i18n/resources.ts --write
+          echo 'PF0071_PATCH_BEGIN'
+          git diff -- e2e/demo-scenarios.spec.ts src/app/App.test.tsx src/features/demos/demoScenarios.ts src/features/home/HomePage.test.tsx src/i18n/resources.ts
+          echo 'PF0071_PATCH_END'
