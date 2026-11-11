@@ -58,6 +58,10 @@ export function createDemoWorkspace(id: DemoScenarioId): ScenarioWorkspaceSnapsh
     return percentage(scenario.nominalAnnualRate)
   }
 
+  if (source.financing.oneTimeAdditionalRepayments.length !== 0) {
+    throw new Error('The published demos require a new one-time repayment mapping')
+  }
+
   const analysis = {
     ...initialScenarioAnalysisDraft,
     propertyUse: source.mode,
@@ -152,10 +156,7 @@ export function createDemoWorkspace(id: DemoScenarioId): ScenarioWorkspaceSnapsh
             ? ''
             : euros(source.financing.annualAdditionalRepaymentCents, 'de'),
         annualAdditionalRepaymentMonth: String(source.financing.annualAdditionalRepaymentMonth),
-        oneTimeAdditionalRepayments: source.financing.oneTimeAdditionalRepayments.map((item) => ({
-          amount: euros(item.amountCents, 'de'),
-          month: String(item.month),
-        })),
+        oneTimeAdditionalRepayments: [],
       },
     },
     analysis,
