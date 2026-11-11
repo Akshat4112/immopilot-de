@@ -2,6 +2,7 @@ import { waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
+import { useScenarioWorkspaceStore } from '../features/scenario-workspace'
 import i18n from '../i18n/config'
 import { renderWithProviders, screen, userEvent } from '../test/render'
 import App from './App'
@@ -16,6 +17,7 @@ function renderApp(route = '/') {
 
 describe('App', () => {
   beforeEach(async () => {
+    useScenarioWorkspaceStore.getState().reset()
     await i18n.changeLanguage('de')
   })
 
@@ -46,7 +48,7 @@ describe('App', () => {
       'href',
       '/privacy',
     )
-    expect(screen.getAllByRole('article')).toHaveLength(3)
+    expect(screen.getAllByRole('article')).toHaveLength(5)
   })
 
   it('switches the complete interface between German and English', async () => {
@@ -159,5 +161,28 @@ describe('App', () => {
       screen.getByRole('heading', { level: 1, name: 'Immobilien im direkten Vergleich' }),
     ).toBeVisible()
     expect(screen.getByRole('link', { name: 'Vergleich' })).toHaveAttribute('aria-current', 'page')
+  })
+  it('labels active fictional inputs across routes and resets only the workspace', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('button', { name: 'Eigennutzungs-Beispiel laden' }))
+    await user.click(screen.getByRole('button', { name: 'Beispiel übernehmen' }))
+
+    expect(screen.getByRole('heading', { name: 'Eine Immobilie bewerten' })).toBeVisible()
+    const banner = screen.getByRole('complementary', { name: 'Aktives Rechenbeispiel' })
+    expect(banner).toHaveTextContent('Fiktives Beispiel:')
+    expect(useScenarioWorkspaceStore.getState().activeDemo).toBe('owner-occupier')
+
+    await user.click(screen.getByRole('button', { name: 'English' }))
+    expect(screen.getByRole('complementary', { name: 'Active worked example' })).toHaveTextContent(
+      'Fictional example:',
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Reset example' }))
+    expect(screen.getByRole('heading', { name: 'Calculate purchase costs' })).toBeVisible()
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('')
+    expect(useScenarioWorkspaceStore.getState().activeDemo).toBeNull()
+    expect(screen.queryByRole('complementary', { name: 'Active worked example' })).toBeNull()
   })
 })

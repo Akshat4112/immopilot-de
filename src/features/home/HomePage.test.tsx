@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import i18n from '../../i18n/config'
 import { renderWithProviders, screen, userEvent } from '../../test/render'
+import { SCENARIO_LIBRARY_STORAGE_KEY } from '../../storage'
 import { useScenarioWorkspaceStore } from '../scenario-workspace'
 import { HomePage } from './HomePage'
 
@@ -16,6 +17,7 @@ function renderPage() {
 
 describe('HomePage audience entry paths', () => {
   beforeEach(async () => {
+    window.localStorage.clear()
     useScenarioWorkspaceStore.getState().reset()
     await i18n.changeLanguage('de')
   })
@@ -44,5 +46,46 @@ describe('HomePage audience entry paths', () => {
     await user.click(screen.getByRole('link', { name: 'Evaluate a rental investment' }))
 
     expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('rental-investment')
+  })
+  it('confirms before replacing unsaved data and leaves saved local scenarios intact', async () => {
+    const user = userEvent.setup()
+    const originalLibrary = '{"saved":"untouched"}'
+    window.localStorage.setItem(SCENARIO_LIBRARY_STORAGE_KEY, originalLibrary)
+    useScenarioWorkspaceStore.getState().setPurchaseCosts({
+      ...useScenarioWorkspaceStore.getState().purchaseCosts,
+      purchasePrice: '777000',
+    })
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: 'Eigennutzungs-Beispiel laden' }))
+    expect(screen.getByText('Fiktives Beispiel laden?')).toBeVisible()
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('777000')
+
+    await user.click(screen.getByRole('button', { name: 'Abbrechen' }))
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('777000')
+
+    await user.click(screen.getByRole('button', { name: 'Eigennutzungs-Beispiel laden' }))
+    await user.click(screen.getByRole('button', { name: 'Beispiel übernehmen' }))
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('250000')
+    expect(useScenarioWorkspaceStore.getState().activeDemo).toBe('owner-occupier')
+    expect(window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY)).toBe(originalLibrary)
+  })
+
+  it('loads an English-labelled rental example without changing the language', async () => {
+    const user = userEvent.setup()
+    await i18n.changeLanguage('en')
+    renderPage()
+
+    expect(screen.getByText('Explore with example inputs')).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Load rental example' }))
+    expect(screen.getByText(/potentially unsaved inputs/)).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Use example' }))
+
+    expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('rental-investment')
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.renovationBudget).toEqual({
+      amountCents: 1_000_000,
+      budgetStatus: 'budgeted',
+    })
+    expect(i18n.resolvedLanguage).toBe('en')
   })
 })

@@ -19,7 +19,7 @@ test('loads the desktop shell and keeps route navigation under the Pages path', 
       name: /Zahlen verstehen\.\s*Sicherer entscheiden\./i,
     }),
   ).toBeVisible()
-  await expect(page.getByText('250.000 €')).toBeVisible()
+  await expect(page.locator('.preview-price').getByText('250.000 €')).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Hauptnavigation' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Navigation öffnen' })).toBeHidden()
   await expect(page.getByRole('link', { name: 'Überblick' })).toHaveAttribute(

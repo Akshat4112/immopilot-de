@@ -22,7 +22,11 @@ ImmoPilot DE is a client-side application for evaluating residential property pu
 ## Current interactive workflow
 
 The application supports purchase costs, financing, single-property results, named saved scenarios
-and comparison of up to three properties. These pages share one scenario workspace and always
+and comparison of up to three properties.
+The homepage also offers two **explicitly fictional**, opt-in owner-occupier and rental-investment
+demos built from the canonical PD-010 examples. Loading a demo requires confirmation and changes
+only the current working inputs; saved scenarios are never overwritten. A persistent notice and
+workspace-only reset remain available across routes. These pages share one scenario workspace and always
 recalculate results through the domain engine.
 
 Saved scenarios persist only versioned user inputs in browser storage. Users can rename, duplicate,
@@ -57,6 +61,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Versioned assumptions schema](docs/assumptions-schema.md): stable data types, defaults, provenance, migrations, examples and validation fixtures
 - [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
 - [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
+- [Selectable fictional demos](docs/pf-0071-demos.md): canonical input mapping, explicit consent, no saved-data writes and workspace-only reset for PF-007.1
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract

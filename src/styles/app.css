@@ -200,6 +200,110 @@ h3 {
   border-left: var(--border-width) solid var(--color-border);
 }
 
+/* Fictional, user-selectable canonical demo scenarios */
+.demo-section {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-13);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.demo-section .section-intro h2 {
+  max-width: none;
+}
+
+.demo-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.demo-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.demo-card h3 {
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-lg);
+}
+
+.demo-card p {
+  flex: 1 1 auto;
+  margin-bottom: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.demo-card button,
+.demo-active-banner button {
+  padding-inline: var(--space-4);
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.demo-confirmation {
+  margin-top: 0;
+}
+
+.demo-confirmation h3 {
+  margin-bottom: var(--space-3);
+}
+
+.demo-confirmation .primary-action,
+.demo-confirmation .secondary-action {
+  border: var(--border-width) solid var(--color-border);
+  font: inherit;
+  cursor: pointer;
+}
+
+.demo-confirmation .primary-action {
+  border-color: var(--color-brand);
+}
+
+.demo-active-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card);
+}
+
+.demo-active-banner p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.demo-active-banner strong {
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 38.75rem) {
+  .demo-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-card button,
+  .demo-active-banner button {
+    width: 100%;
+  }
+
+  .demo-active-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .foundation {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);

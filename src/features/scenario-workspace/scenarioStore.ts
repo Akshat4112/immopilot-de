@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+import { createDemoWorkspace, type DemoScenarioId } from '../demos/demoScenarios'
+
 import {
   initialFinancingDraft,
   initialPurchaseCostsDraft,
@@ -28,6 +30,8 @@ export {
 } from '../../config/scenarioDrafts'
 
 export interface ScenarioWorkspaceState extends ScenarioWorkspaceSnapshot {
+  activeDemo: DemoScenarioId | null
+  loadDemo: (id: DemoScenarioId) => void
   setPurchaseCosts: (purchaseCosts: PurchaseCostsDraft) => void
   updateFinancing: (financing: Partial<FinancingDraft>) => void
   updateAnalysis: (analysis: Partial<ScenarioAnalysisDraft>) => void
@@ -40,6 +44,8 @@ export const useScenarioWorkspaceStore = create<ScenarioWorkspaceState>((set) =>
   purchaseCosts: initialPurchaseCostsDraft,
   financing: initialFinancingDraft,
   analysis: initialScenarioAnalysisDraft,
+  activeDemo: null,
+  loadDemo: (id) => set({ ...createDemoWorkspace(id), activeDemo: id }),
   setPurchaseCosts: (purchaseCosts) => set({ purchaseCosts }),
   updateFinancing: (financing) =>
     set((state) => ({ financing: { ...state.financing, ...financing } })),
@@ -55,6 +61,7 @@ export const useScenarioWorkspaceStore = create<ScenarioWorkspaceState>((set) =>
         purchaseCosts: structuredClone(workspace.purchaseCosts),
         financing,
         analysis: structuredClone(workspace.analysis),
+        activeDemo: null,
       }
     }),
   reset: () =>
@@ -62,5 +69,6 @@ export const useScenarioWorkspaceStore = create<ScenarioWorkspaceState>((set) =>
       purchaseCosts: structuredClone(initialPurchaseCostsDraft),
       financing: structuredClone(initialFinancingDraft),
       analysis: structuredClone(initialScenarioAnalysisDraft),
+      activeDemo: null,
     }),
 }))
