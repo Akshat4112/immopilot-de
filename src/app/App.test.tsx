@@ -185,5 +185,4 @@ describe('App', () => {
     expect(useScenarioWorkspaceStore.getState().activeDemo).toBeNull()
     expect(screen.queryByRole('complementary', { name: 'Active worked example' })).toBeNull()
   })
-
 })
