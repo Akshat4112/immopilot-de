@@ -46,6 +46,31 @@ export const resources = {
         rentalAction: 'Kapitalanlage bewerten',
         documentation: 'Dokumentation',
       },
+      demo: {
+        eyebrow: 'Fiktive Rechenbeispiele',
+        title: 'Mit Beispieldaten ausprobieren',
+        description:
+          'Zwei frei erfundene Wohnungen in Baden-Württemberg mit festgelegten Annahmen aus September 2026. Keine aktuellen Angebote, Prognosen oder Empfehlungen.',
+        ownerTitle: 'Eigennutzung · 250.000 €',
+        ownerDescription:
+          'Kaufkosten, 200.000 € Darlehen und ein zehnjähriger Mieten-oder-Kaufen-Vergleich.',
+        ownerButton: 'Eigennutzungs-Beispiel laden',
+        rentalTitle: 'Kapitalanlage · 240.000 €',
+        rentalDescription:
+          'Mieteinnahmen, Instandhaltung, 10.000 € Renovierung und negativer monatlicher Cashflow.',
+        rentalButton: 'Kapitalanlage-Beispiel laden',
+        confirmTitle: 'Fiktives Beispiel laden?',
+        confirmMessage:
+          'Das Beispiel ersetzt die aktuellen, möglicherweise ungespeicherten Eingaben. Lokal gespeicherte Szenarien bleiben unverändert. Die Zahlen sind rein illustrativ.',
+        confirmButton: 'Beispiel übernehmen',
+        cancelButton: 'Abbrechen',
+        bannerLabel: 'Aktives Rechenbeispiel',
+        fictionalLabel: 'Fiktives Beispiel:',
+        ownerActive: 'Eigennutzung in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
+        rentalActive:
+          'Kapitalanlage in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
+        resetButton: 'Beispiel zurücksetzen',
+      },
       preview: {
         label: 'Beispielrechnung',
         title: 'Beispielszenario',
@@ -1046,6 +1071,30 @@ export const resources = {
         ownerAction: 'Calculate for my own home',
         rentalAction: 'Evaluate a rental investment',
         documentation: 'Documentation',
+      },
+      demo: {
+        eyebrow: 'Fictional worked examples',
+        title: 'Explore with example inputs',
+        description:
+          'Two fictional Baden-Württemberg apartments with fixed September 2026 assumptions. These are not current listings, forecasts or recommendations.',
+        ownerTitle: 'Own home · €250,000',
+        ownerDescription:
+          'Purchase costs, a €200,000 mortgage and a ten-year rent-versus-buy comparison.',
+        ownerButton: 'Load own-home example',
+        rentalTitle: 'Rental investment · €240,000',
+        rentalDescription:
+          'Rental income, maintenance, a €10,000 renovation budget and negative monthly cash flow.',
+        rentalButton: 'Load rental example',
+        confirmTitle: 'Load fictional example?',
+        confirmMessage:
+          'The example replaces current, potentially unsaved inputs. Locally saved scenarios are left untouched. All figures are illustrative.',
+        confirmButton: 'Use example',
+        cancelButton: 'Cancel',
+        bannerLabel: 'Active worked example',
+        fictionalLabel: 'Fictional example:',
+        ownerActive: 'Owner-occupied property in Baden-Württemberg. Editable inputs, not advice.',
+        rentalActive: 'Rental investment in Baden-Württemberg. Editable inputs, not advice.',
+        resetButton: 'Reset example',
       },
       preview: {
         label: 'Example calculation',
