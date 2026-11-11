@@ -211,5 +211,4 @@ describe('ScenariosPage', () => {
     expect(screen.getByText('Noch keine Szenarien gespeichert.')).toBeVisible()
     expect(screen.getByLabelText('Szenarioname')).toHaveValue('')
   })
-
 })
