@@ -78,7 +78,8 @@ export const resources = {
           title: 'So startest du deine Immobilienrechnung',
           description:
             'Wähle einen leeren Rechner für deine eigenen Angaben oder nutze eines der fiktiven Beispiele weiter unten.',
-          stepOne: 'Wähle Eigennutzung oder Kapitalanlage und prüfe den Kaufpreis sowie die Nebenkosten.',
+          stepOne:
+            'Wähle Eigennutzung oder Kapitalanlage und prüfe den Kaufpreis sowie die Nebenkosten.',
           stepTwo: 'Ergänze Eigenkapital, Darlehen, Zinsbindung und bei Bedarf Sondertilgungen.',
           stepThree:
             'Vergleiche die Ergebnisse, prüfe die Annahmen und speichere ein Szenario nur auf eigenen Wunsch.',
@@ -93,9 +94,12 @@ export const resources = {
             'Entscheide genau, was du löschen möchtest. Jeder Vorgang muss bestätigt werden. Gespeicherte Szenarien werden nur bei der letzten Option gelöscht.',
           explanations: {
             purchaseCosts: 'Nur aktuelle Kaufpreis-, Nebenkosten- und Budgeteingaben zurücksetzen.',
-            financing: 'Nur aktuelle Eigenkapital-, Darlehens-, Zins- und Sondertilgungseingaben zurücksetzen.',
-            analysis: 'Nur aktuelle Analyseannahmen zurücksetzen, einschließlich der Auswahl Eigennutzung/Kapitalanlage.',
-            workspace: 'Alle aktuellen, ungespeicherten Eingaben zurücksetzen; gespeicherte Szenarien behalten.',
+            financing:
+              'Nur aktuelle Eigenkapital-, Darlehens-, Zins- und Sondertilgungseingaben zurücksetzen.',
+            analysis:
+              'Nur aktuelle Analyseannahmen zurücksetzen, einschließlich der Auswahl Eigennutzung/Kapitalanlage.',
+            workspace:
+              'Alle aktuellen, ungespeicherten Eingaben zurücksetzen; gespeicherte Szenarien behalten.',
             allLocalData:
               'Aktuelle Eingaben und alle in diesem Browser gespeicherten ImmoPilot-Szenarien löschen.',
           },
@@ -122,7 +126,8 @@ export const resources = {
           confirm: 'Ja, zurücksetzen',
           cancel: 'Abbrechen',
           complete: 'Die ausgewählten Eingaben oder Daten wurden zurückgesetzt.',
-          failed: 'Gespeicherte Szenarien konnten nicht gelöscht werden. Nichts wurde zurückgesetzt.',
+          failed:
+            'Gespeicherte Szenarien konnten nicht gelöscht werden. Nichts wurde zurückgesetzt.',
         },
       },
       preview: {
@@ -1156,8 +1161,10 @@ export const resources = {
           title: 'Get started with your property calculation',
           description:
             'Start with empty inputs for your own property, or explore one of the fictional worked examples below.',
-          stepOne: 'Choose an own home or rental investment and review the purchase price and acquisition costs.',
-          stepTwo: 'Enter your equity, mortgage, fixed-interest period and optional additional repayments.',
+          stepOne:
+            'Choose an own home or rental investment and review the purchase price and acquisition costs.',
+          stepTwo:
+            'Enter your equity, mortgage, fixed-interest period and optional additional repayments.',
           stepThree:
             'Review the calculations and assumptions. Save a scenario only when you explicitly choose to.',
           blankOwner: 'Start blank own-home calculation',
@@ -1170,9 +1177,12 @@ export const resources = {
           description:
             'Choose exactly what to clear. Every reset requires confirmation. Saved scenarios are deleted only by the final option.',
           explanations: {
-            purchaseCosts: 'Reset only the current purchase-price, transaction-cost and budget inputs.',
-            financing: 'Reset only current equity, mortgage, interest-rate and additional-repayment inputs.',
-            analysis: 'Reset current analysis assumptions, including the own-home/rental-investment selection.',
+            purchaseCosts:
+              'Reset only the current purchase-price, transaction-cost and budget inputs.',
+            financing:
+              'Reset only current equity, mortgage, interest-rate and additional-repayment inputs.',
+            analysis:
+              'Reset current analysis assumptions, including the own-home/rental-investment selection.',
             workspace: 'Reset all current unsaved inputs and keep locally saved scenarios.',
             allLocalData:
               'Delete current inputs and all ImmoPilot scenarios saved in this browser.',
