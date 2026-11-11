@@ -2486,3 +2486,101 @@ h3 {
     forced-color-adjust: none;
   }
 }
+
+/* PF-007.2: first-use guidance and explicitly scoped reset decisions */
+.first-steps {
+  display: grid;
+  gap: var(--space-5);
+  padding-block: var(--space-10);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.first-steps .section-intro h2 {
+  max-width: 45rem;
+}
+
+.first-steps-list {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 48rem;
+  margin: 0;
+  padding-inline-start: var(--space-7);
+  color: var(--color-text-secondary);
+}
+
+.first-steps-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.first-steps-note {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.reset-controls {
+  min-width: 0;
+}
+
+.reset-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.reset-controls-option {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.reset-controls-option p {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.reset-controls-option button,
+.reset-warning .scenario-actions button {
+  min-height: var(--control-height);
+  padding-inline: var(--space-4);
+  font: inherit;
+  cursor: pointer;
+}
+
+.reset-warning {
+  margin-top: var(--space-5);
+}
+
+.reset-warning h3 {
+  margin-bottom: var(--space-3);
+}
+
+.reset-warning .primary-action {
+  border-color: var(--color-brand);
+}
+
+@media (max-width: 38.75rem) {
+  .reset-controls-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reset-controls-option button {
+    width: 100%;
+  }
+
+  .first-steps-actions,
+  .first-steps-actions .primary-action,
+  .first-steps-actions .secondary-action {
+    width: 100%;
+  }
+}
