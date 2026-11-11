@@ -91,9 +91,7 @@ export function createDemoWorkspace(id: DemoScenarioId): ScenarioWorkspaceSnapsh
           ownerAnalysisYears: years(ownerFixture.ownerOccupier.analysisMonths),
           ownerRentGrowthRate: percentage(ownerFixture.ownerOccupier.rentGrowthRate),
           ownerCostGrowthRate: percentage(ownerFixture.ownerOccupier.ownerCostGrowthRate),
-          propertyAppreciationRate: percentage(
-            ownerFixture.ownerOccupier.propertyAppreciationRate,
-          ),
+          propertyAppreciationRate: percentage(ownerFixture.ownerOccupier.propertyAppreciationRate),
           alternativeReturnRate: percentage(ownerFixture.ownerOccupier.alternativeReturnRate),
           ownerSellingCostRate: percentage(ownerFixture.ownerOccupier.sellingCostRate),
         }
@@ -112,9 +110,7 @@ export function createDemoWorkspace(id: DemoScenarioId): ScenarioWorkspaceSnapsh
           ),
           otherAnnualOwnerCosts: euros(rentalFixture.rentalInvestment.otherAnnualOwnerCostsCents),
           rentalRentGrowthRate: percentage(rentalFixture.rentalInvestment.rentGrowthRate),
-          rentalOwnerCostGrowthRate: percentage(
-            rentalFixture.rentalInvestment.ownerCostGrowthRate,
-          ),
+          rentalOwnerCostGrowthRate: percentage(rentalFixture.rentalInvestment.ownerCostGrowthRate),
           rentalHoldingYears: years(rentalFixture.rentalInvestment.holdingPeriodMonths),
           rentalPropertyAppreciationRate: percentage(
             rentalFixture.rentalInvestment.propertyAppreciationRate,
