@@ -66,7 +66,8 @@ export const resources = {
         cancelButton: 'Abbrechen',
         bannerLabel: 'Aktives Rechenbeispiel',
         fictionalLabel: 'Fiktives Beispiel:',
-        ownerActive: 'Eigennutzung in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
+        ownerActive:
+          'Eigennutzung in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
         rentalActive:
           'Kapitalanlage in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
         resetButton: 'Beispiel zurücksetzen',
