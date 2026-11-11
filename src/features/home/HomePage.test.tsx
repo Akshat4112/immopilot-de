@@ -95,7 +95,7 @@ describe('HomePage audience entry paths', () => {
     expect(
       screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
     ).toBeVisible()
-    expect(screen.getByRole('list')).toHaveTextContent('Grunderwerbsteuer')
+    expect(screen.getByRole('list')).toHaveTextContent('Kaufpreis sowie die Nebenkosten')
     expect(screen.getByRole('link', { name: 'Eigennutzung leer starten' })).toHaveAttribute(
       'href',
       '/purchase-costs',
