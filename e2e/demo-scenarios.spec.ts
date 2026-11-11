@@ -57,8 +57,8 @@ test('@cross-browser loads the negative-cash-flow rental demo without mobile ove
     'Kapitalanlage in Baden-Württemberg',
   )
   await expect(page.getByText(/-180(?:,00)?\s*€/u).first()).toBeVisible()
-  const overflows = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  const overflows = await page.evaluate<boolean>(
+    'document.documentElement.scrollWidth > document.documentElement.clientWidth',
   )
   expect(overflows).toBe(false)
 })
