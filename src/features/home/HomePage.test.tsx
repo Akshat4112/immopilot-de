@@ -88,5 +88,4 @@ describe('HomePage audience entry paths', () => {
     })
     expect(i18n.resolvedLanguage).toBe('en')
   })
-
 })
