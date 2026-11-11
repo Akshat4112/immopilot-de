@@ -14,7 +14,9 @@ test('@cross-browser loads a canonical owner demo only after consent and resets 
   await expect(page.getByText('Fiktives Beispiel laden?')).toBeVisible()
   await expect(page.getByText(/möglicherweise ungespeicherten Eingaben/)).toBeVisible()
   await page.getByRole('button', { name: 'Abbrechen' }).click()
-  await expect(page.getByRole('heading', { name: 'Zahlen verstehen. Sicherer entscheiden.' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Zahlen verstehen. Sicherer entscheiden.' }),
+  ).toBeVisible()
 
   await page.getByRole('button', { name: 'Eigennutzungs-Beispiel laden' }).click()
   await page.getByRole('button', { name: 'Beispiel übernehmen' }).click()
@@ -55,8 +57,8 @@ test('@cross-browser loads the negative-cash-flow rental demo without mobile ove
     'Kapitalanlage in Baden-Württemberg',
   )
   await expect(page.getByText(/-180(?:,00)?\s*€/u).first()).toBeVisible()
-  const overflows = await page.evaluate(() =>
-    document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
   )
   expect(overflows).toBe(false)
 })
