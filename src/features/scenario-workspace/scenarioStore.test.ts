@@ -216,5 +216,4 @@ describe('scenario workspace', () => {
     expect(useScenarioWorkspaceStore.getState().activeDemo).toBeNull()
     expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('240000')
   })
-
 })
