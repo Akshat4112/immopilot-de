@@ -108,8 +108,9 @@ describe('HomePage audience entry paths', () => {
 
   it('hides first-use guidance after actual property data is entered', () => {
     renderPage()
-    expect(screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }))
-      .toBeVisible()
+    expect(
+      screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
+    ).toBeVisible()
     useScenarioWorkspaceStore.getState().setPurchaseCosts({
       ...useScenarioWorkspaceStore.getState().purchaseCosts,
       purchasePrice: '200000',
@@ -118,5 +119,4 @@ describe('HomePage audience entry paths', () => {
       screen.queryByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
     ).not.toBeInTheDocument()
   })
-
 })
