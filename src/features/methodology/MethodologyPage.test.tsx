@@ -3,12 +3,12 @@ import { MemoryRouter } from 'react-router-dom'
 
 import i18n from '../../i18n/config'
 import { renderWithProviders, screen, userEvent } from '../../test/render'
-import App from '../../app/App'
+import { MethodologyPage } from './MethodologyPage'
 
 function renderMethodology() {
   return renderWithProviders(
     <MemoryRouter initialEntries={['/methodology']}>
-      <App />
+      <MethodologyPage />
     </MemoryRouter>,
   )
 }
