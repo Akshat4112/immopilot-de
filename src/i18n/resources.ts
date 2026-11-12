@@ -571,6 +571,11 @@ export const resources = {
             title: 'Immobilien vergleichen · ImmoPilot DE',
             description: 'Vergleiche bis zu drei gespeicherte Immobilien-Szenarien nebeneinander.',
           },
+          methodology: {
+            title: 'Berechnungsmethodik und Quellen · ImmoPilot DE',
+            description:
+              'Berechnungsformeln, Mietrendite-Zähler und Nenner, Grenzen und versionierte offizielle Quellen einsehen.',
+          },
           privacy: {
             title: 'Datenschutz und Hinweise · ImmoPilot DE',
             description:
@@ -1695,6 +1700,11 @@ export const resources = {
           comparison: {
             title: 'Compare properties · ImmoPilot DE',
             description: 'Compare up to three saved property scenarios side by side.',
+          },
+          methodology: {
+            title: 'Calculation methodology and sources · ImmoPilot DE',
+            description:
+              'Review formulas, rental yield numerators and denominators, limitations, and versioned source records.',
           },
           privacy: {
             title: 'Privacy and notices · ImmoPilot DE',
