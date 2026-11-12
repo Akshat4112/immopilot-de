@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -111,9 +112,11 @@ describe('HomePage audience entry paths', () => {
     expect(
       screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
     ).toBeVisible()
-    useScenarioWorkspaceStore.getState().setPurchaseCosts({
-      ...useScenarioWorkspaceStore.getState().purchaseCosts,
-      purchasePrice: '200000',
+    act(() => {
+      useScenarioWorkspaceStore.getState().setPurchaseCosts({
+        ...useScenarioWorkspaceStore.getState().purchaseCosts,
+        purchasePrice: '200000',
+      })
     })
     expect(
       screen.queryByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
