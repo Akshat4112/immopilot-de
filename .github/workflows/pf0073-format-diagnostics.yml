@@ -1,0 +1,23 @@
+name: PF-007.3 temporary formatter diff
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/pf0073-format-diagnostics.yml'
+permissions:
+  contents: read
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - name: Print exact Prettier patch
+        run: |
+          npx prettier e2e/methodology.spec.ts src/features/methodology/MethodologyPage.test.tsx src/features/methodology/MethodologyPage.tsx src/i18n/resources.ts --write
+          echo 'PF0073_PATCH_BEGIN'
+          git diff -- e2e/methodology.spec.ts src/features/methodology/MethodologyPage.test.tsx src/features/methodology/MethodologyPage.tsx src/i18n/resources.ts
+          echo 'PF0073_PATCH_END'
