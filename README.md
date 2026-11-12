@@ -62,6 +62,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
 - [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
 - [Selectable fictional demos](docs/pf-0071-demos.md): canonical input mapping, explicit consent, no saved-data writes and workspace-only reset for PF-007.1
+- [In-app calculation methodology](https://akshat4112.github.io/immopilot-de/#/methodology): bilingual financial formulas, yield denominators, projection limits and bundled source/verification dates (PF-007.3)
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
