@@ -182,4 +182,38 @@ describe('scenario workspace', () => {
       remainingDebtAtFixedPeriodCents: 0,
     })
   })
+  it('resets only the selected module and preserves unrelated working inputs', () => {
+    const store = useScenarioWorkspaceStore.getState()
+    store.setPurchaseCosts(completePurchaseDraft())
+    store.updateFinancing({
+      availableEquity: '66250',
+      additionalRepayments: {
+        annualAdditionalRepayment: '5000',
+        annualAdditionalRepaymentMonth: '12',
+        oneTimeAdditionalRepayments: [],
+      },
+    })
+    store.updateAnalysis({ propertyUse: 'rental-investment', monthlyNetColdRent: '1000' })
+
+    useScenarioWorkspaceStore.getState().resetModule('purchaseCosts')
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts).toEqual(initialPurchaseCostsDraft)
+    expect(useScenarioWorkspaceStore.getState().financing.availableEquity).toBe('66250')
+    expect(useScenarioWorkspaceStore.getState().analysis.monthlyNetColdRent).toBe('1000')
+
+    useScenarioWorkspaceStore.getState().resetModule('financing')
+    expect(useScenarioWorkspaceStore.getState().financing).toEqual(initialFinancingDraft)
+    expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('rental-investment')
+
+    useScenarioWorkspaceStore.getState().resetModule('analysis')
+    expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('owner-occupier')
+    expect(useScenarioWorkspaceStore.getState().analysis.monthlyNetColdRent).toBe('')
+  })
+
+  it('removes the fictional example label when an individual module is reset', () => {
+    useScenarioWorkspaceStore.getState().loadDemo('rental-investment')
+    expect(useScenarioWorkspaceStore.getState().activeDemo).toBe('rental-investment')
+    useScenarioWorkspaceStore.getState().resetModule('analysis')
+    expect(useScenarioWorkspaceStore.getState().activeDemo).toBeNull()
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('240000')
+  })
 })

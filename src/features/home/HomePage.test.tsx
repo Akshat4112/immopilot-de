@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -87,5 +88,38 @@ describe('HomePage audience entry paths', () => {
       budgetStatus: 'budgeted',
     })
     expect(i18n.resolvedLanguage).toBe('en')
+  })
+  it('guides empty workspaces into a blank mode or approved demo flow', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    expect(
+      screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
+    ).toBeVisible()
+    expect(screen.getByRole('list')).toHaveTextContent('Kaufpreis sowie die Nebenkosten')
+    expect(screen.getByRole('link', { name: 'Eigennutzung leer starten' })).toHaveAttribute(
+      'href',
+      '/purchase-costs',
+    )
+
+    await user.click(screen.getByRole('link', { name: 'Kapitalanlage leer starten' }))
+    expect(useScenarioWorkspaceStore.getState().analysis.propertyUse).toBe('rental-investment')
+    expect(screen.getByRole('button', { name: 'Kapitalanlage-Beispiel laden' })).toBeVisible()
+  })
+
+  it('hides first-use guidance after actual property data is entered', () => {
+    renderPage()
+    expect(
+      screen.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
+    ).toBeVisible()
+    act(() => {
+      useScenarioWorkspaceStore.getState().setPurchaseCosts({
+        ...useScenarioWorkspaceStore.getState().purchaseCosts,
+        purchasePrice: '200000',
+      })
+    })
+    expect(
+      screen.queryByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
+    ).not.toBeInTheDocument()
   })
 })

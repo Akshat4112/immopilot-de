@@ -36,6 +36,7 @@ export interface ScenarioWorkspaceState extends ScenarioWorkspaceSnapshot {
   updateFinancing: (financing: Partial<FinancingDraft>) => void
   updateAnalysis: (analysis: Partial<ScenarioAnalysisDraft>) => void
   replaceWorkspace: (workspace: ScenarioWorkspaceSnapshot) => void
+  resetModule: (module: keyof ScenarioWorkspaceSnapshot) => void
   reset: () => void
 }
 
@@ -62,6 +63,26 @@ export const useScenarioWorkspaceStore = create<ScenarioWorkspaceState>((set) =>
         financing,
         analysis: structuredClone(workspace.analysis),
         activeDemo: null,
+      }
+    }),
+  resetModule: (module) =>
+    set(() => {
+      switch (module) {
+        case 'purchaseCosts':
+          return {
+            purchaseCosts: structuredClone(initialPurchaseCostsDraft),
+            activeDemo: null,
+          }
+        case 'financing':
+          return {
+            financing: structuredClone(initialFinancingDraft),
+            activeDemo: null,
+          }
+        case 'analysis':
+          return {
+            analysis: structuredClone(initialScenarioAnalysisDraft),
+            activeDemo: null,
+          }
       }
     }),
   reset: () =>

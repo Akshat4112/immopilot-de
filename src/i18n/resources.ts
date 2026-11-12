@@ -72,6 +72,64 @@ export const resources = {
           'Kapitalanlage in Baden-Württemberg. Alle Werte sind bearbeitbar und keine Beratung.',
         resetButton: 'Beispiel zurücksetzen',
       },
+      onboarding: {
+        welcome: {
+          eyebrow: 'Erste Schritte',
+          title: 'So startest du deine Immobilienrechnung',
+          description:
+            'Wähle einen leeren Rechner für deine eigenen Angaben oder nutze eines der fiktiven Beispiele weiter unten.',
+          stepOne:
+            'Wähle Eigennutzung oder Kapitalanlage und prüfe den Kaufpreis sowie die Nebenkosten.',
+          stepTwo: 'Ergänze Eigenkapital, Darlehen, Zinsbindung und bei Bedarf Sondertilgungen.',
+          stepThree:
+            'Vergleiche die Ergebnisse, prüfe die Annahmen und speichere ein Szenario nur auf eigenen Wunsch.',
+          blankOwner: 'Eigennutzung leer starten',
+          blankRental: 'Kapitalanlage leer starten',
+          demoHint:
+            'Du möchtest zuerst üben? Die fiktiven Beispiele darunter ersetzen aktuelle Eingaben erst nach Bestätigung. Alle Berechnungen bleiben lokal im Browser.',
+        },
+        reset: {
+          title: 'Eingaben und lokale Daten zurücksetzen',
+          description:
+            'Entscheide genau, was du löschen möchtest. Jeder Vorgang muss bestätigt werden. Gespeicherte Szenarien werden nur bei der letzten Option gelöscht.',
+          explanations: {
+            purchaseCosts: 'Nur aktuelle Kaufpreis-, Nebenkosten- und Budgeteingaben zurücksetzen.',
+            financing:
+              'Nur aktuelle Eigenkapital-, Darlehens-, Zins- und Sondertilgungseingaben zurücksetzen.',
+            analysis:
+              'Nur aktuelle Analyseannahmen zurücksetzen, einschließlich der Auswahl Eigennutzung/Kapitalanlage.',
+            workspace:
+              'Alle aktuellen, ungespeicherten Eingaben zurücksetzen; gespeicherte Szenarien behalten.',
+            allLocalData:
+              'Aktuelle Eingaben und alle in diesem Browser gespeicherten ImmoPilot-Szenarien löschen.',
+          },
+          actions: {
+            purchaseCosts: 'Kaufkosten zurücksetzen',
+            financing: 'Finanzierung zurücksetzen',
+            analysis: 'Analyse zurücksetzen',
+            workspace: 'Arbeitsstand zurücksetzen',
+            allLocalData: 'Arbeitsstand und gespeicherte Szenarien löschen',
+          },
+          confirmTitle: 'Zurücksetzen wirklich ausführen?',
+          warnings: {
+            purchaseCosts:
+              'Deine aktuellen Kaufkosten und Budgetangaben gehen verloren. Finanzierung, Analyse und gespeicherte Szenarien bleiben erhalten.',
+            financing:
+              'Deine aktuellen Finanzierungsangaben und Sondertilgungen gehen verloren. Kaufkosten, Analyse und gespeicherte Szenarien bleiben erhalten.',
+            analysis:
+              'Deine aktuellen Analyseannahmen gehen verloren und die Auswahl wird auf Eigennutzung zurückgesetzt. Kaufkosten, Finanzierung und gespeicherte Szenarien bleiben erhalten.',
+            workspace:
+              'Alle aktuellen, möglicherweise ungespeicherten Eingaben gehen verloren. Lokal gespeicherte Szenarien bleiben erhalten.',
+            allLocalData:
+              'Alle aktuellen Eingaben und alle im Browser gespeicherten ImmoPilot-Szenarien werden dauerhaft gelöscht. Fremde Website-Daten bleiben unberührt. Bereits exportierte Dateien und geteilte Links können nicht zurückgerufen werden.',
+          },
+          confirm: 'Ja, zurücksetzen',
+          cancel: 'Abbrechen',
+          complete: 'Die ausgewählten Eingaben oder Daten wurden zurückgesetzt.',
+          failed:
+            'Gespeicherte Szenarien konnten nicht gelöscht werden. Nichts wurde zurückgesetzt.',
+        },
+      },
       preview: {
         label: 'Beispielrechnung',
         title: 'Beispielszenario',
@@ -1096,6 +1154,64 @@ export const resources = {
         ownerActive: 'Owner-occupied property in Baden-Württemberg. Editable inputs, not advice.',
         rentalActive: 'Rental investment in Baden-Württemberg. Editable inputs, not advice.',
         resetButton: 'Reset example',
+      },
+      onboarding: {
+        welcome: {
+          eyebrow: 'First steps',
+          title: 'Get started with your property calculation',
+          description:
+            'Start with empty inputs for your own property, or explore one of the fictional worked examples below.',
+          stepOne:
+            'Choose an own home or rental investment and review the purchase price and acquisition costs.',
+          stepTwo:
+            'Enter your equity, mortgage, fixed-interest period and optional additional repayments.',
+          stepThree:
+            'Review the calculations and assumptions. Save a scenario only when you explicitly choose to.',
+          blankOwner: 'Start blank own-home calculation',
+          blankRental: 'Start blank rental calculation',
+          demoHint:
+            'Want to practice first? The fictional examples below replace working inputs only after confirmation. Calculations remain local to this browser.',
+        },
+        reset: {
+          title: 'Reset inputs and local data',
+          description:
+            'Choose exactly what to clear. Every reset requires confirmation. Saved scenarios are deleted only by the final option.',
+          explanations: {
+            purchaseCosts:
+              'Reset only the current purchase-price, transaction-cost and budget inputs.',
+            financing:
+              'Reset only current equity, mortgage, interest-rate and additional-repayment inputs.',
+            analysis:
+              'Reset current analysis assumptions, including the own-home/rental-investment selection.',
+            workspace: 'Reset all current unsaved inputs and keep locally saved scenarios.',
+            allLocalData:
+              'Delete current inputs and all ImmoPilot scenarios saved in this browser.',
+          },
+          actions: {
+            purchaseCosts: 'Reset purchase costs',
+            financing: 'Reset financing',
+            analysis: 'Reset analysis',
+            workspace: 'Reset workspace',
+            allLocalData: 'Clear workspace and saved scenarios',
+          },
+          confirmTitle: 'Confirm this reset?',
+          warnings: {
+            purchaseCosts:
+              'Your current purchase costs and budget inputs will be lost. Financing, analysis and saved scenarios are retained.',
+            financing:
+              'Your current financing and additional-repayment inputs will be lost. Purchase costs, analysis and saved scenarios are retained.',
+            analysis:
+              'Your current analysis assumptions will be lost, and the mode returns to own-home. Purchase costs, financing and saved scenarios are retained.',
+            workspace:
+              'All current, potentially unsaved inputs will be lost. Locally saved scenarios are retained.',
+            allLocalData:
+              'Current inputs and every ImmoPilot scenario saved in this browser will be permanently deleted. Unrelated site data is untouched. Previously exported files and shared links cannot be recalled.',
+          },
+          confirm: 'Yes, reset',
+          cancel: 'Cancel',
+          complete: 'The selected inputs or data have been reset.',
+          failed: 'Saved scenarios could not be deleted. Nothing was reset.',
+        },
       },
       preview: {
         label: 'Example calculation',

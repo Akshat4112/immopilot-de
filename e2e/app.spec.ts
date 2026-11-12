@@ -1091,7 +1091,13 @@ test('carries Sondertilgung through results, saved restoration, and comparison @
   await expect(page.getByText('Szenario gespeichert.')).toBeVisible()
 
   await page.getByRole('button', { name: 'Arbeitsstand zurücksetzen' }).click()
-  await expect(page.getByText('Der aktuelle Arbeitsstand wurde zurückgesetzt.')).toBeVisible()
+  await expect(page.getByRole('alertdialog')).toContainText(
+    'Lokal gespeicherte Szenarien bleiben erhalten.',
+  )
+  await page.getByRole('button', { name: 'Ja, zurücksetzen' }).click()
+  await expect(
+    page.getByText('Die ausgewählten Eingaben oder Daten wurden zurückgesetzt.'),
+  ).toBeVisible()
 
   const savedRegion = page.getByRole('region', { name: 'Lokal gespeicherte Szenarien' })
   const savedCard = savedRegion
