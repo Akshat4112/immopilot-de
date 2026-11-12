@@ -29,7 +29,7 @@ test('@cross-browser methodology exposes bilingual source/version evidence witho
   await expect(page.getByText(/net yield = net operating income/u)).toBeVisible()
   await expect(page.getByText(/A historical verification date/u)).toBeVisible()
   const scan = await new AxeBuilder({ page }).include('.methodology-page').analyze()
-  expect(scan.violations.filter(({ impact }) => impact === 'critical' || impact === 'serious')).toEqual(
-    [],
-  )
+  expect(
+    scan.violations.filter(({ impact }) => impact === 'critical' || impact === 'serious'),
+  ).toEqual([])
 })
