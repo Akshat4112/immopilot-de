@@ -25,17 +25,20 @@ describe('PF-007.3 methodology and source metadata', () => {
     ).toBeVisible()
     expect(screen.getByText('de-2026.09')).toBeVisible()
     expect(screen.getAllByText('1.0.0').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Bruttorendite = Jahresnettokaltmiete / Kaufpreis P;', { exact: false }))
-      .toBeVisible()
-    expect(screen.getAllByText(/Nicht angegeben/u).length).toBeGreaterThan(0)
     expect(
-      screen.getByRole('link', { name: /Aktuelle Grunderwerbsteuersätze/u }),
-    ).toHaveAttribute('href', expect.stringContaining('dnoti.de'))
+      screen.getByText('Bruttorendite = Jahresnettokaltmiete / Kaufpreis P;', { exact: false }),
+    ).toBeVisible()
+    expect(screen.getAllByText(/Nicht angegeben/u).length).toBeGreaterThan(0)
+    expect(screen.getByRole('link', { name: /Aktuelle Grunderwerbsteuersätze/u })).toHaveAttribute(
+      'href',
+      expect.stringContaining('dnoti.de'),
+    )
     expect(screen.getByText(/historisches Prüfdatum/)).toBeVisible()
     expect(screen.getByText(/keine gesetzlichen Erwerbsnebenkosten/)).toBeVisible()
-    expect(
-      screen.getByRole('link', { name: 'Berechnungsspezifikation 1.0.0' }),
-    ).toHaveAttribute('href', expect.stringContaining('calculation-specification.md'))
+    expect(screen.getByRole('link', { name: 'Berechnungsspezifikation 1.0.0' })).toHaveAttribute(
+      'href',
+      expect.stringContaining('calculation-specification.md'),
+    )
   })
 
   it('switches formula explanations, source dates and page metadata to English', async () => {
