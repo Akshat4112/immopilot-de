@@ -36,7 +36,7 @@ test('@cross-browser confirms app-data deletion but preserves unrelated browser 
   await page.evaluate("localStorage.setItem('different-app-key', 'keep')")
   await page.getByRole('textbox', { name: 'Szenarioname' }).fill('User-owned scenario')
   await page.getByRole('button', { name: 'Szenario speichern' }).click()
-  await expect(page.getByDisplayValue('User-owned scenario')).toBeVisible()
+  await expect(page.locator('input[value="User-owned scenario"]')).toBeVisible()
 
   await page
     .getByRole('button', { name: 'Arbeitsstand und gespeicherte Szenarien löschen' })
@@ -45,7 +45,7 @@ test('@cross-browser confirms app-data deletion but preserves unrelated browser 
     'Bereits exportierte Dateien und geteilte Links können nicht zurückgerufen werden.',
   )
   await page.getByRole('button', { name: 'Abbrechen' }).click()
-  await expect(page.getByDisplayValue('User-owned scenario')).toBeVisible()
+  await expect(page.locator('input[value="User-owned scenario"]')).toBeVisible()
 
   await page
     .getByRole('button', { name: 'Arbeitsstand und gespeicherte Szenarien löschen' })
