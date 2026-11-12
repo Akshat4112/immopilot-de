@@ -23,7 +23,7 @@ test('@cross-browser offers first-use paths with no desktop or mobile overflow',
   await expect(page).toHaveURL(/#\/purchase-costs$/u)
   await expect(page.getByRole('heading', { name: 'Kaufkosten berechnen' })).toBeVisible()
   await page.getByRole('textbox', { name: 'Kaufpreis' }).fill('240000')
-  await page.goto('./')
+  await page.getByRole('link', { name: 'Überblick' }).click()
   await expect(
     page.getByRole('heading', { name: 'So startest du deine Immobilienrechnung' }),
   ).toHaveCount(0)
