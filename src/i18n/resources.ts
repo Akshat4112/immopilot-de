@@ -439,6 +439,107 @@ export const resources = {
           fullDocument: 'Vollständiger Finanz- und Datenschutzhinweis im Repository',
         },
       },
+      methodology: {
+        page: {
+          eyebrow: 'Rechenmethodik und Quellen',
+          title: 'So berechnet ImmoPilot deine Szenarien',
+          summary:
+            'Formeln, Nenner und Zähler, Rechenannahmen und belegte Quelldaten – transparent und ohne Marktprognosen.',
+        },
+        versionHeading: 'Versionen und Prüfstand',
+        assumptionVersion: 'Annahmen-Datensatz',
+        specificationVersion: 'Berechnungsspezifikation',
+        assumptionVerified: 'Annahmen geprüft am',
+        transferTaxSourceAsOf: 'Grunderwerbsteuer-Quelle: Stand',
+        dateWarning:
+          'Ein historisches Prüfdatum bedeutet keine erneute Bestätigung zum heutigen Tag. Individuelle Überschreibungen werden nicht unabhängig geprüft.',
+        formulaLabel: 'Vereinfachte Rechenregel',
+        sections: {
+          acquisition: {
+            title: 'Kaufkosten und Gesamtprojekt',
+            description:
+              'Die Grunderwerbsteuer nutzt den Kaufpreis als Bemessungsgrundlage und den Satz des gewählten Bundeslands. Notar und Grundbuch sind editierbare Planungspauschalen (1,00 % und 0,50 %). Die Maklerprovision ist vertragsspezifisch; 3,57 % ist ein editierbarer Brutto-Richtwert.',
+            formula: 'Kaufnebenkosten C = Steuer + Notar + Grundbuch + ggf. Makler; Gesamtprojekt = Kaufpreis P + C + Renovierung/Umzug Q',
+            boundary:
+              'Renovierung und Umzug sind separate Budgets, keine gesetzlichen Erwerbsnebenkosten. Fehlende Budgets sind nicht automatisch 0 €.',
+          },
+          financing: {
+            title: 'Darlehen und benötigtes Eigenkapital',
+            description:
+              'Die eingetragene Anzahlung deckt einen Teil des Kaufpreises. Ein optional finanzierter Anteil der Kaufnebenkosten wird dem Darlehen zugeschlagen; Renovierung und Umzug bleiben eigenkapitalfinanziert.',
+            formula: 'Darlehen L = P − Anzahlung D + finanzierte Kaufnebenkosten F; benötigtes Eigenkapital = D + (C − F) + Q',
+            boundary:
+              'Die Beleihung im Rechner ist keine bankseitige Wertermittlung, Kreditzusage oder Zusicherung einer 100-%-Finanzierung.',
+          },
+          mortgage: {
+            title: 'Monatsrate und Zinsbindung',
+            description:
+              'Der deutsche Annuitäten-Startwert kombiniert nominalen Sollzins i und anfänglichen Tilgungssatz t. Monatszinsen werden auf die jeweilige Restschuld gerechnet. Zinszahlungen und Tilgung sind getrennt.',
+            formula: 'Monatliche Sollrate A = auf Cent gerundet [L × (i + t) / 12]; Monatszins = Restschuld × i / 12',
+            boundary:
+              'Der Sollzins ist nicht der effektive Jahreszins. Die Monatsrate wird bei der letzten Tilgung begrenzt; nach der Zinsbindung gelten keine garantierten Anschlusszinsen.',
+          },
+          repayment: {
+            title: 'Sondertilgung und Restschuld',
+            description:
+              'Monat für Monat werden zuerst Zinsen, reguläre Rate und Tilgung gebucht; erst danach wird eine gültige Sondertilgung von der verbleibenden Schuld abgezogen.',
+            formula: 'Restschuld B(m) = B(m−1) − reguläre Tilgung T(m) − Sondertilgung S(m)',
+            boundary:
+              'Die vertragliche Monatsrate bleibt im Modell gleich. Einsparungen bis zum Ende der Zinsbindung und lebenslange Projektionen werden getrennt ausgewiesen. Der Vertrag kann Sondertilgungen begrenzen.',
+          },
+          owner: {
+            title: 'Eigennutzung: Mieten oder Kaufen',
+            description:
+              'Die Vermögensentwicklung vergleicht Käufer und Mieter bei abgestimmtem Monatsbudget. Beim Käufer zählen Immobilienwert abzüglich Restschuld und hypothetischer Verkaufskosten sowie das alternative Anlageportfolio.',
+            formula: 'Vermögensunterschied = Nettovermögen Käufer − Portfoliovermögen Mieter',
+            boundary:
+              'Darlehenstilgung erhöht das Immobilieneigenkapital und ist nicht nochmals als Konsumkosten abzuziehen. Miet-, Preis- und Renditewachstum sind Nutzereingaben, keine Prognosen.',
+          },
+          rental: {
+            title: 'Kapitalanlage: Mietrenditen und Cashflow',
+            description:
+              'Die Bruttomietrendite nutzt die jährliche Nettokaltmiete vor Leerstand. Das Netto-Betriebsergebnis berücksichtigt modellierten Leerstand und nicht umlegbare Eigentümerkosten. Die Netto-Rendite bezieht sich auf den gesamten Projekteinsatz.',
+            formula:
+              'Bruttorendite = Jahresnettokaltmiete / Kaufpreis P; Nettorendite = Netto-Betriebsergebnis / (P + C + Q); Cash-on-Cash = jährlicher Cashflow vor Sondertilgung / benötigtes Eigenkapital',
+            boundary:
+              'Der laufende Cashflow zieht die reguläre Kreditrate ab; freiwillige Sondertilgungen werden separat gezeigt. Rücklagen sind Liquiditätsabfluss, nicht identisch mit wirtschaftlichen Kosten. Alle Ergebnisse vor persönlichen Steuern.',
+          },
+          offer: {
+            title: 'Angebotspreis und Immobilienvergleich',
+            description:
+              'Zielrenditen, Monatsbudgets und Vergleichsobjekte werden nur berechnet, wenn du dafür Eingaben lieferst. Vergleichstabellen übernehmen je Objekt dessen Annahmen, Quellen und Zeithorizonte.',
+            formula:
+              'Preisobergrenze (Bruttorendite) = jährliche Nettokaltmiete / Ziel-Bruttorendite; Vergleichspreise = nutzerdefinierte €/m² × Wohnfläche',
+            boundary:
+              'Die Bandbreiten sind keine professionelle Verkehrswertermittlung und kein empfohlenes Kaufgebot. Unterschiedliche Zeithorizonte nicht als identische Prognosen lesen.',
+          },
+          limits: {
+            title: 'Wachstum, Rundung und Prognosegrenzen',
+            description:
+              'Geldwerte werden centgenau gerundet; Finanzierungspläne rechnen monatlich. Ein effektiver jährlicher Wachstumswert wird nur für monatliche Projektionen in einen Monatswert umgerechnet.',
+            formula: 'Monatswachstum = (1 + Jahreswachstum)^(1/12) − 1',
+            boundary:
+              'Nach der Zinsbindung fortgeführte Tilgungswerte sind hypothetische Projektionen mit konstantem Sollzins. Kein Steuer-, Energie-, Mietrechts-, Förder- oder Kreditangebot.',
+          },
+        },
+        sources: {
+          title: 'Verwendete Quellen des gebündelten Annahmen-Datensatzes',
+          description:
+            'Die Quellenliste kommt direkt aus der versionierten Annahmendatei. Dokumentdatum und unser letztes Prüfdatum werden nicht verwechselt.',
+          sourceDate: 'Quellendatum',
+          verifiedOn: 'Zuletzt geprüft',
+          undated: 'Nicht angegeben',
+          note:
+            'Externe Quellen können sich inzwischen geändert haben. Du solltest aktuelle Bundesland- und Vertragswerte unabhängig prüfen.',
+        },
+        documentation: {
+          title: 'Vollständige technische Dokumentation',
+          summary:
+            'Die normativen Detailformeln, Rechenreihenfolge und Tests stehen in der versionierten Spezifikation und im Quellen-/Berichtsaudit.',
+          specification: 'Berechnungsspezifikation 1.0.0',
+          audit: 'Methodik- und Quellenprüfung PF-006.5',
+        },
+      },
       metadata: {
         pages: {
           home: {
@@ -1461,6 +1562,107 @@ export const resources = {
           githubPages: 'GitHub Pages: data collection',
           githubPrivacy: 'GitHub General Privacy Statement',
           fullDocument: 'Full financial and privacy notice in the repository',
+        },
+      },
+      methodology: {
+        page: {
+          eyebrow: 'Calculation methods and sources',
+          title: 'How ImmoPilot calculates your scenarios',
+          summary:
+            'Equations, numerators and denominators, assumptions and source records, without pretending to forecast the market.',
+        },
+        versionHeading: 'Versions and verification status',
+        assumptionVersion: 'Assumption dataset',
+        specificationVersion: 'Calculation specification',
+        assumptionVerified: 'Assumptions checked on',
+        transferTaxSourceAsOf: 'Transfer-tax source as of',
+        dateWarning:
+          'A historical verification date does not mean the source was checked today. User overrides are not independently verified.',
+        formulaLabel: 'Simplified calculation',
+        sections: {
+          acquisition: {
+            title: 'Acquisition costs and total project',
+            description:
+              'German property transfer tax uses the purchase price as its taxable base and the selected state rate. Notary and land-register assumptions are editable planning proxies (1.00% and 0.50%). Broker commission is contract-specific; 3.57% is an editable gross illustration.',
+            formula: 'Closing costs C = transfer tax + notary + land register + optional broker; total project = purchase price P + C + renovation/moving Q',
+            boundary:
+              'Renovation and moving costs are separate budgets, not statutory closing costs. Missing budgets are never silently set to €0.',
+          },
+          financing: {
+            title: 'Loan amount and required equity',
+            description:
+              'The selected down payment covers part of the property price. Any explicitly financed share of closing costs is added to the loan; renovation and moving budgets are funded in cash.',
+            formula: 'Loan L = P − down payment D + financed closing costs F; required equity = D + (C − F) + Q',
+            boundary:
+              'The calculator’s purchase-price financing ratio is not a lender’s valuation, loan approval or guarantee of 100% financing.',
+          },
+          mortgage: {
+            title: 'Mortgage payment and fixed period',
+            description:
+              'The German initial annuity combines nominal annual interest i and initial principal repayment t. Monthly interest accrues on the remaining balance; interest and principal are shown separately.',
+            formula: 'Monthly scheduled payment A = cent-rounded [L × (i + t) / 12]; monthly interest = outstanding balance × i / 12',
+            boundary:
+              'The nominal interest rate is not the effective APR. The last payment is capped at the remaining debt; refinancing rates after the fixed period are not guaranteed.',
+          },
+          repayment: {
+            title: 'Additional principal repayments',
+            description:
+              'Each month the calculation applies interest and the regular instalment first. Only then is an eligible additional repayment deducted from the remaining loan balance.',
+            formula: 'Loan balance B(m) = B(m−1) − scheduled principal T(m) − additional repayment S(m)',
+            boundary:
+              'The model keeps the contractual monthly payment unchanged. Savings within the fixed period are distinct from lifetime projections. Loan agreements may restrict extra repayments.',
+          },
+          owner: {
+            title: 'Owner-occupier: rent versus buy',
+            description:
+              'The comparison uses a matched monthly spending budget. Buyer wealth includes property value net of outstanding debt and hypothetical selling costs, plus an alternative investment portfolio.',
+            formula: 'Wealth difference = buyer net wealth − renter portfolio wealth',
+            boundary:
+              'Mortgage principal adds to property equity and must not be double-counted as a consumption cost. Rent, house-price growth and investment returns are user assumptions, not forecasts.',
+          },
+          rental: {
+            title: 'Rental investment: yields and cash flow',
+            description:
+              'Gross yield uses annual net cold rent before vacancies. Net operating income deducts modelled vacancy and owner costs. Net yield uses the whole project investment as its denominator.',
+            formula:
+              'Gross yield = annual net cold rent / purchase price P; net yield = net operating income / (P + C + Q); cash-on-cash = annual pre-extra-repayment cash flow / required equity',
+            boundary:
+              'Operating cash flow deducts the regular loan payment; voluntary extra repayments appear separately. Reserves are cash outflow, not necessarily economic expense. All figures are before personal taxes.',
+          },
+          offer: {
+            title: 'Offer prices and property comparisons',
+            description:
+              'Target yields, payment limits and comparable properties are analysed only when corresponding inputs are provided. Comparisons retain each property’s separate assumptions, sources and horizons.',
+            formula:
+              'Gross-yield price ceiling = annual net cold rent / target gross yield; comparable values = user-provided €/m² × floor area',
+            boundary:
+              'These ranges are not formal property valuations or recommended offers. Differing horizons must not be treated as identical projections.',
+          },
+          limits: {
+            title: 'Growth, rounding and projection boundaries',
+            description:
+              'Amounts are rounded in cents and amortization is calculated month by month. An effective annual growth assumption is converted to a monthly rate only where a monthly projection requires it.',
+            formula: 'Monthly growth = (1 + annual growth)^(1/12) − 1',
+            boundary:
+              'Loan balances continued beyond the fixed-interest term are hypothetical constant-rate projections. No tax, energy, tenancy-law, subsidy or lending advice is provided.',
+          },
+        },
+        sources: {
+          title: 'Sources in the bundled assumption set',
+          description:
+            'Source entries are read from the versioned assumption dataset. The source document date and last verification date are always distinguished.',
+          sourceDate: 'Source date',
+          verifiedOn: 'Last verified',
+          undated: 'Not provided',
+          note:
+            'External documents may have changed since their verification dates. Independently verify current local rates and contract terms.',
+        },
+        documentation: {
+          title: 'Full technical methodology',
+          summary:
+            'The normative formulas, calculation order and test vectors are in the versioned calculation specification and report methodology audit.',
+          specification: 'Calculation specification 1.0.0',
+          audit: 'Methodology and provenance audit PF-006.5',
         },
       },
       metadata: {
