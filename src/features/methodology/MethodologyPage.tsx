@@ -85,8 +85,7 @@ export function MethodologyPage() {
                     : t('methodology.sources.undated')}
                 </span>
                 <span>
-                  {t('methodology.sources.verifiedOn')}:{' '}
-                  {formatDate(source.verifiedOn, language)}
+                  {t('methodology.sources.verifiedOn')}: {formatDate(source.verifiedOn, language)}
                 </span>
               </li>
             ))}
