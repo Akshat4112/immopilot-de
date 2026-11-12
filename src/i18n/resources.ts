@@ -459,7 +459,8 @@ export const resources = {
             title: 'Kaufkosten und Gesamtprojekt',
             description:
               'Die Grunderwerbsteuer nutzt den Kaufpreis als Bemessungsgrundlage und den Satz des gewählten Bundeslands. Notar und Grundbuch sind editierbare Planungspauschalen (1,00 % und 0,50 %). Die Maklerprovision ist vertragsspezifisch; 3,57 % ist ein editierbarer Brutto-Richtwert.',
-            formula: 'Kaufnebenkosten C = Steuer + Notar + Grundbuch + ggf. Makler; Gesamtprojekt = Kaufpreis P + C + Renovierung/Umzug Q',
+            formula:
+              'Kaufnebenkosten C = Steuer + Notar + Grundbuch + ggf. Makler; Gesamtprojekt = Kaufpreis P + C + Renovierung/Umzug Q',
             boundary:
               'Renovierung und Umzug sind separate Budgets, keine gesetzlichen Erwerbsnebenkosten. Fehlende Budgets sind nicht automatisch 0 €.',
           },
@@ -467,7 +468,8 @@ export const resources = {
             title: 'Darlehen und benötigtes Eigenkapital',
             description:
               'Die eingetragene Anzahlung deckt einen Teil des Kaufpreises. Ein optional finanzierter Anteil der Kaufnebenkosten wird dem Darlehen zugeschlagen; Renovierung und Umzug bleiben eigenkapitalfinanziert.',
-            formula: 'Darlehen L = P − Anzahlung D + finanzierte Kaufnebenkosten F; benötigtes Eigenkapital = D + (C − F) + Q',
+            formula:
+              'Darlehen L = P − Anzahlung D + finanzierte Kaufnebenkosten F; benötigtes Eigenkapital = D + (C − F) + Q',
             boundary:
               'Die Beleihung im Rechner ist keine bankseitige Wertermittlung, Kreditzusage oder Zusicherung einer 100-%-Finanzierung.',
           },
@@ -475,7 +477,8 @@ export const resources = {
             title: 'Monatsrate und Zinsbindung',
             description:
               'Der deutsche Annuitäten-Startwert kombiniert nominalen Sollzins i und anfänglichen Tilgungssatz t. Monatszinsen werden auf die jeweilige Restschuld gerechnet. Zinszahlungen und Tilgung sind getrennt.',
-            formula: 'Monatliche Sollrate A = auf Cent gerundet [L × (i + t) / 12]; Monatszins = Restschuld × i / 12',
+            formula:
+              'Monatliche Sollrate A = auf Cent gerundet [L × (i + t) / 12]; Monatszins = Restschuld × i / 12',
             boundary:
               'Der Sollzins ist nicht der effektive Jahreszins. Die Monatsrate wird bei der letzten Tilgung begrenzt; nach der Zinsbindung gelten keine garantierten Anschlusszinsen.',
           },
@@ -529,8 +532,7 @@ export const resources = {
           sourceDate: 'Quellendatum',
           verifiedOn: 'Zuletzt geprüft',
           undated: 'Nicht angegeben',
-          note:
-            'Externe Quellen können sich inzwischen geändert haben. Du solltest aktuelle Bundesland- und Vertragswerte unabhängig prüfen.',
+          note: 'Externe Quellen können sich inzwischen geändert haben. Du solltest aktuelle Bundesland- und Vertragswerte unabhängig prüfen.',
         },
         documentation: {
           title: 'Vollständige technische Dokumentation',
@@ -1589,7 +1591,8 @@ export const resources = {
             title: 'Acquisition costs and total project',
             description:
               'German property transfer tax uses the purchase price as its taxable base and the selected state rate. Notary and land-register assumptions are editable planning proxies (1.00% and 0.50%). Broker commission is contract-specific; 3.57% is an editable gross illustration.',
-            formula: 'Closing costs C = transfer tax + notary + land register + optional broker; total project = purchase price P + C + renovation/moving Q',
+            formula:
+              'Closing costs C = transfer tax + notary + land register + optional broker; total project = purchase price P + C + renovation/moving Q',
             boundary:
               'Renovation and moving costs are separate budgets, not statutory closing costs. Missing budgets are never silently set to €0.',
           },
@@ -1597,7 +1600,8 @@ export const resources = {
             title: 'Loan amount and required equity',
             description:
               'The selected down payment covers part of the property price. Any explicitly financed share of closing costs is added to the loan; renovation and moving budgets are funded in cash.',
-            formula: 'Loan L = P − down payment D + financed closing costs F; required equity = D + (C − F) + Q',
+            formula:
+              'Loan L = P − down payment D + financed closing costs F; required equity = D + (C − F) + Q',
             boundary:
               'The calculator’s purchase-price financing ratio is not a lender’s valuation, loan approval or guarantee of 100% financing.',
           },
@@ -1605,7 +1609,8 @@ export const resources = {
             title: 'Mortgage payment and fixed period',
             description:
               'The German initial annuity combines nominal annual interest i and initial principal repayment t. Monthly interest accrues on the remaining balance; interest and principal are shown separately.',
-            formula: 'Monthly scheduled payment A = cent-rounded [L × (i + t) / 12]; monthly interest = outstanding balance × i / 12',
+            formula:
+              'Monthly scheduled payment A = cent-rounded [L × (i + t) / 12]; monthly interest = outstanding balance × i / 12',
             boundary:
               'The nominal interest rate is not the effective APR. The last payment is capped at the remaining debt; refinancing rates after the fixed period are not guaranteed.',
           },
@@ -1613,7 +1618,8 @@ export const resources = {
             title: 'Additional principal repayments',
             description:
               'Each month the calculation applies interest and the regular instalment first. Only then is an eligible additional repayment deducted from the remaining loan balance.',
-            formula: 'Loan balance B(m) = B(m−1) − scheduled principal T(m) − additional repayment S(m)',
+            formula:
+              'Loan balance B(m) = B(m−1) − scheduled principal T(m) − additional repayment S(m)',
             boundary:
               'The model keeps the contractual monthly payment unchanged. Savings within the fixed period are distinct from lifetime projections. Loan agreements may restrict extra repayments.',
           },
@@ -1659,8 +1665,7 @@ export const resources = {
           sourceDate: 'Source date',
           verifiedOn: 'Last verified',
           undated: 'Not provided',
-          note:
-            'External documents may have changed since their verification dates. Independently verify current local rates and contract terms.',
+          note: 'External documents may have changed since their verification dates. Independently verify current local rates and contract terms.',
         },
         documentation: {
           title: 'Full technical methodology',
