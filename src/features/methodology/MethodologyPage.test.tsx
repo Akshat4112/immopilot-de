@@ -27,7 +27,7 @@ describe('PF-007.3 methodology and source metadata', () => {
     expect(screen.getAllByText('1.0.0').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Bruttorendite = Jahresnettokaltmiete / Kaufpreis P;', { exact: false }))
       .toBeVisible()
-    expect(screen.getByText('Nicht angegeben', { exact: false }).length).not.toBe(0)
+    expect(screen.getAllByText(/Nicht angegeben/u).length).toBeGreaterThan(0)
     expect(
       screen.getByRole('link', { name: /Aktuelle Grunderwerbsteuersätze/u }),
     ).toHaveAttribute('href', expect.stringContaining('dnoti.de'))
