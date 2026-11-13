@@ -35,7 +35,8 @@ test('@cross-browser follows system appearance, preserves manual choice across r
   const printBackground = await page.evaluate<string>(
     "getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim()",
   )
-  expect(printBackground).toBe('#ffffff')
+  // Browsers may serialize the same white CSS color as #fff or #ffffff.
+  expect(['#fff', '#ffffff']).toContain(printBackground)
 
   await page.emulateMedia({ media: 'screen' })
   await page.getByRole('combobox', { name: 'Farbschema' }).selectOption('system')
