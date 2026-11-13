@@ -178,4 +178,37 @@ describe('ScenariosPage', () => {
     expect(screen.getByText(/Only user inputs are saved/i)).toBeVisible()
     await user.type(screen.getByLabelText('Scenario name'), 'Berlin flat')
   })
+  it('clears only ImmoPilot saved scenarios after explicit full-data confirmation', async () => {
+    const user = userEvent.setup()
+    window.localStorage.setItem('unrelated-product-key', 'preserve')
+    useScenarioWorkspaceStore.getState().setPurchaseCosts({
+      ...useScenarioWorkspaceStore.getState().purchaseCosts,
+      purchasePrice: '250000',
+    })
+    renderPage()
+
+    await user.type(screen.getByLabelText('Szenarioname'), 'Owned scenario')
+    await user.click(screen.getByRole('button', { name: 'Szenario speichern' }))
+    expect(window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY)).not.toBeNull()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Arbeitsstand und gespeicherte Szenarien löschen' }),
+    )
+    expect(screen.getByRole('alertdialog')).toHaveTextContent(
+      'Bereits exportierte Dateien und geteilte Links können nicht zurückgerufen werden.',
+    )
+    expect(screen.getByDisplayValue('Owned scenario')).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Abbrechen' }))
+    expect(window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY)).not.toBeNull()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Arbeitsstand und gespeicherte Szenarien löschen' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Ja, zurücksetzen' }))
+    expect(window.localStorage.getItem(SCENARIO_LIBRARY_STORAGE_KEY)).toBeNull()
+    expect(window.localStorage.getItem('unrelated-product-key')).toBe('preserve')
+    expect(useScenarioWorkspaceStore.getState().purchaseCosts.purchasePrice).toBe('')
+    expect(screen.getByText('Noch keine Szenarien gespeichert.')).toBeVisible()
+    expect(screen.getByLabelText('Szenarioname')).toHaveValue('')
+  })
 })

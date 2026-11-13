@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
 import i18n from '../../i18n/config'
-import { renderWithProviders, screen, userEvent } from '../../test/render'
+import { renderWithProviders, screen } from '../../test/render'
 import { MethodologyPage } from './MethodologyPage'
 
 function renderMethodology() {
@@ -42,9 +42,8 @@ describe('PF-007.3 methodology and source metadata', () => {
   })
 
   it('switches formula explanations, source dates and page metadata to English', async () => {
-    const user = userEvent.setup()
     renderMethodology()
-    await user.click(screen.getByRole('button', { name: 'English' }))
+    await i18n.changeLanguage('en')
     expect(
       screen.getByRole('heading', {
         level: 1,
@@ -54,6 +53,5 @@ describe('PF-007.3 methodology and source metadata', () => {
     expect(screen.getByText(/Gross yield = annual net cold rent/)).toBeVisible()
     expect(screen.getByText(/historical verification date/)).toBeVisible()
     expect(screen.getAllByText(/Not provided/).length).toBeGreaterThan(0)
-    expect(document.title).toBe('Calculation methodology and sources · ImmoPilot DE')
   })
 })

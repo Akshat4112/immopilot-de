@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { PageLayout } from '../../components/PageLayout'
+import { ResetControls } from './ResetControls'
 import { useScenarioWorkspaceStore } from '../scenario-workspace'
 import {
   createSavedScenario,
@@ -85,7 +86,6 @@ export function ScenariosPage() {
   const financing = useScenarioWorkspaceStore((state) => state.financing)
   const analysis = useScenarioWorkspaceStore((state) => state.analysis)
   const replaceWorkspace = useScenarioWorkspaceStore((state) => state.replaceWorkspace)
-  const resetWorkspace = useScenarioWorkspaceStore((state) => state.reset)
   const initialLibrary = useMemo(() => readBrowserScenarioLibrary(), [])
   const [scenarios, setScenarios] = useState(initialLibrary.scenarios)
   const [libraryIssue, setLibraryIssue] = useState<ScenarioLibraryIssue | undefined>(
@@ -216,6 +216,27 @@ export function ScenariosPage() {
     setStatus('cleared')
   }
 
+  const clearAllAppData = () => {
+    // Only the ImmoPilot scenario-library key is removed. Other sites' data and
+    // externally shared URLs, downloaded JSON and PDFs are beyond this reset.
+    if (!clearBrowserScenarioLibrary()) {
+      setLibraryIssue('storage-unavailable')
+      setStatus('writeFailed')
+      return false
+    }
+    setScenarios([])
+    setRenameValues({})
+    setScenarioName('')
+    setPendingDeleteId(undefined)
+    setClearAllPending(false)
+    setPendingSensitiveAction(undefined)
+    setShareUrl('')
+    setLibraryIssue(undefined)
+    setStatus(undefined)
+    if (searchParams.has('scenario')) void navigate('/scenarios', { replace: true })
+    return true
+  }
+
   const saveExternalScenario = (scenario: SavedScenario) => {
     const externalScenario = scenarios.some((item) => item.id === scenario.id)
       ? duplicateSavedScenario(scenario, { name: scenario.name })
@@ -331,16 +352,6 @@ export function ScenariosPage() {
               </button>
               <button className="secondary-action" type="button" onClick={createCurrentShareLink}>
                 {t('scenarios.actions.shareCurrent')}
-              </button>
-              <button
-                className="secondary-action"
-                type="button"
-                onClick={() => {
-                  resetWorkspace()
-                  setStatus('reset')
-                }}
-              >
-                {t('scenarios.actions.reset')}
               </button>
             </div>
           </div>
@@ -556,6 +567,8 @@ export function ScenariosPage() {
             </ul>
           )}
         </section>
+
+        <ResetControls onClearAllLocalData={clearAllAppData} />
 
         <p className="scenario-status" role="status">
           {status ? t(`scenarios.status.${status}`) : ''}

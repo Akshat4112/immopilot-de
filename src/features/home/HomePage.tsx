@@ -22,6 +22,15 @@ export function HomePage() {
   const navigate = useNavigate()
   const [pendingDemo, setPendingDemo] = useState<DemoScenarioId | null>(null)
   const loadDemo = useScenarioWorkspaceStore((state) => state.loadDemo)
+  const showFirstSteps = useScenarioWorkspaceStore(
+    (state) =>
+      !state.activeDemo &&
+      !state.purchaseCosts.purchasePrice.trim() &&
+      !state.financing.availableEquity.trim() &&
+      !state.financing.downPayment.trim() &&
+      !state.analysis.currentComparableRent.trim() &&
+      !state.analysis.monthlyNetColdRent.trim(),
+  )
   const confirmDemo = () => {
     if (!pendingDemo) return
     loadDemo(pendingDemo)
@@ -112,6 +121,38 @@ export function HomePage() {
         <span>{t('principles.assumptions')}</span>
         <span>{t('principles.bilingual')}</span>
       </section>
+
+      {showFirstSteps ? (
+        <section className="first-steps" aria-labelledby="first-steps-title">
+          <div className="section-intro">
+            <p className="eyebrow">{t('onboarding.welcome.eyebrow')}</p>
+            <h2 id="first-steps-title">{t('onboarding.welcome.title')}</h2>
+            <p>{t('onboarding.welcome.description')}</p>
+          </div>
+          <ol className="first-steps-list">
+            <li>{t('onboarding.welcome.stepOne')}</li>
+            <li>{t('onboarding.welcome.stepTwo')}</li>
+            <li>{t('onboarding.welcome.stepThree')}</li>
+          </ol>
+          <div className="first-steps-actions">
+            <Link
+              className="primary-action"
+              onClick={() => selectPropertyUse('owner-occupier')}
+              to="/purchase-costs"
+            >
+              {t('onboarding.welcome.blankOwner')}
+            </Link>
+            <Link
+              className="secondary-action"
+              onClick={() => selectPropertyUse('rental-investment')}
+              to="/purchase-costs"
+            >
+              {t('onboarding.welcome.blankRental')}
+            </Link>
+          </div>
+          <p className="first-steps-note">{t('onboarding.welcome.demoHint')}</p>
+        </section>
+      ) : null}
 
       <section className="demo-section" aria-labelledby="demo-title">
         <div className="section-intro">
