@@ -133,6 +133,35 @@
   font-weight: var(--font-weight-medium);
 }
 
+.theme-selector {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+}
+
+.theme-selector select {
+  min-width: 6.25rem;
+  min-height: 2.5rem;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .language-switcher {
   padding: 0.1875rem;
   border: var(--border-width) solid var(--color-border);
