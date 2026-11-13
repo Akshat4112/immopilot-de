@@ -20,18 +20,16 @@ test('@cross-browser follows system appearance, preserves manual choice across r
   await page.getByRole('combobox', { name: 'Farbschema' }).selectOption('dark')
   await page.emulateMedia({ colorScheme: 'light' })
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  await expect(
-    page.locator('html').evaluate((element) =>
-      getComputedStyle(element).getPropertyValue('--color-background').trim(),
-    ),
-  ).resolves.toBe('#101b16')
+  const darkBackground = await page.evaluate<string>(
+    "getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim()",
+  )
+  expect(darkBackground).toBe('#101b16')
 
   await page.emulateMedia({ media: 'print' })
-  await expect(
-    page.locator('html').evaluate((element) =>
-      getComputedStyle(element).getPropertyValue('--color-background').trim(),
-    ),
-  ).resolves.toBe('#ffffff')
+  const printBackground = await page.evaluate<string>(
+    "getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim()",
+  )
+  expect(printBackground).toBe('#ffffff')
 
   await page.emulateMedia({ media: 'screen' })
   await page.getByRole('combobox', { name: 'Farbschema' }).selectOption('system')
