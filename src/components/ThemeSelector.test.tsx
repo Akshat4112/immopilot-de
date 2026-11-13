@@ -76,7 +76,10 @@ describe('PF-007.5 system and manual theme preference', () => {
 
   it('provides English labels without persisting a user preference', async () => {
     const user = userEvent.setup()
-    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: false })),
+    )
     await i18n.changeLanguage('en')
 
     renderWithProviders(<ThemeSelector />)
