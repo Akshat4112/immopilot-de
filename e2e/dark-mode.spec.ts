@@ -13,7 +13,13 @@ test('@cross-browser follows system appearance, preserves manual choice across r
 
   await control.selectOption('light')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  // Hash navigation keeps the mounted app; a manual choice stays active.
   await page.goto('./#/financing')
+  await expect(page.getByRole('combobox', { name: 'Farbschema' })).toHaveValue('light')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+
+  // A real browser reload starts in System mode again.
+  await page.reload()
   await expect(page.getByRole('combobox', { name: 'Farbschema' })).toHaveValue('system')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
 
