@@ -2,6 +2,7 @@ export const resources = {
   de: {
     translation: {
       language: { selectorLabel: 'Sprache auswählen', german: 'Deutsch', english: 'English' },
+      theme: { label: 'Farbschema', system: 'System', light: 'Hell', dark: 'Dunkel' },
       brand: { homeLabel: 'ImmoPilot DE Startseite', release: 'Version 1 · Release-Prüfung' },
       shell: {
         skipToContent: 'Zum Inhalt springen',
@@ -1087,6 +1088,7 @@ export const resources = {
   en: {
     translation: {
       language: { selectorLabel: 'Choose language', german: 'Deutsch', english: 'English' },
+      theme: { label: 'Theme', system: 'System', light: 'Light', dark: 'Dark' },
       brand: { homeLabel: 'ImmoPilot DE home', release: 'Version 1 · Release review' },
       shell: {
         skipToContent: 'Skip to content',
