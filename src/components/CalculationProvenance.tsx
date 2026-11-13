@@ -26,9 +26,14 @@ export function CalculationProvenance({ scope }: { scope: CalculationProvenanceS
     >
       <div className="calculation-provenance__heading">
         <strong>{t('provenance.title')}</strong>
-        <Link className="inline-link" to="/privacy">
-          {t('provenance.fullNotice')}
-        </Link>
+        <div className="calculation-provenance__links">
+          <Link className="inline-link" to="/methodology">
+            {t('methodology.page.title')}
+          </Link>
+          <Link className="inline-link" to="/privacy">
+            {t('provenance.fullNotice')}
+          </Link>
+        </div>
       </div>
       <dl>
         <div>

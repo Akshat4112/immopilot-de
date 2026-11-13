@@ -2487,6 +2487,124 @@ h3 {
   }
 }
 
+/* PF-007.3 — inspectable calculation methodology and versioned source records */
+.methodology-page {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-9);
+}
+
+.methodology-metadata,
+.methodology-section,
+.methodology-sources {
+  min-width: 0;
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.methodology-metadata h2,
+.methodology-section h2,
+.methodology-sources h2 {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-xl);
+}
+
+.methodology-metadata dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.methodology-metadata dl > div {
+  min-width: 0;
+}
+
+.methodology-metadata dt {
+  color: var(--color-text-secondary);
+}
+
+.methodology-metadata dd {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.methodology-metadata > p {
+  margin-top: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.methodology-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.methodology-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.methodology-formula {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.methodology-formula code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.methodology-limitation {
+  color: var(--color-text-secondary);
+}
+
+.methodology-sources ul {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.methodology-sources li {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+.methodology-sources li a {
+  color: var(--color-brand);
+  font-weight: var(--font-weight-bold);
+}
+
+.methodology-sources li span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.calculation-provenance__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (max-width: 53.75rem) {
+  .methodology-sections,
+  .methodology-metadata dl {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* PF-007.2: first-use guidance and explicitly scoped reset decisions */
 .first-steps {
   display: grid;

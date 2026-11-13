@@ -8,6 +8,9 @@ export function AppFooter() {
     <footer className="site-footer">
       <div>
         <p>{t('footer.disclaimer')}</p>
+        <Link className="site-footer__notice" to="/methodology">
+          {t('methodology.page.title')}
+        </Link>
         <Link className="site-footer__notice" to="/privacy">
           {t('footer.privacyNotice')}
         </Link>

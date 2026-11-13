@@ -10,6 +10,7 @@ const pageKeys: Record<string, string> = {
   '/scenarios': 'scenarios',
   '/comparison': 'comparison',
   '/privacy': 'privacy',
+  '/methodology': 'methodology',
 }
 
 function setMetaContent(selector: string, content: string) {

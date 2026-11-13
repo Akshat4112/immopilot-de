@@ -5,6 +5,7 @@ import { HomePage } from '../features/home/HomePage'
 import { PurchaseCostsPage } from '../features/purchase-costs/PurchaseCostsPage'
 import { ComparisonPage } from '../features/comparison'
 import { PrivacyPage } from '../features/privacy'
+import { MethodologyPage } from '../features/methodology/MethodologyPage'
 import { ResultsPage } from '../features/results'
 import { ScenariosPage } from '../features/scenarios'
 import { AppShell } from './AppShell'
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="scenarios" element={<ScenariosPage />} />
         <Route path="comparison" element={<ComparisonPage />} />
         <Route path="privacy" element={<PrivacyPage />} />
+        <Route path="methodology" element={<MethodologyPage />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Route>
     </Routes>
