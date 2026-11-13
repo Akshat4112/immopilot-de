@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeSelector } from '../components/ThemeSelector'
 import { AppNavigation } from './AppNavigation'
 
 const navigationId = 'primary-navigation'
@@ -37,6 +38,7 @@ export function AppHeader() {
         <div className="header-actions">
           <span className="release-tag">{t('brand.release')}</span>
           <LanguageSwitcher />
+          <ThemeSelector />
           <button
             className="menu-toggle"
             type="button"
