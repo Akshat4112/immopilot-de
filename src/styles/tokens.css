@@ -110,3 +110,59 @@
   --duration-reduced: 0.01ms;
   --ease-standard: ease;
 }
+
+/* PF-007.5: dark semantic palette; primitive light values remain unchanged. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-text-primary: #f4f7f1;
+  --color-text-secondary: #c2d0c8;
+  --color-text-tertiary: #b1c4b8;
+  --color-text-eyebrow: #d0e8d7;
+  --color-text-trust: #d0e0d4;
+  --color-background: #101b16;
+  --color-surface: #18271f;
+  --color-surface-translucent: rgb(24 39 31 / 92%);
+  --color-surface-card: rgb(27 44 35 / 96%);
+  --color-border: #4c6356;
+  --color-border-decorative: #385a45;
+  --color-chart-comparison: #a0bbff;
+  --color-chart-additional: #f6c179;
+  --color-brand: #315b42;
+  --color-brand-alpha: rgb(139 206 156 / 18%);
+  --color-accent: #c8ff5a;
+  --color-on-brand: #ffffff;
+  --color-on-brand-prominent: rgb(255 255 255 / 92%);
+  --color-on-brand-muted: rgb(255 255 255 / 80%);
+  --color-on-brand-caption: rgb(255 255 255 / 80%);
+  --color-on-brand-subtle: rgb(255 255 255 / 76%);
+  --color-on-brand-border: rgb(255 255 255 / 24%);
+  --color-focus-ring: #cbff75;
+  --color-selection: #466b52;
+  --color-warning: #ffe39a;
+  --color-warning-border: #bb8b32;
+  --color-warning-bg: #3a2e17;
+  --color-warning-surface: #2c2519;
+  --color-warning-text: #fff0b4;
+  --shadow-preview: 0 1.875rem 4.375rem rgb(0 0 0 / 35%);
+}
+
+@media print {
+  /* Printed reports always use white paper and dark ink, regardless of UI theme. */
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --color-text-primary: #111111;
+    --color-text-secondary: #333333;
+    --color-text-tertiary: #333333;
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-translucent: #ffffff;
+    --color-surface-card: #ffffff;
+    --color-border: #9b9b9b;
+    --color-brand: #173f32;
+    --color-on-brand: #ffffff;
+    --color-focus-ring: #173f32;
+    --color-warning-bg: #fff8c5;
+    --color-warning-surface: #fffbea;
+    --color-warning-text: #6e4c00;
+  }
+}
