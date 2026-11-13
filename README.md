@@ -64,6 +64,7 @@ links to the bilingual in-application privacy and financial notice from every ro
 - [Selectable fictional demos](docs/pf-0071-demos.md): canonical input mapping, explicit consent, no saved-data writes and workspace-only reset for PF-007.1
 - [First-use and reset controls](docs/pf-0072-onboarding-reset.md): bilingual onboarding, confirmation for each reset scope, explicit saved-data deletion boundaries
 - [Dark theme and print contract](docs/pf-0075-dark-mode.md): system/light/dark controls, session-only overrides, semantic contrast tokens and print-light verification
+- [In-app calculation methodology](https://akshat4112.github.io/immopilot-de/#/methodology): bilingual financial formulas, yield denominators, projection limits and bundled source/verification dates (PF-007.3)
 - [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
 - [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
 - [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
