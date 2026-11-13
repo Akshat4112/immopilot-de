@@ -34,6 +34,10 @@ manual overrides, locale labels, and the no-storage boundary. Chromium,
 Firefox and WebKit tests exercise mobile-width navigation, manual/system
 switching, inherited print colors, and viewport overflow.
 
+Theme changes are presentation-only: canonical inputs, calculated amounts, saved scenarios,
+sharing links and report content must remain identical in both appearances. Screenshot
+regressions should cover empty fields, warning banners and negative-cash-flow charts.
+
 The browser and accessibility release sweep (PF-007.6) remains the separate
 manual/automated cross-flow gate for full keyboard, screen-reader, contrast,
 reduced-motion, all chart/table states, and all supported browsers. Completing
