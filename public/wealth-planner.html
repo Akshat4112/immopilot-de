@@ -634,6 +634,53 @@ body[data-theme="dark"] .rb-alert,body[data-theme="dark"] .rb-negative{color:#f3
 @media(max-width:540px){.rb-assumptions{grid-template-columns:1fr}.rb-assumptions label:last-child{grid-column:auto}.rb-stats{grid-template-columns:1fr}.rb-buttons{flex-wrap:wrap}.rb-buttons button{flex:1}.maincol svg.rb-svg{min-width:760px!important}}
 @media print{.rb-assumptions,.rb-control-line,#rbChartPane{display:none!important}#rbTablePane{display:block!important}.rb-table-scroll{max-height:none}}
 
+
+/* UX-029 — mortgage chart with audited annual debt identity and extra repayment what-if. */
+#amortPanel{min-width:0}
+.mortgage-explorer-controls{display:grid;grid-template-columns:1.2fr 1.2fr .9fr;align-items:end;gap:11px;margin:16px 0}
+.mortgage-explorer-controls label{font-size:.76rem;font-weight:750;line-height:1.5;color:var(--ink);display:flex;flex-direction:column;gap:5px;min-width:0}
+.mortgage-explorer-controls select,.mortgage-explorer-controls input{border:1px solid var(--ux-line,#d7e5df);border-radius:10px;background:var(--ux-surface,#fff);color:var(--ink);font-size:.83rem;min-height:42px;padding:8px 10px;max-width:100%;width:100%;min-width:0}
+.mortgage-explorer-switches{display:flex;justify-content:space-between;align-items:center;gap:11px;flex-wrap:wrap;margin:13px 0}
+.mortgage-switch{display:flex;gap:4px;flex-wrap:wrap;background:#e9f2ed;padding:4px;border-radius:11px}
+.mortgage-switch button{border:0;border-radius:8px;font-size:.76rem;color:#3f675c;font-weight:750;padding:8px 11px;min-height:38px;background:transparent;cursor:pointer}
+.mortgage-switch button[aria-pressed="true"]{background:#176b5e;color:#fff}
+.mortgage-switch button:focus-visible,.mortgage-explorer-controls input:focus-visible,.mortgage-explorer-controls select:focus-visible,.mortgage-chart-svg [data-amort-year]:focus-visible,.mortgage-explorer-table tbody tr:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.mortgage-explorer-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
+.mortgage-explorer-kpis>div{border:1px solid var(--ux-line,#d7e5df);background:var(--ux-surface-soft,#f5f9f5);border-radius:12px;padding:12px;min-width:0}
+.mortgage-explorer-kpis small{display:block;color:var(--muted);font-size:.72rem;line-height:1.45}
+.mortgage-explorer-kpis strong{display:block;color:var(--ink);font-variant-numeric:tabular-nums;font-size:1.02rem;margin-top:6px}
+.mortgage-explorer-graph{background:var(--ux-surface-soft,#f5f9f5);border:1px solid var(--ux-line,#d7e5df);border-radius:12px;max-width:100%;overflow-x:auto}
+.mortgage-chart-svg{min-width:790px!important;width:100%;height:auto;display:block}
+.mortgage-chart-svg [data-amort-year]{cursor:pointer}
+.mortgage-chart-svg [data-amort-year] .mortgage-year-dot{stroke-width:2;stroke:#146b5d;fill:#fff}
+.mortgage-chart-svg [data-amort-year].selected .mortgage-year-dot,.mortgage-chart-svg [data-amort-year]:hover .mortgage-year-dot,.mortgage-chart-svg [data-amort-year]:focus-visible .mortgage-year-dot{stroke-width:3;fill:#d9f4e7}
+.mortgage-explorer-legend{display:flex;gap:8px 15px;flex-wrap:wrap;margin:12px 0}
+.mortgage-explorer-legend span{font-size:.74rem;line-height:1.4;display:inline-flex;gap:7px;align-items:center;color:var(--ink)}
+.mortgage-explorer-legend i{width:20px;height:4px;border-radius:2px;display:inline-block}
+.mortgage-explorer-detail{padding:10px 12px;font-size:.78rem;line-height:1.65;margin:8px 0;background:#eaf5ee;border-radius:10px;color:var(--ink)}
+.mortgage-explorer-warning{color:#ac4750;font-size:.78rem;line-height:1.5;font-weight:650;margin:7px 0}
+.mortgage-explorer-warning:empty{display:none}
+.mortgage-explorer-table-scroll{max-height:510px;max-width:100%;overflow:auto;border:1px solid var(--ux-line,#d7e5df);border-radius:12px;margin:12px 0}
+.mortgage-explorer-table{min-width:1600px;width:100%;border-collapse:collapse}
+.mortgage-explorer-table th,.mortgage-explorer-table td{border-bottom:1px solid var(--ux-line,#d7e5df);font-size:.73rem;padding:9px 11px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.mortgage-explorer-table th:first-child,.mortgage-explorer-table td:first-child{text-align:left;position:sticky;left:0;background:var(--ux-surface,#fff)}
+.mortgage-explorer-table thead{background:#e9f3ec}
+.mortgage-explorer-table tbody tr{cursor:pointer}
+.mortgage-explorer-table tbody tr[aria-selected="true"]{background:#e4f4e8}
+.mortgage-explorer-table td.negative{color:#af4250;font-weight:750}
+.mortgage-explorer-note{font-size:.73rem;line-height:1.65;color:var(--muted);margin:12px 0 0}
+#amortChartPane[hidden],#amortTablePane[hidden]{display:none!important}
+body[data-theme="dark"] .mortgage-switch{background:#29403e}
+body[data-theme="dark"] .mortgage-switch button{color:#d1e8de}
+body[data-theme="dark"] .mortgage-switch button[aria-pressed="true"]{background:#176b5e;color:#fff}
+body[data-theme="dark"] .mortgage-explorer-controls select,body[data-theme="dark"] .mortgage-explorer-controls input{background:#213b3e}
+body[data-theme="dark"] .mortgage-explorer-kpis>div,body[data-theme="dark"] .mortgage-explorer-graph,body[data-theme="dark"] .mortgage-explorer-detail{background:#213a3b}
+body[data-theme="dark"] .mortgage-explorer-table thead,body[data-theme="dark"] .mortgage-explorer-table tbody tr[aria-selected="true"]{background:#25423d}
+body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mortgage-explorer-table td.negative{color:#f2a5b1}
+@media(max-width:950px){.mortgage-explorer-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.mortgage-explorer-controls{grid-template-columns:1fr}.mortgage-explorer-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.mortgage-switch{width:100%}.mortgage-switch button{flex:1;padding:8px 6px}.maincol svg.mortgage-chart-svg{min-width:790px!important}}
+@media print{.mortgage-explorer-controls,.mortgage-explorer-switches,#amortChartPane{display:none!important}#amortTablePane{display:block!important}.mortgage-explorer-table-scroll{max-height:none}}
+
 </style>
 </head>
 <body><main>
@@ -1147,11 +1194,44 @@ body[data-theme="dark"] .rb-alert,body[data-theme="dark"] .rb-negative{color:#f3
   <p class="chart-hint">Red = estimated funding required. Green = positive after-tax rental cash. This is not a promise of receiving tax relief every month; income tax is generally settled separately.</p>
  </div>
  <div class="plot-card" id="amortPanel">
-  <h3>C. Mortgage amortization · interest vs principal</h3>
-  <div class="analytics-controls"><label for="amortTarget">Loan to display</label><select id="amortTarget"><option value="home">Primary or existing home</option></select></div>
-  <div class="chart-scroll"><svg id="amortChart" class="plot-chart" viewBox="0 0 820 330" role="img" aria-label="Annual mortgage interest and principal repayments with remaining loan debt"></svg></div>
+  <h3>C. Mortgage explorer · interest, principal & equity</h3>
+  <p class="note">Inspect your existing loan assumptions, then see how an <strong>additional</strong> annual special repayment changes debt, equity and interest. The what-if does not edit your original mortgage.</p>
+  <div class="mortgage-explorer-controls">
+   <label for="amortTarget">Mortgage<select id="amortTarget"><option value="home">Primary / existing home</option></select></label>
+   <label for="mortgageExtraWhatIf">Additional repayment per year (€)<input id="mortgageExtraWhatIf" type="number" min="0" max="100000" step="250" value="1000"></label>
+   <label for="mortgageYears">Years shown<select id="mortgageYears"><option value="all">Full horizon</option><option value="5">5 years</option><option value="10">10 years</option><option value="20">20 years</option><option value="30">30 years</option></select></label>
+  </div>
+  <div class="mortgage-explorer-switches">
+   <div class="mortgage-switch" role="group" aria-label="Mortgage chart metric">
+    <button type="button" data-mortgage-mode="equity" aria-pressed="true">Debt & equity</button>
+    <button type="button" data-mortgage-mode="payments" aria-pressed="false">Interest & principal</button>
+    <button type="button" data-mortgage-mode="savings" aria-pressed="false">Interest savings</button>
+   </div>
+   <div class="mortgage-switch" role="group" aria-label="Mortgage data presentation">
+    <button type="button" data-mortgage-view="chart" aria-pressed="true">Chart</button>
+    <button type="button" data-mortgage-view="table" aria-pressed="false">Annual table</button>
+   </div>
+  </div>
+  <div id="amortKpis" class="mortgage-explorer-kpis">
+   <div><small>Baseline debt at selected year</small><strong id="amortBaseDebt">—</strong></div>
+   <div><small>Debt with additional repayments</small><strong id="amortWhatIfDebt">—</strong></div>
+   <div><small>Cumulative interest avoided</small><strong id="amortInterestSaved">—</strong></div>
+   <div><small>Estimated mortgage payoff</small><strong id="amortPayoff">—</strong></div>
+  </div>
+  <p id="amortWarning" class="mortgage-explorer-warning" role="status" aria-live="polite"></p>
+  <div id="amortChartPane" class="mortgage-explorer-graph chart-scroll" role="region" aria-label="Mortgage interest, repayment and property equity chart" tabindex="0">
+   <svg id="amortChart" class="plot-chart mortgage-chart-svg" viewBox="0 0 920 380" role="group" aria-label="Interactive annual mortgage debt and property equity comparison"></svg>
+  </div>
+  <div id="amortTablePane" class="mortgage-explorer-table-scroll" role="region" tabindex="0" aria-label="Complete annual mortgage schedule and alternative repayment table" hidden>
+   <table class="mortgage-explorer-table">
+    <thead><tr><th scope="col">Year</th><th scope="col">Property value</th><th scope="col">Opening debt</th><th scope="col">Accrued interest</th><th scope="col">Scheduled paid</th><th scope="col">Regular extra paid</th><th scope="col">Unpaid interest</th><th scope="col">Net debt reduction</th><th scope="col">Closing debt</th><th scope="col">Home equity</th><th scope="col">What-if debt</th><th scope="col">What-if equity</th><th scope="col">Extra what-if paid</th><th scope="col">Cumulative interest saved</th></tr></thead>
+    <tbody id="amortRows"></tbody>
+   </table>
+  </div>
+  <div class="mortgage-explorer-legend" id="amortLegend"></div>
+  <p id="amortDetail" class="mortgage-explorer-detail" role="status" aria-live="polite">Select a year for an exact payment breakdown.</p>
   <div id="amortStats" class="plot-stat-row"></div>
-  <p class="chart-hint">Own-home refinancing uses your selected future rate with the same monthly payment. Rental-loan interest remains constant in the current rental projection; actual bank financing may differ.</p>
+  <p class="mortgage-explorer-note">Net debt reduction equals scheduled payments plus regular extra repayments minus accrued interest. If repayments are less than interest, unpaid interest is capitalized and the debt can grow. Equity is the assumed property value minus outstanding mortgage—not disposable cash. <strong>Interest avoided is not net investment profit:</strong> special repayments consume cash that could otherwise be saved or invested; lender limits, early-repayment fees (Vorfälligkeitsentschädigung), taxes and refinancing costs are excluded. Rental tax calculations elsewhere are <strong>not</strong> recomputed for the what-if. Owner refinancing uses the entered post-fix rate; the rental loan keeps its entered fixed illustration rate.</p>
  </div>
  <div class="plot-card" id="riskPanel">
   <h3>D. ETF market-sequence simulation</h3>
@@ -1450,11 +1530,11 @@ document.querySelectorAll('[data-overview-jump]').forEach(button=>button.addEven
 <script>
 (()=>{
 'use strict';
-const defaults={strategyEtf:'on',strategyRental:'on',homeMode:'buy',existingType:'mortgage',existingValue:250000,existingOwner:300,existingLoan:110000,existingRate:3.5,existingEmi:700,existingFix:8,existingRefi:4.5,existingExtra:0,existingRent:1500,profileMode:'married',price:200000,down:0,purchase:10,rate:4.5,emi:1100,fixYears:10,refiRate:4.5,extra:0,owner:250,husband:75000,wife:75000,monthlyH:0,monthlyW:0,ret:7,ter:.14,allow:2000,drawMode:'none',custom:500,years:25,houseGrowth:2,inflation:2,crash:'0',incomeMode:'estimate',grossH:100000,grossW:70000,healthH:'pkv',healthW:'pkv',pkvH:450,pkvW:450,actualH:4500,actualW:3200,jointTax:'joint',childless:'yes',childlessW:'yes',careRegion:'other',eligibleChildren:0,eligibleChildrenW:0,gkvExtra:2.9,pkvDeductible:85,churchTax:'no',otherNet:0,utilities:250,groceries:650,transport:250,otherInsurance:100,lifestyle:400,misc:300,otherDebt:0,cashSaving:0,cashReserve:10000,availableCapital:180000,netGrowth:2,expenseGrowth:2,heatRentStep:100,heatRateStep:0.5,saleCosts:3,mcVol:18,mcTrials:500,rankingMetric:"cash",taxClassH:'IV',taxClassW:'IV',withholdingH:0,withholdingW:0,soliH:0,soliW:0,churchH:0,churchW:0,withholdingMonths:12,decisionRent:1500,decisionRentGrowth:2};
+const defaults={strategyEtf:'on',strategyRental:'on',homeMode:'buy',existingType:'mortgage',existingValue:250000,existingOwner:300,existingLoan:110000,existingRate:3.5,existingEmi:700,existingFix:8,existingRefi:4.5,existingExtra:0,existingRent:1500,profileMode:'married',price:200000,down:0,purchase:10,rate:4.5,emi:1100,fixYears:10,refiRate:4.5,extra:0,owner:250,husband:75000,wife:75000,monthlyH:0,monthlyW:0,ret:7,ter:.14,allow:2000,drawMode:'none',custom:500,years:25,houseGrowth:2,inflation:2,crash:'0',incomeMode:'estimate',grossH:100000,grossW:70000,healthH:'pkv',healthW:'pkv',pkvH:450,pkvW:450,actualH:4500,actualW:3200,jointTax:'joint',childless:'yes',childlessW:'yes',careRegion:'other',eligibleChildren:0,eligibleChildrenW:0,gkvExtra:2.9,pkvDeductible:85,churchTax:'no',otherNet:0,utilities:250,groceries:650,transport:250,otherInsurance:100,lifestyle:400,misc:300,otherDebt:0,cashSaving:0,cashReserve:10000,availableCapital:180000,netGrowth:2,expenseGrowth:2,heatRentStep:100,heatRateStep:0.5,saleCosts:3,mcVol:18,mcTrials:500,rankingMetric:"cash",taxClassH:'IV',taxClassW:'IV',withholdingH:0,withholdingW:0,soliH:0,soliW:0,churchH:0,churchW:0,withholdingMonths:12,decisionRent:1500,decisionRentGrowth:2,mortgageExtraWhatIf:1000};
 const $=id=>document.getElementById(id);const ids=Object.keys(defaults);
 const n=id=>Number($(id).value)||0;const money=x=>Number.isFinite(x)?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(x):'—';
 const pct=x=>Number.isFinite(x)?(100*x).toFixed(1)+'%':'—';const taxRate=.26375, taxableShare=.70;
-function inputs(){const x={};for(const id of ids){x[id]=(['strategyEtf','strategyRental','homeMode','existingType','profileMode','drawMode','crash','incomeMode','healthH','healthW','jointTax','childless','childlessW','careRegion','churchTax','rankingMetric','taxClassH','taxClassW'].includes(id))?$(id).value:n(id);}for(const id of ['existingValue','existingOwner','existingLoan','existingRate','existingEmi','existingFix','existingRefi','existingExtra','existingRent','price','down','purchase','rate','emi','fixYears','refiRate','extra','owner','husband','wife','monthlyH','monthlyW','ter','allow','custom','years','inflation','grossH','grossW','pkvH','pkvW','actualH','actualW','gkvExtra','pkvDeductible','eligibleChildren','eligibleChildrenW','otherNet','utilities','groceries','transport','otherInsurance','lifestyle','misc','otherDebt','cashSaving','cashReserve','availableCapital','heatRentStep','heatRateStep','saleCosts','mcVol','mcTrials','withholdingH','withholdingW','soliH','soliW','churchH','churchW','withholdingMonths'])x[id]=Math.max(0,x[id]);x.withholdingMonths=Math.min(12,Math.max(1,Math.round(x.withholdingMonths)));x.heatRentStep=Math.max(25,Math.min(2000,x.heatRentStep));x.heatRateStep=Math.max(.25,Math.min(2,x.heatRateStep));x.decisionRent=Math.min(100000,Math.max(0,x.decisionRent));x.decisionRentGrowth=Math.max(-10,Math.min(20,x.decisionRentGrowth));x.mcVol=Math.min(60,x.mcVol);x.mcTrials=Math.min(1000,Math.max(250,Math.floor(x.mcTrials)));x.saleCosts=Math.min(15,x.saleCosts);x.down=Math.min(x.price,x.down);x.purchase=Math.min(30,x.purchase);x.allow=Math.min(x.profileMode==='single'?1000:2000,x.allow);x.fixYears=Math.max(1,Math.floor(x.fixYears));x.years=Math.max(1,Math.min(40,Math.floor(x.years)));x.ret=Math.max(-90,Math.min(40,x.ret));x.ter=Math.min(5,x.ter);x.houseGrowth=Math.max(-10,Math.min(15,x.houseGrowth));x.netGrowth=Math.min(20,Math.max(-10,x.netGrowth));x.expenseGrowth=Math.min(20,Math.max(0,x.expenseGrowth));x.gkvExtra=Math.min(10,x.gkvExtra);x.pkvDeductible=Math.min(100,x.pkvDeductible);x.husband=Math.min(x.husband,1e8);x.wife=x.profileMode==='single'?0:Math.min(x.wife,1e8);if(x.profileMode==='single'){x.grossW=0;x.pkvW=0;x.actualW=0;x.monthlyW=0;x.jointTax='separate';}if(x.strategyEtf==='off'){x.husband=0;x.wife=0;x.monthlyH=0;x.monthlyW=0;x.drawMode='none';}x.start=x.husband+x.wife;x.loan=x.price-x.down;
+function inputs(){const x={};for(const id of ids){x[id]=(['strategyEtf','strategyRental','homeMode','existingType','profileMode','drawMode','crash','incomeMode','healthH','healthW','jointTax','childless','childlessW','careRegion','churchTax','rankingMetric','taxClassH','taxClassW'].includes(id))?$(id).value:n(id);}for(const id of ['existingValue','existingOwner','existingLoan','existingRate','existingEmi','existingFix','existingRefi','existingExtra','existingRent','price','down','purchase','rate','emi','fixYears','refiRate','extra','owner','husband','wife','monthlyH','monthlyW','ter','allow','custom','years','inflation','grossH','grossW','pkvH','pkvW','actualH','actualW','gkvExtra','pkvDeductible','eligibleChildren','eligibleChildrenW','otherNet','utilities','groceries','transport','otherInsurance','lifestyle','misc','otherDebt','cashSaving','cashReserve','availableCapital','heatRentStep','heatRateStep','saleCosts','mcVol','mcTrials','withholdingH','withholdingW','soliH','soliW','churchH','churchW','withholdingMonths'])x[id]=Math.max(0,x[id]);x.withholdingMonths=Math.min(12,Math.max(1,Math.round(x.withholdingMonths)));x.heatRentStep=Math.max(25,Math.min(2000,x.heatRentStep));x.heatRateStep=Math.max(.25,Math.min(2,x.heatRateStep));x.decisionRent=Math.min(100000,Math.max(0,x.decisionRent));x.decisionRentGrowth=Math.max(-10,Math.min(20,x.decisionRentGrowth));x.mortgageExtraWhatIf=Math.min(100000,Math.max(0,x.mortgageExtraWhatIf));x.mcVol=Math.min(60,x.mcVol);x.mcTrials=Math.min(1000,Math.max(250,Math.floor(x.mcTrials)));x.saleCosts=Math.min(15,x.saleCosts);x.down=Math.min(x.price,x.down);x.purchase=Math.min(30,x.purchase);x.allow=Math.min(x.profileMode==='single'?1000:2000,x.allow);x.fixYears=Math.max(1,Math.floor(x.fixYears));x.years=Math.max(1,Math.min(40,Math.floor(x.years)));x.ret=Math.max(-90,Math.min(40,x.ret));x.ter=Math.min(5,x.ter);x.houseGrowth=Math.max(-10,Math.min(15,x.houseGrowth));x.netGrowth=Math.min(20,Math.max(-10,x.netGrowth));x.expenseGrowth=Math.min(20,Math.max(0,x.expenseGrowth));x.gkvExtra=Math.min(10,x.gkvExtra);x.pkvDeductible=Math.min(100,x.pkvDeductible);x.husband=Math.min(x.husband,1e8);x.wife=x.profileMode==='single'?0:Math.min(x.wife,1e8);if(x.profileMode==='single'){x.grossW=0;x.pkvW=0;x.actualW=0;x.monthlyW=0;x.jointTax='separate';}if(x.strategyEtf==='off'){x.husband=0;x.wife=0;x.monthlyH=0;x.monthlyW=0;x.drawMode='none';}x.start=x.husband+x.wife;x.loan=x.price-x.down;
  if(x.homeMode==='existing'){
   x.homeNewPurchase=false;
   if(x.existingType==='rent'){
