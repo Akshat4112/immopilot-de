@@ -1085,3 +1085,159 @@ test('UX-029 mobile defaults to a semantic annual mortgage table', async ({ page
   await expect(planner.locator('#amortChart [data-amort-year="10"]')).toHaveCount(1)
   await page.screenshot({ path: test.info().outputPath('explorer-ux029-mobile.png') })
 })
+
+test('UX-030 annual rental waterfall reconciles every step to the canonical after-tax ledger', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#rentalWaterfallPanel')
+  await expect(panel).toBeVisible()
+  await expect(panel).toHaveAttribute('data-waterfall-balanced', 'true')
+  await expect(panel).toHaveAttribute('data-waterfall-status', 'available')
+  const income = Number(await panel.getAttribute('data-waterfall-collected'))
+  const before = Number(await panel.getAttribute('data-waterfall-before'))
+  const tax = Number(await panel.getAttribute('data-waterfall-tax'))
+  const after = Number(await panel.getAttribute('data-waterfall-after'))
+  expect(income).toBeGreaterThan(0)
+  expect(before - tax).toBeCloseTo(after, 1)
+  const entries = planner.locator('#rentalWaterfallRows tr')
+  let total = 0
+  for (let index = 0; index < (await entries.count()) - 1; index++) {
+    total += Number(await entries.nth(index).getAttribute('data-waterfall-value'))
+  }
+  expect(total).toBeCloseTo(after, 1)
+  expect(Number(await planner.locator('[data-waterfall-row="result"]').getAttribute('data-waterfall-running'))).toBeCloseTo(
+    after, 1,
+  )
+  await expect(planner.locator('[data-waterfall-row="interest"]')).toHaveCount(1)
+  await expect(planner.locator('[data-waterfall-row="principal"]')).toHaveCount(1)
+  await expect(planner.locator('[data-waterfall-row="reserve"]')).toHaveCount(1)
+})
+
+test('UX-030 makes tenancy advances, vacancy and recoverable costs distinct cash movements', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const val = async (key: string) =>
+    Number(await planner.locator('[data-waterfall-row="' + key + '"]').getAttribute('data-waterfall-value'))
+  expect(await val('cold')).toBeGreaterThan(0)
+  expect(await val('advances')).toBeGreaterThan(0)
+  expect(await val('vacancy')).toBeLessThan(0)
+  expect(await val('recoverable')).toBeLessThan(0)
+  expect(await val('nonrecoverable')).toBeLessThan(0)
+  expect(await val('reserve')).toBeLessThan(0)
+  const total = (await val('cold')) + (await val('advances')) + (await val('vacancy'))
+  expect(total).toBeCloseTo(
+    Number(await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-collected')),
+    1,
+  )
+  await expect(planner.locator('#rentalWaterfallWarning')).not.toContainText('nonzero reconciliation')
+})
+
+test('UX-030 monthly and annual views and future-year selection do not change core rental inputs', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const baseline = await planner.locator('#rentalWaterfallCollected').textContent()
+  const currentRent = await planner.locator('#r1_kalt').inputValue()
+  await planner.locator('[data-waterfall-period="year"]').click()
+  await expect(planner.locator('[data-waterfall-period="year"]')).toHaveAttribute('aria-pressed', 'true')
+  const annual = await planner.locator('#rentalWaterfallCollected').textContent()
+  expect(annual).not.toBe(baseline)
+  await planner.locator('#rentalWaterfallYear').selectOption('5')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-status', 'available')
+  await expect(planner.locator('#rentalWaterfallYear')).toHaveValue('5')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-balanced', 'true')
+  await planner.locator('[data-waterfall-period="month"]').click()
+  await expect(planner.locator('[data-waterfall-period="month"]')).toHaveAttribute('aria-pressed', 'true')
+  await expect(planner.locator('#r1_kalt')).toHaveValue(currentRent)
+  await expect(planner.locator('#years')).toHaveValue('25')
+})
+
+test('UX-030 a single property has standalone tax, which is not a portfolio share', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#rentalWaterfallScope').selectOption('1')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-source', 'standalone')
+  await expect(planner.locator('#rentalWaterfallWarning')).toContainText('NOT an additive portion')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-balanced', 'true')
+  const initial = Number(await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-collected'))
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  const section = planner.locator('#rentalInputsSection')
+  const toggle = section.locator('.section-toggle')
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+    await toggle.click()
+  }
+  await planner.locator('#addRental').click()
+  await planner.locator('#rentalWaterfallScope').selectOption('all')
+  const combined = Number(await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-collected'))
+  expect(combined).toBeGreaterThan(initial)
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-balanced', 'true')
+  await planner.locator('#rentalWaterfallScope').selectOption('1')
+  expect(Number(await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-collected'))).toBeCloseTo(
+    initial, 1,
+  )
+  await planner.locator('#rentalWaterfallScope').selectOption('2')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-source', 'standalone')
+  await planner.locator('#rentalInputs [data-remove="2"]').click()
+  await expect(planner.locator('#rentalWaterfallScope')).toHaveValue('all')
+})
+
+test('UX-030 rental cash waterfall is economic even when household tax timing is cash', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const taxBefore = await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-tax')
+  const cashBefore = await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-after')
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  const rentalSection = planner.locator('#rentalInputsSection')
+  const toggle = rentalSection.locator('.section-toggle')
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+    await toggle.click()
+  }
+  await expect(planner.locator('#rentalTaxTiming')).toBeVisible()
+  await planner.locator('#rentalTaxTiming').selectOption('accrual')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-tax', taxBefore ?? '')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-after', cashBefore ?? '')
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-balanced', 'true')
+})
+
+test('UX-030 ETF-only or no-rental strategy shows a helpful empty state', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-status', 'empty')
+  await expect(planner.locator('#rentalBridgeChart')).toContainText('Add a rental apartment')
+  await expect(planner.locator('#rentalWaterfallRows')).toContainText('No rental apartment')
+  await expect(planner.locator('#rentalWaterfallAfter')).toHaveText('—')
+  await planner.getByRole('button', { name: 'All three', exact: true }).click()
+  await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-status', 'available')
+})
+
+test('UX-030 table and interactive waterfall bars support keyboard selection and mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#rentalWaterfallTablePane')).toBeVisible()
+  await expect(planner.locator('#rentalWaterfallChartPane')).toBeHidden()
+  const interest = planner.locator('[data-waterfall-row="interest"]')
+  await interest.focus()
+  await expect(planner.locator('#rentalWaterfallDetail')).toContainText('Interest covered')
+  await planner.locator('[data-waterfall-view="chart"]').click()
+  await expect(planner.locator('#rentalWaterfallChartPane')).toBeVisible()
+  const point = planner.locator('#rentalBridgeChart [data-waterfall-step="principal"]')
+  await point.focus()
+  await point.press('Enter')
+  await expect(planner.locator('#rentalWaterfallDetail')).toContainText('Mortgage principal paid')
+  await expect(point).toHaveClass(/selected/)
+  await page.screenshot({ path: test.info().outputPath('ux030-rental-waterfall-mobile.png') })
+})
