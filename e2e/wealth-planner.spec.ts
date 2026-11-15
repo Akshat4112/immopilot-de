@@ -406,7 +406,7 @@ test('UX-024 comparison remains limited to three and warns on mismatched horizon
   await planner.locator('#saveScenario').click()
   await expect(planner.locator('#scenarioCards .scenario-tile')).toHaveCount(4)
   await expect(planner.locator('#scenarioCards [data-compare]:checked')).toHaveCount(3)
-  await planner.locator('#scenarioCards [data-compare]:not(:checked)').first().check()
+  await planner.locator('#scenarioCards [data-compare]:not(:checked)').first().click()
   await expect(planner.locator('#scenarioCards [data-compare]:checked')).toHaveCount(3)
   await expect(planner.locator('#scenarioNotice')).toContainText('Compare up to three')
   await expect(planner.locator('#scenarioCompare table thead th')).toHaveCount(4)
