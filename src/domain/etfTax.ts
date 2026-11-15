@@ -64,10 +64,15 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
     ['Opening price', input.openingPriceEuro],
     ['Closing price', input.closingPriceEuro],
     ['Distributions', input.distributionsEuro],
-  ] as const) amount(label, val)
-  if (input.acquisitionMonth !== undefined &&
+  ] as const) {
+    amount(label, val)
+  }
+  if (
+    input.acquisitionMonth !== undefined &&
     (!Number.isInteger(input.acquisitionMonth) ||
-      input.acquisitionMonth < 1 || input.acquisitionMonth > 12)) {
+      input.acquisitionMonth < 1 ||
+      input.acquisitionMonth > 12)
+  ) {
     throw new Error('Acquisition month must be 1–12')
   }
   const grossBasis = input.units * input.openingPriceEuro * 0.7 * input.basisInterestRate
@@ -78,7 +83,8 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
   const capped = Math.min(grossBasis, growthPlusDistributions)
   // §18(1): advance is the capped basic yield not already covered by actual distributions.
   const afterDistributions = Math.max(0, capped - input.distributionsEuro)
-  const fraction = input.acquisitionMonth === undefined ? 1 : (13 - input.acquisitionMonth) / 12
+  const fraction =
+    input.acquisitionMonth === undefined ? 1 : (13 - input.acquisitionMonth) / 12
   const advanceAmountEuro = cents(afterDistributions * fraction)
   return {
     basicYieldEuro: cents(grossBasis),
@@ -128,7 +134,9 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     ['Sold units', input.soldUnits],
     ['Sale price', input.salePricePerUnitEuro],
     ['Sale costs', input.saleCostsEuro],
-  ] as const) amount(label, val)
+  ] as const) {
+    amount(label, val)
+  }
   const share = privateFundTaxableShare(input.category)
   const seen = new Set<string>()
   for (const lot of input.lotsOldestFirst) {
@@ -165,10 +173,10 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   }
   const totalProceedsEuro = cents(input.soldUnits * input.salePricePerUnitEuro)
   const totalCostBasisEuro = cents(lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0))
-  const totalAdvanceOffsetEuro = cents(lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0))
-  const gain = cents(
-    totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro,
+  const totalAdvanceOffsetEuro = cents(
+    lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0),
   )
+  const gain = cents(totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro)
   return {
     lines,
     totalProceedsEuro,
