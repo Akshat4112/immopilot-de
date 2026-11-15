@@ -19,16 +19,22 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     expect(result.deemedReceiptTaxYear).toBe(2027)
   })
   it('caps advance by actual annual market gain plus distributions', () => {
-    expect(calculateAdvanceTax({ ...base, closingPriceEuro: 101 }).advanceAmountEuro).toBe(100)
+    expect(calculateAdvanceTax({ ...base, closingPriceEuro: 101 }).advanceAmountEuro).toBe(
+      100,
+    )
     expect(calculateAdvanceTax({ ...base, closingPriceEuro: 90 }).advanceAmountEuro).toBe(0)
   })
   it('subtracts distributions before tax and never creates negative advances', () => {
-    expect(calculateAdvanceTax({ ...base, distributionsEuro: 100 }).advanceAmountEuro).toBe(124)
+    expect(calculateAdvanceTax({ ...base, distributionsEuro: 100 }).advanceAmountEuro).toBe(
+      124,
+    )
     expect(calculateAdvanceTax({ ...base, distributionsEuro: 500 }).advanceAmountEuro).toBe(0)
   })
   it('prorates by full preceding months in acquisition year', () => {
     expect(calculateAdvanceTax({ ...base, acquisitionMonth: 7 }).advanceAmountEuro).toBe(112)
-    expect(calculateAdvanceTax({ ...base, acquisitionMonth: 12 }).advanceAmountEuro).toBe(18.67)
+    expect(calculateAdvanceTax({ ...base, acquisitionMonth: 12 }).advanceAmountEuro).toBe(
+      18.67,
+    )
   })
   it('uses applicable partial exemption for equity, mixed and other funds', () => {
     expect(privateFundTaxableShare('equity')).toBe(0.7)
@@ -86,7 +92,10 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(() => calculateFifoSale({ ...base, soldUnits: 21 })).toThrow()
     expect(() => calculateFifoSale({ ...base, saleCostsEuro: -1 })).toThrow()
     expect(() =>
-      calculateFifoSale({ ...base, lotsOldestFirst: [base.lotsOldestFirst[0], base.lotsOldestFirst[0]] }),
+      calculateFifoSale({
+        ...base,
+        lotsOldestFirst: [base.lotsOldestFirst[0], base.lotsOldestFirst[0]],
+      }),
     ).toThrow()
   })
 })
