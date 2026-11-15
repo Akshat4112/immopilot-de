@@ -176,7 +176,9 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   const totalAdvanceOffsetEuro = cents(
     lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0),
   )
-  const gain = cents(totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro)
+  const gain = cents(
+    totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro,
+  )
   return {
     lines,
     totalProceedsEuro,
