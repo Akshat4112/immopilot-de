@@ -31,3 +31,7 @@ src/domain/rentalAfa.test.ts
 
 # Standalone rental expense module is reviewed with its regression tests.
 src/domain/rentalExpenses.ts
+
+# RENT-003 standalone statutory classification and reviewed reference vectors.
+src/domain/renovation15.ts
+src/domain/renovation15.test.ts
