@@ -55,6 +55,12 @@ test('reconciles property AfA with 2026 rental tax and cash assumptions', async 
   const planner = page.frameLocator(frameSelector)
   await planner.getByRole('tab', { name: /Properties/i }).click()
 
+  const rentalInputs = planner.locator('#rentalInputsSection')
+  const sectionToggle = rentalInputs.locator('.section-toggle')
+  if ((await sectionToggle.getAttribute('aria-expanded')) === 'false') {
+    await sectionToggle.click()
+  }
+  await rentalInputs.locator('details summary').first().click()
   const propertyDate = planner.locator('#r1_eligibleFromDate')
   await propertyDate.fill('2026-07-01')
   await expect(propertyDate).toHaveValue('2026-07-01')
