@@ -60,6 +60,7 @@ test('reconciles property AfA with 2026 rental tax and cash assumptions', async 
   await expect(propertyDate).toHaveValue('2026-07-01')
   await expect(planner.locator('#rentalAfaAudit')).toContainText('Qualifying months')
   await expect(planner.locator('#rentalAfaAudit')).toContainText('2026 AfA')
+  await expect(planner.locator('#rentalAfaAudit tbody tr').first().locator('td').nth(3)).toHaveText('6')
   await expect(planner.locator('#rentalAfaAudit')).toContainText('Principal (not deductible)')
 
   // Changing capital improvement assumptions must not be counted as immediately
