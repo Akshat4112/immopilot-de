@@ -47,7 +47,7 @@ export function Payroll2026Panel({ plannerFrame }: { plannerFrame: RefObject<HTM
   const syncFromPlanner = () => {
     const doc = plannerFrame.current?.contentDocument
     const gross = doc?.getElementById('grossH') as HTMLInputElement | null
-    const insurance = doc?.getElementById('insH') as HTMLSelectElement | null
+    const insurance = doc?.getElementById('healthH') as HTMLSelectElement | null
     const premium = doc?.getElementById('pkvH') as HTMLInputElement | null
     if (!gross) {
       setError('Open Household in the main planner first, then try again.')
@@ -61,7 +61,7 @@ export function Payroll2026Panel({ plannerFrame }: { plannerFrame: RefObject<HTM
     setInput((old) => ({
       ...old,
       monthlyGrossEuro: Math.round((grossAnnual / 12) * 100) / 100,
-      healthInsurance: insurance?.value === 'gkv' ? 'gkv' : old.healthInsurance,
+      healthInsurance: insurance?.value === 'gkv' ? 'gkv' : 'pkv',
       pkvBasicPremiumMonthlyEuro: premium ? Number(premium.value) : old.pkvBasicPremiumMonthlyEuro,
     }))
     setError('')
