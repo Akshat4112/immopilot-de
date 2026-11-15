@@ -51,8 +51,18 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
 describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
   const base = {
     lotsOldestFirst: [
-      { lotId: '2024', units: 10, purchasePricePerUnitEuro: 100, previousAdvancePerUnitEuro: 4 },
-      { lotId: '2025', units: 10, purchasePricePerUnitEuro: 120, previousAdvancePerUnitEuro: 2 },
+      {
+        lotId: '2024',
+        units: 10,
+        purchasePricePerUnitEuro: 100,
+        previousAdvancePerUnitEuro: 4,
+      },
+      {
+        lotId: '2025',
+        units: 10,
+        purchasePricePerUnitEuro: 120,
+        previousAdvancePerUnitEuro: 2,
+      },
     ],
     soldUnits: 15,
     salePricePerUnitEuro: 150,
@@ -71,7 +81,12 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(r.gainBeforePartialExemptionEuro).toBe(600)
     expect(r.taxableGainEuro).toBe(420)
     expect(r.remainingLots).toEqual([
-      { lotId: '2025', units: 5, purchasePricePerUnitEuro: 120, previousAdvancePerUnitEuro: 2 },
+      {
+        lotId: '2025',
+        units: 5,
+        purchasePricePerUnitEuro: 120,
+        previousAdvancePerUnitEuro: 2,
+      },
     ])
   })
   it('uses actual costs and only reduces gain once for previously assessed advances', () => {
