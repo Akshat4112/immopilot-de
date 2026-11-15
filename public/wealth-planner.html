@@ -1451,8 +1451,29 @@ function householdTax(x){const h=calculatePerson(x,'h'),w=x.profileMode==='singl
 const rentSeed={name:'Rental 1 · Möhringen example',owner:'joint',price:199000,down:20000,buyCosts:10,interest:4.5,repay:2,kalt:800,tenantNk:180,recoverCost:180,nonrecover:81,reserve:60,repairs:40,vacancy:3,buildingShare:80,buildYear:1992,eligibleFromDate:'2026-01-01',rentalUsePercent:100,acquisitionDate:'',workPerformedDate:'',renovationVat:19,renovationCategory:'modernization',withinThreeYears:'yes',renovation:0,renoType:'none',rentGrowth:2,costGrowth:2,appreciation:2};
 let rentalSeq=1;
 let rentalItems=[{...rentSeed,_id:1}];
+let lifeEvents=[];
+const lifeTypes=['salary','etf','refinance','expense','milestone'];
+function validLifeEvent(v){
+ if(!v||typeof v!=='object'||Array.isArray(v))return false;
+ if(typeof v.id!=='string'||v.id.length>90||!/^[a-zA-Z0-9_-]+$/.test(v.id))return false;
+ if(!lifeTypes.includes(v.type)||!Number.isInteger(v.year)||v.year<1||v.year>40)return false;
+ if(typeof v.name!=='string'||v.name.length>60||typeof v.amount!=='number'||!Number.isFinite(v.amount))return false;
+ const [min,max]=v.type==='salary'?[-20000,20000]:v.type==='etf'?[-10000,10000]:
+  v.type==='refinance'?[0,25]:v.type==='expense'?[0,10000000]:[0,0];
+ return v.amount>=min&&v.amount<=max;
+}
+function normalizeLifeEvents(values){return Array.isArray(values)?values.filter(validLifeEvent).slice(0,15):[];}
+function lifeEventConfig(year,events,x){
+ const due=events.filter(e=>e.year<=year).sort((a,b)=>a.year-b.year);
+ const salary=due.filter(e=>e.type==='salary').reduce((v,e)=>v+e.amount,0);
+ const etf=x.strategyEtf==='off'?0:due.filter(e=>e.type==='etf').reduce((v,e)=>v+e.amount,0);
+ const refi=due.filter(e=>e.type==='refinance').at(-1);
+ const expense=due.filter(e=>e.type==='expense'&&e.year===year).reduce((v,e)=>v+e.amount,0);
+ return {salary,etf,refiRate:refi?refi.amount:null,expense};
+}
+window.ImmoPilotLifeEvents={validate:validLifeEvent,get:()=>lifeEvents.map(e=>({...e}))};
 const storageKey='home_etf_rentals_analytics_v7',previousStorageKey='home_etf_rentals_modes_v6';
-try{const saved=JSON.parse(localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey)||'null');if(saved&&saved.fields){for(const id of ids){if(Object.prototype.hasOwnProperty.call(saved.fields,id))$(id).value=saved.fields[id];}if(Array.isArray(saved.rentalItems)&&saved.rentalItems.length<=4){rentalItems=saved.rentalItems.map((r,i)=>({...rentSeed,...r,_id:Number(r._id)||i+1}));rentalSeq=Math.max(1,...rentalItems.map(r=>r._id));}if(saved.rentalTaxTiming==='accrual')$('rentalTaxTiming').value='accrual';if(saved.profileAllowances)window._loadedProfileAllowances=saved.profileAllowances;if(saved.comparisonProperty)window._loadComparisonProperty=saved.comparisonProperty;if(saved.amortTarget)window._loadAmortTarget=saved.amortTarget;}}catch(_){/* Browser may restrict local storage; calculator still works */} 
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey)||'null');if(saved&&saved.fields){for(const id of ids){if(Object.prototype.hasOwnProperty.call(saved.fields,id))$(id).value=saved.fields[id];}if(Array.isArray(saved.rentalItems)&&saved.rentalItems.length<=4){rentalItems=saved.rentalItems.map((r,i)=>({...rentSeed,...r,_id:Number(r._id)||i+1}));rentalSeq=Math.max(1,...rentalItems.map(r=>r._id));}if(saved.rentalTaxTiming==='accrual')$('rentalTaxTiming').value='accrual';if(saved.profileAllowances)window._loadedProfileAllowances=saved.profileAllowances;if(saved.comparisonProperty)window._loadComparisonProperty=saved.comparisonProperty;if(saved.amortTarget)window._loadAmortTarget=saved.amortTarget;if(saved.lifeEvents)lifeEvents=normalizeLifeEvents(saved.lifeEvents);}}catch(_){/* Browser may restrict local storage; calculator still works */} 
 function safeText(v){return String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 const rentalFields={
  name:['Property label','text',null],owner:['Tax ownership','select',[['joint','Joint · 50/50'],['h','Husband 100%'],['w','Wife 100%']]],
@@ -1716,33 +1737,35 @@ function familyMonthly(x,sim,tax,rent){const net=tax.useH+tax.useW+x.otherNet;
  const essentials=housing+x.utilities+x.groceries+x.transport+x.otherInsurance+otherDebt+x.extra/12;
  return {net,living,housing,otherDebt,invested,sold,monthlySaving:x.cashSaving,mandatory,discretionaryAllocation,free,baseFree,rentalCash,taxProvision,before,essentials};
 }
-function householdCashProjection(x,tax,sim,rent){const startNet=(tax.useH+tax.useW+x.otherNet)*12;
+function householdCashProjection(x,tax,sim,rent,events=[]){const startNet=(tax.useH+tax.useW+x.otherNet)*12;
  const living=(x.utilities+x.groceries+x.transport+x.otherInsurance+x.lifestyle+x.misc+x.otherDebt)*12;
  let balance=x.cashReserve;
  const rows=[];let priorDraw=0;
  for(const r of sim.rows.slice(1)){
-   const i=r.year-1,net=startNet*Math.pow(1+x.netGrowth/100,i);
+   const i=r.year-1,plan=lifeEventConfig(r.year,events,x),net=startNet*Math.pow(1+x.netGrowth/100,i)+plan.salary*12;
    const recurringLiving=(living+x.owner*12)*Math.pow(1+x.expenseGrowth/100,i);
    const mortgage=r.mortgagePaid+r.extraPaid;
-   const newETF=(x.monthlyH+x.monthlyW)*12;
+   const newETF=r.newETF??(x.monthlyH+x.monthlyW)*12;
    const receipts=r.withdrawn-priorDraw;priorDraw=r.withdrawn;
    const rentalYear=rent.rows[i]||{cash:0,deltaTax:0};
    const rentalCash=rentalYear.cash,rentalTax=rent.taxTiming==='accrual'?-rentalYear.deltaTax:0;
-   const change=net+receipts+rentalCash+rentalTax-recurringLiving-mortgage-newETF;
+   const change=net+receipts+rentalCash+rentalTax-recurringLiving-mortgage-newETF-plan.expense;
    balance+=change;
-   rows.push({year:r.year,net,living:recurringLiving,mortgage,newETF,receipts,rentalCash,rentalTax,change,balance});
+   rows.push({year:r.year,net,living:recurringLiving,mortgage,newETF,receipts,rentalCash,rentalTax,lifeExpense:plan.expense,change,balance});
  }
  return rows;
 }
-function simulate(x){
+function simulate(x,events=[]){
  let h=x.husband,w=x.wife,basisH=h,basisW=w,loan=x.loan,home=x.price,nominalNoSales=x.start,withdrawn=0,paidTax=0,unfunded=0,allMortgageInterest=0,totalMortgagePaid=0,totalIncomeCash=0,firstWithdraw=0,firstSalary=0,month=0,negativeAmort=false,payoffMonth=null;
  const rows=[{year:0,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn:0,tax:0}],traces=[{year:0,mortgage:loan,portfolio:h+w,noSales:nominalNoSales}];
  for(let yr=1;yr<=x.years;yr++){
-  let allowance=x.allow,allowanceH=Math.min(1000,x.allow/2),allowanceW=Math.min(1000,x.allow/2),yearPaid=0,yearExtra=0;const yearReturn=yr===1&&Number(x.crash)<0?Number(x.crash)/100:x.ret/100;
+  let allowance=x.allow,allowanceH=Math.min(1000,x.allow/2),allowanceW=Math.min(1000,x.allow/2),yearPaid=0,yearExtra=0;
+  const plan=lifeEventConfig(yr,events,x),monthlyH=Math.max(0,x.monthlyH+plan.etf);
+  const yearReturn=yr===1&&Number(x.crash)<0?Number(x.crash)/100:x.ret/100;
   const growth=Math.pow(Math.max(.001,(1+yearReturn)*(1-x.ter/100)),1/12)-1;
   for(let mm=1;mm<=12;mm++){
    month++;
-   const currentRate=(month<=x.fixYears*12?x.rate:x.refiRate)/100/12;
+   const currentRate=(plan.refiRate===null?(month<=x.fixYears*12?x.rate:x.refiRate):plan.refiRate)/100/12;
    const interest=loan*currentRate;
    const pay=loan>0?Math.min(x.emi,loan+interest):0;
    if(loan>0&&pay<=interest+0.000001)negativeAmort=true;
@@ -1750,9 +1773,9 @@ function simulate(x){
    if(month%12===0&&loan>0){const extraPay=Math.min(x.extra,loan);yearExtra+=extraPay;loan=Math.max(0,loan-extraPay);}
    if(loan<=0.00001&&payoffMonth===null)payoffMonth=month;
    allMortgageInterest+=interest;totalMortgagePaid+=pay;yearPaid+=pay;
-   h=Math.max(0,h*(1+growth)+x.monthlyH);w=Math.max(0,w*(1+growth)+x.monthlyW);
-   nominalNoSales=Math.max(0,nominalNoSales*(1+growth)+x.monthlyH+x.monthlyW);
-   basisH+=x.monthlyH;basisW+=x.monthlyW;
+   h=Math.max(0,h*(1+growth)+monthlyH);w=Math.max(0,w*(1+growth)+x.monthlyW);
+   nominalNoSales=Math.max(0,nominalNoSales*(1+growth)+monthlyH+x.monthlyW);
+   basisH+=monthlyH;basisW+=x.monthlyW;
    const houseCost=pay+x.owner;
    let target=0;if(x.drawMode==='interest')target=interest;else if(x.drawMode==='full')target=pay+(x.housingType==='tenant'?x.owner:0);else if(x.drawMode==='custom')target=x.custom;
    let actualNet=0;const market=h+w;
@@ -1772,7 +1795,7 @@ function simulate(x){
    if(month===1){firstWithdraw=actualNet;firstSalary=incomeCash;}
   }
   home*=1+x.houseGrowth/100;
-  const row={year:yr,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn,tax:paidTax,mortgagePaid:yearPaid,extraPaid:yearExtra};rows.push(row);traces.push(row);
+  const row={year:yr,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn,tax:paidTax,mortgagePaid:yearPaid,extraPaid:yearExtra,newETF:(monthlyH+x.monthlyW)*12};rows.push(row);traces.push(row);
  }
  if(x.drawMode==='none')firstSalary=x.emi*(x.loan>0?1:0)+x.owner;
  return {rows,traces,last:rows.at(-1),withdrawn,paidTax,unfunded,allMortgageInterest,totalMortgagePaid,totalIncomeCash,firstWithdraw,firstSalary,payoffMonth,negativeAmort};
@@ -2071,7 +2094,7 @@ function render(){
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
@@ -2164,10 +2187,10 @@ function render(){
  drawChart(sim.traces,x.years);set('endEtf',money(sim.last.portfolio));set('endMortgage',money(sim.last.mortgage));set('endEquity',money(sim.last.homeEquity));$('annualRows').innerHTML=sim.rows.map(p=>`<tr><td>${p.year}</td><td>${money(p.mortgage)}</td><td>${money(p.homeEquity)}</td><td>${money(p.noSales)}</td><td>${money(p.portfolio)}</td><td>${money(p.withdrawn)}</td><td>${money(p.tax)}</td></tr>`).join('');
  const discountedEquity=sim.last.homeEquity/Math.pow(1+x.inflation/100,x.years);$('drawExplain').textContent=`At the end of ${x.years} years, modeled home equity is ${money(sim.last.homeEquity)} (about ${money(discountedEquity)} in today's purchasing power at ${x.inflation}% inflation), plus ${money(sim.last.portfolio)} of remaining ETF holdings under your selected withdrawal approach. This is not total household net worth: the chart includes modeled cash reserves, but this particular summary omits them, taxes on any unsold ETF gains, property sale expenses, and other assets/debts. The year-1 shock option is a simplified scenario, not a prediction.`;
  $('customLine').hidden=x.drawMode!=='custom';window.currentSummary={x,e,sim,gap,tax,c,projectedCash,rent};
- try{localStorage.setItem(storageKey,JSON.stringify({fields:Object.fromEntries(ids.map(id=>[id,$(id).value])),rentalItems,rentalTaxTiming:rent.taxTiming,profileAllowances,comparisonProperty:$('comparisonProperty').value,amortTarget:$('amortTarget').value}));}catch(_){/* Privacy restrictions may block local storage */}
+ try{localStorage.setItem(storageKey,JSON.stringify({fields:Object.fromEntries(ids.map(id=>[id,$(id).value])),rentalItems,rentalTaxTiming:rent.taxTiming,profileAllowances,comparisonProperty:$('comparisonProperty').value,amortTarget:$('amortTarget').value,lifeEvents}));}catch(_){/* Privacy restrictions may block local storage */}
 }
 for(const id of ids){if(id==='profileMode'||id==='homeMode')continue;$(id).addEventListener('input',()=>{if(id==='existingType')updateHomeUI();render();});$(id).addEventListener('change',()=>{if(id==='existingType')updateHomeUI();render();});}for(const b of document.querySelectorAll('[data-switch-home]'))b.addEventListener('click',()=>switchHome(b.dataset.switchHome));for(const b of document.querySelectorAll('[data-switch-profile]'))b.addEventListener('click',()=>switchProfile(b.dataset.switchProfile));for(const btn of document.querySelectorAll('[data-half]'))btn.addEventListener('click',()=>{$('husband').value=btn.dataset.half;if($('profileMode').value==='married')$('wife').value=btn.dataset.half;render();});
-$('reset').addEventListener('click',()=>{for(const [key,value] of Object.entries(defaults))$(key).value=value;profileAllowances.single=1000;profileAllowances.married=2000;updateProfileUI();updateHomeUI();rentalSeq=1;rentalItems=[{...rentSeed,_id:1}];$('rentalTaxTiming').value='cash';renderRentalInputs();render();set('liveStatus','Defaults restored. Results recalculated.');});$('print').addEventListener('click',()=>window.print());$('copy').addEventListener('click',async()=>{const {x,e,sim,gap}=window.currentSummary;const value=`${x.profileMode==='single'?'Individual':'Married couple'} ${x.homeNewPurchase?'new home + rental':'existing housing + rental-investment'} scenario\nHousing: ${x.housingLabel}; home value: ${money(x.price)}; mortgage ${money(x.loan)} at ${x.rate}%\nMonthly mortgage payment: ${money(x.emi)}; other monthly owner costs: ${money(x.owner)}\n${x.profileMode==='single'?'Individual ETF: '+money(x.husband):'Husband ETF: '+money(x.husband)+', wife ETF: '+money(x.wife)}\nAssumed ETF return: ${x.ret}%, fee: ${x.ter}%\nEconomic after-tax annual ETF gain estimate: ${money(e.net)}\nMonthly-equivalent EMI ${gap>=0?'shortfall':'surplus'}: ${money(Math.abs(gap))}\nWithdrawal plan: ${x.drawMode}; end mortgage ${money(sim.last.mortgage)}; end ETF ${money(sim.last.portfolio)}\nMonthly household net: ${money(window.currentSummary.c.net)}; rental cash: ${money(window.currentSummary.rent.first.cash/12)}; yearly rental tax change: ${money(window.currentSummary.rent.first.deltaTax)}; free cash: ${money(window.currentSummary.c.free)}; annual: ${money(window.currentSummary.c.free*12)}\nNot guaranteed income. No investment borrowing.`;try{await navigator.clipboard.writeText(value);set('liveStatus','Scenario summary copied.');}catch(_){const a=document.createElement('textarea');a.value=value;document.body.append(a);a.select();document.execCommand('copy');a.remove();set('liveStatus','Scenario summary copied.');}});
+$('reset').addEventListener('click',()=>{for(const [key,value] of Object.entries(defaults))$(key).value=value;profileAllowances.single=1000;profileAllowances.married=2000;updateProfileUI();updateHomeUI();rentalSeq=1;rentalItems=[{...rentSeed,_id:1}];lifeEvents=[];$('rentalTaxTiming').value='cash';renderRentalInputs();render();set('liveStatus','Defaults restored. Results recalculated.');});$('print').addEventListener('click',()=>window.print());$('copy').addEventListener('click',async()=>{const {x,e,sim,gap}=window.currentSummary;const value=`${x.profileMode==='single'?'Individual':'Married couple'} ${x.homeNewPurchase?'new home + rental':'existing housing + rental-investment'} scenario\nHousing: ${x.housingLabel}; home value: ${money(x.price)}; mortgage ${money(x.loan)} at ${x.rate}%\nMonthly mortgage payment: ${money(x.emi)}; other monthly owner costs: ${money(x.owner)}\n${x.profileMode==='single'?'Individual ETF: '+money(x.husband):'Husband ETF: '+money(x.husband)+', wife ETF: '+money(x.wife)}\nAssumed ETF return: ${x.ret}%, fee: ${x.ter}%\nEconomic after-tax annual ETF gain estimate: ${money(e.net)}\nMonthly-equivalent EMI ${gap>=0?'shortfall':'surplus'}: ${money(Math.abs(gap))}\nWithdrawal plan: ${x.drawMode}; end mortgage ${money(sim.last.mortgage)}; end ETF ${money(sim.last.portfolio)}\nMonthly household net: ${money(window.currentSummary.c.net)}; rental cash: ${money(window.currentSummary.rent.first.cash/12)}; yearly rental tax change: ${money(window.currentSummary.rent.first.deltaTax)}; free cash: ${money(window.currentSummary.c.free)}; annual: ${money(window.currentSummary.c.free*12)}\nNot guaranteed income. No investment borrowing.`;try{await navigator.clipboard.writeText(value);set('liveStatus','Scenario summary copied.');}catch(_){const a=document.createElement('textarea');a.value=value;document.body.append(a);a.select();document.execCommand('copy');a.remove();set('liveStatus','Scenario summary copied.');}});
 $('applyAssessment').addEventListener('click',()=>{if($('profileMode').value!=='married')return;$('jointTax').value=$('applyAssessment').dataset.target;render();});
 window.__payrollReconciliation={year:2026,method:'Observed payslip deductions compared with approximate annual income tax; not PAP',calculate:(x,tax)=>{const monthly=x.withholdingH+x.soliH+x.churchH+(x.profileMode==='single'?0:x.withholdingW+x.soliW+x.churchW);return {monthly,withheld:monthly*x.withholdingMonths,liability:tax.taxes,difference:monthly*x.withholdingMonths-tax.taxes};}};
 window.__taxAuditChecks={est2026IncomeTax,careEmployeeRate,calculatePerson,householdTax,germanTotalTax,annualRentalTaxDelta,compareAssessment2026};
