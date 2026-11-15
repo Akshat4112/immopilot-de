@@ -130,3 +130,72 @@ test('classifies renovation from actual acquisition date, VAT and 15 percent thr
   await planner.locator('#r1_workPerformedDate').fill('2030-04-01')
   await expect(planner.locator('#renovationAudit tbody')).toContainText('deductible')
 })
+
+test('goal-first wizard can configure ETF-only without asking for a property', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+
+  await planner.locator('[data-start-goal="etf"]').click()
+  const guide = planner.getByRole('dialog', { name: 'Set up your financial plan' })
+  await expect(guide).toBeVisible()
+  await guide.getByRole('radio', { name: /Single person/ }).check()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await guide.getByRole('radio', { name: /Renting/ }).check()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await expect(guide.getByRole('radio', { name: /ETF only/ })).toBeChecked()
+  await guide.getByRole('button', { name: /Finish & open calculator/ }).click()
+
+  await expect(guide).toBeHidden()
+  await expect(planner.locator('#profileMode')).toHaveValue('single')
+  await expect(planner.locator('#existingType')).toHaveValue('rent')
+  await expect(planner.locator('#strategyEtf')).toHaveValue('on')
+  await expect(planner.locator('#strategyRental')).toHaveValue('off')
+  await expect(planner.locator('#homeMode')).toHaveValue('existing')
+  await expect(planner.getByRole('tab', { name: /Investments/ })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
+})
+
+test('closing onboarding leaves existing inputs untouched and restoring a goal retains drafts', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/ }).click()
+  await planner.locator('#price').fill('245000')
+  await planner.getByRole('tab', { name: /Overview/ }).click()
+  await planner.getByRole('button', { name: /Plan my goals/ }).click()
+
+  const guide = planner.getByRole('dialog', { name: 'Set up your financial plan' })
+  await guide.getByRole('radio', { name: /Single person/ }).check()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await guide.getByRole('radio', { name: /Own outright/ }).check()
+  await guide.getByRole('button', { name: 'Close' }).click()
+  await expect(guide).toBeHidden()
+  await expect(planner.locator('#profileMode')).toHaveValue('married')
+  await expect(planner.locator('#existingType')).toHaveValue('mortgage')
+  await expect(planner.locator('#price')).toHaveValue('245000')
+
+  await planner.locator('[data-start-goal="etf"]').click()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await guide.getByRole('radio', { name: /Own outright/ }).check()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await guide.getByRole('button', { name: /Finish & open calculator/ }).click()
+  await expect(planner.locator('#existingType')).toHaveValue('paid')
+  await expect(planner.locator('#price')).toHaveValue('245000')
+  await planner.getByRole('button', { name: 'All three', exact: true }).click()
+  await expect(planner.locator('#price')).toHaveValue('245000')
+})
+
+test('the guided setup offers all seven combinations on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('[data-start-goal="all"]').click()
+  const guide = planner.getByRole('dialog', { name: 'Set up your financial plan' })
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await guide.getByRole('button', { name: 'Next' }).click()
+  await expect(guide.getByRole('radio')).toHaveCount(7)
+  await expect(guide.getByRole('radio', { name: /All three/ })).toBeChecked()
+})

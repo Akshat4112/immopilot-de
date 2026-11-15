@@ -281,10 +281,57 @@ body[data-theme="dark"] .profile-picker button:hover{background:#29413f}
  .view-intro{background:#fff!important}
 }
 
+
+/* UX-021 goal-first onboarding: lightweight, keyboard-first progressive disclosure. */
+.goal-launch{padding:20px 22px;margin:0 0 16px}
+.goal-launch .goal-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:13px}
+.goal-launch .goal-heading h2{margin:0 0 4px;font-size:1.13rem}
+.goal-launch .goal-heading p{margin:0;font-size:.82rem;color:var(--muted)}
+.goal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.goal-choice{appearance:none;text-align:left;display:flex;flex-direction:column;gap:5px;min-width:0;border:1px solid var(--ux-line);
+ background:#f8fbf9;color:var(--ink);border-radius:13px;padding:15px;min-height:103px}
+.goal-choice strong{font-size:.91rem;line-height:1.25}
+.goal-choice span{font-size:.75rem;line-height:1.4;color:#60776f}
+.goal-choice:hover{border-color:#6cb39b;background:#edf8f2}
+.goal-choice:focus-visible{outline:3px solid var(--ux-focus);outline-offset:3px}
+body:not([data-view="overview"]) .goal-launch{display:none}
+.guide-dialog{width:calc(100% - 28px);max-width:660px;max-height:min(90vh,800px);overflow:auto;border-radius:19px}
+.guide-inner{padding:clamp(17px,3vw,28px)}
+.guide-fieldset{border:0;padding:0;margin:12px 0 0;min-width:0}
+.guide-fieldset legend{font-size:.92rem;font-weight:750;margin-bottom:8px}
+.guide-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.guide-choices.strategy{grid-template-columns:repeat(2,minmax(0,1fr))}
+.guide-radio{display:flex;align-items:start;gap:10px;margin:0;cursor:pointer;border:1px solid var(--ux-line);
+ border-radius:12px;padding:13px;background:#f9fcfa;min-width:0;min-height:60px}
+.guide-radio strong{display:block;font-size:.83rem;line-height:1.3}
+.guide-radio small{display:block;margin-top:4px;font-size:.73rem;color:#5d756d;line-height:1.4}
+.guide-radio input{flex:0 0 auto;width:18px;height:18px;margin:1px 0 0;accent-color:#176b5e}
+.guide-radio:has(input:checked){border-color:#137b68;background:#eaf6ef;box-shadow:inset 0 0 0 1px #137b68}
+.guide-radio:focus-within{outline:3px solid var(--ux-focus);outline-offset:2px}
+.guide-progress{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-weight:750}
+.guide-progress-meter{display:flex;gap:4px;max-width:175px;flex:1}
+.guide-progress-meter i{display:block;height:6px;border-radius:999px;background:#e0ece6;flex:1}
+.guide-progress-meter i.active{background:#176b5e}
+.guide-help{padding:12px 14px;margin:12px 0 0;border-radius:10px;background:#eff6f2;font-size:.78rem;color:#365d51;line-height:1.5}
+body[data-theme="dark"] .goal-choice,body[data-theme="dark"] .guide-radio{background:#20343b;color:var(--ink)}
+body[data-theme="dark"] .goal-choice span,body[data-theme="dark"] .guide-radio small{color:#bed4cf}
+body[data-theme="dark"] .goal-choice:hover,body[data-theme="dark"] .guide-radio:has(input:checked){background:#274a46}
+body[data-theme="dark"] .guide-help{background:#28443f;color:#cbece1}
+body[data-theme="dark"] .guide-progress-meter i{background:#324d47}
+body[data-theme="dark"] .guide-progress-meter i.active{background:#75c9ac}
+@media(max-width:1000px){.goal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){
+ .goal-launch{padding:15px}
+ .goal-grid,.guide-choices,.guide-choices.strategy{grid-template-columns:1fr}
+ .goal-choice{min-height:0;padding:12px}
+ .guide-dialog{max-height:90dvh}
+}
+@media print{.goal-launch,.guide-dialog{display:none!important}}
+
 </style>
 </head>
 <body><main>
-<header><div><div class="eyebrow">Germany · v13 · 2026 tax comparison · No investment borrowing</div><h1>Household · Housing · ETFs · Rentals</h1><p class="subtitle">Compare owning your home, rental apartments, or ETFs. Single and married households, household income, rental taxes, investment comparisons, heatmaps and risk simulations—all update live.</p></div><div class="header-actions"><button class="btn" id="themeToggle" type="button" aria-label="Toggle light or dark mode">◐ Theme</button><button class="btn" type="button" id="openGuide">⚡ Guided setup</button><div class="chip-live"><span class="dot"></span>Live calculator</div></div></header>
+<header><div><div class="eyebrow">Germany · v13 · 2026 tax comparison · No investment borrowing</div><h1>Household · Housing · ETFs · Rentals</h1><p class="subtitle">Compare owning your home, rental apartments, or ETFs. Single and married households, household income, rental taxes, investment comparisons, heatmaps and risk simulations—all update live.</p></div><div class="header-actions"><button class="btn" id="themeToggle" type="button" aria-label="Toggle light or dark mode">◐ Theme</button><button class="btn" type="button" id="openGuide">⚡ Plan my goals</button><div class="chip-live"><span class="dot"></span>Live calculator</div></div></header>
 <nav class="app-tabs" role="tablist" aria-label="Planner sections">
 <button role="tab" type="button" data-view="overview" aria-selected="true">◫ Overview</button>
 <button role="tab" type="button" data-view="household" aria-selected="false">♧ Household</button>
@@ -296,6 +343,15 @@ body[data-theme="dark"] .profile-picker button:hover{background:#29413f}
 <div class="view-intro" id="viewIntro" aria-live="polite"><div><strong id="viewTitle">Your financial overview</strong><p id="viewDescription">Live household cash flow, property impact and investment performance at a glance.</p></div><button id="editAllInputs" class="btn" type="button">Edit assumptions</button></div>
 <div class="sticky-kpis" aria-label="Live household status"><span>Free cash <strong id="stickyFree">—</strong></span><span>Net income <strong id="stickyNet">—</strong></span><span>Rental cash <strong id="stickyRental">—</strong></span></div>
 
+<section class="card goal-launch" id="goalLauncher" aria-label="Choose your financial goal">
+ <div class="goal-heading"><div><h2>Start with what matters to you</h2><p>Choose a goal. We'll show the relevant inputs and keep your existing plan.</p></div><button class="btn" type="button" id="allGoalOptions">All seven strategies</button></div>
+ <div class="goal-grid">
+ <button type="button" class="goal-choice" data-start-goal="etf"><strong>Grow my ETFs</strong><span>Invest without buying a property</span></button>
+ <button type="button" class="goal-choice" data-start-goal="home"><strong>Buy my own home</strong><span>Explore mortgage and rent-versus-buy</span></button>
+ <button type="button" class="goal-choice" data-start-goal="rental"><strong>Buy to rent out</strong><span>Model rental cash flow, AfA and equity</span></button>
+ <button type="button" class="goal-choice" data-start-goal="all"><strong>Combine strategies</strong><span>Explore ETFs, a home and rental property together</span></button>
+ </div>
+</section>
 <section class="card content-card health-card" id="healthCard" aria-label="Financial health check"><div class="scenario-head"><h2>Financial health checks</h2><span class="fine">Estimates · updated with inputs</span></div><div id="healthIndicators" class="health-grid">Calculating risk indicators…</div><p class="fine">Signals use editable reserve and spending assumptions. These are screening indicators, not lending approvals or guarantees.</p></section>
 <section class="card scenario-workspace" id="scenarioWorkspace" aria-label="Saved financial scenarios">
  <div class="scenario-head"><div><h2>Scenario workspace <span style="font-size:.7rem;color:#7b8b96">NEW IN V9</span></h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save current plan</button></div></div>
@@ -1422,15 +1478,88 @@ render();
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),euro=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n)||0);
-const guide=$('guideDialog');let step=0;
-const options=[
- {title:'Who is planning?',message:'Select a single person or married household. Tax allowances and second-person inputs respond automatically.',html:'<label class="guide-option"><input name="gProfile" type="radio" value="single"> Single person</label><label class="guide-option"><input name="gProfile" type="radio" value="married" checked> Married household</label>'},
- {title:'What are you planning?',message:'Choose whether to buy an own-use home or use an existing home and focus on rental investments.',html:'<label class="guide-option"><input name="gHome" type="radio" value="buy" checked> Buy a home + invest</label><label class="guide-option"><input name="gHome" type="radio" value="existing"> Already housed; evaluate rental investments</label>'},
- {title:'Enter verified household income',message:'Next, adjust gross and actual net salaries on the Household tab. Using net payslip amounts reduces budgeting errors.',html:'<p>Use payslip mode if available. Check whether private health insurance is paid separately or already included in net income.</p>'},
- {title:'Set up assets and assumptions',message:'Edit home, rental and ETF assumptions, then save your first scenario to compare alternatives.',html:'<p>Keep an emergency reserve separate from purchase costs. Investment returns and rental tax benefits are not guaranteed spendable cash.</p>'}
+const guide=$('guideDialog');
+let step=0;
+let draft=null;
+// All selections stay in this in-memory draft until Finish. Cancel does not
+// mutate any inputs, persisted scenario or existing rental-property record.
+const guideOptions=[
+ {key:'profile',name:'gProfile',title:'Who is planning?',hint:'Choose the household used for the tax and cash-flow estimates.',choices:[
+  ['single','Single person','One income and individual tax allowances'],
+  ['married','Married couple','Two incomes and shared or separate tax assessment']]},
+ {key:'housing',name:'gHousing',title:'Where do you live today?',hint:'Your current housing cost stays in your budget even when you only invest in ETFs or rental property.',choices:[
+  ['rent','Renting','Use your current rent and running costs'],
+  ['mortgage','Own with mortgage','Include the existing home loan'],
+  ['paid','Own outright','Own a home without a mortgage']]},
+ {key:'strategy',name:'gStrategy',title:'What would you like to plan?',hint:'All seven combinations are available. Inactive investments stay saved for later.',choices:[
+  ['etf','ETF only','Invest without buying a new home'],
+  ['home','Own home only','Buy a home to live in'],
+  ['rental','Rental only','Buy a property to let'],
+  ['etf-home','ETF + own home','Invest while buying a home'],
+  ['etf-rental','ETF + rental','Invest in ETFs and rental property'],
+  ['home-rental','Own home + rental','Buy a home and an investment property'],
+  ['all','All three','ETFs, your own home and rental property']]}
 ];
-function paintGuide(){const g=options[step];$('guideStepText').innerHTML=`<p class="fine">Step ${step+1} of ${options.length}</p><h3>${g.title}</h3><p>${g.message}</p>${g.html}`;$('guideBack').disabled=step===0;$('guideNext').textContent=step===options.length-1?'Finish':'Next';if(step===0) guide.querySelector(`[name=gProfile][value=${$('profileMode').value}]`)?.click();if(step===1)guide.querySelector(`[name=gHome][value=${$('homeMode').value}]`)?.click();}
-$('openGuide').onclick=()=>{step=0;paintGuide();guide.showModal()};$('closeGuide').onclick=()=>guide.close();$('guideBack').onclick=()=>{step=Math.max(0,step-1);paintGuide()};$('guideNext').onclick=()=>{if(step===0){let mode=guide.querySelector('input[name=gProfile]:checked')?.value;document.querySelector(`[data-switch-profile="${mode}"]`)?.click()}if(step===1){let mode=guide.querySelector('input[name=gHome]:checked')?.value;document.querySelector(`[data-switch-home="${mode}"]`)?.click()}if(step>=options.length-1){guide.close();document.querySelector('.app-tabs [data-view="household"]')?.click()}else{step++;paintGuide()}};
+function currentGuideStrategy(){
+ const pressed=document.querySelector('.strategy-presets [data-strategy][aria-pressed="true"]');
+ if(pressed)return pressed.dataset.strategy;
+ const home=$('homeMode').value==='buy',etf=$('strategyEtf').value==='on',rental=$('strategyRental').value==='on';
+ return { '100':'home','010':'etf','001':'rental','110':'etf-home',
+  '011':'etf-rental','101':'home-rental','111':'all'}[String(Number(home))+Number(etf)+Number(rental)]||'all';
+}
+function beginGoalSetup(strategy){
+ draft={profile:$('profileMode').value,housing:$('existingType').value,strategy:strategy||currentGuideStrategy()};
+ step=0;paintGuide();guide.showModal();
+ guide.querySelector('input:checked')?.focus();
+}
+function captureStep(){
+ const part=guideOptions[step],value=guide.querySelector('input[name="'+part.name+'"]:checked')?.value;
+ if(!part.choices.some(choice=>choice[0]===value))return false;
+ draft[part.key]=value;return true;
+}
+function paintGuide(){
+ const part=guideOptions[step];
+ $('guideStepText').innerHTML=
+  '<div class="guide-progress"><span>Step '+(step+1)+' of '+guideOptions.length+'</span>'+
+  '<div class="guide-progress-meter" aria-hidden="true">'+guideOptions.map((_,i)=>'<i class="'+(i<=step?'active':'')+'"></i>').join('')+'</div></div>'+
+  '<h3>'+part.title+'</h3><p>'+part.hint+'</p>'+
+  '<fieldset class="guide-fieldset"><legend>Choose one option</legend><div class="guide-choices '+(step===2?'strategy':'')+'">'+
+  part.choices.map(choice=>'<label class="guide-radio"><input type="radio" name="'+part.name+'" value="'+choice[0]+'"><span><strong>'+choice[1]+'</strong><small>'+choice[2]+'</small></span></label>').join('')+
+  '</div></fieldset>'+
+  '<p class="guide-help">No changes are applied until you select Finish. Your existing amounts and locally saved scenarios are preserved.</p>';
+ const selected=guide.querySelector('input[name="'+part.name+'"][value="'+draft[part.key]+'"]');
+ if(selected)selected.checked=true;
+ $('guideBack').disabled=step===0;
+ $('guideNext').textContent=step===guideOptions.length-1?'Finish & open calculator':'Next';
+}
+function commitGoalSetup(){
+ // Reuse the existing calculator event handlers so inputs, calculations and
+ // saved scenario data follow the same tested update path as manual controls.
+ document.querySelector('[data-switch-profile="'+draft.profile+'"]')?.click();
+ document.querySelector('.strategy-presets [data-strategy="'+draft.strategy+'"]')?.click();
+ if($('existingType').value!==draft.housing){
+  $('existingType').value=draft.housing;
+  $('existingType').dispatchEvent(new Event('change',{bubbles:true}));
+ }
+ guide.close();
+ const nextTab=draft.strategy==='etf'?'investments':'properties';
+ document.querySelector('.app-tabs [data-view="'+nextTab+'"]')?.click();
+ $('liveStatus').textContent='Goal setup applied. Edit your amounts below and save a scenario when ready.';
+}
+$('openGuide').addEventListener('click',()=>beginGoalSetup());
+$('allGoalOptions').addEventListener('click',()=>beginGoalSetup());
+document.querySelectorAll('[data-start-goal]').forEach(button=>button.addEventListener('click',()=>beginGoalSetup(button.dataset.startGoal)));
+$('closeGuide').addEventListener('click',()=>guide.close());
+$('guideBack').addEventListener('click',()=>{
+ if(step===0)return;
+ if(!captureStep())return;
+ step--;paintGuide();
+});
+$('guideNext').addEventListener('click',()=>{
+ if(!captureStep())return;
+ if(step===guideOptions.length-1)commitGoalSetup();
+ else{step++;paintGuide();guide.querySelector('input:checked')?.focus();}
+});
 const themeKey='wealthPlanner_theme_v10';function applyTheme(mode){document.body.dataset.theme=mode;$('themeToggle').textContent=mode==='dark'?'☀ Light mode':'◐ Dark mode';try{localStorage.setItem(themeKey,mode)}catch(_){}}applyTheme((()=>{try{return localStorage.getItem(themeKey)}catch(_){return null}})()||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light'));$('themeToggle').onclick=()=>applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
 const fmtPct=x=>Number.isFinite(x)?x.toFixed(1)+'%':'—';
 function update(){const z=window.currentSummary;if(!z)return;const {x,c,rent,e,sim}=z;let net=Number(c.net)||0,free=Number(c.free)||0,monthlyHousing=(Number(x.emi)||0)+(Number(x.owner)||0), reserve=Number(x.cashReserve)||0;let essential=Math.max(1,net-free);let months=reserve/essential;let housingRatio=net>0?monthlyHousing/net*100:0, rentalCash=(Number(rent?.first?.cash)||0)/12;let grossDebt=Number(x.loan)||0;let monthlySavings=(Number(x.monthlyH)||0)+(Number(x.monthlyW)||0);let items=[{label:'Emergency reserve coverage',v:`${months.toFixed(1)} months`,detail:'Target cash ÷ modeled monthly outflows',bad:months<3},{label:'Housing payment burden',v:fmtPct(housingRatio),detail:'Mortgage and owner costs ÷ spendable net',bad:housingRatio>35},{label:'Budget after allocations',v:euro(free)+'/month',detail:'After regular costs, investing and savings',bad:free<0},{label:'Rental cash flow (before tax timing)',v:euro(rentalCash)+'/month',detail:'May require additional salary support',bad:rentalCash<0}];$('healthIndicators').innerHTML=items.map(q=>`<div class="health-item ${q.bad?'risk':'ok'}"><small>${q.label}</small><strong>${q.v}</strong><small>${q.detail}</small></div>`).join('');
