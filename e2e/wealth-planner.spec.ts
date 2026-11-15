@@ -345,3 +345,96 @@ test('UX-023 input density controls are mobile usable and do not change strategy
   await expect(planner.locator('#homeMode')).toHaveValue('buy')
   await page.screenshot({ path: test.info().outputPath('explorer-ux023-mobile.png') })
 })
+
+test('UX-024 tracks unsaved inputs and updates an active saved plan', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#scenarioName').fill('Home baseline')
+  await planner.locator('#saveScenario').click()
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Saved · Home baseline')
+  await expect(planner.locator('#updateScenario')).toBeDisabled()
+
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  await planner.locator('#price').fill('230000')
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Unsaved edits')
+  await expect(planner.locator('#updateScenario')).toBeEnabled()
+  await planner.locator('#updateScenario').click()
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Saved · Home baseline')
+
+  await planner.locator('#scenarioCards [data-action="duplicate"]').first().click()
+  await expect(planner.locator('#scenarioCards .scenario-tile')).toHaveCount(2)
+  await expect(planner.locator('#activeScenario option')).toHaveCount(3)
+})
+
+test('UX-024 switching saved plans allows undoing the previous load', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  page.on('dialog', (dialog) => dialog.accept())
+  await planner.locator('#scenarioName').fill('Plan A')
+  await planner.locator('#saveScenario').click()
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  await planner.locator('#price').fill('225000')
+  await planner.locator('#scenarioName').fill('Plan B')
+  await planner.locator('#saveScenario').click()
+  await planner.locator('#price').fill('260000')
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Unsaved edits')
+
+  await planner.locator('#activeScenario').selectOption({ label: 'Plan A' })
+  await expect(planner.locator('#price')).toHaveValue('200000')
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Saved · Plan A')
+  await expect(planner.locator('#undoScenarioLoad')).toBeEnabled()
+
+  await planner.locator('#undoScenarioLoad').click()
+  await expect(planner.locator('#price')).toHaveValue('260000')
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Unsaved edits · Plan B')
+  await expect(planner.locator('#undoScenarioLoad')).toBeDisabled()
+})
+
+test('UX-024 comparison remains limited to three and warns on mismatched horizons', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#scenarioName').fill('One')
+  await planner.locator('#saveScenario').click()
+  await planner.locator('#scenarioName').fill('Two')
+  await planner.locator('#saveScenario').click()
+  await planner.locator('#scenarioName').fill('Three')
+  await planner.locator('#saveScenario').click()
+  await planner.locator('#scenarioName').fill('Four')
+  await planner.locator('#saveScenario').click()
+  await expect(planner.locator('#scenarioCards .scenario-tile')).toHaveCount(4)
+  await expect(planner.locator('#scenarioCards [data-compare]:checked')).toHaveCount(3)
+  await planner.locator('#scenarioCards [data-compare]:not(:checked)').first().check()
+  await expect(planner.locator('#scenarioCards [data-compare]:checked')).toHaveCount(3)
+  await expect(planner.locator('#scenarioNotice')).toContainText('Compare up to three')
+  await expect(planner.locator('#scenarioCompare table thead th')).toHaveCount(4)
+})
+
+test('UX-024 rejects malformed backup without deleting saved plans', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#scenarioName').fill('Keep me')
+  await planner.locator('#saveScenario').click()
+  await planner.locator('#scenarioFile').setInputFiles({
+    name: 'invalid-plans.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({
+      version: 2,
+      scenarios: [{ name: 'Untrusted data', snapshot: { fields: { invalidField: 3 } }, stats: {} }],
+    })),
+  })
+  await expect(planner.locator('#scenarioNotice')).toContainText('Import failed')
+  await expect(planner.locator('#scenarioCards .scenario-tile')).toHaveCount(1)
+  await expect(planner.locator('#scenarioSaveStatus')).toContainText('Saved · Keep me')
+})
+
+test('UX-024 scenario switcher is usable on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#scenarioQuickbar')).toBeVisible()
+  await expect(planner.locator('#activeScenario')).toBeVisible()
+  await expect(planner.locator('#undoScenarioLoad')).toBeDisabled()
+  await page.screenshot({ path: test.info().outputPath('explorer-ux024-mobile.png') })
+})
