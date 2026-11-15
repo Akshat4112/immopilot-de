@@ -240,18 +240,14 @@ test('UX-022 dashboard zeroes inactive investment categories and retains inputs'
 test('UX-022 shows a funding gap and adjusts projection horizon', async ({ page }) => {
   await page.goto('./')
   const planner = page.frameLocator(frameSelector)
-  await planner.locator('#utilities').evaluate((node) => {
-    const input = node as HTMLInputElement
-    input.value = '50000'
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-  })
+  await planner.locator('#utilities').evaluate(
+    "(node) => { node.value = '50000'; node.dispatchEvent(new Event('input', { bubbles: true })); }",
+  )
   await expect(planner.locator('#overviewCashStatus')).toContainText('funding gap')
   await expect(planner.locator('#overviewFreeCash')).toHaveClass(/red/)
-  await planner.locator('#years').evaluate((node) => {
-    const input = node as HTMLInputElement
-    input.value = '5'
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-  })
+  await planner.locator('#years').evaluate(
+    "(node) => { node.value = '5'; node.dispatchEvent(new Event('input', { bubbles: true })); }",
+  )
   await expect(planner.locator('#overviewFutureLabel')).toContainText('year 5')
 })
 
@@ -264,9 +260,7 @@ test('UX-022 KPI grid remains readable on mobile without hiding the goal launche
   await expect(planner.locator('#overviewDashboard')).toBeVisible()
   await expect(planner.locator('.overview-kpi')).toHaveCount(4)
   await expect(planner.locator('#goalLauncher')).toBeVisible()
-  const sizes = await planner.locator('#overviewDashboard').evaluate((element) => ({
-    contentWidth: element.getBoundingClientRect().width,
-    viewportWidth: element.ownerDocument.documentElement.clientWidth,
-  }))
-  expect(sizes.contentWidth).toBeLessThanOrEqual(sizes.viewportWidth + 1)
+  const dashboardBox = await planner.locator('#overviewDashboard').boundingBox()
+  expect(dashboardBox).not.toBeNull()
+  expect(dashboardBox?.width).toBeLessThanOrEqual(376)
 })
