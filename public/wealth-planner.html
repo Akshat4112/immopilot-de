@@ -167,6 +167,120 @@ body[data-view="reports"] .maincol > #printableReport{display:block!important}
 @media(max-width:720px){.header-actions{width:100%;justify-content:flex-start}.health-grid,.report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-inner{padding:15px}}
 @media print{body{background:#fff!important;color:#111!important}header,.app-tabs,.view-intro,.sticky-kpis,.sidebar,.scenario-workspace,.profile-card,.strategy-card,.health-card,.guide-dialog,.glossary,.flexbuttons,.footer,#chartControls{display:none!important}.layout{display:block}.maincol>*:not(#printableReport){display:none!important}#printableReport{display:block!important;box-shadow:none;border:0}#printableReport .note{display:block}.report-grid{grid-template-columns:repeat(2,1fr)}@page{size:A4;margin:15mm}}
 .tax-audit{padding:15px;border:1px solid var(--line,#d5dedb);border-radius:12px;margin:12px 0}.tax-audit summary{cursor:pointer;font-weight:700}.tax-audit .report-grid{margin-top:12px}.tax-audit a{text-decoration:underline}
+
+
+/* UX-020 — coherent workspace shell. Visual-only: canonical calculations untouched. */
+:root{
+ --ux-surface:#fff;--ux-surface-soft:#f3f7f5;--ux-foreground:#203c3b;
+ --ux-muted:#647b79;--ux-line:#dae6e0;--ux-brand:#117968;
+ --ux-focus:#097e6b;--ux-shadow:0 4px 24px rgba(15,61,55,.055);
+ --ux-radius:18px;
+ --ink:#203c3b;--muted:#647b79;--border:#dae6e0;
+ --wash:#f2f6f3;--accent:#117968;--positive:#08745c;
+}
+body{font-size:15px;line-height:1.5;background:var(--wash)}
+main{max-width:1540px;padding:26px clamp(14px,2.2vw,36px) 70px}
+header{align-items:flex-start;gap:24px;margin-bottom:22px;padding:8px 2px 2px}
+header>div:first-child{min-width:0;max-width:850px}
+header .eyebrow{font-size:.68rem;letter-spacing:.12em;color:var(--accent);margin-bottom:9px}
+header h1{font-size:clamp(1.85rem,3vw,2.85rem);line-height:1.12;letter-spacing:-.045em;color:var(--ink);font-weight:800}
+header .subtitle{font-size:.9rem;max-width:730px;color:var(--muted)}
+.header-actions{justify-content:flex-end;gap:10px}
+.card{border-radius:var(--ux-radius);border-color:var(--ux-line);box-shadow:var(--ux-shadow)}
+.content-card{padding:clamp(17px,2vw,27px)}
+.content-card h2,.scenario-workspace h2,.health-card h2{font-size:1.12rem;line-height:1.35;letter-spacing:-.025em}
+.note,.muted,.fine{line-height:1.65}
+.app-tabs{top:0;z-index:40;margin:0 0 16px;padding:8px;border:1px solid var(--ux-line);
+ border-radius:15px;background:rgba(255,255,255,.94);box-shadow:0 5px 22px rgba(19,59,49,.045);gap:5px}
+.app-tabs button{border-radius:10px;padding:11px 16px;color:#47645e;font-weight:700;min-height:44px}
+.app-tabs button:hover{background:#eaf3ee}
+.app-tabs button[aria-selected="true"]{background:#176b5e;color:white;box-shadow:none}
+.app-tabs button:focus-visible,.btn:focus-visible,.strategy-presets button:focus-visible,
+.profile-picker button:focus-visible,.row-field input:focus-visible,.row-field select:focus-visible{
+ outline:3px solid var(--ux-focus);outline-offset:3px}
+.view-intro{background:linear-gradient(110deg,#e7f3ed,#f2f8f4);border-color:#cfe3d8;
+ border-radius:var(--ux-radius);padding:19px 22px;margin:0 0 13px}
+.view-intro strong{font-size:1.13rem;letter-spacing:-.02em}
+.view-intro p{font-size:.82rem;max-width:680px}
+.sticky-kpis{background:#214b45;box-shadow:0 4px 15px rgba(15,61,55,.12);
+ border-radius:14px;padding:14px 19px;gap:12px}
+.sticky-kpis span{flex:1;justify-content:space-between;min-width:0}
+.sticky-kpis strong{font-variant-numeric:tabular-nums;font-size:1.13rem}
+.health-card,.scenario-workspace,.profile-card,.strategy-card{margin-bottom:15px}
+.profile-card,.strategy-card{padding:20px 22px}
+.strategy-presets{gap:8px}
+.strategy-presets button{min-height:42px;padding:9px 13px;border-color:#caddd3;border-radius:10px}
+.strategy-presets button:hover,.profile-picker button:hover{background:#e6f4ed}
+.strategy-presets button[aria-pressed="true"]{background:#176b5e;color:white}
+.layout{grid-template-columns:minmax(285px,325px) minmax(0,1fr);gap:18px}
+.sidebar{padding:19px;top:78px;max-height:calc(100vh - 96px);box-shadow:var(--ux-shadow)}
+.row-field{gap:12px;margin:11px 0}
+.row-field label{font-size:.83rem}
+.row-field input,.row-field select{min-height:39px;border-radius:9px}
+.metrics,.household-pills{gap:12px}
+.metric{padding:19px}
+.metric .label{font-size:.79rem;min-height:0}
+.metric .big{font-variant-numeric:tabular-nums;letter-spacing:-.045em}
+.mini{border-radius:13px}
+.plot-card{border-radius:15px;border-color:var(--ux-line);padding:18px}
+.data th{background:#edf4f0;color:#435e56}
+.data tbody tr:hover{background:#f1f8f4}
+.btn{min-height:38px;border-radius:10px;border-color:#c9ded5}
+.btn.primary{background:#176b5e;border-color:#176b5e}
+.btn.primary:hover{background:#115347}
+.info-panel{border-radius:12px}
+body[data-theme="dark"]{
+ --ux-surface:#1a2836;--ux-surface-soft:#253b3d;--ux-foreground:#e6edf5;
+ --ux-muted:#afc5c5;--ux-line:#354e52;--ux-brand:#78d5ba;--ux-focus:#7ae3cf;
+ --ux-shadow:0 4px 24px rgba(0,0,0,.16);
+ --ink:#e6edf5;--muted:#afc5c5;--border:#354e52;--wash:#101922;--accent:#78d5ba
+}
+body[data-theme="dark"] .app-tabs{background:rgba(26,40,54,.96);border-color:var(--ux-line)}
+body[data-theme="dark"] .app-tabs button{color:#d1e3e1}
+body[data-theme="dark"] .app-tabs button[aria-selected="true"]{background:#176b5e;color:#fff}
+body[data-theme="dark"] .app-tabs button:hover:not([aria-selected="true"]){background:#29413f}
+body[data-theme="dark"] .view-intro{background:#20383a;border-color:#365c52}
+body[data-theme="dark"] .view-intro p{color:#b9d4d0}
+body[data-theme="dark"] .sticky-kpis{background:#1c4644}
+body[data-theme="dark"] .data th{background:#263c42;color:#d6e5e2}
+body[data-theme="dark"] .plot-card{background:#1a2836;border-color:var(--ux-line)}
+body[data-theme="dark"] .strategy-presets button:hover,
+body[data-theme="dark"] .profile-picker button:hover{background:#29413f}
+@media(max-width:870px){
+ main{padding:18px 13px 60px}
+ header{flex-direction:column;gap:14px}
+ .header-actions{justify-content:flex-start}
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .sidebar{position:static;max-height:none}
+ .app-tabs{position:sticky;top:0;margin:0 0 14px}
+}
+@media(max-width:580px){
+ main{padding:14px 11px 115px!important}
+ header h1{font-size:1.95rem}
+ header .subtitle{font-size:.82rem}
+ .app-tabs{border-radius:12px;margin:0 0 12px;padding:5px}
+ .app-tabs button{padding:10px 12px;font-size:.78rem}
+ .sticky-kpis{bottom:0;border-radius:14px 14px 0 0;padding:10px 12px max(10px,env(safe-area-inset-bottom))}
+ .sticky-kpis span{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+ .sticky-kpis strong{font-size:.89rem}
+ .view-intro{padding:14px 15px;gap:8px}
+ .view-intro strong{font-size:1rem}
+ .view-intro p{font-size:.74rem}
+ .metrics,.household-pills{gap:8px}
+ .metric{padding:14px}
+ .content-card{padding:16px}
+ .profile-card,.strategy-card{padding:15px}
+ .row-field{grid-template-columns:minmax(0,1fr) minmax(110px,120px)}
+}
+@media(max-width:370px){.sticky-kpis span{font-size:.58rem}.sticky-kpis strong{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+@media print{
+ body{background:#fff!important;color:#111!important}
+ .app-tabs,.sticky-kpis,.header-actions{display:none!important}
+ .card{box-shadow:none!important;border-color:#bbb!important}
+ .view-intro{background:#fff!important}
+}
+
 </style>
 </head>
 <body><main>
