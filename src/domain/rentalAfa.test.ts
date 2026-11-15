@@ -75,6 +75,18 @@ describe('RENT-001: Residential rental building AfA under §7(4) EStG', () => {
     expect(result.taxYearAfaEuro).toBe(0)
   })
 
+  it('adds capitalized building improvements without depreciating land twice', () => {
+    const result = calculateRentalBuildingAfa({
+      ...base,
+      capitalisedImprovementEuro: 10000,
+      rentalUsePercent: 50,
+    })
+    expect(result.depreciableBuildingBasisEuro).toBe(185120)
+    expect(result.landAndOtherBasisEuro).toBe(43780)
+    expect(result.rentalBuildingBasisEuro).toBe(92560)
+    expect(result.fullYearAfaEuro).toBe(1851.2)
+  })
+
   it('rejects invalid dates, invalid allocations and buildings not ready for use', () => {
     expect(() => calculateRentalBuildingAfa({ ...base, eligibleFromDate: '2026-02-30' })).toThrow()
     expect(() => calculateRentalBuildingAfa({ ...base, buildingSharePercent: 110 })).toThrow()
