@@ -66,11 +66,12 @@ export function Payroll2026Panel({ plannerFrame }: { plannerFrame: RefObject<HTM
     }))
     setError('')
   }
+  let validationError = error
   let calculation: ReturnType<typeof payroll2026> | undefined
   try {
     calculation = payroll2026(input)
   } catch (caught) {
-    error = caught instanceof Error ? caught.message : 'Calculation error'
+    validationError = caught instanceof Error ? caught.message : 'Calculation error'
   }
   const euro = (value: number) => new Intl.NumberFormat('de-DE', {
     style: 'currency', currency: 'EUR',
@@ -168,7 +169,7 @@ export function Payroll2026Panel({ plannerFrame }: { plannerFrame: RefObject<HTM
             <input type="number" min="0" step="0.5" style={inputStyle} value={input.childAllowances}
               onChange={(e) => change('childAllowances', numberOrZero(e.target.value))} />
           </label>
-          {error && <p role="alert" style={{ color: '#a23a3a' }}>{error}</p>}
+          {validationError && <p role="alert" style={{ color: '#a23a3a' }}>{validationError}</p>}
           {calculation && (
             <div aria-live="polite" style={{ background: '#f1f6f4', borderRadius: 10, padding: 14 }}>
               <p><strong>Monthly Lohnsteuer:</strong> {euro(calculation.wageTaxEuro)}</p>
