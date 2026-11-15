@@ -1,6 +1,8 @@
 import { useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Payroll2026Panel } from './components/Payroll2026Panel'
+import { calculateRentalBuildingAfa } from './domain/rentalAfa'
+import { calculateRentalExpenseBreakdown } from './domain/rentalExpenses'
 import './styles/tokens.css'
 import './styles/global.css'
 import './styles/shell.css'
@@ -13,6 +15,15 @@ if (!root) throw new Error('Application root element was not found')
 
 document.title = 'ImmoPilot DE · Household Wealth Planner'
 const plannerUrl = `${import.meta.env.BASE_URL}wealth-planner.html`
+
+// The same-origin legacy planner reads this tested domain engine on first render.
+// Register before React mounts its iframe to avoid a first-render race.
+Object.assign(window, {
+  __immopilotRentalV2: {
+    calculateAfa: calculateRentalBuildingAfa,
+    calculateExpenses: calculateRentalExpenseBreakdown,
+  },
+})
 
 export function Planner() {
   const plannerFrame = useRef<HTMLIFrameElement>(null)
