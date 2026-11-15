@@ -500,6 +500,45 @@ body[data-theme="dark"] .sankey-balance.sankey-warning,body[data-theme="dark"] .
 @media(prefers-reduced-motion:reduce){.sankey-link{transition:none!important}}
 @media print{.sankey-scroll,.sankey-actions{display:none!important}#sankeyTableWrap{display:block!important}.cash-sankey-panel{break-inside:avoid}}
 
+
+/* UX-026: lifetime yearly wealth composition with signed balances and debts */
+.wealth-timeline{min-width:0}
+.wealth-timeline-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:13px 0}
+.wealth-button-group{display:inline-flex;gap:4px;padding:4px;background:#e9f2ec;border-radius:11px}
+.wealth-button-group button{border:0;border-radius:8px;background:transparent;color:#41645b;font-size:.77rem;font-weight:750;padding:8px 11px;min-height:38px;cursor:pointer}
+.wealth-button-group button[aria-pressed="true"]{background:#176b5e;color:#fff}
+.wealth-button-group button:focus-visible,.wealth-range:focus-visible,.wealth-chart [data-wealth-year]:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.wealth-range{padding:9px;border:1px solid var(--ux-line,#dbe9e0);border-radius:9px;background:var(--ux-surface,#fff);color:var(--ink)}
+.wealth-timeline-graph{overflow-x:auto;border-radius:13px;border:1px solid var(--ux-line,#dbe9e0);background:var(--ux-surface-soft,#f5faf6)}
+.wealth-chart{width:100%;height:auto;display:block;min-width:760px!important}
+.wealth-chart [data-wealth-year]{cursor:pointer}
+.wealth-chart .wealth-year-dot{fill:#fff;stroke:#244c50;stroke-width:2}
+.wealth-chart [data-wealth-year]:hover .wealth-year-dot,.wealth-chart [data-wealth-year]:focus-visible .wealth-year-dot,.wealth-chart [data-wealth-year].selected .wealth-year-dot{fill:#146b5d;stroke:#fff;stroke-width:2.5}
+.wealth-timeline-legend{display:flex;gap:8px 16px;flex-wrap:wrap;margin:13px 0}
+.wealth-timeline-legend span{display:flex;align-items:center;gap:6px;font-size:.77rem}
+.wealth-timeline-legend i{width:12px;height:12px;display:inline-block;border-radius:3px}
+.wealth-timeline-detail{padding:11px 13px;border-radius:10px;background:#edf6f0;font-size:.8rem;line-height:1.65;margin:12px 0;color:var(--ink)}
+.wealth-timeline-warning{color:#ac4852;font-size:.77rem;font-weight:650;line-height:1.5}
+.wealth-timeline-footnote{color:var(--muted);font-size:.72rem;line-height:1.65;margin-top:10px}
+.wealth-timeline-table-wrap{overflow:auto;border:1px solid var(--ux-line,#dbe9e0);border-radius:12px;margin-top:9px}
+.wealth-timeline-table{min-width:960px;width:100%;border-collapse:collapse}
+.wealth-timeline-table th,.wealth-timeline-table td{padding:8px 10px;border-bottom:1px solid var(--ux-line,#dbe9e0);font-size:.74rem;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.wealth-timeline-table th:first-child{text-align:left;position:sticky;left:0;background:var(--ux-surface,#fff)}
+.wealth-timeline-table thead{background:#e9f3ec}
+.wealth-timeline-table tr[aria-selected="true"]{background:#ddf0e5}
+.wealth-negative{color:#af4351;font-weight:750}
+#wealthTimelineChartPane[hidden],#wealthTimelineTablePane[hidden],#wealthTimelineWarning[hidden]{display:none!important}
+body[data-theme="dark"] .wealth-button-group{background:#29413e}
+body[data-theme="dark"] .wealth-button-group button{color:#d0e5df}
+body[data-theme="dark"] .wealth-button-group button[aria-pressed="true"]{color:#fff}
+body[data-theme="dark"] .wealth-timeline-graph{background:#1c343a}
+body[data-theme="dark"] .wealth-range{background:#203d3e}
+body[data-theme="dark"] .wealth-timeline-detail{background:#28443e}
+body[data-theme="dark"] .wealth-timeline-table thead,body[data-theme="dark"] .wealth-timeline-table tr[aria-selected="true"]{background:#28443e}
+body[data-theme="dark"] .wealth-timeline-warning{color:#f8b2bd}
+@media(max-width:580px){.wealth-timeline-controls{gap:7px}.wealth-button-group{flex:1}.wealth-button-group button{flex:1;padding:8px 6px}}
+@media print{.wealth-timeline-controls,#wealthTimelineChartPane{display:none!important}#wealthTimelineTablePane{display:block!important}}
+
 </style>
 </head>
 <body><main>
@@ -885,12 +924,31 @@ body[data-theme="dark"] .sankey-balance.sankey-warning,body[data-theme="dark"] .
   <svg class="plot-chart" id="rentalBridgeChart" viewBox="0 0 820 300" role="img" aria-label="Rental receipts, running costs, interest, principal and tax effects per month"></svg>
   <div class="plot-stat-row" id="rentalBridgeStats"></div>
  </div>
- <div class="plot-card">
-  <h3>Projected household asset composition</h3>
-  <p class="note">Illustrative home equity, rental equity, ETF holdings after any planned sales, and modeled cash reserves. Negative cash or equity is a warning, not an asset. This chart is not a tax-adjusted liquidation value.</p>
-  <svg class="plot-chart" id="wealthCompositionChart" viewBox="0 0 820 350" role="img" aria-label="Stacked household assets by year"></svg>
-  <div class="plot-legend"><span><i style="background:#397eac"></i>Own home equity</span><span><i style="background:#8a73b7"></i>Rental equity</span><span><i style="background:#13927d"></i>ETF investments</span><span><i style="background:#d6a35f"></i>Cash reserves</span></div>
+ <div class="plot-card wealth-timeline" id="wealthTimeline">
+  <h3>Lifetime wealth · assets, equity and debt</h3>
+  <p class="note">Annual projections from the existing household, ETF, mortgage and rental models. The signed net-position line includes negative cash or equity.</p>
+  <div class="wealth-timeline-controls">
+   <div class="wealth-button-group" role="group" aria-label="Wealth breakdown mode">
+    <button type="button" data-wealth-mode="equity" aria-pressed="true">Equity</button>
+    <button type="button" data-wealth-mode="gross" aria-pressed="false">Gross assets & debt</button>
+   </div>
+   <label for="wealthRange">Show <select id="wealthRange" class="wealth-range"><option value="all">Full projection</option><option value="5">5 years</option><option value="10">10 years</option><option value="20">20 years</option><option value="30">30 years</option></select></label>
+   <div class="wealth-button-group" role="group" aria-label="Wealth data display">
+    <button type="button" data-wealth-view="chart" aria-pressed="true">Chart</button>
+    <button type="button" data-wealth-view="table" aria-pressed="false">Yearly table</button>
+   </div>
+  </div>
+  <div id="wealthTimelineChartPane" class="wealth-timeline-graph" role="region" aria-label="Interactive wealth timeline; scroll horizontally on narrow screens" tabindex="0">
+   <svg id="wealthCompositionChart" class="wealth-chart" viewBox="0 0 960 450" role="group" aria-label="Annual stacked wealth, mortgage debt and signed net position"></svg>
+  </div>
+  <div id="wealthTimelineTablePane" class="wealth-timeline-table-wrap" role="region" aria-label="Year-by-year asset and liability table" tabindex="0" hidden>
+   <table class="wealth-timeline-table"><thead><tr><th>Year</th><th>Home equity</th><th>Rental equity</th><th>ETFs</th><th>Cash</th><th>Home value</th><th>Rental value</th><th>Home loan</th><th>Rental debt</th><th>Net position</th></tr></thead><tbody id="wealthTimelineRows"></tbody></table>
+  </div>
+  <div class="wealth-timeline-legend" id="wealthTimelineLegend"></div>
+  <p class="wealth-timeline-detail" id="wealthTimelineDetail" role="status" aria-live="polite">Select a year for details.</p>
   <div class="plot-stat-row" id="wealthChartStats"></div>
+  <p class="wealth-timeline-warning" id="wealthTimelineWarning" hidden></p>
+  <p class="wealth-timeline-footnote">Net position = home equity + rental equity + ETF holdings + modeled cash. Gross assets view displays market values and property debt separately, without subtracting loans twice. Negative balances affect the net line and table, but are not stacked as positive assets. Year 0 is the modeled opening/purchase position. Cash is a reserve assumption, not verified bank holdings. No ETF liquidation tax, property sale costs or unmodeled liabilities are included.</p>
  </div>
 </section>
 
@@ -1666,19 +1724,117 @@ function renderRentalBridge(rent){
  stats.innerHTML=`<span>Collected: ${money(p.collected/12)}/mo.</span><span>Before tax: ${money(p.cash/12)}/mo.</span><span>After estimated tax: ${money(p.afterTax/12)}/mo.</span>`;
 }
 function renderWealthComposition(x,sim,rent,houseCash){
- const el=$('wealthCompositionChart');const years=x.years,selected=[0,...Array.from({length:Math.floor(years/5)},(_,i)=>(i+1)*5),years].filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
- const firstOwn=x.homeNewPurchase?x.down:(x.existingType==='rent'?0:x.existingValue-(x.existingType==='mortgage'?x.existingLoan:0));
- const prop0=rent.properties.reduce((v,p)=>v+p.down,0);
- const points=selected.map(y=>{const sr=sim.rows[Math.min(y,sim.rows.length-1)],rr=y?rent.rows[y-1]:null,cc=y?houseCash[y-1]:null;
-  const home=y?sr.homeEquity:firstOwn,rental=y?(rr?rr.equity:0):prop0,etf=sr.portfolio,cash=y?(cc?cc.balance:0):x.cashReserve;
-  return {year:y,vals:[home,rental,etf,cash].map(v=>Math.max(0,v)),negative:[home,rental,cash].some(v=>v<0)};
+ const root=$('wealthTimeline'),chart=$('wealthCompositionChart');
+ if(!root)return;
+ const state=window._wealthTimeline||(window._wealthTimeline={mode:'equity',view:'chart',range:'all',year:null});
+ state.refs={x,sim,rent,houseCash};
+ const rentalOpening=rent.properties.reduce((a,p)=>a+p.price,0);
+ const loanOpening=rent.properties.reduce((a,p)=>a+p.loan,0);
+ const annual=sim.rows.map(sr=>{
+  const y=sr.year,rr=y?rent.rows[y-1]:null,cc=y?houseCash[y-1]:null;
+  const homeDebt=Number(sr.mortgage)||0,homeEq=Number(sr.homeEquity)||0;
+  const homeVal=homeEq+homeDebt,rentalVal=y?Number(rr?.homeVal)||0:rentalOpening;
+  const rentalDebt=y?Number(rr?.debt)||0:loanOpening,rentalEq=rentalVal-rentalDebt;
+  const etf=Number(sr.portfolio)||0,cash=y?Number(cc?.balance)||0:Number(x.cashReserve)||0;
+  const debt=homeDebt+rentalDebt,net=homeEq+rentalEq+etf+cash;
+  return {year:y,homeEq,homeVal,homeDebt,rentalEq,rentalVal,rentalDebt,etf,cash,debt,net,
+   gross:homeVal+rentalVal+etf+Math.max(0,cash)};
  });
- const W=820,H=350,left=77,right=22,top=15,bottom=51,h=H-top-bottom,max=Math.max(1000,...points.map(p=>p.vals.reduce((a,b)=>a+b,0)))*1.1;
- const colors=['#397eac','#8a73b7','#13927d','#d6a35f'],step=(W-left-right)/points.length,bw=Math.min(76,step*.62);
- let svg='';for(let i=0;i<=4;i++){let val=max*i/4,y=top+h*(1-val/max);svg+=`<line x1="${left}" x2="${W-right}" y1="${y}" y2="${y}" stroke="#e8edef"/><text x="${left-12}" y="${y+4}" fill="#75899a" text-anchor="end" font-size="12">${val>=1e6?(val/1e6).toFixed(2)+'m':Math.round(val/1000)+'k'}</text>`;}
- points.forEach((p,i)=>{let bottom=top+h,x=left+(i+.5)*step-bw/2;for(let j=0;j<4;j++){let hh=p.vals[j]/max*h;bottom-=hh;svg+=`<rect x="${x}" y="${bottom}" width="${bw}" height="${Math.max(0,hh)}" rx="${hh>4?2:0}" fill="${colors[j]}"><title>${p.year}y · ${['Home equity','Rental equity','ETF holdings','Cash reserves'][j]}: ${money(p.vals[j])}</title></rect>`;}svg+=`<text x="${x+bw/2}" y="${H-20}" text-anchor="middle" fill="#65798a" font-size="12">${p.year}y</text>`;});
- el.innerHTML=svg;const last=points.at(-1),total=last.vals.reduce((a,b)=>a+b,0);
- $('wealthChartStats').innerHTML=`<span>Year ${years} · gross modeled assets/equity: ${money(total)}</span><span>ETF holdings: ${money(last.vals[2])}</span><span>Rental equity: ${money(last.vals[1])}</span>`+(points.some(p=>p.negative)?'<span style="color:#a94c53">Warning: negative cash or equity is excluded from the positive stacked bars</span>':'');
+ state.annual=annual;
+ const period=state.range==='all'?x.years:Math.min(x.years,Number(state.range));
+ const pts=annual.filter(p=>p.year<=period);
+ if(state.year===null||state.year>period)state.year=period;
+ const moneyV=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+ const compact=v=>Math.abs(v)>=1000000?(v/1000000).toFixed(1)+'m':Math.abs(v)>=1000?Math.round(v/1000)+'k':Math.round(v).toString();
+ const series=state.mode==='equity'
+  ?[['homeEq','Home equity','#397eac'],['rentalEq','Rental equity','#8a73b7'],['etf','ETFs','#13927d'],['cash','Cash','#d6a35f']]
+  :[['homeVal','Home value','#397eac'],['rentalVal','Rental value','#8a73b7'],['etf','ETFs','#13927d'],['cash','Positive cash','#d6a35f']];
+ const total=p=>series.reduce((sum,a)=>sum+Math.max(0,p[a[0]]),0);
+ const max=Math.max(1000,...pts.map(p=>Math.max(total(p),p.debt,p.net)));
+ const min=Math.min(0,...pts.map(p=>p.net));
+ const lo=min<0?min*1.12:0,hi=max*1.1;
+ const W=960,H=450,L=89,R=25,T=26,B=55,ww=W-L-R,hh=H-T-B;
+ const X=y=>L+ww*(period?y/period:0),Y=v=>T+hh*(hi-v)/(hi-lo);
+ const round=n=>n.toFixed(2);
+ let svg='';
+ for(let i=0;i<=5;i++){
+  const v=lo+(hi-lo)*i/5,y=Y(v);
+  svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+round(y)+'" y2="'+round(y)+'" stroke="#d4e1db"/>';
+  svg+='<text x="'+(L-11)+'" y="'+round(y+4)+'" text-anchor="end" font-size="12" fill="#607c78">'+compact(v)+'</text>';
+ }
+ const labels=[...new Set([0,Math.min(5,period),Math.min(10,period),Math.min(20,period),period])].sort((a,b)=>a-b);
+ for(const yr of labels)svg+='<text x="'+round(X(yr))+'" y="'+(H-20)+'" text-anchor="middle" font-size="12" fill="#607c78">'+yr+'y</text>';
+ let base=pts.map(()=>0);
+ for(const [key,name,color] of series){
+  const upper=pts.map((p,i)=>base[i]+Math.max(0,p[key]));
+  const a=pts.map((p,i)=>round(X(p.year))+','+round(Y(upper[i])));
+  const b=pts.map((p,i)=>round(X(p.year))+','+round(Y(base[i]))).reverse();
+  svg+='<polygon points="'+a.concat(b).join(' ')+'" fill="'+color+'" fill-opacity=".82" stroke="'+color+'" stroke-width=".6"><title>'+name+'</title></polygon>';
+  base=upper;
+ }
+ const path=key=>pts.map(p=>round(X(p.year))+','+round(Y(p[key]))).join(' ');
+ svg+='<polyline points="'+path('debt')+'" fill="none" stroke="#bd5961" stroke-width="2.7" stroke-dasharray="7,5"><title>Outstanding property loans</title></polyline>';
+ svg+='<polyline points="'+path('net')+'" fill="none" stroke="#243c49" stroke-width="3.1"><title>Signed net position</title></polyline>';
+ for(const p of pts){
+  svg+='<g data-wealth-year="'+p.year+'" tabindex="0" role="button" aria-label="Year '+p.year+
+   ': net '+moneyV(p.net)+'"><circle class="wealth-year-dot" cx="'+round(X(p.year))+
+   '" cy="'+round(Y(p.net))+'" r="5.2"/><title>Year '+p.year+', net position '+moneyV(p.net)+'</title></g>';
+ }
+ chart.innerHTML=svg;
+ chart.setAttribute('aria-label','Year-by-year '+state.mode+' composition, signed net wealth and outstanding property loans through year '+period);
+ $('wealthTimelineLegend').innerHTML=series.map(a=>'<span><i style="background:'+a[2]+'"></i>'+a[1]+'</span>').join('')+
+  '<span><i style="background:#243c49;width:19px;height:3px"></i>Net position</span>'+
+  '<span><i style="background:#bd5961;width:19px;height:3px"></i>Property debt</span>';
+ $('wealthTimelineRows').innerHTML=pts.map(p=>{
+  const vals=[p.year,p.homeEq,p.rentalEq,p.etf,p.cash,p.homeVal,p.rentalVal,p.homeDebt,p.rentalDebt,p.net];
+  return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" aria-selected="'+(p.year===state.year)+'">'+
+   vals.map((v,i)=>i===0?'<th scope="row">Year '+v+'</th>':
+    '<td'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
+ }).join('');
+ const show=()=>{
+  const p=pts.find(z=>z.year===state.year)||pts.at(-1);
+  $('wealthTimelineDetail').textContent='Year '+p.year+': signed net position '+moneyV(p.net)+
+   ' = home equity '+moneyV(p.homeEq)+' + rental equity '+moneyV(p.rentalEq)+
+   ' + ETFs '+moneyV(p.etf)+' + modeled cash '+moneyV(p.cash)+
+   '. Outstanding property loans: '+moneyV(p.debt)+'.';
+  for(const node of chart.querySelectorAll('[data-wealth-year]'))node.classList.toggle('selected',Number(node.dataset.wealthYear)===p.year);
+  for(const row of root.querySelectorAll('[data-wealth-row]'))row.setAttribute('aria-selected',String(Number(row.dataset.wealthRow)===p.year));
+ };
+ state.show=show;show();
+ const last=pts.at(-1);
+ $('wealthChartStats').innerHTML='<span>Year '+last.year+' · signed net position: '+moneyV(last.net)+'</span>'+
+  '<span>Gross positive assets: '+moneyV(last.gross)+'</span><span>Outstanding property loans: '+moneyV(last.debt)+'</span>';
+ const warn=pts.filter(p=>p.cash<0||p.homeEq<0||p.rentalEq<0);
+ $('wealthTimelineWarning').hidden=!warn.length;
+ $('wealthTimelineWarning').textContent=warn.length+' year(s) have negative cash or property equity. The net line and yearly table keep these amounts; the positive stack does not.';
+ for(const b of root.querySelectorAll('[data-wealth-mode]'))b.setAttribute('aria-pressed',String(b.dataset.wealthMode===state.mode));
+ for(const b of root.querySelectorAll('[data-wealth-view]'))b.setAttribute('aria-pressed',String(b.dataset.wealthView===state.view));
+ $('wealthRange').value=state.range;
+ $('wealthTimelineChartPane').hidden=state.view!=='chart';
+ $('wealthTimelineTablePane').hidden=state.view!=='table';
+ if(!state.bound){
+  state.bound=true;
+  root.addEventListener('click',e=>{
+   const mode=e.target.closest('[data-wealth-mode]'),view=e.target.closest('[data-wealth-view]'),yr=e.target.closest('[data-wealth-year],[data-wealth-row]');
+   if(mode||view){if(mode)state.mode=mode.dataset.wealthMode;if(view)state.view=view.dataset.wealthView;const z=state.refs;renderWealthComposition(z.x,z.sim,z.rent,z.houseCash);}
+   else if(yr){state.year=Number(yr.dataset.wealthYear??yr.dataset.wealthRow);state.show();}
+  });
+  root.addEventListener('change',e=>{
+   if(e.target.id==='wealthRange'){state.range=e.target.value;const z=state.refs;renderWealthComposition(z.x,z.sim,z.rent,z.houseCash);}
+  });
+  root.addEventListener('focusin',e=>{
+   const item=e.target.closest('[data-wealth-year],[data-wealth-row]');
+   if(item){state.year=Number(item.dataset.wealthYear??item.dataset.wealthRow);state.show();}
+  });
+  root.addEventListener('pointerover',e=>{
+   const item=e.target.closest('[data-wealth-year]');
+   if(item&&state.year!==Number(item.dataset.wealthYear)){state.year=Number(item.dataset.wealthYear);state.show();}
+  });
+  root.addEventListener('keydown',e=>{
+   const item=e.target.closest('[data-wealth-year],[data-wealth-row]');
+   if(item&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.year=Number(item.dataset.wealthYear??item.dataset.wealthRow);state.show();}
+  });
+ }
 }
 
 /* v7 decision-oriented analytics: explicitly separate mark-to-market wealth from spendable cash. */
