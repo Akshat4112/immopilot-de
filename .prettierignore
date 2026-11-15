@@ -28,3 +28,6 @@ e2e/wealth-planner.spec.ts
 
 # AfA reference fixtures are kept stable for audit review.
 src/domain/rentalAfa.test.ts
+
+# Standalone rental expense module is reviewed with its regression tests.
+src/domain/rentalExpenses.ts

@@ -18,6 +18,8 @@ export interface RentalBuildingAfaInput {
   taxYear: number
   /** Share of building genuinely used for rental/income-producing activity. */
   rentalUsePercent: number
+  /** Capitalizable building improvements commissioned with rental use; exclude land. */
+  capitalisedImprovementEuro?: number
 }
 
 export interface RentalBuildingAfaResult {
@@ -65,6 +67,7 @@ export function linearResidentialAfaRate(completionYear: number): number {
 export function calculateRentalBuildingAfa(input: RentalBuildingAfaInput): RentalBuildingAfaResult {
   nonnegative('Purchase price', input.purchasePriceEuro)
   nonnegative('Acquisition costs', input.acquisitionCostsEuro)
+  nonnegative('Capitalized improvements', input.capitalisedImprovementEuro ?? 0)
   proportion('Building share', input.buildingSharePercent)
   proportion('Rental-use share', input.rentalUsePercent)
   year('Completion year', input.completionYear)
@@ -88,8 +91,11 @@ export function calculateRentalBuildingAfa(input: RentalBuildingAfaInput): Renta
   const totalAcquisitionCostEuro = roundCents(input.purchasePriceEuro + input.acquisitionCostsEuro)
   const buildingRatio = input.buildingSharePercent / 100
   const rentalRatio = input.rentalUsePercent / 100
-  const depreciableBuildingBasisEuro = roundCents(totalAcquisitionCostEuro * buildingRatio)
-  const landAndOtherBasisEuro = roundCents(totalAcquisitionCostEuro - depreciableBuildingBasisEuro)
+  const originalBuildingBasis = roundCents(totalAcquisitionCostEuro * buildingRatio)
+  const depreciableBuildingBasisEuro = roundCents(
+    originalBuildingBasis + (input.capitalisedImprovementEuro ?? 0),
+  )
+  const landAndOtherBasisEuro = roundCents(totalAcquisitionCostEuro - originalBuildingBasis)
   const annualRatePercent = linearResidentialAfaRate(input.completionYear)
   const rentalBuildingBasisEuro = roundCents(depreciableBuildingBasisEuro * rentalRatio)
   const fullYearAfaEuro = roundCents(rentalBuildingBasisEuro * (annualRatePercent / 100))
