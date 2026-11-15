@@ -42,15 +42,17 @@ describe('RENT-002: separate deductible rental expenses from cash financing', ()
     })
     const base = calculateRentalExpenseBreakdown(sample)
     expect(withMorePrincipal.annualRecurringTaxableEuro).toBe(base.annualRecurringTaxableEuro)
-    expect(withMorePrincipal.annualCashBeforeIncomeTaxEuro).toBe(base.annualCashBeforeIncomeTaxEuro - 1000)
+    expect(withMorePrincipal.annualCashBeforeIncomeTaxEuro).toBe(
+      base.annualCashBeforeIncomeTaxEuro - 1000,
+    )
   })
 
   it('disallows unsupported negative amounts and inconsistent payment breakdowns', () => {
-    expect(() => calculateRentalExpenseBreakdown({
-      ...sample, wegReserveContributionEuro: -5,
-    })).toThrow()
-    expect(() => calculateRentalExpenseBreakdown({
-      ...sample, mortgagePaymentEuro: 9000,
-    })).toThrow()
+    expect(() =>
+      calculateRentalExpenseBreakdown({ ...sample, wegReserveContributionEuro: -5 }),
+    ).toThrow()
+    expect(() =>
+      calculateRentalExpenseBreakdown({ ...sample, mortgagePaymentEuro: 9000 }),
+    ).toThrow()
   })
 })
