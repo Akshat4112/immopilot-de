@@ -36,3 +36,16 @@ test('the planner remains usable on mobile @cross-browser', async ({ page }) => 
   )
   expect(outerOverflow).toBe(false)
 })
+
+test('calculates PAP-2026 wage withholding and syncs the household salary', async ({ page }) => {
+  await page.goto('./')
+  await page.getByRole('button', { name: '2026 Payroll check' }).click()
+  const panel = page.getByRole('region', { name: '2026 BMF payroll check' })
+  await expect(panel).toBeVisible()
+  await panel.getByRole('button', { name: 'Read salary from Household planner' }).click()
+  await expect(panel.getByRole('spinbutton', { name: 'Monthly taxable gross' })).toHaveValue('8333.33')
+  await panel.getByRole('spinbutton', { name: 'Monthly taxable gross' }).fill('5000')
+  await panel.getByRole('combobox', { name: 'Tax class' }).selectOption('1')
+  await panel.getByRole('combobox', { name: 'Health insurance' }).selectOption('gkv')
+  await expect(panel.getByText('Monthly Lohnsteuer:')).toBeVisible()
+})

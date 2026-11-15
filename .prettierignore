@@ -18,3 +18,10 @@ package-lock.json
 
 # Standalone wealth planner is maintained as an independent generated artifact.
 public/wealth-planner.html
+
+# External MIT-licensed/generated PAP port and incremental calculator integration.
+# Follow-up: normalize local adapter/UI formatting before modular migration.
+src/vendor/bmf-pap2026/
+src/domain/payroll2026.ts
+src/components/Payroll2026Panel.tsx
+e2e/wealth-planner.spec.ts
