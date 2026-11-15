@@ -492,6 +492,14 @@ test('UX-025 reconciles source and allocation values from the live cash ledger',
   await expect(planner.locator('#sankeyChart .sankey-link')).not.toHaveCount(0)
   await expect(planner.locator('#sankeyTableRows [data-sankey-row="principal"]')).toHaveCount(1)
   await expect(planner.locator('#sankeyTableRows [data-sankey-row="interest"]')).toHaveCount(1)
+  // Zero monthly contributions do not create a fabricated ETF purchase ribbon.
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="etfbuy"]')).toHaveCount(0)
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  const etfSection = planner.locator('#etfInputsSection')
+  if ((await etfSection.locator('.section-toggle').getAttribute('aria-expanded')) === 'false') {
+    await etfSection.locator('.section-toggle').click()
+  }
+  await planner.locator('#monthlyH').fill('500')
   await expect(planner.locator('#sankeyTableRows [data-sankey-row="etfbuy"]')).toHaveCount(1)
 })
 
