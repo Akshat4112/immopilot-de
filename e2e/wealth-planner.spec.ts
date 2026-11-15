@@ -876,8 +876,12 @@ test('UX-028 shows negative property equity and isolates hypothetical buying in 
   await planner.getByRole('tab', { name: /Compare/i }).click()
   await expect(planner.locator('#rbWarnings')).toContainText('NEW hypothetical')
   await expect(planner.locator('#rbRows tr')).toHaveCount(26)
+  // ETF-only intentionally hides home controls, so enable a home strategy before
+  // changing the hypothetical purchase's appreciation assumption.
+  await planner.getByRole('button', { name: 'All three', exact: true }).click()
   await planner.getByRole('tab', { name: /Investments/i }).click()
   await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await expect(planner.locator('#houseGrowth')).toBeVisible()
   await planner.locator('#houseGrowth').fill('-10')
   const yearOne = planner.locator('#rbRows [data-rb-year-row="1"]')
   expect(Number(await yearOne.getAttribute('data-rb-buy'))).toBeLessThan(0)
