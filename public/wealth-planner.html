@@ -2089,6 +2089,167 @@ function renderOverviewDashboard(x,sim,rent,c,projectedCash){
    :'Bars compare positive category values. They are not a verified current net-worth statement.');
 }
 
+function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
+ const panel=$('lifeEventsPanel');if(!panel)return;
+ const horizon=x.years;
+ const types={salary:'Net salary',etf:'ETF monthly contributions',refinance:'Home refinancing rate',
+  expense:'One-time expense',milestone:'Property purchase milestone'};
+ const note=$('lifeEventStatus'),number=v=>new Intl.NumberFormat('de-DE',{
+  style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+ const compact=v=>Math.abs(v)>=1000000?(v/1000000).toFixed(1)+'m':
+  Math.abs(v)>=1000?Math.round(v/1000)+'k':Math.round(v).toString();
+ const active=lifeEvents.filter(e=>e.year<=horizon);
+ const eventSim=active.some(e=>e.type!=='milestone')?simulate(x,active):baseSim;
+ const eventCash=eventSim===baseSim?baseCash:householdCashProjection(x,tax,eventSim,rent,active);
+ const upfrontRent=rent.properties.reduce((v,p)=>v+p.price-p.loan,0);
+ function points(sim,rows){
+  return sim.rows.map(sr=>{
+   const y=sr.year,rental=y?(rent.rows[y-1]?.equity||0):upfrontRent;
+   const cash=y?(rows[y-1]?.balance||0):x.cashReserve;
+   return {year:y,home:sr.homeEquity||0,rental,etf:sr.portfolio||0,cash,
+    net:(sr.homeEquity||0)+rental+(sr.portfolio||0)+cash};
+  });
+ }
+ const baseline=points(baseSim,baseCash),adjusted=points(eventSim,eventCash);
+ const rows=baseline.map((p,i)=>({year:p.year,base:p.net,next:adjusted[i].net,
+  diff:adjusted[i].net-p.net,events:active.filter(e=>e.year===p.year)}));
+ const end=rows.at(-1);
+ $('lifeBaselineTotal').textContent=number(end.base);
+ $('lifeEventsTotal').textContent=number(end.next);
+ $('lifeEventsDifference').textContent=(end.diff>=0?'+':'')+number(end.diff);
+ $('lifeEventsDifference').style.color=end.diff<-.005?'#b24752':end.diff>.005?'#0b8065':'inherit';
+ $('lifeEventYear').max=String(horizon);
+ if(Number($('lifeEventYear').value)>horizon)$('lifeEventYear').value=String(horizon);
+ const esc=safeText;
+ $('lifeEventsList').innerHTML=lifeEvents.length?
+  lifeEvents.slice().sort((a,b)=>a.year-b.year).map(e=>{
+   const inactive=e.year>horizon;
+   const amt=e.type==='milestone'?'annotation only':e.type==='refinance'?e.amount+'%':
+    (e.amount>=0?'+':'')+number(e.amount)+(e.type==='expense'?' once':'/month');
+   return '<div class="life-event-pill"><strong>Year '+e.year+
+    '</strong> '+esc(e.name||types[e.type])+' · '+amt+(inactive?' (outside selected horizon)':'')+
+    ' <button type="button" data-remove-life="'+e.id+'" aria-label="Remove '+esc(e.name||types[e.type])+
+    ' from year '+e.year+'">Remove</button></div>';
+  }).join(''):
+  '<p class="life-events-note">No life events yet. Add an event to see the future-wealth difference.</p>';
+ $('lifeEventsRows').innerHTML=rows.map(r=>{
+  const labels=r.events.map(e=>esc(e.name||types[e.type])+
+   (e.type==='milestone'?' (annotation)':'')).join(' · ');
+  return '<tr data-life-row="'+r.year+'" data-life-baseline="'+r.base.toFixed(2)+
+   '" data-life-projected="'+r.next.toFixed(2)+'" data-life-diff="'+r.diff.toFixed(2)+
+   '"><th scope="row">Year '+r.year+'</th><td>'+number(r.base)+'</td><td>'+number(r.next)+
+   '</td><td class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
+   (r.diff>=0?'+':'')+number(r.diff)+'</td><td>'+(labels||'—')+'</td></tr>';
+ }).join('');
+ const W=920,H=370,L=85,R=20,T=22,B=49,h=H-T-B,w=W-L-R;
+ const minimum=Math.min(0,...rows.flatMap(r=>[r.base,r.next]));
+ const maximum=Math.max(1000,...rows.flatMap(r=>[r.base,r.next]));
+ const min=minimum<0?minimum*1.1:0,max=maximum*1.11;
+ const X=y=>L+w*y/horizon,Y=v=>T+(max-v)/(max-min)*h,round=n=>n.toFixed(2);
+ let svg='';
+ for(let i=0;i<=4;i++){
+  const v=min+(max-min)*i/4;
+  svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+round(Y(v))+'" y2="'+round(Y(v))+
+   '" stroke="#cfddd5" stroke-width="1"/><text x="'+(L-11)+'" y="'+round(Y(v)+4)+
+   '" text-anchor="end" font-size="12" fill="#627e78">'+compact(v)+'</text>';
+ }
+ for(const y of [0,Math.floor(horizon/4),Math.floor(horizon/2),Math.floor(3*horizon/4),horizon]){
+  svg+='<text x="'+round(X(y))+'" y="'+(H-17)+
+   '" text-anchor="middle" font-size="12" fill="#627e78">'+y+'y</text>';
+ }
+ for(const e of active){
+  svg+='<line x1="'+round(X(e.year))+'" x2="'+round(X(e.year))+
+   '" y1="'+T+'" y2="'+(H-B)+'" stroke="#b78451" stroke-dasharray="3,6" opacity=".65"/>';
+ }
+ const poly=key=>rows.map(r=>round(X(r.year))+','+round(Y(r[key]))).join(' ');
+ svg+='<polyline points="'+poly('base')+'" fill="none" stroke="#5176a0" stroke-width="3.2" stroke-linejoin="round"><title>Baseline net position</title></polyline>';
+ svg+='<polyline points="'+poly('next')+'" fill="none" stroke="#14876b" stroke-width="3.5" stroke-linejoin="round"><title>With planned life events</title></polyline>';
+ for(const r of rows){
+  svg+='<g data-event-year="'+r.year+'" role="button" tabindex="0" aria-label="Year '+r.year+
+   ', events adjusted net '+number(r.next)+'"><circle cx="'+round(X(r.year))+
+   '" cy="'+round(Y(r.next))+'" r="5" fill="#fff" stroke="#14876b" stroke-width="2"/>'+
+   '<title>Year '+r.year+': '+number(r.next)+' (difference '+number(r.diff)+')</title></g>';
+ }
+ svg+='<text x="'+(L+10)+'" y="17" fill="#5176a0" font-size="13" font-weight="700">━ Baseline</text>'+
+  '<text x="'+(L+150)+'" y="17" fill="#14876b" font-size="13" font-weight="700">━ With events</text>';
+ $('lifeEventsChart').innerHTML=svg;
+ const state=window._lifeEventView||(window._lifeEventView={year:null});
+ if(state.year===null||state.year>horizon)state.year=horizon;
+ function selectYear(year){
+  const r=rows.find(z=>z.year===year);if(!r)return;
+  state.year=year;
+  $('lifeEventsDetail').textContent='Year '+r.year+': baseline '+number(r.base)+
+   ' vs events '+number(r.next)+'; change '+(r.diff>=0?'+':'')+number(r.diff)+
+   (r.events.length?'. Milestones: '+r.events.map(e=>e.name||types[e.type]).join(', '):'.');
+  for(const marker of $('lifeEventsChart').querySelectorAll('[data-event-year]')){
+   const on=Number(marker.dataset.eventYear)===year;
+   marker.setAttribute('aria-pressed',String(on));
+   marker.querySelector('circle')?.setAttribute('r',on?'7':'5');
+  }
+ }
+ state.selectYear=selectYear;
+ selectYear(state.year);
+ const ignored=lifeEvents.filter(e=>e.year>horizon).length;
+ const annotations=active.filter(e=>e.type==='milestone').length;
+ const dormant=active.filter(e=>e.type==='refinance'&&x.loan<=0||e.type==='etf'&&x.strategyEtf==='off').length;
+ note.textContent=[
+  ignored?ignored+' event(s) are outside the '+horizon+'-year projection and have no effect.':'',
+  annotations?annotations+' property milestone(s) are annotations only; acquisition cash, timing and equity are unchanged.':'',
+  dormant?dormant+' event(s) cannot affect the current strategy (no applicable mortgage or ETF).':''
+ ].filter(Boolean).join(' ');
+ if(!state.bound){
+  state.bound=true;
+  const desc={
+   salary:['Net change €/month','A change in spendable household net salary continues from the selected year. Future income tax is not recalculated.','500','-20000','20000','50'],
+   etf:['First person ETF €/month','Change in monthly ETF contributions for the first person; the amount is capped at zero after changes.','200','-10000','10000','50'],
+   refinance:['New annual interest %','New interest rate on the existing own-home loan from the selected year. Monthly payment stays fixed; loan terms may prohibit early refinancing.','4','0','25','0.1'],
+   expense:['One-time cost €','A one-time cost is deducted from modeled cash reserves in the selected year; it does not create a new asset.','10000','0','10000000','100'],
+   milestone:['Annotation only','A future purchase marker does not create a property or schedule its cash flows. Configure existing purchases in Properties.','0','0','0','1']
+  };
+  $('lifeEventType').addEventListener('change',()=>{
+   const [label,help,val,minV,maxV,step]=desc[$('lifeEventType').value];
+   $('lifeEventAmountLabel').textContent=label;
+   $('lifeEventMeaning').textContent=help;
+   $('lifeEventAmount').value=val;$('lifeEventAmount').min=minV;
+   $('lifeEventAmount').max=maxV;$('lifeEventAmount').step=step;
+   $('lifeEventAmount').disabled=$('lifeEventType').value==='milestone';
+   $('lifeEventAmount').required=$('lifeEventType').value!=='milestone';
+  });
+  $('lifeEventForm').addEventListener('submit',e=>{
+   e.preventDefault();
+   const type=$('lifeEventType').value,year=Number($('lifeEventYear').value);
+   const amount=type==='milestone'?0:Number($('lifeEventAmount').value);
+   const name=$('lifeEventName').value.trim().slice(0,60)||types[type];
+   const item={id:'evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
+    year,type,amount,name};
+   if(!validLifeEvent(item)||year>x.years){note.textContent='Enter a valid year within the current projection, and an amount within the allowed range.';return;}
+   if(lifeEvents.length>=15){note.textContent='Maximum 15 events. Remove an existing event before adding another.';return;}
+   lifeEvents.push(item);
+   $('lifeEventName').value='';
+   render();
+   $('lifeEventName').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+  $('lifeEventsList').addEventListener('click',e=>{
+   const remove=e.target.closest('[data-remove-life]');if(!remove)return;
+   lifeEvents=lifeEvents.filter(z=>z.id!==remove.dataset.removeLife);
+   render();
+   $('lifeEventName').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+  panel.addEventListener('click',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot)state.selectYear(Number(dot.dataset.eventYear));
+  });
+  panel.addEventListener('focusin',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot)state.selectYear(Number(dot.dataset.eventYear));
+  });
+  panel.addEventListener('keydown',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.selectYear(Number(dot.dataset.eventYear));}
+  });
+ }
+}
+
 function render(){
  syncStrategyUI();
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
