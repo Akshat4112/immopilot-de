@@ -60,7 +60,7 @@ test('reconciles property AfA with 2026 rental tax and cash assumptions', async 
   if ((await sectionToggle.getAttribute('aria-expanded')) === 'false') {
     await sectionToggle.click()
   }
-  await rentalInputs.locator('details summary').first().click()
+  await rentalInputs.locator('#rentalInputs .rental-property details > summary').first().click()
   const propertyDate = planner.locator('#r1_eligibleFromDate')
   await propertyDate.fill('2026-07-01')
   await expect(propertyDate).toHaveValue('2026-07-01')
@@ -121,7 +121,7 @@ test('classifies renovation from actual acquisition date, VAT and 15 percent thr
   if ((await sectionToggle.getAttribute('aria-expanded')) === 'false') {
     await sectionToggle.click()
   }
-  await rental.locator('details summary').first().click()
+  await rental.locator('#rentalInputs .rental-property details > summary').first().click()
   await planner.locator('#r1_acquisitionDate').fill('2026-01-15')
   await planner.locator('#r1_workPerformedDate').fill('2026-04-01')
   await planner.locator('#r1_renovation').fill('40000')
