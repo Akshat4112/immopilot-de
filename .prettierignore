@@ -25,3 +25,6 @@ src/vendor/bmf-pap2026/
 src/domain/payroll2026.ts
 src/components/Payroll2026Panel.tsx
 e2e/wealth-planner.spec.ts
+
+# AfA reference fixtures are kept stable for audit review.
+src/domain/rentalAfa.test.ts
