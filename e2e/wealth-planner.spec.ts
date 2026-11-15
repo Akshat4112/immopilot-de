@@ -49,3 +49,22 @@ test('calculates PAP-2026 wage withholding and syncs the household salary', asyn
   await panel.getByRole('combobox', { name: 'Health insurance' }).selectOption('gkv')
   await expect(panel.getByText('Monthly Lohnsteuer:')).toBeVisible()
 })
+
+test('reconciles property AfA with 2026 rental tax and cash assumptions', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+
+  const propertyDate = planner.locator('#r1_eligibleFromDate')
+  await propertyDate.fill('2026-07-01')
+  await expect(propertyDate).toHaveValue('2026-07-01')
+  await expect(planner.locator('#rentalAfaAudit')).toContainText('Qualifying months')
+  await expect(planner.locator('#rentalAfaAudit')).toContainText('2026 AfA')
+  await expect(planner.locator('#rentalAfaAudit')).toContainText('Principal (not deductible)')
+
+  // Changing capital improvement assumptions must not be counted as immediately
+  // deductible upkeep; it belongs to the building basis.
+  await planner.locator('#r1_renovation').fill('10000')
+  await planner.locator('#r1_renoType').selectOption('capital')
+  await expect(planner.locator('#rentalAfaAudit')).toContainText('Building basis')
+})
