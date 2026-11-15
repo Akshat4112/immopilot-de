@@ -2338,16 +2338,228 @@ function heatmapModel(x,tax,rent){const id=$('comparisonProperty').value;const p
  rows+=`<td class="${isCurrent?'selected':''}" style="background:${rgb};color:${intensity>.5?'#fff':'#253a46'}" title="Cold rent ${money(cold)}, mortgage interest ${rate.toFixed(2)}%, estimated cash flow ${money(v)} per month">${v>0?'+':''}${money(v)}</td>`;});rows+='</tr>';});
  $('heatTable').innerHTML=rows+'</tbody></table><div class="fine">Highlighted cell uses the selected property’s current inputs. For higher rents, the model assumes the same tenant charges and operating costs.</div>';
 }
-function amortizationRows(principal,rate,payment,years,fixYears,refi,extra){let loan=principal;const out=[{year:0,debt:loan,interest:0,principal:0}];for(let y=1;y<=years;y++){let int=0,prin=0;for(let m=1;m<=12;m++){const rm=((y-1)*12+m)<=fixYears*12?rate:refi;const cost=loan*rm/1200;const paid=loan>0?Math.min(payment,loan+cost):0;let paidPrincipal=paid-cost;if(loan>0&&paidPrincipal<0){loan+=-paidPrincipal;paidPrincipal=0;}else{loan=Math.max(0,loan-paidPrincipal);}int+=cost;prin+=paidPrincipal;}
- if(loan>0){const ep=Math.min(extra,loan);loan-=ep;prin+=ep;}
- out.push({year:y,debt:loan,interest:int,principal:prin});}return out;}
-function amortizationPlot(x,rent){const id=$('amortTarget').value;const prop=rent.properties.find(p=>String(p._id)===id);const args=prop?[prop.loan,prop.interest,prop.monthlyPayment,x.years,x.years+1,prop.interest,0]:[x.loan,x.rate,x.emi,x.years,x.fixYears,x.refiRate,x.extra];
- const rows=amortizationRows(...args),w=820,h=330,L=70,R=26,T=20,B=45,ww=w-L-R,hh=h-T-B,max=Math.max(1000,...rows.map(q=>q.debt),...rows.map(q=>q.interest+q.principal))*1.08;
- const X=y=>L+ww*y/Math.max(1,x.years),Y=v=>T+hh-v/max*hh;let html='';for(let i=0;i<=4;i++){const val=max*i/4,yy=Y(val);html+=svgGridLine(null,L,yy,w-R,yy)+`<text x="${L-8}" y="${yy+3}" text-anchor="end" fill="#728390" font-size="11">${compactMoney(val)}</text>`;}
- const bw=Math.min(18,ww/Math.max(2,x.years)*.66);for(const row of rows.slice(1)){const bx=X(row.year)-bw/2,base=Y(0);const ph=row.principal/max*hh,ih=row.interest/max*hh;
- html+=`<rect x="${bx}" y="${base-ph}" width="${bw}" height="${Math.max(0,ph)}" fill="#158775"><title>Year ${row.year}: principal ${money(row.principal)}</title></rect><rect x="${bx}" y="${base-ph-ih}" width="${bw}" height="${Math.max(0,ih)}" fill="#d69d55"><title>Year ${row.year}: interest ${money(row.interest)}</title></rect>`;}
- const pts=rows.map(r=>X(r.year)+','+Y(r.debt)).join(' ');html+=`<polyline points="${pts}" fill="none" stroke="#426da3" stroke-width="3"/><text x="${L}" y="${h-9}" font-size="11" fill="#718496">0y</text><text x="${w-R}" y="${h-9}" text-anchor="end" font-size="11" fill="#718496">${x.years}y</text>`;
- $('amortChart').innerHTML=html;const totInt=rows.reduce((a,b)=>a+b.interest,0),totPrin=rows.reduce((a,b)=>a+b.principal,0);$('amortStats').innerHTML=`<span>Interest over horizon ${money(totInt)}</span><span>Principal repaid ${money(totPrin)}</span><span>Remaining balance ${money(rows.at(-1).debt)}</span><span>Blue: remaining debt · Orange: interest · Green: principal</span>`;
+/* UX-029. Both paths use the same monthly mortgage identity as the home simulation:
+   closing debt = opening debt + accrued interest - scheduled payment - extra payment. */
+function amortizationRows(principal,rate,payment,years,fixYears,refi,extra){
+ let loan=Math.max(0,principal),payoffMonth=loan<=.005?0:null,negativeAmort=false;
+ let cumInterest=0,cumPaid=0,cumExtra=0;
+ const rows=[{year:0,opening:loan,debt:loan,interest:0,paid:0,principal:0,
+  extraPaid:0,unpaid:0,netReduction:0,cumInterest:0,cumPaid:0,cumExtra:0}];
+ for(let y=1;y<=years;y++){
+  const opening=loan;
+  let annualInterest=0,annualPaid=0,annualPrincipal=0,annualExtra=0,annualUnpaid=0;
+  for(let m=1;m<=12;m++){
+   const month=(y-1)*12+m;
+   const interest=loan>0?loan*((month<=fixYears*12?rate:refi)/1200):0;
+   const paid=loan>0?Math.min(Math.max(0,payment),loan+interest):0;
+   const unpaid=Math.max(0,interest-paid);
+   const principalPaid=Math.max(0,paid-interest);
+   annualInterest+=interest;annualPaid+=paid;annualUnpaid+=unpaid;
+   annualPrincipal+=principalPaid;
+   if(unpaid>.005)negativeAmort=true;
+   loan=Math.max(0,loan+interest-paid);
+   if(loan<=.005&&payoffMonth===null)payoffMonth=month;
+  }
+  if(loan>0){
+   annualExtra=Math.min(Math.max(0,extra),loan);
+   loan=Math.max(0,loan-annualExtra);
+   if(loan<=.005&&payoffMonth===null)payoffMonth=y*12;
+  }
+  cumInterest+=annualInterest;cumPaid+=annualPaid;cumExtra+=annualExtra;
+  rows.push({year:y,opening,debt:loan,interest:annualInterest,paid:annualPaid,
+   principal:annualPrincipal,extraPaid:annualExtra,unpaid:annualUnpaid,
+   netReduction:opening-loan,cumInterest,cumPaid,cumExtra});
+ }
+ return {rows,payoffMonth,negativeAmort};
+}
+function amortizationPlot(x,rent){
+ const root=$('amortPanel'),id=$('amortTarget').value;
+ const prop=rent.properties.find(p=>String(p._id)===id);
+ const state=window._mortgageExplorer||(window._mortgageExplorer={
+  mode:'equity',view:window.matchMedia&&window.matchMedia('(max-width: 600px)').matches?'table':'chart',
+  range:'all',year:null,bound:false});
+ state.refs={x,rent};
+ const isRental=Boolean(prop),value=isRental?prop.price:(x.housingType==='tenant'?0:x.price);
+ const principal=isRental?prop.loan:x.loan;
+ const interest=isRental?prop.interest:x.rate;
+ const monthlyPayment=isRental?prop.monthlyPayment:x.emi;
+ const fixYears=isRental?101:x.fixYears,refi=isRental?prop.interest:x.refiRate;
+ const regularExtra=isRental?0:x.extra,additional=x.mortgageExtraWhatIf;
+ const growth=isRental?prop.appreciation:x.houseGrowth;
+ const base=amortizationRows(principal,interest,monthlyPayment,x.years,fixYears,refi,regularExtra);
+ const whatIf=amortizationRows(principal,interest,monthlyPayment,x.years,fixYears,refi,regularExtra+additional);
+ const maxYear=state.range==='all'?x.years:Math.min(x.years,Number(state.range));
+ const fullBase=amortizationRows(principal,interest,monthlyPayment,100,fixYears,refi,regularExtra);
+ const fullWith=amortizationRows(principal,interest,monthlyPayment,100,fixYears,refi,regularExtra+additional);
+ const all=base.rows.map((b,i)=>{
+  const alt=whatIf.rows[i],propertyValue=value*Math.pow(1+growth/100,i);
+  return {...b,altDebt:alt.debt,altEquity:propertyValue-alt.debt,
+   equity:propertyValue-b.debt,propertyValue,interestSaved:b.cumInterest-alt.cumInterest,
+   altInterest:alt.interest,altExtra:alt.extraPaid,altUnpaid:alt.unpaid,
+   altCumInterest:alt.cumInterest,altCumPaid:alt.cumPaid,altCumExtra:alt.cumExtra};
+ });
+ const rows=all.filter(r=>r.year<=maxYear);
+ if(state.year===null||state.year>maxYear)state.year=maxYear;
+ const final=rows.at(-1),endBase=fullBase.payoffMonth,endAlt=fullWith.payoffMonth;
+ const payoff=m=>m===0?'Already repaid':m===null?'Not repaid within 100y':((m/12).toFixed(1)+' years');
+ const saving=final.interestSaved;
+ set('amortBaseDebt',money(final.debt));
+ set('amortWhatIfDebt',money(final.altDebt));
+ set('amortInterestSaved',(saving>=0?'+':'−')+money(Math.abs(saving)));
+ set('amortPayoff',payoff(endBase)+' → '+payoff(endAlt));
+ root.dataset.mortgageOpening=principal.toFixed(2);
+ root.dataset.mortgageSelected=id;
+ root.dataset.mortgageHorizon=String(maxYear);
+ const warnings=[];
+ if(principal<=.005)warnings.push('No outstanding mortgage for this target. Extra repayments have no effect.');
+ if(base.negativeAmort||whatIf.negativeAmort)
+  warnings.push('Scheduled payments do not cover all accrued interest in at least one month. Unpaid interest increases debt; inspect the table before relying on the payoff forecast.');
+ if(isRental&&additional>0)
+  warnings.push('Rental interest deductions and annual rental taxes are NOT recalculated for this extra-repayment what-if.');
+ if(principal>0&&additional>0)
+  warnings.push('Additional repayments require cash not deducted from household savings or ETFs here. Check lender Sondertilgung limits and possible charges.');
+ let discrepancy=0;
+ if(isRental){
+  const canonical=rent.perProperty.find(r=>r.info._id===prop._id);
+  if(canonical)for(let y=1;y<=x.years;y++)
+   discrepancy=Math.max(discrepancy,Math.abs(all[y].debt-canonical.years[y-1].loan));
+ }else{
+  const canonical=simulate(x).rows;
+  for(let y=0;y<=x.years;y++)
+   discrepancy=Math.max(discrepancy,Math.abs(all[y].debt-canonical[y].mortgage));
+ }
+ root.dataset.mortgageReconciled=String(discrepancy<=.05);
+ if(discrepancy>.05)warnings.push('Baseline loan differs from the underlying household/rental schedule by up to '+
+  money(discrepancy)+'. In particular, the rental tax model may treat unpaid interest differently. Verify before relying on any comparison.');
+ $('amortWarning').textContent=warnings.join(' ');
+ $('amortRows').innerHTML=rows.map(r=>{
+  const nums=[r.propertyValue,r.opening,r.interest,r.paid,r.extraPaid,r.unpaid,
+   r.netReduction,r.debt,r.equity,r.altDebt,r.altEquity,r.altExtra,r.interestSaved];
+  return '<tr tabindex="0" data-amort-row="'+r.year+'" aria-selected="'+(state.year===r.year)+
+   '" data-amort-open="'+r.opening.toFixed(2)+'" data-amort-interest="'+r.interest.toFixed(2)+
+   '" data-amort-paid="'+r.paid.toFixed(2)+'" data-amort-extra="'+r.extraPaid.toFixed(2)+
+   '" data-amort-debt="'+r.debt.toFixed(2)+'" data-amort-alt-debt="'+r.altDebt.toFixed(2)+
+   '" data-amort-equity="'+r.equity.toFixed(2)+'" data-amort-alt-equity="'+r.altEquity.toFixed(2)+
+   '" data-amort-unpaid="'+r.unpaid.toFixed(2)+'" data-amort-interest-saved="'+r.interestSaved.toFixed(2)+
+   '"><th scope="row">Year '+r.year+'</th>'+
+   nums.map(n=>'<td'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
+ }).join('');
+ const mode=state.mode;
+ const lineSpecs=mode==='equity'?
+  [['propertyValue','Property market value','#667fa7'],['debt','Baseline debt','#b35e67'],
+   ['altDebt','What-if debt','#8a70b9'],['equity','Baseline equity','#177b68'],
+   ['altEquity','What-if equity','#d1964b']]:
+  mode==='savings'?
+  [['cumInterest','Baseline accrued interest','#b35e67'],['altCumInterest','What-if accrued interest','#8a70b9'],
+   ['interestSaved','Cumulative interest avoided','#177b68']]:[];
+ const key=mode==='equity'?'equity':mode==='savings'?'interestSaved':'interest';
+ const allVals=mode==='payments'?rows.flatMap(r=>[r.interest,r.principal,r.extraPaid]):
+  rows.flatMap(r=>lineSpecs.map(z=>r[z[0]]));
+ const minRaw=Math.min(0,...allVals),maxRaw=Math.max(1000,...allVals);
+ const low=minRaw<0?minRaw*1.12:0,high=maxRaw*1.12;
+ const W=920,H=380,L=92,R=23,T=27,B=50,w=W-L-R,h=H-T-B;
+ const X=year=>L+w*year/Math.max(1,maxYear),Y=v=>T+(high-v)/(high-low)*h,fmt=v=>Number(v).toFixed(2);
+ const label=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'m':Math.abs(v)>=1000?Math.round(v/1000)+'k':Math.round(v).toString();
+ let svg='';
+ for(let t=0;t<=4;t++){
+  const v=low+(high-low)*t/4,yy=Y(v);
+  svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+fmt(yy)+'" y2="'+fmt(yy)+
+   '" stroke="#d7e4dd"/><text x="'+(L-9)+'" y="'+fmt(yy+4)+
+   '" font-size="12" text-anchor="end" fill="#637e77">'+label(v)+'</text>';
+ }
+ const ticks=[...new Set([0,Math.min(5,maxYear),Math.min(10,maxYear),Math.min(20,maxYear),maxYear])].sort((a,b)=>a-b);
+ for(const tick of ticks)svg+='<text x="'+fmt(X(tick))+'" y="'+(H-17)+
+  '" font-size="12" text-anchor="middle" fill="#637e77">'+tick+'y</text>';
+ let legend=[];
+ if(mode==='payments'){
+  const gap=Math.min(17,w/Math.max(2,maxYear)*.75),bw=gap/3.6;
+  legend=[['Accrued interest','#cf9754'],['Scheduled principal','#177b68'],['Regular extra paid','#8a70b9']];
+  for(const r of rows.slice(1)){
+   for(const [j,amount,color] of [[0,r.interest,'#cf9754'],[1,r.principal,'#177b68'],[2,r.extraPaid,'#8a70b9']]){
+    const xx=X(r.year)-gap/2+j*bw,y=Y(Math.max(0,amount));
+    svg+='<rect x="'+fmt(xx)+'" y="'+fmt(y)+'" width="'+fmt(bw)+'" height="'+fmt(Y(0)-y)+
+     '" fill="'+color+'"><title>Year '+r.year+': '+money(amount)+'</title></rect>';
+   }
+  }
+ }else{
+  legend=lineSpecs.map(q=>[q[1],q[2]]);
+  for(const [index,[propKey,name,color]] of lineSpecs.entries()){
+   const pts=rows.map(r=>fmt(X(r.year))+','+fmt(Y(r[propKey]))).join(' ');
+   svg+='<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="'+(index>=3?'3.1':'2.5')+
+    '" stroke-linejoin="round"'+(propKey==='altDebt'||propKey==='altEquity'?' stroke-dasharray="7,4"':'')+
+    '><title>'+name+'</title></polyline>';
+  }
+ }
+ for(const r of rows){
+  svg+='<g role="button" data-amort-year="'+r.year+'" tabindex="0" aria-label="Year '+r.year+
+   ', debt '+money(r.debt)+'; interest avoided '+money(r.interestSaved)+'"><circle class="mortgage-year-dot" cx="'+
+   fmt(X(r.year))+'" cy="'+fmt(Y(r[key]))+'" r="5"><title>Year '+r.year+': '+money(r[key])+'</title></circle></g>';
+ }
+ $('amortChart').innerHTML=svg;
+ $('amortChart').setAttribute('aria-label',
+  (mode==='equity'?'Property value, mortgage debt and equity':mode==='payments'?
+   'Annual accrued mortgage interest, principal and regular extra repayments':'Cumulative accrued interest and modeled interest avoided')+
+   ' for years zero to '+maxYear);
+ $('amortLegend').innerHTML=legend.map(([name,color])=>'<span><i style="background:'+color+'"></i>'+name+'</span>').join('');
+ function focusYear(year){
+  const r=rows.find(q=>q.year===year);if(!r)return;
+  state.year=year;
+  $('amortDetail').textContent='Year '+year+': opening debt '+money(r.opening)+
+   ' + interest '+money(r.interest)+' − scheduled paid '+money(r.paid)+
+   ' − regular extra '+money(r.extraPaid)+' = closing debt '+money(r.debt)+
+   '. Property value '+money(r.propertyValue)+'; baseline equity '+money(r.equity)+
+   ', with additional repayments '+money(r.altEquity)+'. Cumulative interest avoided '+money(r.interestSaved)+'.';
+  for(const node of $('amortChart').querySelectorAll('[data-amort-year]'))
+   node.classList.toggle('selected',Number(node.dataset.amortYear)===year);
+  for(const row of $('amortRows').querySelectorAll('[data-amort-row]'))
+   row.setAttribute('aria-selected',String(Number(row.dataset.amortRow)===year));
+ }
+ state.focusYear=focusYear;focusYear(state.year);
+ const totInt=final.cumInterest,totExtra=final.cumExtra,totAltExtra=final.altCumExtra;
+ $('amortStats').innerHTML='<span>Interest accrued '+money(totInt)+'</span>'+
+  '<span>Regular extra repayments '+money(totExtra)+'</span>'+
+  '<span>What-if extra repayments '+money(totAltExtra)+'</span>'+
+  '<span>Equity advantage '+money(final.altEquity-final.equity)+' (cash-funded)</span>';
+ for(const btn of root.querySelectorAll('[data-mortgage-mode]'))
+  btn.setAttribute('aria-pressed',String(btn.dataset.mortgageMode===state.mode));
+ for(const btn of root.querySelectorAll('[data-mortgage-view]'))
+  btn.setAttribute('aria-pressed',String(btn.dataset.mortgageView===state.view));
+ $('mortgageYears').value=state.range;
+ $('amortChartPane').hidden=state.view!=='chart';
+ $('amortTablePane').hidden=state.view!=='table';
+ if(!state.bound){
+  state.bound=true;
+  root.addEventListener('click',e=>{
+   const mode=e.target.closest('[data-mortgage-mode]'),view=e.target.closest('[data-mortgage-view]'),
+    yr=e.target.closest('[data-amort-year],[data-amort-row]');
+   if(mode||view){
+    if(mode)state.mode=mode.dataset.mortgageMode;
+    if(view)state.view=view.dataset.mortgageView;
+    amortizationPlot(state.refs.x,state.refs.rent);
+   }else if(yr)state.focusYear(Number(yr.dataset.amortYear??yr.dataset.amortRow));
+  });
+  root.addEventListener('change',e=>{
+   if(e.target.id==='mortgageYears'){
+    state.range=e.target.value;
+    amortizationPlot(state.refs.x,state.refs.rent);
+   }
+  });
+  root.addEventListener('focusin',e=>{
+   const yr=e.target.closest('[data-amort-year],[data-amort-row]');
+   if(yr)state.focusYear(Number(yr.dataset.amortYear??yr.dataset.amortRow));
+  });
+  root.addEventListener('pointerover',e=>{
+   const yr=e.target.closest('[data-amort-year]');
+   if(yr&&state.year!==Number(yr.dataset.amortYear))
+    state.focusYear(Number(yr.dataset.amortYear));
+  });
+  root.addEventListener('keydown',e=>{
+   const yr=e.target.closest('[data-amort-year],[data-amort-row]');
+   if(yr&&(e.key==='Enter'||e.key===' ')){
+    e.preventDefault();state.focusYear(Number(yr.dataset.amortYear??yr.dataset.amortRow));
+   }
+  });
+ }
 }
 function gaussian(prng){const u=Math.max(1e-12,prng()),v=Math.max(1e-12,prng());return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function seededRandom(seed){let z=seed>>>0;return ()=>{z=(Math.imul(1664525,z)+1013904223)>>>0;return z/4294967296;};}
