@@ -266,3 +266,69 @@ test('UX-022 KPI grid remains readable on mobile without hiding the goal launche
   expect(dashboardBox?.width).toBeLessThanOrEqual(376)
   await page.screenshot({ path: test.info().outputPath('explorer-ux022-mobile.png') })
 })
+
+test('UX-023 essentials retains core inputs and advanced mortgage values without recalculating them away', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/ }).click()
+  await expect(planner.getByRole('button', { name: 'Essentials', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(planner.locator('#price')).toBeVisible()
+  await expect(planner.locator('#emi')).toBeVisible()
+  await expect(planner.locator('#refiRate')).toBeHidden()
+
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await expect(planner.locator('#refiRate')).toBeVisible()
+  await planner.locator('#refiRate').fill('6.25')
+  await planner.locator('#price').fill('245000')
+  await planner.getByRole('button', { name: 'Essentials', exact: true }).click()
+  await expect(planner.locator('#refiRate')).toBeHidden()
+  await expect(planner.locator('#uxInputStatus')).toContainText('customized advanced')
+  await expect(planner.locator('#refiRate')).toHaveValue('6.25')
+  await expect(planner.locator('#price')).toHaveValue('245000')
+
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await expect(planner.locator('#refiRate')).toBeVisible()
+  await expect(planner.locator('#refiRate')).toHaveValue('6.25')
+  await expect(planner.locator('#price')).toHaveValue('245000')
+})
+
+test('UX-023 investments show a short input form with financial explanations', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await planner.getByRole('tab', { name: /Investments/ }).click()
+  await expect(planner.locator('#husband')).toBeVisible()
+  await expect(planner.locator('#ret')).toBeVisible()
+  await expect(planner.locator('#allow')).toBeHidden()
+  await expect(planner.locator('#uxInputContext')).toContainText('ETFs')
+
+  const terms = planner.locator('#etfInputsSection').getByText('Explain financial terms')
+  await terms.click()
+  await expect(planner.locator('#etfInputsSection')).toContainText('Vorabpauschale')
+  await expect(planner.locator('#etfInputsSection')).toContainText('does not yet accurately model')
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await expect(planner.locator('#allow')).toBeVisible()
+})
+
+test('UX-023 input density controls are mobile usable and do not change strategy', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/ }).click()
+  await expect(planner.locator('#uxInputToolbar')).toBeVisible()
+  await expect(planner.getByRole('button', { name: 'Essentials', exact: true })).toBeVisible()
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await expect(planner.locator('#strategyEtf')).toHaveValue('on')
+  await expect(planner.locator('#strategyRental')).toHaveValue('on')
+  await expect(planner.locator('#homeMode')).toHaveValue('buy')
+  await page.screenshot({ path: test.info().outputPath('explorer-ux023-mobile.png') })
+})
