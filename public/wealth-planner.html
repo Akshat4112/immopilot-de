@@ -452,6 +452,54 @@ body[data-theme="dark"] .scenario-save-status[data-dirty="true"]{background:#514
 }
 @media print{.scenario-quickbar{display:none!important}}
 
+
+/* UX-025 — cash-flow Sankey and table view with source-reconciled values. */
+body:not([data-view="overview"]) #cashSankeyPanel{display:none!important}
+.cash-sankey-panel{padding:clamp(15px,2vw,25px);margin:0 0 17px;border:1px solid var(--ux-line,#dae6e0);border-radius:18px}
+.sankey-head{display:flex;align-items:flex-start;justify-content:space-between;gap:13px;flex-wrap:wrap}
+.sankey-head h2{font-size:1.13rem;letter-spacing:-.025em;margin:0 0 5px}
+.sankey-head p{font-size:.79rem;color:var(--muted);line-height:1.55;margin:0;max-width:730px}
+.sankey-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 5px}
+.sankey-segments{display:inline-flex;gap:3px;padding:4px;background:#eaf2ed;border-radius:11px}
+.sankey-segments button{border:0;border-radius:8px;background:transparent;color:#3e665c;cursor:pointer;
+ min-height:37px;padding:7px 12px;font-size:.77rem;font-weight:750}
+.sankey-segments button[aria-pressed="true"]{background:#176b5e;color:white;box-shadow:0 2px 5px #143a3221}
+.sankey-segments button:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.sankey-scroll{overflow-x:auto;overflow-y:hidden;border:1px solid var(--ux-line,#dae6e0);border-radius:13px;
+ margin-top:12px;background:var(--ux-surface-soft,#f4f8f5);scrollbar-width:thin}
+.sankey-svg{min-width:830px;width:100%;height:auto;display:block;overflow:visible}
+.sankey-link{opacity:.41;cursor:pointer;transition:opacity .15s ease;stroke:none}
+.sankey-link:hover,.sankey-link.selected,.sankey-link:focus-visible{opacity:.82;stroke:#344e4a;stroke-width:.4px;outline:none}
+.sankey-pool{fill:#356e65}
+.sankey-center-label{fill:var(--ink,#203c3b);font-size:11px;font-weight:800;letter-spacing:1.25px}
+.sankey-node-title{font-size:12px;font-weight:760;fill:var(--ink,#203c3b)}
+.sankey-node-amount{font-size:12px;fill:var(--muted,#647b79);font-variant-numeric:tabular-nums}
+.sankey-details{font-size:.78rem;line-height:1.6;margin:10px 0 3px;min-height:34px;color:var(--ink)}
+.sankey-balance{font-size:.78rem;margin:9px 0 4px;color:#11684f;font-weight:750}
+.sankey-balance.sankey-warning,.sankey-funding-warning{color:#b34d58}
+.sankey-funding-warning{font-weight:760;font-size:.81rem;margin:8px 0}
+.sankey-footnote{font-size:.74rem;color:var(--muted);line-height:1.6;margin:7px 0 0}
+.sankey-table-scroll{overflow-x:auto;max-width:100%;margin-top:12px;border:1px solid var(--ux-line,#dae6e0);border-radius:12px}
+.sankey-table{width:100%;border-collapse:collapse;min-width:620px}
+.sankey-table th,.sankey-table td{padding:9px 11px;border-bottom:1px solid var(--ux-line,#dae6e0);
+ font-size:.79rem;vertical-align:top;text-align:left;line-height:1.45}
+.sankey-table thead{background:#e8f3ec}
+.sankey-table .numeric{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:750}
+.sankey-table tfoot{background:#eaf3ee}
+.sankey-empty{padding:30px;text-align:center;font-size:.85rem;color:var(--muted)}
+#sankeyChartScroll[hidden],#sankeyTableWrap[hidden],#sankeyFundingWarning[hidden]{display:none!important}
+body[data-theme="dark"] .cash-sankey-panel{background:#1a2836;border-color:#354e52}
+body[data-theme="dark"] .sankey-segments{background:#29403e}
+body[data-theme="dark"] .sankey-segments button{color:#cee4df}
+body[data-theme="dark"] .sankey-segments button[aria-pressed="true"]{background:#176b5e;color:white}
+body[data-theme="dark"] .sankey-scroll{background:#20343b}
+body[data-theme="dark"] .sankey-table thead,body[data-theme="dark"] .sankey-table tfoot{background:#233c3b}
+body[data-theme="dark"] .sankey-balance{color:#7ad6b0}
+body[data-theme="dark"] .sankey-balance.sankey-warning,body[data-theme="dark"] .sankey-funding-warning{color:#f6a9b3}
+@media(max-width:600px){.cash-sankey-panel{padding:13px}.sankey-segments{flex:1}.sankey-segments button{flex:1;padding:8px 5px}}
+@media(prefers-reduced-motion:reduce){.sankey-link{transition:none!important}}
+@media print{.sankey-scroll,.sankey-actions{display:none!important}#sankeyTableWrap{display:block!important}.cash-sankey-panel{break-inside:avoid}}
+
 </style>
 </head>
 <body><main>
@@ -515,6 +563,37 @@ body[data-theme="dark"] .scenario-save-status[data-dirty="true"]{background:#514
    <div class="overview-actions"><button type="button" class="btn" data-overview-jump="compare">Compare strategies</button><button type="button" class="btn" data-overview-jump="investments">Explore investments</button></div>
   </div>
  </div>
+</section>
+
+<section class="card cash-sankey-panel" id="cashSankeyPanel" aria-labelledby="sankeyHeading">
+ <div class="sankey-head">
+  <div><h2 id="sankeyHeading">Your money flow</h2>
+   <p>Follow your household take-home income and other receipts through housing, debt repayment, daily costs, ETF investments and remaining cash.</p></div>
+  <span class="fine" id="sankeyPeriodName">per month</span>
+ </div>
+ <div class="sankey-actions">
+  <div class="sankey-segments" role="group" aria-label="Cash flow time basis">
+   <button type="button" data-sankey-period="month" aria-pressed="true">Monthly</button>
+   <button type="button" data-sankey-period="year" aria-pressed="false">Annual run-rate</button>
+  </div>
+  <div class="sankey-segments" role="group" aria-label="Cash flow presentation">
+   <button type="button" data-sankey-view="diagram" aria-pressed="true">Diagram</button>
+   <button type="button" data-sankey-view="table" aria-pressed="false">Table</button>
+  </div>
+ </div>
+ <div id="sankeyChartScroll" class="sankey-scroll" role="region" aria-label="Interactive household cash-flow diagram (horizontally scrollable)" tabindex="0">
+  <div id="sankeyChart">Calculating cash flows…</div>
+ </div>
+ <div id="sankeyTableWrap" class="sankey-table-scroll" hidden role="region" aria-label="Cash-flow detail table" tabindex="0">
+  <table class="sankey-table">
+   <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Explanation</th></tr></thead>
+   <tbody id="sankeyTableRows"></tbody><tfoot id="sankeyTableFoot"></tfoot>
+  </table>
+ </div>
+ <p id="sankeyDetail" class="sankey-details" aria-live="polite">Select or focus a flow to understand what it represents. Each line is proportional to its value.</p>
+ <p id="sankeyAccounting" class="sankey-balance" role="status" aria-live="polite">Reconciling the household ledger…</p>
+ <p id="sankeyFundingWarning" class="sankey-funding-warning" hidden></p>
+ <p class="sankey-footnote"><strong>Important:</strong> Sources start at take-home salary, not gross pay; payroll deductions are already reflected in net income. The central band pools available cash, not a direct source-to-expense assignment. Mortgage principal, ETF contributions and cash transfers build assets rather than consumption expenses. Rental tax is a timing estimate. Annual run-rate is 12 × the current month, not a forecast.</p>
 </section>
 
 <section class="card goal-launch" id="goalLauncher" aria-label="Choose your financial goal">
@@ -922,6 +1001,7 @@ body[data-theme="dark"] .scenario-save-status[data-dirty="true"]{background:#514
 </div><section class="card content-card glossary" id="glossary"><h2>German finance glossary and calculation notes</h2><div class="glossary-grid"><details><summary>AfA — building depreciation</summary><p>Depreciation can reduce taxable rental income, but not own-use income. The applicable rate and building share depend on property facts and dates.</p></details><details><summary>Werbungskosten — rental expenses</summary><p>Eligible rental-related expenses may include interest, management and qualifying repairs. Mortgage principal is not deductible.</p></details><details><summary>Hausgeld and maintenance reserve</summary><p>Some owner charges can be passed to tenants. Contributions to a WEG maintenance reserve are generally not immediately tax-deductible merely upon payment.</p></details><details><summary>Sondertilgung — extra mortgage repayment</summary><p>An optional additional principal payment, subject to mortgage terms, can reduce future interest costs.</p></details><details><summary>Vorabpauschale — ETF advance taxation</summary><p>German fund taxation can create a taxable amount even without a sale; the calculator provides only approximate ETF tax estimates.</p></details><details><summary>Cash flow vs investment returns</summary><p>Unrealized ETF growth is not spendable cash. Tax benefits may arise only at assessment or through adjusted withholding.</p></details></div><p class="fine">Planning tool, not individual tax or investment advice. Recheck current German tax rules and lender terms.</p></section>
 <dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle"><div class="guide-inner"><div class="scenario-head"><h2 id="guideTitle">Set up your financial plan</h2><button class="btn" id="closeGuide" type="button">Close</button></div><div id="guideStepText" aria-live="polite"></div><div class="flexbuttons" style="justify-content:space-between"><button class="btn" id="guideBack" type="button">Back</button><button class="btn primary" id="guideNext" type="button">Next</button></div></div></dialog>
 </main>
+<script src="./wealth-sankey.js"></script>
 <script>
 /* UX-022: navigation-only controls; never persist or change financial values. */
 document.querySelectorAll('[data-overview-jump]').forEach(button=>button.addEventListener('click',()=>{
@@ -1547,7 +1627,7 @@ function render(){
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderOverviewDashboard(x,sim,rent,c,projectedCash);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
