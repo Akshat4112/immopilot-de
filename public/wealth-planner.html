@@ -328,6 +328,63 @@ body[data-theme="dark"] .guide-progress-meter i.active{background:#75c9ac}
 }
 @media print{.goal-launch,.guide-dialog{display:none!important}}
 
+
+/* UX-022 — financially reconciled overview, no new calculation assumptions. */
+body:not([data-view="overview"]) #overviewDashboard{display:none!important}
+.overview-dashboard{margin:0 0 17px}
+.overview-dashboard .overview-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.overview-heading h2{font-size:1.18rem;letter-spacing:-.025em;margin:0 0 5px}
+.overview-heading p{font-size:.8rem;color:var(--muted);margin:0;max-width:680px}
+.overview-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.overview-kpi{background:var(--ux-surface);border:1px solid var(--ux-line);border-radius:15px;padding:18px;min-width:0;box-shadow:var(--ux-shadow)}
+.overview-kpi.featured{background:linear-gradient(145deg,#174a45,#28625d);color:white;border-color:#245a52}
+.overview-kpi .kpi-caption{display:flex;justify-content:space-between;align-items:start;gap:8px;font-size:.76rem;line-height:1.4;font-weight:650;min-height:36px}
+.overview-kpi .kpi-number{font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;font-size:clamp(1.24rem,2vw,1.9rem);overflow-wrap:anywhere;line-height:1.2;margin:11px 0 7px}
+.overview-kpi .kpi-explain{font-size:.71rem;line-height:1.5;color:var(--ux-muted);margin:0}
+.overview-kpi.featured .kpi-caption,.overview-kpi.featured .kpi-explain{color:#d4eee5}
+.overview-kpi .kpi-number.red{color:#ad3a45}
+.overview-kpi.featured .kpi-number.red{color:#ffd6c8}
+.overview-panels{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:13px;margin-top:13px}
+.overview-panel{background:var(--ux-surface);border:1px solid var(--ux-line);border-radius:15px;padding:19px;min-width:0;box-shadow:var(--ux-shadow)}
+.overview-panel h3{font-size:1rem;letter-spacing:-.018em;margin:0 0 4px}
+.overview-panel .overview-subtitle{font-size:.76rem;color:var(--ux-muted);margin:0 0 16px;line-height:1.5}
+.overview-panel .summary-total{display:flex;align-items:baseline;justify-content:space-between;gap:9px;font-size:.78rem;font-weight:650;margin-bottom:11px}
+.overview-panel .summary-total strong{font-size:1rem;font-variant-numeric:tabular-nums}
+.overview-bar-row{display:grid;grid-template-columns:minmax(115px,1fr) minmax(70px,.7fr);gap:6px 12px;align-items:baseline;margin:12px 0}
+.overview-bar-label{font-size:.8rem;font-weight:650;color:var(--ink)}
+.overview-bar-amount{font-size:.8rem;font-weight:750;text-align:right;font-variant-numeric:tabular-nums}
+.overview-bar-track{height:9px;border-radius:999px;background:#e9f0eb;grid-column:1/-1;overflow:hidden}
+.overview-bar-fill{height:100%;width:0;border-radius:999px;transition:width .18s ease}
+.overview-bar-fill.housing{background:#397eac}
+.overview-bar-fill.living{background:#cf956c}
+.overview-bar-fill.etfs{background:#8068b8}
+.overview-bar-fill.saving{background:#b9a359}
+.overview-bar-fill.free{background:#17876a}
+.overview-bar-fill.owner{background:#397eac}
+.overview-bar-fill.rental{background:#8068b8}
+.overview-bar-fill.funds{background:#17876a}
+.overview-callout{margin-top:12px;border-top:1px solid var(--ux-line);padding-top:12px;font-size:.77rem;color:var(--ux-muted);line-height:1.55}
+.overview-callout.warning{color:#a8434b;font-weight:650}
+.overview-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.overview-actions button{font-size:.76rem}
+.overview-details{margin-top:11px;font-size:.72rem;color:var(--ux-muted);line-height:1.65}
+body[data-theme="dark"] .overview-kpi,body[data-theme="dark"] .overview-panel{background:#1a2836}
+body[data-theme="dark"] .overview-kpi.featured{background:linear-gradient(145deg,#214940,#24544d)}
+body[data-theme="dark"] .overview-kpi .kpi-number.red,body[data-theme="dark"] .overview-callout.warning{color:#f6a3a3}
+body[data-theme="dark"] .overview-bar-track{background:#33474b}
+body[data-theme="dark"] .overview-bar-label{color:#e5f2ef}
+@media(max-width:1070px){.overview-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.overview-panels{grid-template-columns:1fr}}
+@media(max-width:420px){
+ .overview-kpi-grid{gap:8px}
+ .overview-kpi{padding:13px}
+ .overview-kpi .kpi-number{font-size:1.22rem}
+ .overview-kpi .kpi-caption{font-size:.69rem}
+ .overview-kpi .kpi-explain{font-size:.66rem}
+ .overview-panel{padding:15px}
+}
+@media print{.overview-kpi,.overview-panel{box-shadow:none!important;background:white!important;color:#111!important}}
+
 </style>
 </head>
 <body><main>
@@ -342,6 +399,56 @@ body[data-theme="dark"] .guide-progress-meter i.active{background:#75c9ac}
 </nav>
 <div class="view-intro" id="viewIntro" aria-live="polite"><div><strong id="viewTitle">Your financial overview</strong><p id="viewDescription">Live household cash flow, property impact and investment performance at a glance.</p></div><button id="editAllInputs" class="btn" type="button">Edit assumptions</button></div>
 <div class="sticky-kpis" aria-label="Live household status"><span>Free cash <strong id="stickyFree">—</strong></span><span>Net income <strong id="stickyNet">—</strong></span><span>Rental cash <strong id="stickyRental">—</strong></span></div>
+
+<section id="overviewDashboard" class="overview-dashboard" aria-label="Financial overview dashboard">
+ <div class="overview-heading"><div><h2>Your financial picture</h2><p>Current household planning inputs and modeled outcomes. See what you can spend, what you invest, and how property debt affects wealth.</p></div><span class="fine">EUR · illustrative, not account balances</span></div>
+ <div class="overview-kpi-grid">
+  <article class="overview-kpi featured">
+   <div class="kpi-caption"><span>Monthly cash left</span><span aria-hidden="true">↗</span></div>
+   <div id="overviewFreeCash" class="kpi-number" aria-live="polite">—</div>
+   <p class="kpi-explain">After modeled living costs, debt service and planned savings</p>
+  </article>
+  <article class="overview-kpi">
+   <div class="kpi-caption"><span>ETF portfolio today</span><span aria-hidden="true">◈</span></div>
+   <div id="overviewEtfValue" class="kpi-number" aria-live="polite">—</div>
+   <p class="kpi-explain">Entered investment value, before selling taxes</p>
+  </article>
+  <article class="overview-kpi">
+   <div class="kpi-caption"><span>Property equity at purchase / now</span><span aria-hidden="true">⌂</span></div>
+   <div id="overviewOpeningEquity" class="kpi-number" aria-live="polite">—</div>
+   <p id="overviewEquityNote" class="kpi-explain">Modeled owner and rental property equity, net of loans</p>
+  </article>
+  <article class="overview-kpi">
+   <div class="kpi-caption"><span id="overviewFutureLabel">Projected wealth position</span><span aria-hidden="true">◫</span></div>
+   <div id="overviewFutureWealth" class="kpi-number" aria-live="polite">—</div>
+   <p class="kpi-explain">Modeled equity + ETFs + cash. Before sale taxes and fees.</p>
+  </article>
+ </div>
+ <div class="overview-panels">
+  <div class="overview-panel" aria-labelledby="overviewMonthlyTitle">
+   <h3 id="overviewMonthlyTitle">Where your monthly money goes</h3>
+   <p class="overview-subtitle">Planned uses of spendable cash. Mortgage payments include principal building equity.</p>
+   <div class="summary-total"><span>Available for allocation</span><strong id="overviewAvailable">—</strong></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Housing and extra repayments</span><strong class="overview-bar-amount" id="overviewHousingAmt">—</strong><div class="overview-bar-track"><div id="overviewHousingBar" class="overview-bar-fill housing"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Living costs and other debt</span><strong class="overview-bar-amount" id="overviewLivingAmt">—</strong><div class="overview-bar-track"><div id="overviewLivingBar" class="overview-bar-fill living"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">New ETF contributions</span><strong class="overview-bar-amount" id="overviewInvestAmt">—</strong><div class="overview-bar-track"><div id="overviewInvestBar" class="overview-bar-fill etfs"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Cash savings transfers</span><strong class="overview-bar-amount" id="overviewSavingAmt">—</strong><div class="overview-bar-track"><div id="overviewSavingBar" class="overview-bar-fill saving"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Free to spend</span><strong class="overview-bar-amount" id="overviewFreeAmt">—</strong><div class="overview-bar-track"><div id="overviewFreeBar" class="overview-bar-fill free"></div></div></div>
+   <p id="overviewCashStatus" class="overview-callout" role="status">Recalculating monthly allocation…</p>
+   <div class="overview-actions"><button type="button" class="btn" data-overview-jump="household">Inspect household cash flow</button></div>
+  </div>
+  <div class="overview-panel" aria-labelledby="overviewAssetTitle">
+   <h3 id="overviewAssetTitle">What makes up your starting position</h3>
+   <p class="overview-subtitle">Investment and property equity categories, not yet spendable money.</p>
+   <div class="overview-bar-row"><span class="overview-bar-label">ETFs</span><strong class="overview-bar-amount" id="overviewAssetEtfAmt">—</strong><div class="overview-bar-track"><div id="overviewAssetEtfBar" class="overview-bar-fill funds"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Own-home equity</span><strong class="overview-bar-amount" id="overviewAssetHomeAmt">—</strong><div class="overview-bar-track"><div id="overviewAssetHomeBar" class="overview-bar-fill owner"></div></div></div>
+   <div class="overview-bar-row"><span class="overview-bar-label">Rental-property equity</span><strong class="overview-bar-amount" id="overviewAssetRentalAmt">—</strong><div class="overview-bar-track"><div id="overviewAssetRentalBar" class="overview-bar-fill rental"></div></div></div>
+   <p class="overview-callout" id="overviewAssetStatus">Change your strategy to compare asset types.</p>
+   <p class="overview-details">Property equity is property value minus outstanding debt. For planned purchases, it reflects the modeled position immediately after purchase, not an asset already owned. Your cash reserve is an editable target, not a verified bank balance.</p>
+   <div class="overview-actions"><button type="button" class="btn" data-overview-jump="compare">Compare strategies</button><button type="button" class="btn" data-overview-jump="investments">Explore investments</button></div>
+  </div>
+ </div>
+</section>
 
 <section class="card goal-launch" id="goalLauncher" aria-label="Choose your financial goal">
  <div class="goal-heading"><div><h2>Start with what matters to you</h2><p>Choose a goal. We'll show the relevant inputs and keep your existing plan.</p></div><button class="btn" type="button" id="allGoalOptions">All seven strategies</button></div>
@@ -726,6 +833,12 @@ body[data-theme="dark"] .guide-progress-meter i.active{background:#75c9ac}
 </div><section class="card content-card glossary" id="glossary"><h2>German finance glossary and calculation notes</h2><div class="glossary-grid"><details><summary>AfA — building depreciation</summary><p>Depreciation can reduce taxable rental income, but not own-use income. The applicable rate and building share depend on property facts and dates.</p></details><details><summary>Werbungskosten — rental expenses</summary><p>Eligible rental-related expenses may include interest, management and qualifying repairs. Mortgage principal is not deductible.</p></details><details><summary>Hausgeld and maintenance reserve</summary><p>Some owner charges can be passed to tenants. Contributions to a WEG maintenance reserve are generally not immediately tax-deductible merely upon payment.</p></details><details><summary>Sondertilgung — extra mortgage repayment</summary><p>An optional additional principal payment, subject to mortgage terms, can reduce future interest costs.</p></details><details><summary>Vorabpauschale — ETF advance taxation</summary><p>German fund taxation can create a taxable amount even without a sale; the calculator provides only approximate ETF tax estimates.</p></details><details><summary>Cash flow vs investment returns</summary><p>Unrealized ETF growth is not spendable cash. Tax benefits may arise only at assessment or through adjusted withholding.</p></details></div><p class="fine">Planning tool, not individual tax or investment advice. Recheck current German tax rules and lender terms.</p></section>
 <dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle"><div class="guide-inner"><div class="scenario-head"><h2 id="guideTitle">Set up your financial plan</h2><button class="btn" id="closeGuide" type="button">Close</button></div><div id="guideStepText" aria-live="polite"></div><div class="flexbuttons" style="justify-content:space-between"><button class="btn" id="guideBack" type="button">Back</button><button class="btn primary" id="guideNext" type="button">Next</button></div></div></dialog>
 </main>
+<script>
+/* UX-022: navigation-only controls; never persist or change financial values. */
+document.querySelectorAll('[data-overview-jump]').forEach(button=>button.addEventListener('click',()=>{
+ document.querySelector('.app-tabs [data-view="'+button.dataset.overviewJump+'"]')?.click();
+}));
+</script>
 <script>
 (()=>{
 'use strict';
@@ -1279,12 +1392,73 @@ function propertyRanking(x,tax,rent){if(!rent.properties.length){$('rankRows').i
 function renderAnalytics(x,tax,rent){propertySelectorUpdate(rent);compareModel(x,tax,rent);heatmapModel(x,tax,rent);amortizationPlot(x,rent);riskPlot(x);propertyRanking(x,tax,rent);}
 $('comparisonProperty').addEventListener('change',()=>render());$('amortTarget').addEventListener('change',()=>render());
 
+
+/* UX-022 is presentation-only: it receives the SAME x/sim/rent/cash ledger
+   already used by the existing calculator and its investment summaries. */
+function renderOverviewDashboard(x,sim,rent,c,projectedCash){
+ const label=(id,value)=>{$(id).textContent=value;};
+ const equityOwn=x.housingType==='tenant'?0:x.price-x.loan;
+ const equityRental=rent.properties.reduce((total,p)=>total+p.price-p.loan,0);
+ const equityInitial=equityOwn+equityRental;
+ const annualLast=projectedCash.at(-1);
+ const wealthFuture=(sim.last?.homeEquity||0)+(sim.last?.portfolio||0)+(rent.rows.at(-1)?.equity||0)+(annualLast?.balance??x.cashReserve);
+ label('overviewFreeCash',money(c.free));
+ $('overviewFreeCash').classList.toggle('red',c.free<0);
+ label('overviewEtfValue',money(x.start));
+ label('overviewOpeningEquity',money(equityInitial));
+ $('overviewOpeningEquity').classList.toggle('red',equityInitial<0);
+ label('overviewEquityNote',x.homeNewPurchase||rent.properties.length?'Includes modeled equity in purchases, not yet owned':'Existing home equity; no new purchase modeled');
+ label('overviewFutureLabel','Projected position · year '+x.years);
+ label('overviewFutureWealth',money(wealthFuture));
+ $('overviewFutureWealth').classList.toggle('red',wealthFuture<0);
+ const inflow=c.net+c.sold+c.rentalCash-c.taxProvision;
+ label('overviewAvailable',money(inflow));
+ const uses=[
+  ['overviewHousingAmt','overviewHousingBar',c.housing+x.extra/12],
+  ['overviewLivingAmt','overviewLivingBar',c.living+c.otherDebt],
+  ['overviewInvestAmt','overviewInvestBar',c.invested],
+  ['overviewSavingAmt','overviewSavingBar',c.monthlySaving],
+  ['overviewFreeAmt','overviewFreeBar',Math.max(0,c.free)]
+ ];
+ const denominator=Math.max(1,...uses.map(([, ,value])=>Math.max(0,value)));
+ for(const [amountId,barId,value] of uses){
+  const v=Math.max(0,value);
+  label(amountId,money(value));
+  $(barId).style.width=Math.min(100,v/denominator*100).toFixed(2)+'%';
+  $(barId).parentElement.setAttribute('role','img');
+  $(barId).parentElement.setAttribute('aria-label',$(amountId).previousElementSibling.textContent+': '+money(value));
+ }
+ const status=$('overviewCashStatus');
+ status.classList.toggle('warning',c.free<0);
+ status.textContent=c.free<0
+  ?'Modeled monthly funding gap: '+money(-c.free)+'. Reduce spending or allocations, or verify household income.'
+  :'Unallocated cash: '+money(c.free)+'/month. Includes rental net cash and optional tax provisions when enabled; annual tax settlement may differ.';
+ const assetRows=[
+  ['overviewAssetEtfAmt','overviewAssetEtfBar',x.start],
+  ['overviewAssetHomeAmt','overviewAssetHomeBar',equityOwn],
+  ['overviewAssetRentalAmt','overviewAssetRentalBar',equityRental]
+ ];
+ const assetScale=Math.max(1,...assetRows.map(([, ,value])=>Math.max(0,value)));
+ for(const [amountId,barId,value] of assetRows){
+  label(amountId,money(value));
+  $(barId).style.width=Math.max(0,value)/assetScale*100+'%';
+  $(barId).parentElement.setAttribute('role','img');
+  $(barId).parentElement.setAttribute('aria-label',$(amountId).previousElementSibling.textContent+': '+money(value));
+ }
+ const anyAsset=assetRows.some(([, ,value])=>Math.abs(value)>0.001);
+ label('overviewAssetStatus',!anyAsset
+  ?'No ETFs or property equity modeled. Enter an investment or property to populate this view.'
+  :equityOwn<0||equityRental<0
+   ?'Negative property equity is shown as a number but not as a positive-width bar.'
+   :'Bars compare positive category values. They are not a verified current net-worth statement.');
+}
+
 function render(){
  syncStrategyUI();
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
