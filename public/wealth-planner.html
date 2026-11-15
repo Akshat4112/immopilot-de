@@ -540,6 +540,48 @@ body[data-theme="dark"] .wealth-timeline-warning{color:#f8b2bd}
 .wealth-timeline-table tr:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:-3px}
 @media print{.wealth-timeline-controls,#wealthTimelineChartPane{display:none!important}#wealthTimelineTablePane{display:block!important}}
 
+
+/* UX-027 — year-specific planning events and baseline comparison */
+.life-events-panel{margin-top:16px;min-width:0}
+.life-events-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.life-events-head h3{font-size:1.1rem;margin:0 0 5px}
+.life-events-head p{font-size:.79rem;color:var(--muted);line-height:1.55;margin:0;max-width:730px}
+.life-events-form{display:grid;grid-template-columns:1.3fr .65fr 1fr 1.2fr auto;gap:9px;align-items:end;margin:16px 0}
+.life-events-form label{font-size:.73rem;line-height:1.4;font-weight:750;color:var(--ink);display:flex;flex-direction:column;gap:5px;min-width:0}
+.life-events-form input,.life-events-form select{border:1px solid var(--ux-line,#dae6e0);border-radius:9px;min-height:40px;width:100%;padding:8px 9px;font-size:.8rem;background:var(--ux-surface,#fff);color:var(--ink);min-width:0}
+.life-events-form input:focus-visible,.life-events-form select:focus-visible,.life-events-form button:focus-visible,.life-events-list button:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.life-events-form button{min-height:40px}
+.life-events-list{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}
+.life-event-pill{display:flex;align-items:center;gap:8px;border:1px solid var(--ux-line,#dae6e0);border-radius:10px;padding:7px 9px;background:var(--ux-surface-soft,#f4f8f5);font-size:.75rem}
+.life-event-pill strong{color:var(--ink)}
+.life-event-pill button{min-height:28px;font-size:.71rem;padding:4px 7px;border:1px solid #bdcfc7;border-radius:7px;background:var(--ux-surface,#fff);color:var(--ink);cursor:pointer}
+.life-events-stats{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}
+.life-events-stats span{font-size:.8rem;color:var(--ink)}
+.life-events-stats strong{font-variant-numeric:tabular-nums}
+.life-events-graph{overflow-x:auto;max-width:100%;border:1px solid var(--ux-line,#dae6e0);border-radius:12px;background:var(--ux-surface-soft,#f4f8f5)}
+.life-events-svg{min-width:720px!important;width:100%;height:auto;display:block}
+.life-events-svg [data-event-year]{cursor:pointer}
+.life-events-svg [data-event-year]:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:-3px}
+.life-events-table-scroll{overflow:auto;max-width:100%;max-height:420px;margin-top:13px;border:1px solid var(--ux-line,#dae6e0);border-radius:12px}
+.life-events-table{min-width:800px;width:100%;border-collapse:collapse}
+.life-events-table td,.life-events-table th{border-bottom:1px solid var(--ux-line,#dae6e0);padding:8px 10px;font-size:.77rem;text-align:right;font-variant-numeric:tabular-nums}
+.life-events-table td:first-child,.life-events-table th:first-child{text-align:left}
+.life-events-table td:last-child,.life-events-table th:last-child{text-align:left;white-space:normal;min-width:180px}
+.life-events-table thead{background:#e9f3ed}
+.life-events-table .event-positive{color:#0c785e;font-weight:750}
+.life-events-table .event-negative{color:#ae4351;font-weight:750}
+.life-events-note{font-size:.73rem;color:var(--muted);line-height:1.65;margin:10px 0}
+.life-events-warning{font-size:.78rem;line-height:1.5;color:#aa424c;font-weight:650}
+.life-events-detail{font-size:.8rem;line-height:1.5;margin:10px 0;color:var(--ink)}
+body[data-theme="dark"] .life-event-pill,body[data-theme="dark"] .life-events-graph{background:#20393b}
+body[data-theme="dark"] .life-events-form input,body[data-theme="dark"] .life-events-form select,body[data-theme="dark"] .life-event-pill button{background:#243c40}
+body[data-theme="dark"] .life-events-table thead{background:#28433d}
+body[data-theme="dark"] .life-events-warning,body[data-theme="dark"] .life-events-table .event-negative{color:#f2a6b1}
+body[data-theme="dark"] .life-events-table .event-positive{color:#70dab7}
+@media(max-width:1020px){.life-events-form{grid-template-columns:repeat(2,minmax(0,1fr))}.life-events-form button{grid-column:1/-1}}
+@media(max-width:580px){.life-events-form{grid-template-columns:1fr}.life-events-form button{grid-column:auto}.maincol svg.life-events-svg{min-width:720px!important}}
+@media print{.life-events-form,.life-event-pill button{display:none!important}.life-events-table-scroll{max-height:none}}
+
 </style>
 </head>
 <body><main>
@@ -951,6 +993,35 @@ body[data-theme="dark"] .wealth-timeline-warning{color:#f8b2bd}
   <p class="wealth-timeline-warning" id="wealthTimelineWarning" hidden></p>
   <p class="wealth-timeline-footnote">Net position = home equity + rental equity + ETF holdings + modeled cash. Gross assets view displays market values and property debt separately, without subtracting loans twice. Negative balances affect the net line and table, but are not stacked as positive assets. Year 0 is the modeled opening/purchase position. Cash is a reserve assumption, not verified bank holdings. No ETF liquidation tax, property sale costs or unmodeled liabilities are included.</p>
  </div>
+<div class="plot-card life-events-panel" id="lifeEventsPanel" aria-labelledby="lifeEventsTitle">
+ <div class="life-events-head"><div><h3 id="lifeEventsTitle">Life-event planner · compare your future</h3>
+ <p>Schedule changes in net income, first-person ETF contributions, mortgage rates or one-time expenses. See what changes year by year versus the original plan.</p></div><span class="fine">What-if overlay · not a second saved plan</span></div>
+ <form class="life-events-form" id="lifeEventForm">
+  <label for="lifeEventType">Event type<select id="lifeEventType" required>
+   <option value="salary">Net income change</option><option value="etf">ETF contributions change</option>
+   <option value="refinance">Home mortgage rate change</option><option value="expense">One-time expense</option>
+   <option value="milestone">Property purchase milestone (annotation)</option>
+  </select></label>
+  <label for="lifeEventYear">Starting year<input type="number" id="lifeEventYear" min="1" max="40" value="3" step="1" required></label>
+  <label for="lifeEventAmount"><span id="lifeEventAmountLabel">Net change €/month</span><input type="number" id="lifeEventAmount" min="-20000" max="20000" step="50" value="500" required></label>
+  <label for="lifeEventName">Event label<input type="text" id="lifeEventName" maxlength="60" placeholder="e.g. Salary raise" autocomplete="off"></label>
+  <button class="btn primary" type="submit" id="lifeEventAdd">Add event</button>
+ </form>
+ <p class="life-events-note" id="lifeEventMeaning">A net salary change starts in the selected year, continues afterward, and is added after the existing income-growth assumption. It is not a gross-salary or income-tax recalculation.</p>
+ <p id="lifeEventStatus" role="status" aria-live="polite" class="life-events-warning"></p>
+ <div class="life-events-list" id="lifeEventsList" aria-label="Scheduled life events"></div>
+ <div class="life-events-stats"><span>Baseline final: <strong id="lifeBaselineTotal">—</strong></span>
+  <span>With life events: <strong id="lifeEventsTotal">—</strong></span>
+  <span>Difference: <strong id="lifeEventsDifference">—</strong></span></div>
+ <div class="life-events-graph" role="region" tabindex="0" aria-label="Baseline wealth versus event-adjusted wealth; horizontally scrollable">
+  <svg id="lifeEventsChart" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
+ </div>
+ <p id="lifeEventsDetail" class="life-events-detail" role="status" aria-live="polite">Select a year to see the difference.</p>
+ <div class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
+  <table class="life-events-table"><thead><tr><th scope="col">Year</th><th scope="col">Baseline net</th><th scope="col">With events</th><th scope="col">Difference</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
+ </div>
+ <p class="life-events-note"><strong>Scope:</strong> Effective from the start of a modeled year; one-time expenses happen within that year. ETF contribution changes affect the first person's fund purchases and the cash budget. Mortgage-rate events affect only the own-home loan; its scheduled payment stays unchanged. Property milestones are annotations: use the Properties tab to model purchases at the starting date. Future gross pay taxes, delayed property acquisition and changed rental tax are not recalculated. The chart is before liquidation costs and taxes; projected negative cash is a funding shortfall.</p>
+</div>
 </section>
 
 <section class="card content-card report-card" id="printableReport"><h2>One-page financial decision report</h2><p class="note">Always uses the currently displayed inputs. It includes household cash-flow, mortgage, ETF and rentals, plus critical assumptions.</p><div id="reportSummary" class="report-grid"></div><div class="flexbuttons"><button type="button" class="btn primary" id="printDecisionReport">Print / save as PDF</button><button type="button" class="btn" id="copyDecisionReport">Copy report text</button></div></section>
