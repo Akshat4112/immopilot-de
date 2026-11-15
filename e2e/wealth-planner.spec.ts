@@ -790,3 +790,135 @@ test('UX-027 mobile event form and timeline remain accessible', async ({ page })
   await expect(planner.locator('#lifeEventsChart [data-event-year="2"]')).toHaveCount(1)
   await page.screenshot({ path: test.info().outputPath('explorer-ux027-mobile.png') })
 })
+
+test('UX-028 matches upfront cash against the down payment and purchase fees', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  const panel = planner.locator('#rentBuyExplorer')
+  await expect(panel).toBeVisible()
+  expect(Number(await panel.getAttribute('data-rb-pool'))).toBeCloseTo(20000, 1)
+  expect(Number(await panel.getAttribute('data-rb-fees'))).toBeCloseTo(20000, 1)
+  const start = planner.locator('#rbRows [data-rb-year-row="0"]')
+  expect(Number(await start.getAttribute('data-rb-buy'))).toBeCloseTo(0, 1)
+  expect(Number(await start.getAttribute('data-rb-etf'))).toBeCloseTo(20000, 1)
+  expect(Number(await start.getAttribute('data-rb-cash'))).toBeCloseTo(20000, 1)
+  await expect(planner.locator('#rbMethod')).toContainText('excludes common household income')
+})
+
+test('UX-028 reconciles equal yearly housing and saving budgets across alternatives', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  for (const year of [1, 5, 10, 20]) {
+    const row = planner.locator('#rbRows [data-rb-year-row="' + year + '"]')
+    const numbers = await Promise.all(
+      ['data-rb-budget', 'data-rb-buy-contribution', 'data-rb-rent-contribution',
+        'data-rb-buy-annual', 'data-rb-rent-annual'].map((name) => row.getAttribute(name)),
+    )
+    const [budget, buySaving, rentSaving, buyHousing, rentHousing] = numbers.map(Number)
+    expect(budget).toBeGreaterThan(0)
+    expect(buyHousing + buySaving).toBeCloseTo(budget, 1)
+    expect(rentHousing + rentSaving).toBeCloseTo(budget, 1)
+    expect(buySaving).toBeGreaterThanOrEqual(0)
+    expect(rentSaving).toBeGreaterThanOrEqual(0)
+  }
+  await expect(planner.locator('#rbRows tr')).toHaveCount(26)
+})
+
+test('UX-028 rent assumptions change alternative wealth without modifying main housing inputs', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  const last = planner.locator('#rbRows tr').last()
+  const original = Number(await last.getAttribute('data-rb-etf'))
+  const home = await planner.locator('#price').inputValue()
+  const existing = await planner.locator('#existingRent').inputValue()
+  await planner.locator('#decisionRent').fill('1000')
+  await planner.locator('#decisionRentGrowth').fill('3')
+  const updated = Number(await last.getAttribute('data-rb-etf'))
+  expect(updated).not.toBeCloseTo(original, 1)
+  await expect(planner.locator('#price')).toHaveValue(home)
+  await expect(planner.locator('#existingRent')).toHaveValue(existing)
+  await page.reload()
+  await expect(planner.locator('#decisionRent')).toHaveValue('1000')
+  await expect(planner.locator('#decisionRentGrowth')).toHaveValue('3')
+})
+
+test('UX-028 rent plus ETF and rent plus cash agree when ETF return and fees are zero', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await planner.locator('#ret').fill('0')
+  await planner.locator('#ter').fill('0')
+  for (const year of [0, 1, 5, 10, 25]) {
+    const row = planner.locator('#rbRows [data-rb-year-row="' + year + '"]')
+    const etf = Number(await row.getAttribute('data-rb-etf'))
+    const cash = Number(await row.getAttribute('data-rb-cash'))
+    expect(etf).toBeCloseTo(cash, 1)
+  }
+})
+
+test('UX-028 shows negative property equity and isolates hypothetical buying in ETF-only mode', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await expect(planner.locator('#rbWarnings')).toContainText('NEW hypothetical')
+  await expect(planner.locator('#rbRows tr')).toHaveCount(26)
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  await planner.locator('#houseGrowth').fill('-10')
+  const yearOne = planner.locator('#rbRows [data-rb-year-row="1"]')
+  const equity = Number(await yearOne.locator('td').nth(3).textContent()?.then((s) => s?.replace(/[^0-9,-]/g, '')))
+  expect(Number.isFinite(equity)).toBe(true)
+  await expect(planner.locator('#rbChart polyline')).toHaveCount(3)
+})
+
+test('UX-028 chart/table controls and planning range do not change the projection horizon', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  const horizon = await planner.locator('#years').inputValue()
+  await planner.locator('#rbYears').selectOption('5')
+  await expect(planner.locator('#rbRows tr')).toHaveCount(6)
+  await planner.locator('[data-rb-metric="paid"]').click()
+  await expect(planner.locator('#rbLegend')).toContainText('cumulative housing cash paid')
+  await planner.locator('[data-rb-metric="cost"]').click()
+  await expect(planner.locator('#rbLegend')).toContainText('interest')
+  await planner.locator('[data-rb-view="table"]').click()
+  await expect(planner.locator('#rbTablePane')).toBeVisible()
+  await expect(planner.locator('#rbChartPane')).toBeHidden()
+  await planner.locator('[data-rb-view="chart"]').click()
+  await planner.locator('#rbChart [data-rb-year="3"]').focus()
+  await expect(planner.locator('#rbDetail')).toContainText('Year 3:')
+  await expect(planner.locator('#years')).toHaveValue(horizon)
+})
+
+test('UX-028 mobile uses semantic table first and supports comparison interaction', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await expect(planner.locator('#rbTablePane')).toBeVisible()
+  const target = planner.locator('#rbRows [data-rb-year-row="5"]')
+  await target.focus()
+  await expect(planner.locator('#rbDetail')).toContainText('Year 5:')
+  await planner.locator('[data-rb-view="chart"]').click()
+  await expect(planner.locator('#rbChartPane')).toBeVisible()
+  await page.screenshot({ path: test.info().outputPath('explorer-ux028-mobile.png') })
+})
