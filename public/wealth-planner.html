@@ -1787,7 +1787,7 @@ function renderWealthComposition(x,sim,rent,houseCash){
   '<span><i style="background:#bd5961;width:19px;height:3px"></i>Property debt</span>';
  $('wealthTimelineRows').innerHTML=pts.map(p=>{
   const vals=[p.year,p.homeEq,p.rentalEq,p.etf,p.cash,p.homeVal,p.rentalVal,p.homeDebt,p.rentalDebt,p.net];
-  return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" aria-selected="'+(p.year===state.year)+'">'+
+  return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" data-home-equity="'+round(p.homeEq)+'" data-rental-equity="'+round(p.rentalEq)+'" data-etf="'+round(p.etf)+'" data-cash="'+round(p.cash)+'" data-home-loan="'+round(p.homeDebt)+'" data-rental-loan="'+round(p.rentalDebt)+'" aria-selected="'+(p.year===state.year)+'">'+
    vals.map((v,i)=>i===0?'<th scope="row">Year '+v+'</th>':
     '<td'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
  }).join('');
