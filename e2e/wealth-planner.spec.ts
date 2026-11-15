@@ -212,6 +212,7 @@ test('UX-022 dashboard reflects existing household and ETF calculations', async 
     (await planner.locator('#mPortfolio').textContent()) ?? '',
   )
   await expect(planner.locator('#overviewFutureLabel')).toContainText('year 25')
+  await page.screenshot({ path: test.info().outputPath('explorer-ux022-desktop.png') })
 
   await planner.locator('[data-overview-jump="household"]').click()
   await expect(planner.getByRole('tab', { name: /Household/ })).toHaveAttribute(
@@ -263,4 +264,5 @@ test('UX-022 KPI grid remains readable on mobile without hiding the goal launche
   const dashboardBox = await planner.locator('#overviewDashboard').boundingBox()
   expect(dashboardBox).not.toBeNull()
   expect(dashboardBox?.width).toBeLessThanOrEqual(376)
+  await page.screenshot({ path: test.info().outputPath('explorer-ux022-mobile.png') })
 })
