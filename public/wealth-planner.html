@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Germany Wealth Planner v10 · Home, ETFs, Rental ROI & Risk</title>
+<style>
+:root{color-scheme:light;--ink:#1c293a;--muted:#667586;--border:#e0e5ec;--wash:#f5f7fa;--navy:#18364d;--accent:#176e62;--positive:#127b5e;--negative:#ad3a45;--gold:#a67532;--violet:#7d64b0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font-size:15px}button,input,select{font:inherit}button{cursor:pointer}main{max-width:1460px;margin:0 auto;padding:27px 20px 56px}h1{margin:6px 0 8px;letter-spacing:-.035em;font-size:clamp(1.75rem,3vw,2.45rem)}h2{margin:0 0 12px;font-size:1.13rem;letter-spacing:-.012em}h3{font-size:.92rem;margin:20px 0 11px}p{line-height:1.57}header{margin-bottom:23px;display:flex;align-items:center;justify-content:space-between;gap:12px}.eyebrow{color:var(--accent);text-transform:uppercase;font-weight:800;font-size:.71rem;letter-spacing:.15em}.subtitle{color:var(--muted);max-width:840px;line-height:1.6;margin:0}.chip-live{white-space:nowrap;border-radius:99px;padding:8px 13px;background:#e5f4ec;border:1px solid #c5e7d6;color:#116247;font-weight:750;font-size:.79rem}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#178e69;margin-right:7px}.layout{display:grid;grid-template-columns:minmax(300px,365px) minmax(0,1fr);gap:17px;align-items:start}.card{background:white;border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 16px #17324807}.sidebar{padding:19px;max-height:calc(100vh - 24px);overflow-y:auto;position:sticky;top:12px}.section{border-bottom:1px solid #ecf0f3;padding:2px 0 16px;margin-bottom:16px}.section:last-child{border:0;padding-bottom:0;margin-bottom:0}.section h2{display:flex;align-items:center;gap:9px}.num{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e8eff6;color:#315f85;font-size:.72rem;font-weight:800}.row-field{display:grid;grid-template-columns:minmax(0,1fr) 125px;align-items:center;gap:10px;margin:9px 0}.row-field label{font-size:.80rem;color:#3d5064;line-height:1.3}.row-field small{display:block;font-size:.71rem;color:#8794a1;margin-top:2px}.row-field input,.row-field select{background:#fff;border:1px solid #c9d4de;border-radius:8px;width:100%;padding:8px 9px;min-width:0;font-size:.85rem;color:var(--ink);text-align:right}.row-field select{text-align:left;grid-column:1/-1}.row-field input:focus-visible,.row-field select:focus-visible{outline:3px solid #afd7cd;border-color:#4e998d}.presets{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0}.presets button,.btn{border:1px solid #ccdae3;border-radius:8px;padding:7px 9px;background:white;color:#2d506a;font-size:.77rem;font-weight:650}.presets button:hover,.btn:hover{background:#eff6fa}.muted{font-size:.79rem;color:var(--muted);line-height:1.55}.maincol{display:grid;gap:14px;min-width:0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{padding:16px;min-width:0}.metric .label{color:var(--muted);font-size:.73rem;line-height:1.4;min-height:34px}.metric .big{font-weight:800;font-size:clamp(1.22rem,2vw,1.8rem);letter-spacing:-.035em;margin:7px 0;overflow-wrap:anywhere}.metric .tiny{color:#7f8c9b;font-size:.71rem;line-height:1.4}.green{color:var(--positive)}.red{color:var(--negative)}.content-card{padding:20px;min-width:0}.note{font-size:.80rem;color:var(--muted);line-height:1.6;margin:1px 0 15px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.kv{display:flex;align-items:start;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #ecf0f3;font-size:.82rem}.kv:last-child{border-bottom:0}.kv strong{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.label-chip{font-size:.72rem;letter-spacing:.025em;color:#4b6778;font-weight:800;text-transform:uppercase;margin-bottom:5px}.highlight{border-radius:12px;background:#edf7f2;padding:14px;margin:14px 0}.highlight h3{margin:0 0 5px;color:#165d49}.highlight p{font-size:.81rem;color:#315e52;margin:0;line-height:1.6}.warn{background:#fff5ea;border:1px solid #f1e1cb}.warn h3{color:#7b542d}.warn p{color:#79573a}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.mini{border-radius:12px;background:#f4f7f9;padding:12px}.mini .t{font-size:.73rem;color:#778493;line-height:1.35}.mini .v{margin-top:8px;font-weight:800;font-size:1.12rem}.chart-scroll{overflow:auto}svg{width:100%;height:auto;display:block;min-width:440px}.legend{display:flex;flex-wrap:wrap;gap:14px;margin:7px 0 12px;color:#778391;font-size:.75rem}.key{display:inline-block;vertical-align:middle;width:18px;border-top:3px solid;margin-right:5px}.table-scroll{overflow-x:auto}.data{border-collapse:collapse;width:100%;font-size:.79rem;white-space:nowrap}.data th,.data td{padding:10px 11px;text-align:right;border-bottom:1px solid #e7ecf1}.data th{background:#f2f6f8;color:#53697b;font-weight:750;position:sticky;top:0}.data td:first-child,.data th:first-child{text-align:left}.data tr:last-child td{border:0}.data tbody tr:hover{background:#f5f9f8}.fine{font-size:.72rem;color:#748493;line-height:1.65}.footer{padding:17px 3px;font-size:.74rem;color:#788593;line-height:1.7}.footer a{color:#286b8e}.flexbuttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.primary{background:#1c655c;color:white;border-color:#1c655c}.bar-track{height:12px;border-radius:9px;background:#e8edf2;overflow:hidden;margin:12px 0}.bar-fill{height:100%;background:#24886f;max-width:100%;transition:width .1s}.bar-fill.red{background:#bc5560}.sleeve{color:#597085;font-size:.76rem}.error{color:#a64244;border-left:3px solid #b64d52;padding:7px 11px;margin:8px 0;background:#fff5f6;font-size:.8rem}.scenario-selected{background:#eaf6ef!important;font-weight:800}input[type=range]{width:100%;accent-color:#238773}hr{border:0;border-top:1px solid #edf0f3;margin:16px 0}#liveStatus{font-size:.75rem;color:#32816e;margin:6px 0 0}#customLine[hidden]{display:none!important}[hidden]{display:none!important}
+@media(max-width:1160px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:870px){main{padding:18px 12px 44px}.layout{grid-template-columns:minmax(0,1fr)}.sidebar{position:static;max-height:none}header{align-items:start}}@media(max-width:580px){.grid2{grid-template-columns:1fr}.three{grid-template-columns:1fr}.content-card{padding:16px}.row-field{grid-template-columns:1fr 120px}.metric{padding:13px}.metric .label{min-height:0}.metric .big{font-size:1.27rem}header{display:block}.chip-live{display:inline-block;margin-top:13px}}
+@media print{body{background:#fff}header .chip-live,.sidebar,.flexbuttons{display:none}.layout{display:block}.maincol{display:block}.card{break-inside:avoid;box-shadow:none;margin-bottom:14px}svg{max-height:290px}}
+
+/* v3 household cash-flow additions */
+.household-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.household-pills .metric{min-width:0}
+.group-title{font-weight:750;font-size:.79rem;color:#355b70;margin:12px 0 4px;padding-bottom:5px;border-bottom:1px solid #e7edf0}
+.row-field select.compact{grid-column:2;text-align:right}
+.info-panel{background:#f2f7fa;border:1px solid #dbe8ee;border-radius:12px;padding:12px 14px;margin:9px 0;color:#3d5a6b;font-size:.78rem;line-height:1.55}
+.cashbar{height:20px;display:flex;overflow:hidden;border-radius:7px;background:#f1f3f6;margin:12px 0 7px}
+.cashbar div{transition:width .12s;min-width:0}.cashbar .home{background:#3878a3}.cashbar .living{background:#ca9761}.cashbar .invest{background:#8b7ab8}.cashbar .free{background:#1a866d}
+.cashlabels{display:flex;flex-wrap:wrap;gap:13px;color:#596b7a;font-size:.73rem}
+.cashlabels i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+.income-warning{font-size:.76rem;color:#93682c;background:#fff7e9;border-left:3px solid #d6a052;padding:9px 11px;margin:10px 0}
+.kpi-meaning{color:#6c7b89;font-size:.73rem;line-height:1.5;margin-top:9px}
+.side-sub{margin:8px 0;font-size:.73rem;color:#587081}
+@media(max-width:1160px){.household-pills{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.household-pills{grid-template-columns:repeat(2,minmax(0,1fr))}.household-pills .metric .big{font-size:1.17rem}}
+
+.quicklinks{display:flex;gap:9px;flex-wrap:wrap;margin:-6px 0 17px}.quicklinks a{font-size:.77rem;text-decoration:none;border:1px solid #d3e3e0;color:#256f64;background:#fff;border-radius:99px;padding:7px 12px}.quicklinks a:focus-visible{outline:2px solid #1a806c}
+/* v4 rental-property additions */
+.rental-property{border:1px solid #d4e2df;border-radius:13px;margin:12px 0;padding:13px;background:#f9fcfb}
+.rental-property .rental-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.rental-property .rental-head b{font-size:.87rem}
+.rental-property .rental-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.rental-property .property-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.rental-property .property-field label{font-size:.72rem;color:#49616a;line-height:1.3}
+.rental-property .property-field input,.rental-property .property-field select{width:100%;min-width:0;border:1px solid #c9d8d6;border-radius:8px;padding:7px 8px;background:#fff;color:#1c293a;font-size:.84rem}
+.rental-property .property-field input:focus-visible,.rental-property .property-field select:focus-visible{outline:3px solid #bde0d1}
+.rental-property .property-field.full{grid-column:1/-1}
+.rental-property details summary{cursor:pointer;margin:12px 0 8px;color:#315e56;font-size:.82rem;font-weight:750}
+.rental-property details .rental-grid{padding:2px 0 7px}
+.rental-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.rental-pills .mini{border:1px solid #e4e9e9}
+.rental-kv .kv{font-size:.8rem}
+.rental-intro{font-size:.78rem;color:#687a80;line-height:1.55;margin:8px 0}
+.rental-meta{color:#788992;font-size:.72rem;line-height:1.5;margin-top:7px}
+.rental-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rental-compare .mini{padding:15px}
+.negative-indicator{border-left:4px solid #bc525e}
+@media(max-width:1080px){.rental-pills{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.rental-property .rental-grid{grid-template-columns:1fr 1fr;gap:8px}.rental-property{padding:10px}.rental-compare{grid-template-columns:1fr}.rental-pills .mini .v{font-size:1rem}}
+
+/* v5 household profile switch */
+.profile-card{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:13px;padding:16px 19px;margin:0 0 16px}
+.profile-copy{display:flex;flex-direction:column;gap:5px;min-width:225px;flex:1}
+.profile-copy strong{font-size:.96rem}.profile-copy span{font-size:.76rem;color:var(--muted);line-height:1.45}
+.profile-picker{display:flex;gap:5px;background:#eff3f6;padding:5px;border-radius:11px;flex-wrap:wrap}
+.profile-picker button{border:1px solid transparent;border-radius:8px;padding:10px 14px;font-weight:750;font-size:.83rem;background:transparent;color:#496374}
+.profile-picker button[aria-pressed="true"]{background:white;border-color:#ccdcd9;color:#155f55;box-shadow:0 2px 6px #1a42300e}
+.profile-picker button:focus-visible{outline:3px solid #6ab1a4;outline-offset:2px}
+.profile-note{flex-basis:100%;color:#3f6870;font-size:.75rem;line-height:1.45}
+body[data-profile="single"] .second-person,body[data-profile="single"] .married-only{display:none!important}
+body[data-profile="single"] .single-only{display:block!important}
+.single-only{display:none}
+body[data-profile="single"] .spouse-results{grid-template-columns:minmax(0,1fr)}
+@media(max-width:580px){.profile-picker{width:100%}.profile-picker button{flex:1}}
+@media print{.profile-card{display:none}}
+
+/* v6: primary housing / investment-only modes */
+.strategy-card{padding:16px 19px;margin-bottom:15px}
+.strategy-card .profile-picker{margin-top:10px;display:inline-flex}
+.strategy-card .strategy-note{font-size:.76rem;color:#66798b;line-height:1.5;margin-top:10px}
+.strategy-card strong{font-size:.95rem}
+.strategy-card button[aria-pressed="true"]{background:white;border-color:#acd7ce;color:#126e63}
+#existingHomeInputs{display:none}
+body[data-home-mode="existing"] #newHomeInputs{display:none}
+body[data-home-mode="existing"] #existingHomeInputs{display:block}
+body[data-existing-type="rent"] .existing-owned{display:none!important}
+body:not([data-existing-type="rent"]) #existingRentRow{display:none!important}
+body[data-existing-type="paid"] .existing-loan{display:none!important}
+body[data-existing-type="mortgage"] .existing-paid-note{display:none!important}
+body[data-existing-type="rent"] .existing-paid-note{display:none!important}
+.plot-card{border:1px solid var(--border);border-radius:13px;background:#fff;padding:14px;margin:13px 0 18px}
+.plot-card h3{margin:0 0 6px}.plot-card p{margin:0 0 12px}
+.plot-chart{width:100%;height:auto;display:block;max-height:355px}
+.plot-legend{display:flex;flex-wrap:wrap;gap:12px;color:#667789;font-size:.74rem;margin-top:7px}
+.plot-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:4px}
+.plot-stat-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.plot-stat-row span{font-size:.78rem;background:#f2f5f6;padding:7px 10px;border-radius:9px}
+.chart-empty{font-size:.83rem;color:#687987;padding:28px 10px;text-align:center}
+@media(max-width:580px){.strategy-card .profile-picker{width:100%}.strategy-card .profile-picker button{padding:9px 8px;font-size:.77rem;flex:1}.plot-card{padding:10px}}
+@media print{.strategy-card{display:none}}
+
+/* v7 comparison and risk analytics */
+.quick-nav{display:flex;gap:8px;flex-wrap:wrap;margin:-12px 0 18px}.quick-nav a{text-decoration:none;border:1px solid #d2dfeb;background:white;border-radius:99px;padding:8px 13px;font-size:.77rem;font-weight:740;color:#416176}.quick-nav a:hover{background:#edf5f8}.quick-nav .focus-link{background:#e8f5ee;border-color:#bfdcca;color:#116c50}.quick-nav a:focus-visible{outline:3px solid #83c1ac}html{scroll-behavior:smooth}
+.analytics-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:8px 0 13px}
+.analytics-controls label{font-size:.77rem;color:#486173;font-weight:700}
+.analytics-controls select,.analytics-controls input{border:1px solid #cbd7df;border-radius:8px;background:#fff;padding:8px 10px;min-width:100px;max-width:100%;color:#243e52}
+.analytics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.analytics-stat{background:#f1f6f8;border:1px solid #e3ecef;padding:12px;border-radius:11px;min-width:0}
+.analytics-stat .t{color:#5c7180;font-size:.72rem;line-height:1.4}
+.analytics-stat .v{font-size:1.27rem;font-weight:800;margin-top:6px;overflow-wrap:anywhere}
+.heat-scroll{overflow-x:auto;max-width:100%;padding-bottom:4px}
+.heat-grid{border-collapse:separate;border-spacing:4px;width:100%;min-width:600px;font-size:.78rem;font-variant-numeric:tabular-nums}
+.heat-grid td,.heat-grid th{padding:12px 7px;text-align:center;border-radius:8px;white-space:nowrap}
+.heat-grid th{font-size:.73rem;color:#5a6e7b;background:#f0f4f6}
+.heat-grid td{font-weight:800;border:1px solid #ffffff93}
+.heat-grid td.selected{outline:3px solid #244e6d;outline-offset:1px}
+.heat-grid td.heat-empty{background:#f1f4f6!important;color:#758595}
+.chart-hint{font-size:.75rem;line-height:1.55;color:#607487;margin:10px 0}
+.plot-subtitle{font-size:.77rem;color:#607789;margin-bottom:10px}
+.chart-focus{padding:12px 14px;background:#edf7f4;border-radius:10px;font-size:.82rem;line-height:1.5}
+.risk-pill{display:inline-flex;border-radius:9px;padding:7px 10px;background:#f1f5f8;color:#446276;font-size:.76rem;margin:5px 7px 0 0}
+@media(max-width:620px){.analytics-grid{grid-template-columns:1fr}.analytics-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.analytics-controls label{align-self:end}.analytics-controls select{width:100%}.heat-grid td,.heat-grid th{padding:10px 6px}}
+
+/* v8 navigable planning workspace */
+.app-tabs{position:sticky;top:0;z-index:25;background:rgba(245,247,250,.96);backdrop-filter:blur(12px);padding:10px 3px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:thin;margin-bottom:9px;border-bottom:1px solid #dce5eb}
+.app-tabs button{flex:0 0 auto;border:1px solid transparent;border-radius:10px;padding:11px 14px;background:transparent;color:#53687b;font-size:.84rem;font-weight:750;white-space:nowrap;min-height:44px}
+.app-tabs button[aria-selected="true"]{background:#175d55;color:#fff;box-shadow:0 3px 12px #164c4229}
+.app-tabs button:focus-visible,.section-toggle:focus-visible{outline:3px solid #76b9aa;outline-offset:2px}
+.view-intro{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 14px;padding:15px 19px;border:1px solid #dfe9e7;background:#eaf3f1;border-radius:14px}
+.view-intro strong{font-size:1.02rem}.view-intro p{font-size:.78rem;color:#54736e;margin:4px 0 0}
+.sticky-kpis{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#193f42;color:#e5f6f1;padding:11px 16px;border-radius:12px;margin:0 0 14px;box-shadow:0 6px 20px #19473d20}
+.sticky-kpis span{font-size:.77rem;display:flex;gap:9px;align-items:center}.sticky-kpis strong{font-size:1.05rem;color:#fff;font-variant-numeric:tabular-nums}
+body[data-view="overview"] .sidebar{display:none}
+body[data-view="overview"] .layout{display:block}
+body[data-view="overview"] .maincol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+body[data-view="overview"] .maincol>.household-pills,body[data-view="overview"] #householdSection,body[data-view="overview"] #visualizationsSection{grid-column:1/-1}
+body[data-view="overview"] #decisionAnalyticsSection,body[data-view="overview"] #rentalResultsSection{display:none}
+body[data-view="overview"] .maincol>.content-card:not(#householdSection):not(#visualizationsSection){display:none}
+body[data-view="household"] .maincol>.content-card:not(#householdSection),body[data-view="household"] .maincol>.metrics{display:none}
+body[data-view="properties"] .maincol>.content-card:not(#rentalResultsSection):not(#visualizationsSection),body[data-view="properties"] .maincol>.metrics{display:none}
+body[data-view="investments"] .maincol>.content-card,body[data-view="investments"] .maincol>.household-pills{display:none}
+body[data-view="compare"] .maincol>.content-card:not(#decisionAnalyticsSection),body[data-view="compare"] .maincol>.household-pills,body[data-view="compare"] .maincol>.metrics{display:none}
+body[data-view="reports"] .maincol>.household-pills,body[data-view="reports"] .maincol>.metrics{display:none}
+body[data-view="household"] .sidebar>.section:not([data-category="household"]),body[data-view="properties"] .sidebar>.section:not([data-category="properties"]),body[data-view="investments"] .sidebar>.section:not([data-category="investments"]),body[data-view="compare"] .sidebar>.section:not([data-category="compare"]),body[data-view="reports"] .sidebar>.section:not([data-category="reports"]){display:none}
+.sidebar .section{border:1px solid #e1eaf0;border-radius:11px;margin-bottom:9px;padding:11px 12px;background:#fff}
+.sidebar .section h2{margin:0;font-size:.94rem}
+.sidebar .section:not(.expanded)>.row-field,.sidebar .section:not(.expanded)>.group-title,.sidebar .section:not(.expanded)>.presets,.sidebar .section:not(.expanded)>.muted,.sidebar .section:not(.expanded)>.side-sub,.sidebar .section:not(.expanded)>.rental-intro,.sidebar .section:not(.expanded)>.fine,.sidebar .section:not(.expanded)>.flexbuttons,.sidebar .section:not(.expanded)>#newHomeInputs,.sidebar .section:not(.expanded)>#existingHomeInputs,.sidebar .section:not(.expanded)>#rentalInputs,.sidebar .section:not(.expanded)>#addRental{display:none}
+.sidebar .section:not(.expanded) #liveStatus{display:none}
+.section-toggle{width:100%;background:transparent;border:0;color:inherit;text-align:left;padding:1px 0;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px;font-weight:inherit}
+.section-toggle .caret{font-size:.75rem;color:#637f90;transform:rotate(0deg);transition:transform .2s}
+.section.expanded .caret{transform:rotate(180deg)}
+.section-toggle h2{pointer-events:none}
+body[data-view="investments"] .maincol>.metrics{display:grid}
+body[data-view="investments"] .maincol>.content-card[data-investment-panel="true"]{display:block}
+body[data-view="reports"] .sidebar{display:block}
+body[data-view="reports"] .sidebar .section[data-category="reports"]{display:block}
+@media(max-width:930px){body[data-view="overview"] .maincol{display:block}body[data-view="overview"] .maincol>.content-card,body[data-view="overview"] .maincol>.household-pills{margin-bottom:14px}.app-tabs{margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}}
+@media(max-width:580px){.maincol svg{min-width:0!important;max-width:100%}.maincol .chart-scroll,.maincol .plot-card{max-width:100%;overflow-x:auto}.sticky-kpis{position:fixed;bottom:0;left:0;right:0;margin:0;border-radius:0;z-index:30;padding:10px 13px;padding-bottom:max(10px,env(safe-area-inset-bottom));gap:7px}.sticky-kpis span{flex-direction:column;gap:2px;font-size:.61rem}.sticky-kpis strong{font-size:.9rem}.view-intro{padding:12px}.view-intro p{font-size:.72rem}main{padding-bottom:100px!important}.app-tabs{top:0}.profile-card,.strategy-card{padding:12px}.profile-copy span{font-size:.72rem}}
+@media print{.app-tabs,.view-intro,.sticky-kpis,.section-toggle .caret{display:none!important}.sidebar{display:none!important}.maincol>.content-card,.maincol>.household-pills,.maincol>.metrics{display:block!important}}
+
+/* v9 scenario workspace */
+.scenario-workspace{margin:12px 0 17px;padding:18px}.scenario-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.scenario-head h2{margin:0 0 3px}.scenario-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.scenario-controls input,.scenario-controls select{border:1px solid #c9d4de;border-radius:8px;padding:9px;min-width:0;background:white;color:#263b4e}.scenario-controls input{width:190px}.scenario-controls select{max-width:230px}.scenario-notice{font-size:.77rem;color:#547085;margin:11px 0}.scenario-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px;margin-top:12px}.scenario-tile{border:1px solid #dce5e9;border-radius:12px;padding:13px;min-width:0;background:#fff}.scenario-tile.active{border-color:#348671;background:#f2faf5}.scenario-tile strong{display:block;overflow-wrap:anywhere}.scenario-tile .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.scenario-tile .actions button{font-size:.71rem}.scenario-tile .small{font-size:.74rem;color:#5b7182;margin-top:5px;line-height:1.5}.scenario-compare{margin-top:17px}.scenario-compare h3{margin:0 0 9px}.scenario-compare table{width:100%;border-collapse:collapse;font-size:.81rem;min-width:580px}.scenario-compare td,.scenario-compare th{border-bottom:1px solid #e6edf1;padding:10px;text-align:right;white-space:nowrap}.scenario-compare td:first-child,.scenario-compare th:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}.scenario-compare th{background:#f2f7f6;color:#39536a}.scenario-compare th:first-child{background:#f2f7f6}.scenario-compare .best{color:#147151;font-weight:800}.scenario-compare .negative{color:#b44352}.scenario-empty{padding:13px;background:#f3f7f9;border-radius:9px;color:#607489;font-size:.83rem;margin-top:10px}.scenario-footnote{font-size:.73rem;color:#738393;line-height:1.6;margin-top:9px}
+@media(max-width:580px){.scenario-workspace{padding:13px}.scenario-controls{width:100%}.scenario-controls input{flex:1;width:125px}.scenario-controls .btn{padding:9px}.scenario-tile .actions .btn{flex:1}.scenario-compare .table-scroll{max-width:100%}}
+@media print{.scenario-controls,.scenario-tile .actions{display:none!important}}
+
+body[data-view="compare"] .maincol > #chartControls{display:block!important}
+body[data-view="reports"] .maincol > #printableReport{display:block!important}
+/* v10 refinement */
+.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.health-card{margin:12px 0}.health-grid,.report-grid,.delta-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px}.health-item,.delta-card,.report-item{padding:12px 14px;background:#f3f7f9;border-radius:12px;border:1px solid var(--border)}.health-item strong,.report-item strong{display:block;font-size:1rem;margin:5px 0}.health-item small,.report-item small{color:var(--muted)}.health-item.risk{border-left:4px solid #c86a62}.health-item.ok{border-left:4px solid #218a6b}.delta-cards{margin-top:12px}.delta-card p{font-size:.79rem;margin:7px 0}.glossary{margin:18px 0}.glossary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:9px}.glossary details{padding:12px;background:#f4f7f9;border-radius:10px}.glossary summary{cursor:pointer;font-weight:700}.glossary details p{font-size:.82rem}.guide-dialog{border:1px solid var(--border);border-radius:16px;padding:0;max-width:530px;width:calc(100% - 32px);color:var(--ink);background:#fff}.guide-dialog::backdrop{background:#071824a0}.guide-inner{padding:23px}.guide-inner p{font-size:.9rem}.guide-inner .guide-option{padding:10px;margin:10px 0;border:1px solid var(--border);border-radius:9px}.guide-inner .guide-option label{font-weight:700}.guide-inner input{margin:0 8px 0 0}.guide-inner .flexbuttons{margin-top:20px}.report-card{margin-top:10px}.report-item{font-size:.78rem}.report-item strong{font-size:1.1rem}#chartVisibility label{font-size:.79rem;padding:8px;background:#f2f6f8;border-radius:7px}#horizonControls button[aria-pressed="true"]{background:#1c655c;color:white}body[data-theme="dark"]{color-scheme:dark;--ink:#e6edf5;--muted:#9eacb9;--border:#344558;--wash:#101922;--positive:#6bd2ad;--negative:#f59d9d;--accent:#70cab5}body[data-theme="dark"] .card,body[data-theme="dark"] .scenario-tile,body[data-theme="dark"] .guide-dialog{background:#1a2836;color:var(--ink)}body[data-theme="dark"] .row-field input,body[data-theme="dark"] .row-field select,body[data-theme="dark"] .scenario-controls input,body[data-theme="dark"] .btn,body[data-theme="dark"] .scenario-controls select{background:#243548;color:var(--ink);border-color:#53667a}body[data-theme="dark"] .mini,body[data-theme="dark"] .health-item,body[data-theme="dark"] .report-item,body[data-theme="dark"] .delta-card,body[data-theme="dark"] .glossary details,body[data-theme="dark"] #chartVisibility label,body[data-theme="dark"] .scenario-empty,body[data-theme="dark"] .highlight{background:#26384a;color:var(--ink)}body[data-theme="dark"] .highlight h3,body[data-theme="dark"] .highlight p{color:#e2efed}body[data-theme="dark"] .row-field label,body[data-theme="dark"] .scenario-tile .small,body[data-theme="dark"] .fine,body[data-theme="dark"] .label-chip{color:#aec0d0}body[data-theme="dark"] .data td,body[data-theme="dark"] .data th,body[data-theme="dark"] .kv,body[data-theme="dark"] .section{border-color:#354b60}body[data-theme="dark"] .data th,body[data-theme="dark"] .scenario-compare th,body[data-theme="dark"] .scenario-compare th:first-child,body[data-theme="dark"] .scenario-compare td:first-child{background:#243548;color:#e5edf4}body[data-theme="dark"] .scenario-tile.active{background:#234638}body[data-theme="dark"] .profile-card,body[data-theme="dark"] .strategy-card,body[data-theme="dark"] .view-intro,body[data-theme="dark"] .sticky-kpis{background:#1b2b38;color:#e5edf4}body[data-theme="dark"] .profile-card span,body[data-theme="dark"] .strategy-note{color:#acbdca}
+@media(max-width:720px){.header-actions{width:100%;justify-content:flex-start}.health-grid,.report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-inner{padding:15px}}
+@media print{body{background:#fff!important;color:#111!important}header,.app-tabs,.view-intro,.sticky-kpis,.sidebar,.scenario-workspace,.profile-card,.strategy-card,.health-card,.guide-dialog,.glossary,.flexbuttons,.footer,#chartControls{display:none!important}.layout{display:block}.maincol>*:not(#printableReport){display:none!important}#printableReport{display:block!important;box-shadow:none;border:0}#printableReport .note{display:block}.report-grid{grid-template-columns:repeat(2,1fr)}@page{size:A4;margin:15mm}}
+.tax-audit{padding:15px;border:1px solid var(--line,#d5dedb);border-radius:12px;margin:12px 0}.tax-audit summary{cursor:pointer;font-weight:700}.tax-audit .report-grid{margin-top:12px}.tax-audit a{text-decoration:underline}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">Germany · v13 · 2026 tax comparison · No investment borrowing</div><h1>Household · Housing · ETFs · Rentals</h1><p class="subtitle">Compare owning your home, rental apartments, or ETFs. Single and married households, household income, rental taxes, investment comparisons, heatmaps and risk simulations—all update live.</p></div><div class="header-actions"><button class="btn" id="themeToggle" type="button" aria-label="Toggle light or dark mode">◐ Theme</button><button class="btn" type="button" id="openGuide">⚡ Guided setup</button><div class="chip-live"><span class="dot"></span>Live calculator</div></div></header>
+<nav class="app-tabs" role="tablist" aria-label="Planner sections">
+<button role="tab" type="button" data-view="overview" aria-selected="true">◫ Overview</button>
+<button role="tab" type="button" data-view="household" aria-selected="false">♧ Household</button>
+<button role="tab" type="button" data-view="properties" aria-selected="false">⌂ Properties</button>
+<button role="tab" type="button" data-view="investments" aria-selected="false">◈ Investments</button>
+<button role="tab" type="button" data-view="compare" aria-selected="false">⇄ Compare</button>
+<button role="tab" type="button" data-view="reports" aria-selected="false">▤ Reports</button>
+</nav>
+<div class="view-intro" id="viewIntro" aria-live="polite"><div><strong id="viewTitle">Your financial overview</strong><p id="viewDescription">Live household cash flow, property impact and investment performance at a glance.</p></div><button id="editAllInputs" class="btn" type="button">Edit assumptions</button></div>
+<div class="sticky-kpis" aria-label="Live household status"><span>Free cash <strong id="stickyFree">—</strong></span><span>Net income <strong id="stickyNet">—</strong></span><span>Rental cash <strong id="stickyRental">—</strong></span></div>
+
+<section class="card content-card health-card" id="healthCard" aria-label="Financial health check"><div class="scenario-head"><h2>Financial health checks</h2><span class="fine">Estimates · updated with inputs</span></div><div id="healthIndicators" class="health-grid">Calculating risk indicators…</div><p class="fine">Signals use editable reserve and spending assumptions. These are screening indicators, not lending approvals or guarantees.</p></section>
+<section class="card scenario-workspace" id="scenarioWorkspace" aria-label="Saved financial scenarios">
+ <div class="scenario-head"><div><h2>Scenario workspace <span style="font-size:.7rem;color:#7b8b96">NEW IN V9</span></h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save current plan</button></div></div>
+ <div class="scenario-notice" id="scenarioNotice" role="status" aria-live="polite">Saved locally on this device. Use Backup to keep a portable copy.</div>
+ <div class="scenario-cards" id="scenarioCards"></div>
+ <div class="scenario-compare" id="scenarioCompare"><h3>Compare saved scenarios</h3><p class="muted">Select up to three plans using their Compare checkboxes. Numbers are captured when you save each plan.</p><div class="scenario-empty">Save at least two plans to compare them side by side.</div></div>
+ <div class="scenario-controls" style="margin-top:14px"><button class="btn" type="button" id="exportScenario">Backup scenarios (.json)</button><button class="btn" type="button" id="importScenario">Restore backup</button><input type="file" id="scenarioFile" accept="application/json,.json" hidden></div>
+</section>
+<div class="card profile-card" aria-label="Household profile">
+  <div class="profile-copy"><strong>Who is buying and investing?</strong><span>Switch household setup at any time. Your married-person inputs stay saved when you try the single-person scenario.</span></div>
+  <div class="profile-picker" role="group" aria-label="Choose household mode">
+    <button type="button" data-switch-profile="single" aria-pressed="false">Single person</button>
+    <button type="button" data-switch-profile="married" aria-pressed="true">Married couple</button>
+  </div>
+  <div class="profile-note" id="profileDescription">Married household: two incomes, two ETFs, and a joint tax estimate. Separate assessment is also available below.</div>
+  <input type="hidden" id="profileMode" value="married">
+</div>
+<div class="card strategy-card" aria-label="Property planning strategy">
+ <strong>What are you planning?</strong>
+ <div class="profile-picker" role="group" aria-label="Housing strategy">
+  <button type="button" data-switch-home="buy" aria-pressed="true">Buy a home + invest</button>
+  <button type="button" data-switch-home="existing" aria-pressed="false">Invest in rentals only</button>
+ </div>
+ <div class="strategy-note" id="homeStrategyDescription">Buy a primary residence, optionally add rental apartments, and track both against household income and ETF savings.</div>
+ <input type="hidden" id="homeMode" value="buy">
+</div>
+<div class="layout">
+<aside class="card sidebar" aria-label="Calculator inputs">
+<div class="section"><h2><span class="num">1</span> <span id="homeInputsTitle">Home purchase & mortgage</span></h2><div id="newHomeInputs">
+<div class="row-field"><label for="price">Home price (€)</label><input id="price" type="number" value="200000" min="0" step="5000"></div>
+<div class="row-field"><label for="down">Down payment (€)<small>On top of the ETF investments</small></label><input id="down" type="number" value="0" min="0" step="5000"></div>
+<div class="row-field"><label for="purchase">Purchase costs (%)<small>Transfer tax, notary, agent, etc.</small></label><input id="purchase" type="number" value="10" min="0" max="30" step="0.5"></div>
+<div class="row-field"><label for="rate">Mortgage rate (%)</label><input id="rate" type="number" value="4.5" min="0" max="25" step="0.1"></div>
+<div class="row-field"><label for="emi">Mortgage payment / month (€)</label><input id="emi" type="number" value="1100" min="0" step="50"></div>
+<div class="row-field"><label for="fixYears">Fixed-rate period (years)<small>Refinancing simulation afterwards</small></label><input id="fixYears" type="number" value="10" min="1" max="40" step="1"></div>
+<div class="row-field"><label for="refiRate">Rate after fixed period (%)<small>Illustration, not a prediction</small></label><input id="refiRate" type="number" value="4.5" min="0" max="25" step="0.25"></div>
+<div class="row-field"><label for="extra">Extra annual repayment (€)<small>From other cash, not automatically ETFs</small></label><input id="extra" type="number" value="0" min="0" step="500"></div>
+<div class="row-field"><label for="owner">Extra owner costs / month (€)<small>Maintenance, non-tenant charges etc.</small></label><input id="owner" type="number" value="250" min="0" step="25"></div>
+</div>
+<div id="existingHomeInputs">
+ <p class="side-sub">You are <strong>not purchasing a new primary residence</strong>. Tell us what your existing housing costs, so only rental acquisitions are counted upfront.</p>
+ <div class="row-field"><label for="existingType">Existing housing situation</label><select id="existingType"><option value="mortgage">Already own · mortgage</option><option value="paid">Own outright · no loan</option><option value="rent">Currently rent</option></select></div>
+ <div class="row-field existing-owned"><label for="existingValue">Existing home market value (€)<small>For the household wealth chart, not a new purchase</small></label><input id="existingValue" type="number" value="250000" min="0" step="5000"></div>
+ <div class="row-field existing-owned"><label for="existingOwner">Existing home owner costs / month (€)<small>Maintenance, non-tenant Hausgeld etc.</small></label><input id="existingOwner" type="number" value="300" min="0" step="25"></div>
+ <div class="existing-loan">
+  <div class="row-field"><label for="existingLoan">Mortgage outstanding (€)</label><input id="existingLoan" type="number" value="110000" min="0" step="5000"></div>
+  <div class="row-field"><label for="existingRate">Existing mortgage rate (%)</label><input id="existingRate" type="number" value="3.5" min="0" step="0.1"></div>
+  <div class="row-field"><label for="existingEmi">Existing mortgage payment / month (€)</label><input id="existingEmi" type="number" value="700" min="0" step="25"></div>
+  <div class="row-field"><label for="existingFix">Remaining fixed-rate years</label><input id="existingFix" type="number" value="8" min="1" max="40" step="1"></div>
+  <div class="row-field"><label for="existingRefi">Rate after fixed period (%)</label><input id="existingRefi" type="number" value="4.5" min="0" step=".25"></div>
+  <div class="row-field"><label for="existingExtra">Additional annual mortgage repayment (€)</label><input id="existingExtra" type="number" value="0" min="0" step="500"></div>
+ </div>
+ <div class="row-field" id="existingRentRow"><label for="existingRent">Existing monthly rent + Nebenkosten (€)<small>If heating is included, exclude it from utilities below</small></label><input id="existingRent" type="number" value="1500" min="0" step="50"></div>
+ <div class="info-panel existing-paid-note">No home purchase is modeled. Your existing property value increases with the growth assumption, and any existing mortgage reduces household equity.</div>
+</div>
+</div>
+<div class="section"><h2><span class="num">2</span> <span id="salarySectionTitle">Two salaries & German payroll</span></h2>
+<div class="row-field"><label for="incomeMode">Net salary used for cash flow<small>Actual net is recommended</small></label><select id="incomeMode"><option value="estimate">2026 German tax estimate</option><option value="actual">Actual spendable net (payslips)</option></select></div>
+<div class="info-panel">Estimated mode uses the 2026 German individual or joint income-tax tariff and detailed employee social insurance rates (still an annual estimate). <strong>Not an official Lohnsteuer/payslip calculation.</strong> Actual mode uses the net amounts you enter after all insurance payments.</div>
+<div class="group-title" id="firstPersonTitle">Husband</div>
+<div class="row-field"><label for="grossH">Annual gross salary (€)<small>Include regular gross salary</small></label><input id="grossH" type="number" value="100000" min="0" step="1000"></div>
+<div class="row-field"><label for="healthH">Health insurance</label><select class="compact" id="healthH"><option value="pkv">PKV (private)</option><option value="gkv">GKV (statutory)</option></select></div>
+<div class="row-field pkvH-only"><label for="pkvH">PKV + Pflege premium / month (€)<small>Total premium, before employer support</small></label><input id="pkvH" type="number" value="450" min="0" step="25"></div>
+<div class="row-field"><label for="actualH">Actual spendable net / month (€)<small>After PKV if paid separately</small></label><input id="actualH" type="number" value="4500" min="0" step="50"></div>
+<div class="group-title second-person">Wife</div>
+<div class="row-field second-person"><label for="grossW">Annual gross salary (€)</label><input id="grossW" type="number" value="70000" min="0" step="1000"></div>
+<div class="row-field second-person"><label for="healthW">Health insurance</label><select class="compact" id="healthW"><option value="pkv">PKV (private)</option><option value="gkv">GKV (statutory)</option></select></div>
+<div class="row-field pkvW-only second-person"><label for="pkvW">PKV + Pflege premium / month (€)</label><input id="pkvW" type="number" value="450" min="0" step="25"></div>
+<div class="row-field second-person"><label for="actualW">Actual spendable net / month (€)<small>After PKV if paid separately</small></label><input id="actualW" type="number" value="3200" min="0" step="50"></div>
+<div class="group-title">Tax / social insurance assumptions (2026)</div>
+<div class="row-field married-only"><label for="jointTax">Tax assessment</label><select class="compact" id="jointTax"><option value="joint">Joint (splitting)</option><option value="separate">Individual estimate</option></select></div><details class="tax-audit" id="withholdingDetail"><summary>Payroll withholding reconciliation · 2026</summary>
+<p class="note">Optional: copy the monthly <strong>Lohnsteuer</strong>, <strong>Solidaritätszuschlag</strong> and <strong>Kirchensteuer</strong> from each payslip. This compares tax actually withheld with the app's estimated annual income-tax liability. It does <strong>not</strong> implement the official BMF PAP or predict a refund: bonuses, other income, deductions, advance payments and filing adjustments may change the final assessment.</p>
+<div class="row-field"><label for="taxClassH">First person's payroll tax class (informational)</label><select id="taxClassH"><option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV" selected>IV</option><option value="V">V</option><option value="VI">VI</option></select></div>
+<div class="row-field second-person"><label for="taxClassW">Second person's payroll tax class (informational)</label><select id="taxClassW"><option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV" selected>IV</option><option value="V">V</option><option value="VI">VI</option></select></div>
+<div class="row-field"><label for="withholdingH">First person's monthly wage tax (€)</label><input id="withholdingH" type="number" min="0" step="1" value="0"></div>
+<div class="row-field second-person"><label for="withholdingW">Second person's monthly wage tax (€)</label><input id="withholdingW" type="number" min="0" step="1" value="0"></div>
+<div class="row-field"><label for="soliH">First person's monthly solidarity surcharge (€)</label><input id="soliH" type="number" min="0" step="1" value="0"></div>
+<div class="row-field second-person"><label for="soliW">Second person's monthly solidarity surcharge (€)</label><input id="soliW" type="number" min="0" step="1" value="0"></div>
+<div class="row-field"><label for="churchH">First person's monthly church payroll tax (€)</label><input id="churchH" type="number" min="0" step="1" value="0"></div>
+<div class="row-field second-person"><label for="churchW">Second person's monthly church payroll tax (€)</label><input id="churchW" type="number" min="0" step="1" value="0"></div>
+<div class="row-field"><label for="withholdingMonths">Months represented by entered monthly payslip values<small>Use 12 for steady full-year employment; actual annual totals are preferable for changing salaries</small></label><input id="withholdingMonths" type="number" min="1" max="12" step="1" value="12"></div>
+<div class="report-grid" id="payrollReconciliation" aria-live="polite"></div>
+<p class="fine">A negative difference indicates the annual tax estimate exceeds entered withholding, <em>not</em> a confirmed tax bill. A positive difference indicates entered withholding exceeds the estimate, <em>not</em> a confirmed refund. Rental tax effects are shown separately and can alter assessment substantially.</p>
+<p class="fine"><a href="https://www.bmf-steuerrechner.de/interface/pseudocodes.xhtml" target="_blank" rel="noopener noreferrer">Official 2026 BMF PAP pseudocode</a> · <a href="https://www.bmf-steuerrechner.de/interface/programmablauf.xhtml" target="_blank" rel="noopener noreferrer">BMF developer information</a></p>
+</details>
+<div class="row-field"><label for="childless">Care insurance — first person<small>For GKV, age 23+ and no children triggers 0.6% surcharge</small></label><select class="compact" id="childless"><option value="yes">Childless, age 23+</option><option value="no">Parent / exempt from surcharge</option><option value="under23">Childless, under 23</option></select></div>
+<div class="row-field second-person"><label for="childlessW">Care insurance — second person</label><select class="compact" id="childlessW"><option value="yes">Childless, age 23+</option><option value="no">Parent / exempt</option><option value="under23">Childless, under 23</option></select></div>
+<div class="row-field"><label for="careRegion">Place of employment for care insurance<small>Saxony uses a different employee contribution</small></label><select class="compact" id="careRegion"><option value="other">Other German states (including Baden-Württemberg)</option><option value="saxony">Saxony</option></select></div>
+<div class="row-field"><label for="eligibleChildren">First person — eligible children under 25<small>For parents, 2–5 eligible children reduce the care rate by 0.25 percentage points each, up to four reductions</small></label><input id="eligibleChildren" type="number" value="0" min="0" max="5" step="1"></div>
+<div class="row-field second-person"><label for="eligibleChildrenW">Second person — eligible children under 25</label><input id="eligibleChildrenW" type="number" value="0" min="0" max="5" step="1"></div>
+<div class="row-field"><label for="gkvExtra">GKV additional rate (%)<small>Average 2026 = 2.9%</small></label><input id="gkvExtra" type="number" value="2.9" min="0" max="10" step="0.1"></div>
+<div class="row-field"><label for="pkvDeductible">PKV tax-deductible share (%)<small>Approx. basic coverage, adjust to certificate</small></label><input id="pkvDeductible" type="number" value="85" min="0" max="100" step="5"></div>
+<div class="row-field"><label for="churchTax">Church tax (BW 8%)</label><select id="churchTax" class="compact"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="row-field"><label for="otherNet">Other after-tax household income / month (€)</label><input id="otherNet" type="number" value="0" min="0" step="50"></div>
+</div>
+<div class="section"><h2><span class="num">3</span> Household living expenses</h2>
+<p class="side-sub">Budget for your <strong>selected housing arrangement</strong>. Do not double-count current rent or housing costs. If your existing rent includes heating, exclude heating from the utilities amount here.</p>
+<div class="row-field"><label for="utilities">Electricity, heating, internet (€ / mo.)</label><input id="utilities" type="number" value="250" min="0" step="25"></div>
+<div class="row-field"><label for="groceries">Groceries & essentials (€ / mo.)</label><input id="groceries" type="number" value="650" min="0" step="25"></div>
+<div class="row-field"><label for="transport">Transport (€ / mo.)</label><input id="transport" type="number" value="250" min="0" step="25"></div>
+<div class="row-field"><label for="otherInsurance">Other insurance (€ / mo.)<small>Exclude PKV already counted above</small></label><input id="otherInsurance" type="number" value="100" min="0" step="25"></div>
+<div class="row-field"><label for="lifestyle">Dining, travel & leisure (€ / mo.)</label><input id="lifestyle" type="number" value="400" min="0" step="25"></div>
+<div class="row-field"><label for="misc">Other household spending (€ / mo.)</label><input id="misc" type="number" value="300" min="0" step="25"></div>
+<div class="row-field"><label for="otherDebt">Other loan repayments (€ / mo.)</label><input id="otherDebt" type="number" value="0" min="0" step="25"></div>
+<div class="row-field"><label for="cashSaving">Monthly transfer to cash savings (€)<small>Allocation of surplus, not an expense</small></label><input id="cashSaving" type="number" value="0" min="0" step="50"></div>
+<div class="row-field"><label for="availableCapital">Total liquid capital before purchase (€)<small>For ETF investment + purchase costs + reserve</small></label><input id="availableCapital" type="number" value="180000" min="0" step="10000"></div>
+<div class="row-field"><label for="cashReserve">Target emergency cash kept (€)<small>After buying home and funding ETFs</small></label><input id="cashReserve" type="number" value="10000" min="0" step="1000"></div>
+<div class="row-field"><label for="netGrowth">Future net income growth (% / yr)</label><input id="netGrowth" type="number" value="2" min="-10" max="20" step="0.5"></div>
+<div class="row-field"><label for="expenseGrowth">Future living cost growth (% / yr)</label><input id="expenseGrowth" type="number" value="2" min="0" max="20" step="0.5"></div>
+<div class="info-panel">Default salaries and spending are illustrative, <strong>not your verified payslip figures</strong>. Replace them with your household numbers.</div>
+</div>
+<div class="section"><h2><span class="num">4</span> <span id="etfSectionTitle">Two ETF accounts (no loan)</span></h2>
+<div class="row-field"><label for="husband" id="firstEtfLabel">Husband initial ETF (€)</label><input id="husband" type="number" value="75000" min="0" step="5000"></div>
+<div class="row-field second-person"><label for="wife">Wife initial ETF (€)</label><input id="wife" type="number" value="75000" min="0" step="5000"></div>
+<div class="presets"><button data-half="50000" type="button">€50k each</button><button data-half="75000" type="button">€75k each</button><button data-half="100000" type="button">€100k each</button></div>
+<div class="row-field"><label for="monthlyH" id="firstMonthlyLabel">Husband monthly investing (€)</label><input id="monthlyH" type="number" value="0" min="0" step="50"></div>
+<div class="row-field second-person"><label for="monthlyW">Wife monthly investing (€)</label><input id="monthlyW" type="number" value="0" min="0" step="50"></div>
+<div class="row-field"><label for="ret">ETF expected annual return (%)<small>Before ETF fees; not guaranteed</small></label><input id="ret" type="number" value="7" min="-90" max="40" step="0.5"></div>
+<div class="row-field"><label for="ter">ETF fee / TER (% p.a.)</label><input id="ter" type="number" value="0.14" min="0" max="5" step="0.01"></div>
+<div class="row-field"><label for="allow" id="allowanceLabel">Unused joint tax allowance (€)<small>Max €2,000 for jointly assessed spouses</small></label><input id="allow" type="number" value="2000" min="0" max="2000" step="100"></div>
+</div>
+
+<div class="section" id="rentalInputsSection"><h2><span class="num">5</span> Rental investment properties</h2>
+<p class="muted">Add individual apartments, each with its own purchase price, rent, Hausgeld, loan and depreciation. No Scalable borrowing.</p>
+<div id="rentalInputs"></div>
+<button id="addRental" class="btn primary" type="button">+ Add rental property</button>
+<div class="row-field"><label for="rentalTaxTiming">Tax effects in cash budget<small>Tax refunds are not paid monthly automatically</small></label><select id="rentalTaxTiming"><option value="cash">Exclude estimated tax refund/payment</option><option value="accrual">Include monthly tax-equivalent provision</option></select></div>
+<p class="fine">Rented full-year; attribution follows the individual or joint ownership selection. Rent, financing and deductible expenses are separate from your self-used home. The annual tax result is an estimate, not a guaranteed refund.</p>
+</div>
+<div class="section"><h2><span class="num">6</span> Withdrawals & outlook</h2>
+<div class="row-field"><label for="drawMode">ETF withdrawal plan<small>Sales are modeled each month</small></label><select id="drawMode"><option value="none">No ETF withdrawals</option><option value="interest">Pay mortgage interest from ETFs</option><option value="full">Pay entire mortgage EMI from ETFs</option><option value="custom">Custom monthly net withdrawal</option></select></div>
+<div class="row-field" id="customLine" hidden><label for="custom">Monthly net withdrawal (€)</label><input id="custom" type="number" value="500" min="0" step="50"></div>
+<div class="row-field"><label for="years">Projection years</label><input id="years" type="number" value="25" min="1" max="40" step="1"></div>
+<div class="row-field"><label for="houseGrowth">Home appreciation (% p.a.)</label><input id="houseGrowth" type="number" value="2" min="-10" max="15" step="0.5"></div>
+<div class="row-field"><label for="inflation">Inflation (% p.a.)<small>For inflation-adjusted values</small></label><input id="inflation" type="number" value="2" min="0" max="15" step="0.5"></div>
+<div class="row-field"><label for="crash">Year-1 stress scenario</label><select id="crash"><option value="0">Off (smooth assumed returns)</option><option value="-20">ETF falls 20% in year 1</option><option value="-35">ETF falls 35% in year 1</option><option value="-50">ETF falls 50% in year 1</option></select></div>
+<h3>Investment comparison & risk charts</h3>
+<div class="row-field"><label for="comparisonProperty">Compare rental against ETF</label><select id="comparisonProperty" class="compact"><option value="all">All rental apartments</option></select></div>
+<div class="row-field"><label for="heatRentStep">Heatmap cold-rent step (€)</label><input id="heatRentStep" type="number" value="100" min="25" max="2000" step="25"></div>
+<div class="row-field"><label for="heatRateStep">Heatmap interest step (points)</label><input id="heatRateStep" type="number" value="0.5" min="0.25" max="2" step="0.25"></div>
+<div class="row-field"><label for="saleCosts">Indicative property selling costs (%)</label><input id="saleCosts" type="number" value="3" min="0" max="15" step="0.5"></div>
+<div class="row-field"><label for="mcVol">ETF annual volatility (%)*</label><input id="mcVol" type="number" value="18" min="0" max="60" step="1"></div>
+<div class="row-field"><label for="mcTrials">Risk simulation paths</label><select id="mcTrials" class="compact"><option value="250">250</option><option value="500" selected>500</option><option value="1000">1,000</option></select></div>
+<div class="row-field"><label for="rankingMetric">Rental ranking metric</label><select id="rankingMetric" class="compact"><option value="cash" selected>After-tax cash / month</option><option value="cashOnCash">Cash-on-cash return</option><option value="netYield">Net operating yield</option><option value="grossYield">Gross rental yield</option><option value="dscr">Debt-service coverage</option></select></div>
+<p class="fine">*Risk simulations are hypothetical models, not forecast probabilities. Change an input to redraw charts instantly.</p>
+<div class="flexbuttons"><button class="btn primary" id="reset" type="button">Reset defaults</button><button class="btn" id="print" type="button">Print summary</button><button class="btn" id="copy" type="button">Copy summary</button></div><div id="liveStatus" role="status" aria-live="polite">Results update automatically; inputs are saved locally when browser storage allows</div>
+</div>
+</aside>
+<section class="maincol">
+<div class="household-pills">
+<article class="card metric"><div class="label">Household spendable net / month</div><div id="kNet" class="big">—</div><div class="tiny" id="kNetMode">2026 annual tax estimate</div></article>
+<article class="card metric"><div class="label">Monthly living + housing outgoings</div><div id="kOutgo" class="big">—</div><div class="tiny">Home and living before optional investing; rental cash shown separately</div></article>
+<article class="card metric"><div class="label">Free cash / month after allocations</div><div id="kFree" class="big">—</div><div class="tiny">Including recurring rental cash; income-tax timing selectable</div></article>
+<article class="card metric"><div class="label">Free cash / year after allocations</div><div id="kAnnual" class="big">—</div><div class="tiny">12 × current monthly balance</div></article>
+</div>
+<section class="card content-card" id="householdSection">
+<h2>Household income, deductions & disposable cash</h2>
+<details class="tax-audit" id="taxAudit"><summary>Tax calculation audit · 2026</summary>
+<p class="note">2026 Einkommensteuertarif under § 32a EStG. This is an <strong>annual income-tax approximation</strong>, not the BMF payroll withholding (PAP) algorithm. PKV subsidies, insurance deductions, church tax and solidarity surcharge remain simplified. Use payslip amounts for real cash budgeting.</p>
+<p class="note">Reference rates: <a href="https://www.bmas.bund.de/DE/Service/Gesetze-und-Gesetzesvorhaben/sozialversicherungs-rechengroessenverordnung-2026.html" target="_blank" rel="noopener noreferrer">BMAS 2026 limits</a> · <a href="https://www.bundesgesundheitsministerium.de/themen/pflege/online-ratgeber-pflege/die-pflegeversicherung/finanzierung/" target="_blank" rel="noopener noreferrer">BMG care insurance</a>. Private-insurance premiums require separate health/care and employer subsidy confirmation for payroll-level accuracy.</p><div id="taxAuditData" class="report-grid" aria-live="polite"></div>
+<div class="info-panel" id="assessmentCompareSection" style="margin-top:14px"><h3 style="margin:0 0 8px">Married-couple assessment comparison</h3><p class="fine">Compare estimated <em>annual income tax</em> under joint splitting and separate assessment. This does not calculate payroll withholding by tax class (III/V, IV/IV, IV with factor).</p><div id="assessmentCompare" class="report-grid" aria-live="polite"></div><p id="assessmentRecommendation" class="fine" aria-live="polite"></p><button type="button" class="btn" id="applyAssessment" style="margin-top:8px">Use lower estimated annual tax</button></div>
+<div class="info-panel" style="margin-top:12px"><strong>Payroll implementation status:</strong> The official BMF 2026 PAP handles withholding and uses tax class, payroll period and prescribed rounding. The 2026 PAP is not yet integrated. The optional payroll reconciliation compares actual payslip withholding with an estimated annual tax result; annual income-tax forecasts are <strong>not</strong> monthly payroll deductions. <a href="https://www.bmf-steuerrechner.de/interface/pseudocodes.xhtml" target="_blank" rel="noopener noreferrer">Official 2026 PAP XML</a> · <a href="https://www.bmf-steuerrechner.de/interface/programmablauf.xhtml" target="_blank" rel="noopener noreferrer">BMF payroll method</a>. Use Actual net mode for budgeting.</div>
+<p class="fine"><a href="https://ao.bundesfinanzministerium.de/lsth/2026/A-Einkommensteuergesetz/IV-Tarif-31-34b/Paragraf-32a/paragraf-32a.html" target="_blank" rel="noopener noreferrer">BMF: 2026 Einkommensteuertarif (§ 32a)</a> · <a href="https://www.bundesfinanzministerium.de/Datenportal/Daten/frei-nutzbare-produkte/Anwendungen/Programmablaufplan-2026/Programmablaufplan-2026.html" target="_blank" rel="noopener noreferrer">BMF: official 2026 payroll algorithm (future implementation)</a>.</p>
+</details>
+<p class="note" id="taxMethodNote">2026 estimate, not a payroll statement. Switch to actual net salary for budgeting from money arriving in your accounts.</p>
+<div class="grid2 spouse-results">
+<div><div class="label-chip" id="firstPersonSummaryTitle">Husband · annual estimate</div>
+<div class="kv"><span>Gross salary</span><strong id="hGross"></strong></div>
+<div class="kv"><span>Employee pension (Rentenversicherung)</span><strong id="hPension"></strong></div>
+<div class="kv"><span>Unemployment (Arbeitslosenversicherung)</span><strong id="hUnemployment"></strong></div>
+<div class="kv"><span>Health + care cost, after employer support</span><strong id="hHealth"></strong></div>
+<div class="kv"><span>Attributed tax + solidarity / church tax</span><strong id="hTax"></strong></div>
+<div class="kv"><span><strong>Estimated net / month</strong></span><strong id="hNetEstimate"></strong></div>
+<div class="kv"><span>Net used for budget / month</span><strong id="hNetBudget"></strong></div>
+</div>
+<div class="second-person"><div class="label-chip">Wife · annual estimate</div>
+<div class="kv"><span>Gross salary</span><strong id="wGross"></strong></div>
+<div class="kv"><span>Employee pension (Rentenversicherung)</span><strong id="wPension"></strong></div>
+<div class="kv"><span>Unemployment (Arbeitslosenversicherung)</span><strong id="wUnemployment"></strong></div>
+<div class="kv"><span>Health + care cost, after employer support</span><strong id="wHealth"></strong></div>
+<div class="kv"><span>Attributed tax + solidarity / church tax</span><strong id="wTax"></strong></div>
+<div class="kv"><span><strong>Estimated net / month</strong></span><strong id="wNetEstimate"></strong></div>
+<div class="kv"><span>Net used for budget / month</span><strong id="wNetBudget"></strong></div>
+</div></div>
+<div class="info-panel" id="houseTaxSummary"></div>
+<h3>Monthly and annual household budget · including rentals</h3>
+<div class="table-scroll"><table class="data"><thead><tr><th>Cash flow</th><th>Monthly</th><th>Yearly</th></tr></thead><tbody id="cashRows"></tbody></table></div>
+<p class="fine">The bar shows home, living and savings allocations. Rental net cash and the optional tax provision are shown as separate rows above.</p><div class="cashbar" id="cashbar"><div class="home"></div><div class="living"></div><div class="invest"></div><div class="free"></div></div>
+<div class="cashlabels"><span><i style="background:#3878a3"></i>Home</span><span><i style="background:#ca9761"></i>Living & other debt</span><span><i style="background:#8b7ab8"></i>ETF & cash allocations</span><span><i style="background:#1a866d"></i>Remaining cash</span></div>
+<div class="highlight" id="householdTakeaway"></div>
+<div class="info-panel" id="upfrontSummary"></div>
+<div class="three"><div class="mini"><div class="t">Disposable after living + housing, before voluntary savings</div><div class="v" id="cashBeforeAlloc"></div></div><div class="mini"><div class="t">Cash reserve · essential-expense coverage</div><div class="v" id="reserveMonths"></div></div><div class="mini"><div class="t" id="paymentRatioLabel">Housing payment / spendable household income</div><div class="v" id="housingRatio"></div></div></div>
+<div class="income-warning">The tax estimator uses 2026 §32a and social contribution limits, simplified individual or joint-assessment models, and assumed deductible PKV basic cover. It does not reproduce Lohnsteuer by tax class, payroll timing, individual subsidies, tax deductions, child benefits or future changes. Rental-property income tax is separately estimated from the wage-tax baseline and can be settled much later. <strong>Use payslip net for cash-flow decisions.</strong> If your PKV is debited separately, enter your actual net after paying it.</div>
+</section>
+
+<section class="card content-card" id="rentalResultsSection">
+<h2>Rental apartments · cash flow, tax & equity</h2>
+<p class="note">See the household <strong>increment</strong> from each investment property. Rental income is taxable, but eligible interest, depreciation and operating costs may reduce it. Principal repayments reduce debt but do not reduce taxable rental income. Negative taxable results do not guarantee a refund.</p>
+<div class="rental-pills">
+<div class="mini"><div class="t">Added rental cash flow / month · before tax settlement</div><div class="v" id="rentalCashKpi">—</div></div>
+<div class="mini"><div class="t">Est. annual household income-tax change</div><div class="v" id="rentalTaxKpi">—</div></div>
+<div class="mini"><div class="t">Rental cash flow / month · after est. tax</div><div class="v" id="rentalAfterKpi">—</div></div>
+<div class="mini"><div class="t">Monthly mortgage principal paid · rentals</div><div class="v" id="rentalEquityKpi">—</div></div>
+</div>
+<div class="rental-compare">
+<div class="mini"><div class="t" id="baselineRentalLabel">Home + ETFs · free cash / month</div><div class="v" id="baselineFree">—</div><div class="rental-meta">Without any rental investment, after regular household allocations</div></div>
+<div class="mini"><div class="t" id="withRentalLabel">Home + ETFs + rentals · free cash / month</div><div class="v" id="withRentalFree">—</div><div class="rental-meta">Actual recurring cash at the selected tax timing; upfront purchase cash is excluded</div></div>
+</div>
+<div class="three" style="margin-top:12px"><div class="mini"><div class="t">Year-1 additional equity built by repayment</div><div class="v" id="rentalPrincipalAnnual">—</div></div><div class="mini"><div class="t">Year-1 assumed property appreciation (unrealized)</div><div class="v" id="rentalGrowthAnnual">—</div></div><div class="mini"><div class="t">Estimated recurring wealth change (cash + principal, excluding appreciation)</div><div class="v" id="rentalWealthAnnual">—</div></div></div>
+<div class="info-panel" id="rentalVerdict">Add a rental property to compare scenarios.</div>
+<h3>Property-by-property results · first full year</h3>
+<div class="table-scroll"><table class="data"><thead><tr><th>Rental apartment</th><th>Price</th><th>Cold-rent yield</th><th>Cash needed upfront</th><th>Rent receipts/mo.</th><th>Loan payment/mo.</th><th>Other cash out/mo.</th><th>Cash before tax/mo.</th><th>Taxable rental/yr.</th><th>Mortgage principal/mo.</th></tr></thead><tbody id="rentalRows"></tbody></table></div>
+<h3>How German rental deductions affect this household</h3>
+<div class="grid2 rental-kv">
+<div><div class="kv"><span>Annual rental income (cold + recovered charges)</span><strong id="rentRevenue">—</strong></div>
+<div class="kv"><span>Deductible loan interest</span><strong id="rentInterest">—</strong></div>
+<div class="kv"><span>Building depreciation (AfA)</span><strong id="rentAfa">—</strong></div>
+<div class="kv"><span>Other deductible rental expenses</span><strong id="rentDeductible">—</strong></div>
+<div class="kv"><span>Taxable rental result, recurring</span><strong id="rentTaxable">—</strong></div></div>
+<div><div class="kv"><span>Loan principal repaid (not deductible)</span><strong id="rentPrincipal">—</strong></div>
+<div class="kv"><span>WEG reserves paid (not immediately deductible)</span><strong id="rentReserves">—</strong></div>
+<div class="kv"><span>Annual cash flow, before income tax</span><strong id="rentCashAnnual">—</strong></div>
+<div class="kv"><span>Estimated recurring income-tax saving / extra tax</span><strong id="rentTaxSaving">—</strong></div>
+<div class="kv"><span>Potential tax effect in acquisition/renovation year</span><strong id="rentOneTimeTax">—</strong></div></div></div>
+<div class="highlight warn" id="rentalNotes"></div>
+<h3>Long-term rental portfolio projection</h3>
+<p class="note">Loans amortize at the entered starting annuity and rate throughout this simplified projection. Rent and costs grow at each property's selected rates; property values may rise or fall. Future tax results use the current estimated taxable-income baseline, not future tax-law forecasts.</p>
+<div class="table-scroll"><table class="data"><thead><tr><th>Year</th><th>Rental cash before tax</th><th>Est. rental income-tax effect</th><th>After-tax economic cash</th><th>Loan balance</th><th>Property value</th><th>Property equity</th></tr></thead><tbody id="rentalAnnualRows"></tbody></table></div>
+<div class="fine">Property equity is estimated property value minus outstanding debt, excluding selling expenses and any capital-gains tax. Estimated tax relief requires qualifying income-producing rentals and adequate supporting evidence. Initial renovation tax effects are shown separately and are not treated as regular monthly income.</div>
+</section>
+
+
+<section class="card content-card" id="visualizationsSection">
+ <h2>Visual insights · how rental investments change your finances</h2>
+ <p class="note">These charts recalculate immediately when you change a salary, housing setup, ETF amount or rental property. They separate <strong>spendable cash</strong> from mortgage principal paid and unrealized asset growth.</p>
+ <div class="plot-card">
+  <h3>Rental cash-flow bridge · first full year</h3>
+  <p class="note">All rental apartments combined. Positive bars bring cash into your household; negative bars consume it. Tax effects are annual estimates, not monthly payouts.</p>
+  <svg class="plot-chart" id="rentalBridgeChart" viewBox="0 0 820 300" role="img" aria-label="Rental receipts, running costs, interest, principal and tax effects per month"></svg>
+  <div class="plot-stat-row" id="rentalBridgeStats"></div>
+ </div>
+ <div class="plot-card">
+  <h3>Projected household asset composition</h3>
+  <p class="note">Illustrative home equity, rental equity, ETF holdings after any planned sales, and modeled cash reserves. Negative cash or equity is a warning, not an asset. This chart is not a tax-adjusted liquidation value.</p>
+  <svg class="plot-chart" id="wealthCompositionChart" viewBox="0 0 820 350" role="img" aria-label="Stacked household assets by year"></svg>
+  <div class="plot-legend"><span><i style="background:#397eac"></i>Own home equity</span><span><i style="background:#8a73b7"></i>Rental equity</span><span><i style="background:#13927d"></i>ETF investments</span><span><i style="background:#d6a35f"></i>Cash reserves</span></div>
+  <div class="plot-stat-row" id="wealthChartStats"></div>
+ </div>
+</section>
+
+<section class="card content-card report-card" id="printableReport"><h2>One-page financial decision report</h2><p class="note">Always uses the currently displayed inputs. It includes household cash-flow, mortgage, ETF and rentals, plus critical assumptions.</p><div id="reportSummary" class="report-grid"></div><div class="flexbuttons"><button type="button" class="btn primary" id="printDecisionReport">Print / save as PDF</button><button type="button" class="btn" id="copyDecisionReport">Copy report text</button></div></section>
+<section class="card content-card" id="chartControls"><h2>Interactive projection controls</h2><p class="note">Choose a projection horizon and display individual financial charts. Updates are reflected in the full calculator immediately.</p><div class="flexbuttons" id="horizonControls"><button class="btn" type="button" data-horizon="5">5 years</button><button class="btn" type="button" data-horizon="10">10 years</button><button class="btn" type="button" data-horizon="20">20 years</button><button class="btn" type="button" data-horizon="30">30 years</button></div><div class="flexbuttons" id="chartVisibility"><label><input type="checkbox" data-chart="amortChart" checked> Mortgage debt</label><label><input type="checkbox" data-chart="riskChart" checked> ETF risk</label><label><input type="checkbox" data-chart="rankingChart" checked> Property rankings</label></div><p class="fine" id="horizonStatus" role="status"></p></section>
+<section class="card content-card" id="decisionAnalyticsSection">
+ <h2>Investment decision studio · live comparisons</h2>
+ <p class="note">All figures are derived from the rental apartments, household taxes and ETF assumptions you enter above. Positive after-tax rental cash is reinvested at the assumed ETF growth rate; negative cash is treated as additional household funding. These are <strong>illustrative comparisons</strong>, not promised returns.</p>
+ <div class="plot-card" id="comparisonPanel">
+  <h3>A. Buy rental property vs invest identical upfront cash in ETFs</h3>
+  <p class="note" id="compareExplanation">The same initial cash is used in both alternatives. The rental case includes rent, financing and estimated taxes; ETF alternative grows the initial cash at your ETF return assumption after fund costs.</p>
+  <div class="analytics-grid">
+   <div class="analytics-stat"><div class="t">Initial cash compared</div><div id="cmpCapital" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">Rental equity + reinvested after-tax cash, final year</div><div id="cmpRental" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">ETF alternative, final year before sale tax</div><div id="cmpETF" class="v">—</div></div>
+  </div>
+  <div class="chart-scroll"><svg id="comparisonChart" class="plot-chart" viewBox="0 0 820 340" role="img" aria-label="Compare rental equity and invested rental cash flows with an ETF alternative"></svg></div>
+  <div class="plot-legend"><span><i style="background:#148b75"></i>Rental equity + reinvested net cash</span><span><i style="background:#785aaa"></i>Same upfront cash in ETF</span></div>
+  <div id="comparisonVerdict" class="chart-focus" aria-live="polite"></div>
+  <p class="chart-hint" id="saleCaution">Marked-to-market comparison before sale costs and capital-gains taxes on property or ETFs. Mortgage debt is already subtracted from rental equity. Do not compare it with spendable bank cash.</p>
+ </div>
+ <div class="plot-card" id="heatmapPanel">
+  <h3>B. Break-even cold rent vs mortgage interest rate</h3>
+  <p class="note">For the selected apartment, every cell shows <strong>first-year monthly cash flow after estimated household income tax</strong>, including principal repayments. The model keeps other property assumptions fixed.</p>
+  <div class="analytics-grid">
+   <div class="analytics-stat"><div class="t">Current rental cash flow after estimated tax</div><div id="heatCurrent" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">Break-even monthly cold rent at entered rate</div><div id="heatBreakRent" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">Current cold rent & interest</div><div id="heatInputs" class="v">—</div></div>
+  </div>
+  <div id="heatTable" class="heat-scroll"></div>
+  <p class="chart-hint">Red = estimated funding required. Green = positive after-tax rental cash. This is not a promise of receiving tax relief every month; income tax is generally settled separately.</p>
+ </div>
+ <div class="plot-card" id="amortPanel">
+  <h3>C. Mortgage amortization · interest vs principal</h3>
+  <div class="analytics-controls"><label for="amortTarget">Loan to display</label><select id="amortTarget"><option value="home">Primary or existing home</option></select></div>
+  <div class="chart-scroll"><svg id="amortChart" class="plot-chart" viewBox="0 0 820 330" role="img" aria-label="Annual mortgage interest and principal repayments with remaining loan debt"></svg></div>
+  <div id="amortStats" class="plot-stat-row"></div>
+  <p class="chart-hint">Own-home refinancing uses your selected future rate with the same monthly payment. Rental-loan interest remains constant in the current rental projection; actual bank financing may differ.</p>
+ </div>
+ <div class="plot-card" id="riskPanel">
+  <h3>D. ETF market-sequence simulation</h3>
+  <p class="note">Monte Carlo illustration using your assumed average return, a configurable yearly volatility, and independent randomized annual returns. Repeated paths use a fixed seed so results change because of your inputs, not page refreshes.</p>
+  <div class="analytics-grid">
+   <div class="analytics-stat"><div class="t">10th-percentile ETF portfolio at horizon</div><div id="mcLow" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">Median ETF portfolio at horizon</div><div id="mcMid" class="v">—</div></div>
+   <div class="analytics-stat"><div class="t">Share of scenarios ending below starting ETF capital</div><div id="mcUnder" class="v">—</div></div>
+  </div>
+  <div class="chart-scroll"><svg id="riskChart" class="plot-chart" viewBox="0 0 820 330" role="img" aria-label="Simulated 10th, median and 90th percentile ETF outcomes"></svg></div>
+  <div id="mcStats" class="plot-stat-row"></div>
+  <p class="chart-hint">Simulation excludes taxes on ETF withdrawals, borrowing, real-world return tails, inflation and changes to market correlations. Percentiles are properties of this assumed model, <strong>not real-world forecast probabilities</strong>. When ETF withdrawals are selected, the chart subtracts gross requested withdrawals before taxes.</p>
+ </div>
+ <div class="plot-card" id="rankingPanel">
+  <h3>E. Compare your rental properties side by side</h3>
+  <p class="note">Rank your saved apartments using the metric chosen in the left panel. Cash-on-cash return is annual estimated cash after rental income tax divided by upfront cash; principal repayment is shown separately.</p>
+  <div class="table-scroll"><table class="data"><thead><tr><th>Property</th><th>Cold rent yield</th><th>Net operating yield</th><th>After-tax cash/mo.</th><th>Cash-on-cash</th><th>Principal repaid/mo.</th><th>DSCR</th><th>Upfront cash</th></tr></thead><tbody id="rankRows"></tbody></table></div>
+  <div class="chart-scroll"><svg id="rankingChart" class="plot-chart" viewBox="0 0 820 275" role="img" aria-label="Rental property after-tax cash flow ranked by selection"></svg></div>
+  <p class="chart-hint">Rankings use standalone estimated rental income-tax effects, not a property's marginal tax effect within all other rentals. Net operating yield includes regular running expenses and reserve contributions. DSCR uses collected rent less operating outlays, divided by debt service. Negative cash-flow investments may still grow equity but require income support.</p>
+ </div>
+</section>
+<div class="metrics">
+<article class="card metric"><div class="label" id="etfPortfolioTitle">Combined ETF portfolio · own money</div><div id="mPortfolio" class="big">€150,000</div><div class="tiny" id="mSplit">€75k + €75k</div></article>
+<article class="card metric"><div class="label" id="housingKpiLabel">Monthly home payment + owner costs</div><div id="mHousing" class="big">€1,350</div><div class="tiny">Before optional extra repayments</div></article>
+<article class="card metric"><div class="label">Year-1 modeled ETF result / mo.</div><div id="mProfit" class="big green">€743</div><div class="tiny">Economic equivalent only, not monthly cash</div></article>
+<article class="card metric"><div class="label" id="offsetKpiLabel">Modeled EMI shortfall / mo.</div><div id="mGap" class="big">€357</div><div class="tiny">Assumes positive ETF gains realized</div></article>
+</div>
+<section class="card content-card"><h2>Live household overview</h2><p class="note">The mortgage payment is obligatory. ETF gains vary and accumulating ETFs do not pay regular cash. The offset figures estimate gains you <em>might</em> realize and are not guaranteed withdrawals.</p>
+<div id="errors"></div>
+<div class="grid2">
+<div><div class="label-chip">Home & financing</div>
+<div class="kv"><span>Mortgage amount</span><strong id="mortgagePrincipal"></strong></div>
+<div class="kv"><span>First monthly interest</span><strong id="mortgageInterest"></strong></div>
+<div class="kv"><span>First monthly principal repayment</span><strong id="mortgageAmort"></strong></div>
+<div class="kv"><span>Estimated payoff</span><strong id="mortgagePayoff"></strong></div>
+<div class="kv"><span id="upfrontHomeLabel">Cash required initially (ETFs + deposit + fees)</span><strong id="cashNeeded"></strong></div>
+<div class="kv"><span id="homeMonthlyLabel">Mortgage + other owner costs monthly</span><strong id="monthlyTotal"></strong></div><div class="kv"><span>Additional ETF purchases per month</span><strong id="monthlySaving"></strong></div>
+</div>
+<div><div class="label-chip">Investment estimate · year 1</div>
+<div class="kv"><span id="etfSplitTitle">Husband / wife investments</span><strong id="investSplit"></strong></div>
+<div class="kv"><span>ETF gross annual gain</span><strong id="grossGain"></strong></div>
+<div class="kv"><span>ETF internal fees</span><strong id="feeVal"></strong></div>
+<div class="kv"><span>Estimated tax if this year's full gain realized</span><strong id="taxVal"></strong></div>
+<div class="kv"><span>Potential net annual gain</span><strong id="netAnnual"></strong></div>
+<div class="kv"><span id="offsetCapitalLabel">Capital needed to offset mortgage EMI at this return</span><strong id="needCapital"></strong></div>
+</div></div>
+<div class="highlight" id="takeaway" role="status"></div>
+<div class="bar-track"><div class="bar-fill" id="coverageBar" style="width:0%"></div></div><div class="sleeve" id="coverageNote"></div>
+</section>
+<section class="card content-card"><h2>Actual cash flow: funding housing</h2><p class="note">The annual-growth estimate above is not cash. Select an ETF sales plan to project net monthly withdrawals and the funding needed from household income.</p>
+<div class="three"><div class="mini"><div class="t">First-month ETF withdrawal (after modeled sale tax)</div><div class="v" id="withdrawFirst">€0</div></div><div class="mini"><div class="t">First-month income / cash needed for housing</div><div class="v" id="salaryFirst">€1,350</div></div><div class="mini"><div class="t">Unfunded ETF withdrawal requests over horizon</div><div class="v" id="unfundedAmount">€0</div></div></div>
+<div class="highlight warn" id="cashCaution"></div></section>
+<section class="card content-card"><h2>Market-return sensitivity</h2><p class="note">Change your investment amount or assumptions to update every row. These returns are possible one-year outcomes, not probability forecasts.</p>
+<div class="table-scroll"><table class="data"><thead><tr><th>ETF return</th><th>Net gain/loss after potential tax</th><th>Monthly equivalent</th><th>EMI gap / month</th><th>Full housing gap / month</th></tr></thead><tbody id="scenarios"></tbody></table></div></section>
+<section class="card content-card"><h2>Housing debt and investment projection</h2><p class="note">The solid teal line shows remaining ETFs after your selected share withdrawals; the dashed purple line assumes no ETF sales. Blue shows mortgage debt. The model applies your selected refinancing rate after the fixed period, holding monthly payments constant.</p>
+<div class="chart-scroll"><svg id="chart" viewBox="0 0 760 320" role="img" aria-label="Mortgage loan, ETF holdings with and without withdrawals"></svg></div>
+<div class="legend"><span><i class="key" style="border-color:#3779a4"></i>Mortgage debt</span><span><i class="key" style="border-color:#15846e"></i>ETF after withdrawals</span><span><i class="key" style="border-color:#8a73b7;border-style:dashed"></i>ETF without sales</span></div>
+<div class="three"><div class="mini"><div class="t">ETF value at projection end</div><div class="v" id="endEtf"></div></div><div class="mini"><div class="t">Mortgage debt at projection end</div><div class="v" id="endMortgage"></div></div><div class="mini"><div class="t">Home equity at projection end</div><div class="v" id="endEquity"></div></div></div>
+<h3>Year-by-year figures</h3><div class="table-scroll"><table class="data"><thead><tr><th>Year</th><th>Mortgage left</th><th>Home equity</th><th>ETF no sales</th><th>ETF after sales</th><th>Net cash withdrawn (total)</th><th>Sale tax (total)</th></tr></thead><tbody id="annualRows"></tbody></table></div>
+<h3>Household savings projection (salary & spending included)</h3>
+<p class="note">Net salary grows at your net-income assumption; non-mortgage expenses at your spending inflation rate. Monthly mortgage payment stays as entered; mortgage refinancing adjusts the interest and payoff trajectory, not the installment. ETF sales enter as actual cash receipts, and ETF purchases are subtracted from cash. Cash savings are transfers within your cash wealth, not additional spending.</p>
+<div class="table-scroll"><table class="data"><thead><tr><th>Year</th><th>Net household income</th><th>Living / debt / owner costs</th><th>Mortgage + extra repayment</th><th>Rental cash before tax</th><th>Tax provision / estimated relief</th><th>New ETF investment</th><th>ETF sales cash</th><th>Yearly cash change</th><th>Cash reserve balance</th></tr></thead><tbody id="houseAnnualRows"></tbody></table></div>
+<div class="highlight" id="projectionTakeaway"></div>
+<div class="highlight warn"><h3>How to interpret the long-term results</h3><p id="drawExplain"></p></div></section>
+<section class="card content-card"><h2>What this calculator does and does not include</h2>
+<div class="grid2"><div><p class="muted"><strong>Included:</strong> buy-your-own-home or rental-investment-only strategy with existing mortgaged, mortgage-free or rented housing; rental cash-flow bridge and asset-composition chart; up to four independent German rental properties and 2026 incremental rental-income tax estimates; individual or jointly assessed salaries, German payroll estimates, GKV/PKV, living expenses, cash reserve projection, spouse-specific investments, optional monthly contributions, mortgage amortization, extra annual repayments, purchase costs, monthly owner costs, fixed-rate expiry and hypothetical refinancing, ETF fees, 2026 German individual/joint capital-income tax allowance, return scenarios, share-sale requests, house-price growth and inflation-adjusted home-equity illustration.</p><p class="muted"><strong>Investment taxation:</strong> a qualifying equity ETF has a 30% partial exemption. The scenario tax assumes entire positive annual gains are realized. The withdrawal projection uses proportional average cost basis (rather than FIFO), with the appropriate individual/joint allowance; separate spousal assessments use an approximate evenly split unused allowance. Actual German sales are generally FIFO and can differ.</p></div><div><p class="muted"><strong>Not modeled accurately:</strong> special rental depreciation (§7b etc.), differentiated tax treatment of furnished rental, non-full-year acquisitions, changed rental intention, extraordinary Sonderumlagen, financed renovations, recapture or clawback tax cases, precise rental tax return; Vorabpauschale cash tax and later offset, annual tax reforms, acquisition-specific cost basis, full employee payroll reconciliation and exact spouse-specific tax allocations, broker spreads, investment-market volatility sequences beyond the selected initial crash, mortgage refinancing fees, and differences in actual house-selling costs.</p><p class="muted"><strong>Risk:</strong> 7% return does not mean 7% distributable income. Never make a mortgage dependent on an ETF return assumption. Maintain an emergency cash reserve and plan from salary affordability.</p></div></div>
+<div class="footer">References: <a href="https://www.gesetze-im-internet.de/invstg_2018/__20.html" target="_blank" rel="noopener noreferrer">InvStG §20</a> (fund exemptions), <a href="https://www.gesetze-im-internet.de/estg/__20.html" target="_blank" rel="noopener noreferrer">EStG §20</a> (capital-income allowances), <a href="https://www.gesetze-im-internet.de/estg/__32d.html" target="_blank" rel="noopener noreferrer">EStG §32d</a> (capital-income taxation). Illustrative planning tool, not financial or tax advice. Payroll sources (2026): <a href="https://ao.bundesfinanzministerium.de/lsth/2026/A-Einkommensteuergesetz/IV-Tarif-31-34b/Paragraf-32a/paragraf-32a.html" target="_blank" rel="noopener noreferrer">§32a BMF</a>, <a href="https://www.bmas.bund.de/DE/Service/Gesetze-und-Gesetzesvorhaben/sozialversicherungs-rechengroessenverordnung-2026.html" target="_blank" rel="noopener noreferrer">BMAS 2026 ceilings</a>, <a href="https://www.aok.de/fk/sozialversicherung/beitraege-zur-sozialversicherung/beitragszuschuss-zur-krankenversicherung/" target="_blank" rel="noopener noreferrer">PKV employer support</a>. Rental tax references: <a href="https://www.gesetze-im-internet.de/estg/__7.html" target="_blank" rel="noopener noreferrer">EStG §7 depreciation</a>, <a href="https://www.gesetze-im-internet.de/estg/__21.html" target="_blank" rel="noopener noreferrer">EStG §21 rental income</a>, <a href="https://www.bundesfinanzhof.de/de/entscheidung/entscheidungen-online/detail/stre202510025/" target="_blank" rel="noopener noreferrer">BFH on WEG maintenance reserves</a>, <a href="https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Einkommensteuer/2026-01-26-instandsetzung-modernisierung-gebaeude.pdf?__blob=publicationFile" target="_blank" rel="noopener noreferrer">BMF renovation classification</a>. Your input stays in your browser; no data is sent anywhere.</div>
+</section>
+</section>
+</div><section class="card content-card glossary" id="glossary"><h2>German finance glossary and calculation notes</h2><div class="glossary-grid"><details><summary>AfA — building depreciation</summary><p>Depreciation can reduce taxable rental income, but not own-use income. The applicable rate and building share depend on property facts and dates.</p></details><details><summary>Werbungskosten — rental expenses</summary><p>Eligible rental-related expenses may include interest, management and qualifying repairs. Mortgage principal is not deductible.</p></details><details><summary>Hausgeld and maintenance reserve</summary><p>Some owner charges can be passed to tenants. Contributions to a WEG maintenance reserve are generally not immediately tax-deductible merely upon payment.</p></details><details><summary>Sondertilgung — extra mortgage repayment</summary><p>An optional additional principal payment, subject to mortgage terms, can reduce future interest costs.</p></details><details><summary>Vorabpauschale — ETF advance taxation</summary><p>German fund taxation can create a taxable amount even without a sale; the calculator provides only approximate ETF tax estimates.</p></details><details><summary>Cash flow vs investment returns</summary><p>Unrealized ETF growth is not spendable cash. Tax benefits may arise only at assessment or through adjusted withholding.</p></details></div><p class="fine">Planning tool, not individual tax or investment advice. Recheck current German tax rules and lender terms.</p></section>
+<dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle"><div class="guide-inner"><div class="scenario-head"><h2 id="guideTitle">Set up your financial plan</h2><button class="btn" id="closeGuide" type="button">Close</button></div><div id="guideStepText" aria-live="polite"></div><div class="flexbuttons" style="justify-content:space-between"><button class="btn" id="guideBack" type="button">Back</button><button class="btn primary" id="guideNext" type="button">Next</button></div></div></dialog>
+</main>
+<script>
+(()=>{
+'use strict';
+const defaults={homeMode:'buy',existingType:'mortgage',existingValue:250000,existingOwner:300,existingLoan:110000,existingRate:3.5,existingEmi:700,existingFix:8,existingRefi:4.5,existingExtra:0,existingRent:1500,profileMode:'married',price:200000,down:0,purchase:10,rate:4.5,emi:1100,fixYears:10,refiRate:4.5,extra:0,owner:250,husband:75000,wife:75000,monthlyH:0,monthlyW:0,ret:7,ter:.14,allow:2000,drawMode:'none',custom:500,years:25,houseGrowth:2,inflation:2,crash:'0',incomeMode:'estimate',grossH:100000,grossW:70000,healthH:'pkv',healthW:'pkv',pkvH:450,pkvW:450,actualH:4500,actualW:3200,jointTax:'joint',childless:'yes',childlessW:'yes',careRegion:'other',eligibleChildren:0,eligibleChildrenW:0,gkvExtra:2.9,pkvDeductible:85,churchTax:'no',otherNet:0,utilities:250,groceries:650,transport:250,otherInsurance:100,lifestyle:400,misc:300,otherDebt:0,cashSaving:0,cashReserve:10000,availableCapital:180000,netGrowth:2,expenseGrowth:2,heatRentStep:100,heatRateStep:0.5,saleCosts:3,mcVol:18,mcTrials:500,rankingMetric:"cash",taxClassH:'IV',taxClassW:'IV',withholdingH:0,withholdingW:0,soliH:0,soliW:0,churchH:0,churchW:0,withholdingMonths:12};
+const $=id=>document.getElementById(id);const ids=Object.keys(defaults);
+const n=id=>Number($(id).value)||0;const money=x=>Number.isFinite(x)?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(x):'—';
+const pct=x=>Number.isFinite(x)?(100*x).toFixed(1)+'%':'—';const taxRate=.26375, taxableShare=.70;
+function inputs(){const x={};for(const id of ids){x[id]=(['homeMode','existingType','profileMode','drawMode','crash','incomeMode','healthH','healthW','jointTax','childless','childlessW','careRegion','churchTax','rankingMetric','taxClassH','taxClassW'].includes(id))?$(id).value:n(id);}for(const id of ['existingValue','existingOwner','existingLoan','existingRate','existingEmi','existingFix','existingRefi','existingExtra','existingRent','price','down','purchase','rate','emi','fixYears','refiRate','extra','owner','husband','wife','monthlyH','monthlyW','ter','allow','custom','years','inflation','grossH','grossW','pkvH','pkvW','actualH','actualW','gkvExtra','pkvDeductible','eligibleChildren','eligibleChildrenW','otherNet','utilities','groceries','transport','otherInsurance','lifestyle','misc','otherDebt','cashSaving','cashReserve','availableCapital','heatRentStep','heatRateStep','saleCosts','mcVol','mcTrials','withholdingH','withholdingW','soliH','soliW','churchH','churchW','withholdingMonths'])x[id]=Math.max(0,x[id]);x.withholdingMonths=Math.min(12,Math.max(1,Math.round(x.withholdingMonths)));x.heatRentStep=Math.max(25,Math.min(2000,x.heatRentStep));x.heatRateStep=Math.max(.25,Math.min(2,x.heatRateStep));x.mcVol=Math.min(60,x.mcVol);x.mcTrials=Math.min(1000,Math.max(250,Math.floor(x.mcTrials)));x.saleCosts=Math.min(15,x.saleCosts);x.down=Math.min(x.price,x.down);x.purchase=Math.min(30,x.purchase);x.allow=Math.min(x.profileMode==='single'?1000:2000,x.allow);x.fixYears=Math.max(1,Math.floor(x.fixYears));x.years=Math.max(1,Math.min(40,Math.floor(x.years)));x.ret=Math.max(-90,Math.min(40,x.ret));x.ter=Math.min(5,x.ter);x.houseGrowth=Math.max(-10,Math.min(15,x.houseGrowth));x.netGrowth=Math.min(20,Math.max(-10,x.netGrowth));x.expenseGrowth=Math.min(20,Math.max(0,x.expenseGrowth));x.gkvExtra=Math.min(10,x.gkvExtra);x.pkvDeductible=Math.min(100,x.pkvDeductible);x.husband=Math.min(x.husband,1e8);x.wife=x.profileMode==='single'?0:Math.min(x.wife,1e8);if(x.profileMode==='single'){x.grossW=0;x.pkvW=0;x.actualW=0;x.monthlyW=0;x.jointTax='separate';}x.start=x.husband+x.wife;x.loan=x.price-x.down;
+ if(x.homeMode==='existing'){
+  x.homeNewPurchase=false;
+  if(x.existingType==='rent'){
+   x.price=0;x.down=0;x.loan=0;x.rate=0;x.emi=0;x.owner=x.existingRent;x.extra=0;x.houseGrowth=0;
+  }else{
+   x.price=x.existingValue;x.down=0;x.owner=x.existingOwner;
+   x.loan=x.existingType==='mortgage'?x.existingLoan:0;
+   x.emi=x.existingType==='mortgage'?x.existingEmi:0;
+   x.rate=x.existingType==='mortgage'?x.existingRate:0;
+   x.fixYears=x.existingFix;x.refiRate=x.existingRefi;
+   x.extra=x.existingType==='mortgage'?x.existingExtra:0;
+  }
+ }else x.homeNewPurchase=true;
+ x.homeAcquisitionCash=x.homeNewPurchase?(x.down+x.price*x.purchase/100):0;
+ x.housingType=x.homeMode==='buy'?'new-owner':(x.existingType==='rent'?'tenant':x.existingType==='paid'?'paid-owner':'existing-owner');
+ x.housingLabel=x.housingType==='tenant'?'Existing warm rent':x.housingType==='paid-owner'?'Existing owner running costs':x.housingType==='existing-owner'?'Existing mortgage + owner costs':'New home mortgage + owner costs';
+ x.marketNetAnnual=(1+x.ret/100)*(1-x.ter/100)-1;return x;}
+const taxOnGain=(gain,allow)=>Math.max(0,gain*taxableShare-allow)*taxRate;
+function etfGainTax(x,gain,proportionH=x.start>0?x.husband/x.start:1){
+  const positive=Math.max(0,gain);
+  if(x.profileMode==='married'&&x.jointTax==='separate'){
+    const h=positive*proportionH,w=positive-h,each=Math.min(1000,x.allow/2);
+    return taxOnGain(h,each)+taxOnGain(w,each);
+  }
+  return taxOnGain(positive,x.allow);
+}
+function expected(x,annualReturn=x.ret){const gross=x.start*annualReturn/100,afterFee=x.start*((1+annualReturn/100)*(1-x.ter/100)-1),fee=gross-afterFee,tax=etfGainTax(x,afterFee);return {gross,afterFee,fee,tax,net:afterFee-tax};}
+function capitalToMatch(x,monthlyTarget,returnAssumption=x.ret){if(monthlyTarget<=0)return 0;let a=0,b=1e8;const grossNet=(1+returnAssumption/100)*(1-x.ter/100)-1;function net(cap){const gain=cap*grossNet;return gain-etfGainTax(x,gain,x.start>0?x.husband/x.start:1);}if(net(b)<monthlyTarget*12)return Infinity;for(let i=0;i<70;i++){const m=(a+b)/2;if(net(m)<monthlyTarget*12)a=m;else b=m;}return b;}
+// 2026 German income tax and social contributions: annual planning model, NOT official payroll PAP.
+// Sources: BMAS 2026 SV-Rechengroessen, BMG 2026 Pflegeversicherung, BMF PAP 2026.
+const german2026={rvCap:101400,kvCap:69750,rvEmployee:.093,alvEmployee:.013,payrollAllowance:1230,pkvEmployerCap:613.22,healthBase:.146};
+function est2026IncomeTax(z){const x=Math.floor(Math.max(0,z));let tax;
+ if(x<=12348)tax=0;else if(x<=17799){const y=(x-12348)/10000;tax=(914.51*y+1400)*y;}
+ else if(x<=69878){const z=(x-17799)/10000;tax=(173.10*z+2397)*z+1034.87;}
+ else if(x<=277825)tax=.42*x-11135.63;else tax=.45*x-19470.38;
+ return Math.max(0,Math.floor(tax));}
+function careEmployeeRate(status,region,children){
+ const saxony=region==='saxony';
+ const base=saxony?.023:.018;
+ const childless=status==='yes'?.006:0;
+ const discount=status==='no' ? Math.max(0,Math.min(4,Math.floor(children)-1))*.0025:0;
+ return Math.max(0,base+childless-discount);
+}
+function calculatePerson(x,who){
+ const g=who==='h'?x.grossH:x.grossW;
+ const pkv=who==='h'?x.pkvH:x.pkvW;
+ const type=who==='h'?x.healthH:x.healthW;
+ const childStatus=who==='h'?x.childless:x.childlessW;
+ const pension=Math.min(g,german2026.rvCap)*german2026.rvEmployee;
+ const unemployment=Math.min(g,german2026.rvCap)*german2026.alvEmployee;
+ const kvCap=Math.min(g,german2026.kvCap);
+ let healthInsurance=0,careInsurance=0,outOfPocketHealth=0,employerSubsidy=0,healthTaxDeduction=0;
+ if(type==='gkv'){
+   healthInsurance=kvCap*(german2026.healthBase+x.gkvExtra/100)/2;
+   careInsurance=kvCap*careEmployeeRate(childStatus,x.careRegion,who==='h'?x.eligibleChildren:x.eligibleChildrenW);
+   outOfPocketHealth=healthInsurance+careInsurance;
+   healthTaxDeduction=outOfPocketHealth;
+ }else{
+   // User input includes both PKV health + private compulsory care premium. Employer contribution
+   // depends on the eligible split; 50% up to a combined 2026 maximum is only an estimate.
+   const premium=pkv*12;
+   employerSubsidy=g>0?Math.min(premium/2,german2026.pkvEmployerCap*12):0;
+   outOfPocketHealth=Math.max(0,premium-employerSubsidy);
+   healthInsurance=outOfPocketHealth;
+   healthTaxDeduction=outOfPocketHealth*x.pkvDeductible/100;
+ }
+ const deduction=pension+healthTaxDeduction+(g>0?german2026.payrollAllowance:0);
+ return {gross:g,pension,unemployment,health:outOfPocketHealth,healthInsurance,careInsurance,
+  employerSubsidy,subsidy:employerSubsidy,deduction,taxableBase:Math.max(0,g-deduction),careRate:careEmployeeRate(childStatus,x.careRegion,who==='h'?x.eligibleChildren:x.eligibleChildrenW)};
+}
+function householdTax(x){const h=calculatePerson(x,'h'),w=x.profileMode==='single'?{gross:0,pension:0,unemployment:0,health:0,subsidy:0,deduction:0,taxableBase:0}:calculatePerson(x,'w');const baseH=h.taxableBase,baseW=w.taxableBase;
+ let totalTax;const isJoint=x.profileMode==='married'&&x.jointTax==='joint';const personalAllowance=isJoint?72:36;
+ if(isJoint)totalTax=2*est2026IncomeTax(Math.max(0,baseH+baseW-personalAllowance)/2);
+ else totalTax=est2026IncomeTax(Math.max(0,baseH-36))+est2026IncomeTax(Math.max(0,baseW-36));
+ const soliLimit=isJoint?40700:20350;
+ const soli=isJoint?Math.min(totalTax*.055,Math.max(0,(totalTax-soliLimit)*.119)):
+    [baseH,baseW].reduce((acc,b)=>{const t=est2026IncomeTax(Math.max(0,b-36));return acc+Math.min(t*.055,Math.max(0,(t-20350)*.119));},0);
+ const church=x.churchTax==='yes'?totalTax*.08:0;
+ const taxes=totalTax+soli+church;
+ const shareH=x.profileMode==='single'?1:(baseH+baseW>0?baseH/(baseH+baseW):.5);
+ const netH=(h.gross-h.pension-h.unemployment-h.health-taxes*shareH)/12;
+ const netW=(w.gross-w.pension-w.unemployment-w.health-taxes*(1-shareH))/12;
+ return {h,w,baseH,baseW,totalTax,soli,church,taxes,shareH,estimatedH:netH,estimatedW:netW,
+  useH:x.incomeMode==='actual'?x.actualH:netH,useW:x.profileMode==='single'?0:(x.incomeMode==='actual'?x.actualW:netW)};
+}
+// Rental module: 1–4 individually configurable German buy-to-let properties.
+const rentSeed={name:'Rental 1 · Möhringen example',owner:'joint',price:199000,down:20000,buyCosts:10,interest:4.5,repay:2,kalt:800,tenantNk:180,recoverCost:180,nonrecover:81,reserve:60,repairs:40,vacancy:3,buildingShare:80,buildYear:1992,renovation:0,renoType:'none',rentGrowth:2,costGrowth:2,appreciation:2};
+let rentalSeq=1;
+let rentalItems=[{...rentSeed,_id:1}];
+const storageKey='home_etf_rentals_analytics_v7',previousStorageKey='home_etf_rentals_modes_v6';
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey)||'null');if(saved&&saved.fields){for(const id of ids){if(Object.prototype.hasOwnProperty.call(saved.fields,id))$(id).value=saved.fields[id];}if(Array.isArray(saved.rentalItems)&&saved.rentalItems.length<=4){rentalItems=saved.rentalItems.map((r,i)=>({...rentSeed,...r,_id:Number(r._id)||i+1}));rentalSeq=Math.max(1,...rentalItems.map(r=>r._id));}if(saved.rentalTaxTiming==='accrual')$('rentalTaxTiming').value='accrual';if(saved.profileAllowances)window._loadedProfileAllowances=saved.profileAllowances;if(saved.comparisonProperty)window._loadComparisonProperty=saved.comparisonProperty;if(saved.amortTarget)window._loadAmortTarget=saved.amortTarget;}}catch(_){/* Browser may restrict local storage; calculator still works */} 
+function safeText(v){return String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+const rentalFields={
+ name:['Property label','text',null],owner:['Tax ownership','select',[['joint','Joint · 50/50'],['h','Husband 100%'],['w','Wife 100%']]],
+ price:['Purchase price (€)','number',1000],down:['Down payment (€)','number',1000],buyCosts:['Purchase costs (%)','number',.5],
+ interest:['Mortgage interest (%)','number',.1],repay:['Initial principal repayment (%)','number',.1],
+ kalt:['Cold rent / month (€)','number',10],tenantNk:['Tenant Nebenkosten advance / month (€)','number',10],recoverCost:['Recoverable running costs paid / month (€)','number',10],
+ nonrecover:['Non-recoverable owner costs / month (€)','number',10],reserve:['WEG maintenance reserve / month (€)','number',10],repairs:['Eligible recurring upkeep / month (€)','number',10],vacancy:['Vacancy / unpaid rent (%)','number',1],
+ buildingShare:['Building allocation, excluding land (%)','number',5],buildYear:['Year of completion','number',1],
+ renovation:['One-time renovation (€), cash','number',1000],renoType:['One-time renovation tax classification','select',[['none','None / no renovation deduction'],['maintenance','Eligible immediate maintenance (subject to rules)'],['capital','Capitalized building improvement']]],
+ rentGrowth:['Annual rent growth (%)','number',.5],costGrowth:['Annual running-cost growth (%)','number',.5],appreciation:['Annual property value growth (%)','number',.5]
+};
+const rentalCore=['name','owner','price','down','buyCosts','interest','repay','kalt','tenantNk','recoverCost','nonrecover','reserve','repairs','vacancy'];
+const rentalAdvanced=['buildingShare','buildYear','renovation','renoType','rentGrowth','costGrowth','appreciation'];
+function rentalFieldHtml(r,k){const [label,kind,sourceOptions]=rentalFields[k];const meta=(k==='owner'&&$('profileMode').value==='single')?[['h','Single owner · 100%']]:sourceOptions;const id='r'+r._id+'_'+k;
+  const field=kind==='select'?`<select id="${id}" data-rental="${r._id}" data-field="${k}">${meta.map(([v,l])=>`<option value="${v}" ${String(r[k])===v?'selected':''}>${safeText(l)}</option>`).join('')}</select>`:`<input id="${id}" data-rental="${r._id}" data-field="${k}" type="${kind}" ${kind==='number'?`step="${meta}" min="${k==='buildYear'?'1800':k==='rentGrowth'||k==='costGrowth'||k==='appreciation'?'-30':'0'}"`:''} value="${safeText(r[k])}">`;
+ return `<div class="property-field ${k==='name'||k==='renoType'?'full':''}"><label for="${id}">${safeText(label)}</label>${field}</div>`;}
+// Mode-specific allowances are retained independently while testing both household profiles.
+const profileAllowances={single:1000,married:2000};
+if(window._loadedProfileAllowances)for(const key of ['single','married'])if(Number.isFinite(Number(window._loadedProfileAllowances[key])))profileAllowances[key]=Number(window._loadedProfileAllowances[key]);
+profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
+function updateHomeUI(){
+ const mode=$('homeMode').value,existing=$('existingType').value;
+ document.body.dataset.homeMode=mode;document.body.dataset.existingType=existing;
+ for(const b of document.querySelectorAll('[data-switch-home]'))b.setAttribute('aria-pressed',String(b.dataset.switchHome===mode));
+ set('homeInputsTitle',mode==='buy'?'Home purchase & mortgage':'Existing housing · rental investing only');
+ set('homeStrategyDescription',mode==='buy'?'Your own-home purchase and its upfront fees are included. Add rental investments if you want.':'No new home purchase or deposit is counted. Enter your current mortgage, fully owned home, or rent; only rental apartment purchases are added to the capital needed.');
+ set('housingKpiLabel',mode==='buy'?'Monthly home payment + owner costs':'Existing housing cost / month');
+ set('offsetKpiLabel',mode==='buy'?'Modeled EMI shortfall / mo.':'Modeled housing shortfall / mo.');
+ set('baselineRentalLabel',mode==='buy'?'Home + ETFs · free cash / month':'Existing housing + ETFs · free cash / month');
+ set('withRentalLabel',mode==='buy'?'Home + ETFs + rentals · free cash / month':'Existing housing + ETFs + rentals · free cash / month');
+ set('upfrontHomeLabel',mode==='buy'?'Cash needed: ETFs + home deposit + home fees':'Cash needed: ETFs (no new home purchase)');
+ set('homeMonthlyLabel',mode==='buy'?'Mortgage + other owner costs monthly':'Existing housing costs monthly');
+ set('offsetCapitalLabel',mode==='buy'?'Capital to offset mortgage EMI at assumed return':'Capital to offset monthly housing costs at assumed return');
+ set('paymentRatioLabel',mode==='buy'?'Home mortgage / spendable income':'Existing housing payment / spendable income');
+ const opts=$('drawMode').options;
+ opts[1].textContent=existing==='rent'&&mode==='existing'?'No mortgage interest (N/A)':'Pay home mortgage interest from ETFs';
+ opts[2].textContent=mode==='existing'&&existing==='rent'?'Pay housing rent from ETFs':'Pay mortgage payment from ETFs';
+}
+function switchHome(next){if(!['buy','existing'].includes(next)||$('homeMode').value===next)return;
+ $('homeMode').value=next;updateHomeUI();render();
+ set('liveStatus',next==='buy'?'Home-purchase strategy loaded; existing-housing inputs retained.':'Investment-only strategy loaded; new-home purchase inputs retained.');
+}
+function updateProfileUI(){
+ const single=$('profileMode').value==='single';document.body.dataset.profile=single?'single':'married';
+ for(const btn of document.querySelectorAll('[data-switch-profile]'))btn.setAttribute('aria-pressed',String(btn.dataset.switchProfile===(single?'single':'married')));
+ set('profileDescription',single?'Single person: one salary, one ETF account, individual 2026 income-tax estimate, €1,000 maximum unused capital-income allowance and 100% rental ownership.':'Married household: two salaries, two ETF portfolios and selectable rental ownership. Joint or separate tax assessment can be chosen below.');
+ set('salarySectionTitle',single?'Your salary & German payroll':'Two salaries & German payroll');
+ set('firstPersonTitle',single?'Your income':'Husband');set('firstPersonSummaryTitle',single?'Individual · annual estimate':'Husband · annual estimate');
+ set('etfSectionTitle',single?'One ETF account (no loan)':'Two ETF accounts (no loan)');
+ set('firstEtfLabel',single?'Your initial ETF (€)':'Husband initial ETF (€)');set('firstMonthlyLabel',single?'Your monthly ETF investing (€)':'Husband monthly investing (€)');
+ set('etfPortfolioTitle',single?'Your ETF portfolio · own money':'Combined ETF portfolio · own money');
+ set('etfSplitTitle',single?'Your ETF investment':'Husband / wife investments');
+ $('allowanceLabel').innerHTML=single?'Unused individual savings allowance (€)<small>Max €1,000 per person in 2026</small>':'Unused household savings allowance (€)<small>Up to €2,000 when assessed jointly. Separate returns: €1,000 per spouse.</small>';
+ $('allow').max=single?'1000':'2000';
+ for(const btn of document.querySelectorAll('[data-half]'))btn.textContent='€'+Number(btn.dataset.half)/1000+'k '+(single?'total':'each');
+}
+function switchProfile(next){if(!['single','married'].includes(next)||$('profileMode').value===next)return;
+ const prior=$('profileMode').value;profileAllowances[prior]=Number($('allow').value)||0;
+ $('profileMode').value=next;$('allow').value=profileAllowances[next];
+ updateProfileUI();renderRentalInputs();render();
+ set('liveStatus',next==='single'?'Single-person results updated. Married inputs are preserved.':'Married household results restored.');
+}
+function renderRentalInputs(){ $('rentalInputs').innerHTML=rentalItems.length?rentalItems.map((r,i)=>`<div class="rental-property" data-key="${r._id}"><div class="rental-head"><b>Apartment ${i+1}</b><button type="button" class="btn" data-remove="${r._id}">Remove</button></div><div class="rental-grid">${rentalCore.map(k=>rentalFieldHtml(r,k)).join('')}</div><details><summary>Depreciation, renovation & growth assumptions</summary><div class="rental-grid">${rentalAdvanced.map(k=>rentalFieldHtml(r,k)).join('')}</div></details></div>`).join(''):'<div class="info-panel">No rental property added. The household results show only your home and ETFs.</div>';
+ $('addRental').disabled=rentalItems.length>=4;
+}
+function rentalsFromForm(){return rentalItems.map(p=>{
+  const r={...p};for(const k of Object.keys(rentalFields)){const el=$('r'+p._id+'_'+k);if(el)r[k]=['name','owner','renoType'].includes(k)?el.value:(Number(el.value)||0);}
+  if($('profileMode').value==='single')r.owner='h';
+  for(const k of ['price','down','buyCosts','interest','repay','kalt','tenantNk','recoverCost','nonrecover','reserve','repairs','vacancy','buildingShare','renovation'])r[k]=Math.max(0,r[k]);
+  r.down=Math.min(r.price,r.down);r.buyCosts=Math.min(r.buyCosts,25);r.vacancy=Math.min(r.vacancy,100);r.buildingShare=Math.min(r.buildingShare,100);r.buildYear=Math.max(1800,Math.min(2200,r.buildYear));
+  for(const k of ['rentGrowth','costGrowth','appreciation'])r[k]=Math.max(-30,Math.min(30,r[k]));
+  r.loan=Math.max(0,r.price-r.down);r.monthlyPayment=r.loan*(r.interest+r.repay)/1200;
+  r.afaRate=r.buildYear<1925?.025:r.buildYear>=2023?.03:.02;
+  r.renovationThreshold=r.price*(1+r.buyCosts/100)*r.buildingShare/100*.15;
+  r.autoCapitalize=r.renoType==='maintenance'&&r.renovation/1.19>r.renovationThreshold;
+  r.buildingBasis=r.price*(1+r.buyCosts/100)*r.buildingShare/100+((r.renoType==='capital'||r.autoCapitalize)?r.renovation:0);
+  r.afa=r.buildingBasis*r.afaRate;
+  r.upfront=r.down+r.price*r.buyCosts/100+r.renovation;
+  return r;
+ });}
+function germanTotalTax(x,baseH,baseW){
+ const h=Math.max(0,baseH),w=Math.max(0,baseW);
+ const tH=est2026IncomeTax(Math.max(0,h-36)),tW=est2026IncomeTax(Math.max(0,w-36));
+ const isJoint=x.profileMode==='married'&&x.jointTax==='joint';
+ const tax=isJoint?2*est2026IncomeTax(Math.max(0,h+w-72)/2):tH+tW;
+ const soli=isJoint?Math.min(tax*.055,Math.max(0,(tax-40700)*.119)):
+  Math.min(tH*.055,Math.max(0,(tH-20350)*.119))+Math.min(tW*.055,Math.max(0,(tW-20350)*.119));
+ return tax+soli+(x.churchTax==='yes'?tax*.08:0);
+}
+function compareAssessment2026(x, baseH, baseW){
+ const jointX={...x,profileMode:'married',jointTax:'joint'};
+ const separateX={...x,profileMode:'married',jointTax:'separate'};
+ const joint=germanTotalTax(jointX,baseH,baseW);
+ const separate=germanTotalTax(separateX,baseH,baseW);
+ return {joint,separate,difference:separate-joint,recommended:joint<=separate?'joint':'separate'};
+}
+function annualRentalTaxDelta(x,tax,alloc){const baseline=germanTotalTax(x,tax.baseH,tax.baseW);const withRent=germanTotalTax(x,tax.baseH+alloc.h,tax.baseW+alloc.w);return withRent-baseline;}
+function addToAlloc(a,amount,owner){if(owner==='h')a.h+=amount;else if(owner==='w')a.w+=amount;else{a.h+=amount/2;a.w+=amount/2;}}
+function simulateRentalProperty(r,years){
+ let debt=r.loan;
+ let yearly=[];
+ for(let y=1;y<=years;y++){
+  const rentFactor=Math.pow(1+r.rentGrowth/100,y-1),costFactor=Math.pow(1+r.costGrowth/100,y-1);
+  const cold=r.kalt*rentFactor*(1-r.vacancy/100),charges=r.tenantNk*rentFactor*(1-r.vacancy/100);
+  const recoveryCost=r.recoverCost*costFactor,nonrecover=r.nonrecover*costFactor,reserve=r.reserve*costFactor,repairs=r.repairs*costFactor;
+  let payYear=0,interestYear=0,principalYear=0;
+  for(let m=0;m<12;m++){
+   const interest=debt*r.interest/1200,pay=debt>0?Math.min(r.monthlyPayment,debt+interest):0, principal=Math.max(0,pay-interest);
+   debt=Math.max(0,debt-principal);payYear+=pay;interestYear+=interest;principalYear+=principal;
+  }
+  const collected=(cold+charges)*12;
+  const operating=(recoveryCost+nonrecover+reserve+repairs)*12;
+  const deductible=(recoveryCost+nonrecover+repairs)*12;
+  const taxable=collected-interestYear-deductible-r.afa;
+  const cash=collected-operating-payYear;
+  const homeVal=r.price*Math.pow(1+r.appreciation/100,y), equity=homeVal-debt;
+  yearly.push({year:y,property:r.name,loan:debt,interest:interestYear,principal:principalYear,payment:payYear,collected,deductible,afa:r.afa,reserve:reserve*12,operating,taxable,cash,homeVal,equity});
+ }
+ return yearly;
+}
+function rentalPortfolio(x,tax){
+ const properties=rentalsFromForm();let perProperty=properties.map(p=>({info:p,years:simulateRentalProperty(p,x.years)}));
+ const rows=[];
+ for(let y=1;y<=x.years;y++){
+  const alloc={h:0,w:0};let cash=0,taxable=0,debt=0,homeVal=0,equity=0,interest=0,afa=0,deductible=0,collected=0,reserve=0,principal=0,payment=0;
+  for(const item of perProperty){const p=item.years[y-1];addToAlloc(alloc,p.taxable,item.info.owner);
+   cash+=p.cash;taxable+=p.taxable;debt+=p.loan;homeVal+=p.homeVal;equity+=p.equity;interest+=p.interest;afa+=p.afa;deductible+=p.deductible;collected+=p.collected;reserve+=p.reserve;principal+=p.principal;payment+=p.payment;
+  }
+  const deltaTax=annualRentalTaxDelta(x,tax,alloc);
+  rows.push({year:y,cash,taxable,debt,homeVal,equity,deltaTax,afterTax:cash-deltaTax,interest,afa,deductible,collected,reserve,principal,payment});
+ }
+ const first=rows[0]||{year:1,cash:0,taxable:0,debt:0,homeVal:0,equity:0,deltaTax:0,afterTax:0,interest:0,afa:0,deductible:0,collected:0,reserve:0,principal:0,payment:0};
+ const firstYearAlloc={h:0,w:0};for(const item of perProperty){const p=item.years[0];if(!p)continue;
+ const maintenance=item.info.renoType==='maintenance'&&!item.info.autoCapitalize?item.info.renovation:0;addToAlloc(firstYearAlloc,p.taxable-maintenance,item.info.owner);}
+ const acquisitionTaxDelta=annualRentalTaxDelta(x,tax,firstYearAlloc);
+ return {properties,perProperty,rows,first,acquisitionTaxDelta,upfront:properties.reduce((s,p)=>s+p.upfront,0),taxTiming:$('rentalTaxTiming').value};
+}
+function renderRentalResults(x,tax,rent,c){
+ const {properties,perProperty,first,rows}=rent;
+ const signed=v=>(v>=0?'+':'−')+money(Math.abs(v));
+ const taxEffect=-first.deltaTax;
+ set('rentalCashKpi',signed(first.cash/12));set('rentalTaxKpi',(first.deltaTax<=0?'Potential saving ':'Additional tax ')+money(Math.abs(first.deltaTax)));
+ set('rentalAfterKpi',signed(first.afterTax/12));set('rentalEquityKpi',money(first.principal/12));
+ set('baselineFree',money(c.baseFree));set('withRentalFree',money(c.free));
+ const year1ValueGain=properties.reduce((sum,p)=>sum+p.price*p.appreciation/100,0);
+ set('rentalPrincipalAnnual',money(first.principal));set('rentalGrowthAnnual',(year1ValueGain>=0?'+':'−')+money(Math.abs(year1ValueGain)));
+ set('rentalWealthAnnual',signed(first.afterTax+first.principal));
+ $('rentalCashKpi').className='v '+(first.cash>=0?'green':'red');$('rentalAfterKpi').className='v '+(first.afterTax>=0?'green':'red');
+ $('withRentalFree').className='v '+(c.free>=0?'green':'red');
+ $('rentalRows').innerHTML=perProperty.map(({info:r,years})=>{const z=years[0],rentReceipts=z.collected/12,cash=z.cash/12,other=z.operating/12,grossYield=r.price>0?r.kalt*12/r.price:0;return `<tr><td>${safeText(r.name)}</td><td>${money(r.price)}</td><td>${pct(grossYield)}</td><td>${money(r.upfront)}</td><td>${money(rentReceipts)}</td><td>${money(z.payment/12)}</td><td>${money(other)}</td><td class="${cash>=0?'green':'red'}">${signed(cash)}</td><td class="${z.taxable>=0?'green':'red'}">${signed(z.taxable)}</td><td>${money(z.principal/12)}</td></tr>`;}).join('')||'<tr><td colspan="10">No rental investment. Add an apartment to compare against your current household budget.</td></tr>';
+ set('rentRevenue',money(first.collected));set('rentInterest','−'+money(first.interest));set('rentAfa','−'+money(first.afa));set('rentDeductible','−'+money(first.deductible));set('rentTaxable',signed(first.taxable));
+ set('rentPrincipal',money(first.principal));set('rentReserves',money(first.reserve));set('rentCashAnnual',signed(first.cash));set('rentTaxSaving',(taxEffect>=0?'+':'−')+money(Math.abs(taxEffect)));set('rentOneTimeTax',(rent.acquisitionTaxDelta<=0?'Potential saving ':'Additional tax ')+money(Math.abs(rent.acquisitionTaxDelta)));
+ $('rentalAnnualRows').innerHTML=rows.map(z=>`<tr><td>${z.year}</td><td class="${z.cash>=0?'green':'red'}">${signed(z.cash)}</td><td>${signed(-z.deltaTax)}</td><td class="${z.afterTax>=0?'green':'red'}">${signed(z.afterTax)}</td><td>${money(z.debt)}</td><td>${money(z.homeVal)}</td><td>${money(z.equity)}</td></tr>`).join('')||'<tr><td colspan="7">No rental property modeled</td></tr>';
+ let warnings=[];for(const r of properties){if(r.renoType==='maintenance'&&r.renovation/1.19>r.renovationThreshold)warnings.push(`${safeText(r.name)}: the estimated net renovation spending exceeds the 15% building acquisition threshold. The model automatically CAPITALIZES that renovation rather than deducting it immediately. Confirm acquisition timing and included works with a tax adviser.`);
+ if(r.kalt>0&&r.vacancy>=30)warnings.push(`${safeText(r.name)}: high vacancy assumptions may require additional tax and economic review.`);
+ if(r.tenantNk>0&&Math.abs(r.tenantNk-r.recoverCost)>100)warnings.push(`${safeText(r.name)}: tenant advances and recoverable operating costs differ substantially; check utility settlement.`);
+ if(r.loan>0&&r.monthlyPayment<=r.loan*r.interest/1200+.01)warnings.push(`${safeText(r.name)}: mortgage does not meaningfully amortize at this rate; consider a repayment schedule.`);
+ }
+ const rentStatus=properties.length===0?`No rental investments: your home and ETF budget remains unchanged.`:`Recurring rental cash ${signed(first.cash/12)}/month, before tax settlement; estimated annual tax ${first.deltaTax>=0?'increase':'saving'} ${money(Math.abs(first.deltaTax))}. Approximate ongoing after-tax economic rental cash ${signed(first.afterTax/12)}/month. The ${money(first.principal/12)}/month of mortgage principal repayment increases property equity but is not spendable cash.`;
+ $('rentalVerdict').textContent=rentStatus;
+ $('rentalNotes').innerHTML=`<h3>Important tax and financing checks</h3><p>Rental interest and eligible ongoing expenses reduce taxable rental income; principal payments do not. Ordinary residential building AfA is generally 2% for completion in 1925–2022, 3% from 2023, and 2.5% before 1925. Land is not depreciated. WEG reserve contributions are excluded from current tax deductions until qualifying spending occurs. Purchase costs are capitalized and apportioned to building and land, not immediately deducted. The yearly tax calculation assumes full-year qualifying arm's-length rental at an appropriate market rent, no excluded loss deductions and 2026 household tax rules. A rent below market may restrict deductible expenses under §21 EStG. Tax relief is estimated at annual assessment, not deposited monthly. ${warnings.length?'Warnings: '+warnings.join(' '):''}</p>`;
+}
+$('rentalInputs').addEventListener('input',e=>{const f=e.target;if(!f.dataset.rental)return;const r=rentalItems.find(x=>x._id===Number(f.dataset.rental));if(!r)return;r[f.dataset.field]=['name','owner','renoType'].includes(f.dataset.field)?f.value:(Number(f.value)||0);render();});
+$('rentalInputs').addEventListener('change',e=>{if(e.target.dataset.rental)render();});
+$('rentalInputs').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;rentalItems=rentalItems.filter(r=>r._id!==Number(b.dataset.remove));renderRentalInputs();render();});
+$('addRental').addEventListener('click',()=>{if(rentalItems.length>=4)return;const id=++rentalSeq;rentalItems.push({...rentSeed,_id:id,name:'Rental '+id});renderRentalInputs();render();});
+$('rentalTaxTiming').addEventListener('change',render);
+updateProfileUI();updateHomeUI();renderRentalInputs();
+
+function familyMonthly(x,sim,tax,rent){const net=tax.useH+tax.useW+x.otherNet;
+ const living=x.utilities+x.groceries+x.transport+x.otherInsurance+x.lifestyle+x.misc;
+ const housing=(x.loan>0?Math.min(x.emi,x.loan+x.loan*x.rate/1200):0)+x.owner;
+ const otherDebt=x.otherDebt, invested=x.monthlyH+x.monthlyW;
+ const sold=sim.firstWithdraw;
+ const mortgageAndExtra=housing+x.extra/12;
+ const mandatory=housing+living+otherDebt+x.extra/12;
+ const discretionaryAllocation=invested+x.cashSaving;
+ const rentalCash=rent.first.cash/12;
+ const taxProvision=rent.taxTiming==='accrual'?rent.first.deltaTax/12:0;
+ const baseFree=net+sold-mandatory-discretionaryAllocation;
+ const free=baseFree+rentalCash-taxProvision;
+ const before=net+sold-mandatory+rentalCash-taxProvision;
+ const essentials=housing+x.utilities+x.groceries+x.transport+x.otherInsurance+otherDebt+x.extra/12;
+ return {net,living,housing,otherDebt,invested,sold,monthlySaving:x.cashSaving,mandatory,discretionaryAllocation,free,baseFree,rentalCash,taxProvision,before,essentials};
+}
+function householdCashProjection(x,tax,sim,rent){const startNet=(tax.useH+tax.useW+x.otherNet)*12;
+ const living=(x.utilities+x.groceries+x.transport+x.otherInsurance+x.lifestyle+x.misc+x.otherDebt)*12;
+ let balance=x.cashReserve;
+ const rows=[];let priorDraw=0;
+ for(const r of sim.rows.slice(1)){
+   const i=r.year-1,net=startNet*Math.pow(1+x.netGrowth/100,i);
+   const recurringLiving=(living+x.owner*12)*Math.pow(1+x.expenseGrowth/100,i);
+   const mortgage=r.mortgagePaid+r.extraPaid;
+   const newETF=(x.monthlyH+x.monthlyW)*12;
+   const receipts=r.withdrawn-priorDraw;priorDraw=r.withdrawn;
+   const rentalYear=rent.rows[i]||{cash:0,deltaTax:0};
+   const rentalCash=rentalYear.cash,rentalTax=rent.taxTiming==='accrual'?-rentalYear.deltaTax:0;
+   const change=net+receipts+rentalCash+rentalTax-recurringLiving-mortgage-newETF;
+   balance+=change;
+   rows.push({year:r.year,net,living:recurringLiving,mortgage,newETF,receipts,rentalCash,rentalTax,change,balance});
+ }
+ return rows;
+}
+function simulate(x){
+ let h=x.husband,w=x.wife,basisH=h,basisW=w,loan=x.loan,home=x.price,nominalNoSales=x.start,withdrawn=0,paidTax=0,unfunded=0,allMortgageInterest=0,totalMortgagePaid=0,totalIncomeCash=0,firstWithdraw=0,firstSalary=0,month=0,negativeAmort=false,payoffMonth=null;
+ const rows=[{year:0,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn:0,tax:0}],traces=[{year:0,mortgage:loan,portfolio:h+w,noSales:nominalNoSales}];
+ for(let yr=1;yr<=x.years;yr++){
+  let allowance=x.allow,allowanceH=Math.min(1000,x.allow/2),allowanceW=Math.min(1000,x.allow/2),yearPaid=0,yearExtra=0;const yearReturn=yr===1&&Number(x.crash)<0?Number(x.crash)/100:x.ret/100;
+  const growth=Math.pow(Math.max(.001,(1+yearReturn)*(1-x.ter/100)),1/12)-1;
+  for(let mm=1;mm<=12;mm++){
+   month++;
+   const currentRate=(month<=x.fixYears*12?x.rate:x.refiRate)/100/12;
+   const interest=loan*currentRate;
+   const pay=loan>0?Math.min(x.emi,loan+interest):0;
+   if(loan>0&&pay<=interest+0.000001)negativeAmort=true;
+   loan=Math.max(0,loan+interest-pay);
+   if(month%12===0&&loan>0){const extraPay=Math.min(x.extra,loan);yearExtra+=extraPay;loan=Math.max(0,loan-extraPay);}
+   if(loan<=0.00001&&payoffMonth===null)payoffMonth=month;
+   allMortgageInterest+=interest;totalMortgagePaid+=pay;yearPaid+=pay;
+   h=Math.max(0,h*(1+growth)+x.monthlyH);w=Math.max(0,w*(1+growth)+x.monthlyW);
+   nominalNoSales=Math.max(0,nominalNoSales*(1+growth)+x.monthlyH+x.monthlyW);
+   basisH+=x.monthlyH;basisW+=x.monthlyW;
+   const houseCost=pay+x.owner;
+   let target=0;if(x.drawMode==='interest')target=interest;else if(x.drawMode==='full')target=pay+(x.housingType==='tenant'?x.owner:0);else if(x.drawMode==='custom')target=x.custom;
+   let actualNet=0;const market=h+w;
+   if(target>0&&market>.0000001){
+    function saleDetails(gross){const sH=market?gross*h/market:0,sW=gross-sH;const realizedH=Math.max(0,sH*(1-basisH/Math.max(h,1e-9)));const realizedW=Math.max(0,sW*(1-basisW/Math.max(w,1e-9)));const taxableH=realizedH*taxableShare,taxableW=realizedW*taxableShare;
+      const separated=x.profileMode==='married'&&x.jointTax==='separate';
+      const useH=separated?Math.min(allowanceH,taxableH):0,useW=separated?Math.min(allowanceW,taxableW):0;
+      const usedAllowance=separated?useH+useW:Math.min(allowance,taxableH+taxableW);
+      return {sH,sW,usedAllowance,useH,useW,tax:Math.max(0,taxableH+taxableW-usedAllowance)*taxRate};}
+    let lo=0,hi=market;for(let i=0;i<45;i++){const mid=(lo+hi)/2;if(mid-saleDetails(mid).tax<target)lo=mid;else hi=mid;}
+    const gross=Math.min(market,hi),sale=saleDetails(gross);
+    const basisSoldH=h>0?Math.min(basisH,sale.sH*basisH/h):0,basisSoldW=w>0?Math.min(basisW,sale.sW*basisW/w):0;
+    h=Math.max(0,h-sale.sH);w=Math.max(0,w-sale.sW);basisH=Math.max(0,basisH-basisSoldH);basisW=Math.max(0,basisW-basisSoldW);
+    allowance-=sale.usedAllowance;allowanceH-=sale.useH;allowanceW-=sale.useW;paidTax+=sale.tax;actualNet=gross-sale.tax;withdrawn+=actualNet;unfunded+=Math.max(0,target-actualNet);
+   }else if(target>0){unfunded+=target;}
+   const incomeCash=Math.max(0,houseCost-actualNet);totalIncomeCash+=incomeCash;
+   if(month===1){firstWithdraw=actualNet;firstSalary=incomeCash;}
+  }
+  home*=1+x.houseGrowth/100;
+  const row={year:yr,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn,tax:paidTax,mortgagePaid:yearPaid,extraPaid:yearExtra};rows.push(row);traces.push(row);
+ }
+ if(x.drawMode==='none')firstSalary=x.emi*(x.loan>0?1:0)+x.owner;
+ return {rows,traces,last:rows.at(-1),withdrawn,paidTax,unfunded,allMortgageInterest,totalMortgagePaid,totalIncomeCash,firstWithdraw,firstSalary,payoffMonth,negativeAmort};
+}
+function mortgagePayoff(x){if(x.loan<=0)return 0;let loan=x.loan;for(let m=1;m<=1200;m++){const rate=(m<=x.fixYears*12?x.rate:x.refiRate)/1200;const interest=loan*rate;const pay=Math.min(x.emi,loan+interest);loan=Math.max(0,loan+interest-pay);if(m%12===0)loan=Math.max(0,loan-Math.min(loan,x.extra));if(loan<=.005)return m;}return Infinity;}
+function drawChart(rows,years){const svg=$('chart'),W=760,H=320,l=75,r=19,t=18,b=40,ww=W-l-r,hh=H-t-b;const max=Math.max(1000,...rows.flatMap(p=>[p.mortgage,p.portfolio,p.noSales]))*1.08;const X=yr=>l+ww*yr/years,Y=v=>t+hh-v/max*hh;
+ let out='';for(let i=0;i<=4;i++){const val=max*i/4,yy=Y(val);out+=`<line x1="${l}" x2="${W-r}" y1="${yy}" y2="${yy}" stroke="#e8edf1"/><text x="${l-9}" y="${yy+4}" fill="#78899a" font-size="12" text-anchor="end">${val>=1e6?(val/1e6).toFixed(1)+'m':Math.round(val/1000)+'k'}</text>`;}
+ for(let i=0;i<=5;i++){const xx=X(years*i/5);out+=`<text x="${xx}" y="${H-12}" fill="#78899a" font-size="12" text-anchor="middle">${(years*i/5).toFixed(0)}y</text>`;}
+ for(const [name,color,dash] of [['mortgage','#3779a4',''],['noSales','#8a73b7','6,5'],['portfolio','#15846e','']]){const points=rows.map(p=>X(p.year).toFixed(1)+','+Y(p[name]).toFixed(1)).join(' ');out+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round" ${dash?'stroke-dasharray="'+dash+'"':''}/>`;}svg.innerHTML=out;}
+function set(id,s){$(id).textContent=s;}
+
+function renderRentalBridge(rent){
+ const el=$('rentalBridgeChart'),stats=$('rentalBridgeStats');
+ if(!rent.properties.length){el.innerHTML='<text x="410" y="130" text-anchor="middle" font-size="18" fill="#748393">Add a rental apartment to see its cash-flow bridge</text>';stats.innerHTML='';return;}
+ const p=rent.first,items=[['Rent + recoveries',p.collected/12,'#159076'],['Operating expenses',-p.operating/12,'#ca9262'],['Mortgage interest',-p.interest/12,'#8a73b7'],['Mortgage principal',-p.principal/12,'#4378a9'],['Income tax effect',-p.deltaTax/12,p.deltaTax>0?'#bb5760':'#2a9d88'],['Net after tax',p.afterTax/12,p.afterTax>=0?'#117e6c':'#bf5160']];
+ const m=Math.max(1,...items.map(z=>Math.abs(z[1]))),axis=507,half=255,row=43;
+ let svg='<line x1="507" x2="507" y1="23" y2="277" stroke="#bbcbd1" stroke-width="1.3" stroke-dasharray="3,5"/>';
+ items.forEach(([label,v,color],i)=>{const y=26+i*43,w=Math.min(255,Math.abs(v)/m*245),start=v>=0?axis:axis-w;
+ svg+=`<text x="18" y="${y+15}" fill="#344f60" font-size="14">${safeText(label)}</text><rect x="${start}" y="${y}" width="${Math.max(w,1)}" height="21" fill="${color}" rx="4"/><text x="${v>=0?Math.min(809,axis+w+8):start-8}" y="${y+15.5}" text-anchor="${v>=0?'start':'end'}" fill="#334a5a" font-size="12" font-weight="600">${v>=0?'+':'−'}${money(Math.abs(v))}</text>`;
+ });el.innerHTML=svg;
+ stats.innerHTML=`<span>Collected: ${money(p.collected/12)}/mo.</span><span>Before tax: ${money(p.cash/12)}/mo.</span><span>After estimated tax: ${money(p.afterTax/12)}/mo.</span>`;
+}
+function renderWealthComposition(x,sim,rent,houseCash){
+ const el=$('wealthCompositionChart');const years=x.years,selected=[0,...Array.from({length:Math.floor(years/5)},(_,i)=>(i+1)*5),years].filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
+ const firstOwn=x.homeNewPurchase?x.down:(x.existingType==='rent'?0:x.existingValue-(x.existingType==='mortgage'?x.existingLoan:0));
+ const prop0=rent.properties.reduce((v,p)=>v+p.down,0);
+ const points=selected.map(y=>{const sr=sim.rows[Math.min(y,sim.rows.length-1)],rr=y?rent.rows[y-1]:null,cc=y?houseCash[y-1]:null;
+  const home=y?sr.homeEquity:firstOwn,rental=y?(rr?rr.equity:0):prop0,etf=sr.portfolio,cash=y?(cc?cc.balance:0):x.cashReserve;
+  return {year:y,vals:[home,rental,etf,cash].map(v=>Math.max(0,v)),negative:[home,rental,cash].some(v=>v<0)};
+ });
+ const W=820,H=350,left=77,right=22,top=15,bottom=51,h=H-top-bottom,max=Math.max(1000,...points.map(p=>p.vals.reduce((a,b)=>a+b,0)))*1.1;
+ const colors=['#397eac','#8a73b7','#13927d','#d6a35f'],step=(W-left-right)/points.length,bw=Math.min(76,step*.62);
+ let svg='';for(let i=0;i<=4;i++){let val=max*i/4,y=top+h*(1-val/max);svg+=`<line x1="${left}" x2="${W-right}" y1="${y}" y2="${y}" stroke="#e8edef"/><text x="${left-12}" y="${y+4}" fill="#75899a" text-anchor="end" font-size="12">${val>=1e6?(val/1e6).toFixed(2)+'m':Math.round(val/1000)+'k'}</text>`;}
+ points.forEach((p,i)=>{let bottom=top+h,x=left+(i+.5)*step-bw/2;for(let j=0;j<4;j++){let hh=p.vals[j]/max*h;bottom-=hh;svg+=`<rect x="${x}" y="${bottom}" width="${bw}" height="${Math.max(0,hh)}" rx="${hh>4?2:0}" fill="${colors[j]}"><title>${p.year}y · ${['Home equity','Rental equity','ETF holdings','Cash reserves'][j]}: ${money(p.vals[j])}</title></rect>`;}svg+=`<text x="${x+bw/2}" y="${H-20}" text-anchor="middle" fill="#65798a" font-size="12">${p.year}y</text>`;});
+ el.innerHTML=svg;const last=points.at(-1),total=last.vals.reduce((a,b)=>a+b,0);
+ $('wealthChartStats').innerHTML=`<span>Year ${years} · gross modeled assets/equity: ${money(total)}</span><span>ETF holdings: ${money(last.vals[2])}</span><span>Rental equity: ${money(last.vals[1])}</span>`+(points.some(p=>p.negative)?'<span style="color:#a94c53">Warning: negative cash or equity is excluded from the positive stacked bars</span>':'');
+}
+
+/* v7 decision-oriented analytics: explicitly separate mark-to-market wealth from spendable cash. */
+function svgGridLine(svg, x1,y1,x2,y2){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e5ebef"/>`;}
+function compactMoney(v){const a=Math.abs(v);return a>=1e6?(v/1e6).toFixed(1)+'m':a>=1000?Math.round(v/1000)+'k':Math.round(v).toString();}
+function chartFrame(series, maxYear, opts={}){
+ const W=820,H=340,L=70,R=24,T=24,B=41,w=W-L-R,h=H-T-B;
+ const all=series.flatMap(z=>z.values.filter(Number.isFinite));const low=Math.min(0,...all),high=Math.max(1000,...all),spread=Math.max(1,high-low);
+ const X=y=>L+w*y/Math.max(1,maxYear),Y=v=>T+h-(v-low)/spread*h;
+ let svg='';for(let i=0;i<=4;i++){const val=low+spread*i/4,yy=Y(val);svg+=svgGridLine(null,L,yy,W-R,yy)+`<text x="${L-8}" y="${yy+4}" fill="#718394" text-anchor="end" font-size="11">${compactMoney(val)}</text>`;}
+ for(let i=0;i<=5;i++){const y=maxYear*i/5;svg+=`<text x="${X(y)}" y="${H-10}" text-anchor="middle" fill="#718394" font-size="11">${Math.round(y)}y</text>`;}
+ for(const s of series){const points=s.values.map((v,i)=>Number.isFinite(v)?X(i)+','+Y(v):'').filter(Boolean).join(' ');
+ svg+=`<polyline points="${points}" fill="none" stroke="${s.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ${s.dash?'stroke-dasharray="6,5"':''}/>`;}
+ return svg;
+}
+function rentalTaxStandalone(x,tax,r,row){const a={h:0,w:0};addToAlloc(a,row.taxable,r.owner);return annualRentalTaxDelta(x,tax,a);}
+function comparePropertyRows(x,tax,r){return simulateRentalProperty(r,x.years).map(z=>({...z,deltaTax:rentalTaxStandalone(x,tax,r,z)}));}
+function propertySelectorUpdate(rent){
+ const old=$('comparisonProperty').value||window._loadComparisonProperty||'all';
+ $('comparisonProperty').innerHTML='<option value="all">All rental apartments</option>'+rent.properties.map(p=>`<option value="${p._id}">${safeText(p.name)}</option>`).join('');
+ $('comparisonProperty').value=[...$('comparisonProperty').options].some(v=>v.value===old)?old:'all';delete window._loadComparisonProperty;
+ const amortOld=$('amortTarget').value||window._loadAmortTarget||'home';
+ $('amortTarget').innerHTML='<option value="home">Primary / existing home</option>'+rent.properties.map(p=>`<option value="${p._id}">${safeText(p.name)}</option>`).join('');
+ $('amortTarget').value=[...$('amortTarget').options].some(v=>v.value===amortOld)?amortOld:'home';delete window._loadAmortTarget;
+}
+function compareModel(x,tax,rent){
+ const selected=$('comparisonProperty').value;
+ const selection=selected==='all'?rent.properties:rent.properties.filter(p=>String(p._id)===selected);
+ if(!selection.length){$('cmpCapital').textContent='—';$('cmpRental').textContent='—';$('cmpETF').textContent='—';$('comparisonChart').innerHTML='<text x="410" y="165" fill="#7b8d9d" font-size="18" text-anchor="middle">Add a rental apartment to see the investment comparison</text>';$('comparisonVerdict').textContent='No rental property selected.';return;}
+ const initial=selection.reduce((s,p)=>s+p.upfront,0),growth=Math.max(0,(1+x.ret/100)*(1-x.ter/100));
+ const allRows=selection.map(p=>({p,rows:comparePropertyRows(x,tax,p)}));
+ const rentalPath=[selection.reduce((sum,p)=>sum+p.down,0)],etfPath=[initial];let balance=0;
+ for(let y=1;y<=x.years;y++){
+  const yy=allRows.map(({p,rows})=>({p,row:rows[y-1]}));
+  const equity=yy.reduce((t,z)=>t+z.row.equity,0);
+  let annual=yy.reduce((t,z)=>t+z.row.cash-z.row.deltaTax,0);
+  if(y===1){for(const {p,row} of yy){if(p.renoType==='maintenance'&&!p.autoCapitalize&&p.renovation>0){const a={h:0,w:0};addToAlloc(a,row.taxable-p.renovation,p.owner);annual+=-(annualRentalTaxDelta(x,tax,a)-rentalTaxStandalone(x,tax,p,row));}}}
+  balance=balance*growth+annual;
+  rentalPath.push(equity+balance);etfPath.push(initial*Math.pow(growth,y));
+ }
+ const rentalLast=rentalPath.at(-1),etfLast=etfPath.at(-1),diff=rentalLast-etfLast;
+ set('cmpCapital',money(initial));set('cmpRental',money(rentalLast));set('cmpETF',money(etfLast));
+ $('cmpRental').className='v '+(rentalLast>=0?'green':'red');$('cmpETF').className='v';
+ $('comparisonChart').innerHTML=chartFrame([{values:rentalPath,color:'#158b77'},{values:etfPath,color:'#8065ae',dash:true}],x.years);
+ const saleFee=selection.reduce((s,p)=>s+p.price*Math.pow(1+p.appreciation/100,x.years)*x.saleCosts/100,0);
+ const etfTax=Math.max(0,etfLast-initial)*.7*.26375;
+ $('comparisonVerdict').innerHTML=`<strong>Year ${x.years} · ${diff>=0?'rental option ahead':'ETF alternative ahead'} by ${money(Math.abs(diff))} before selling taxes and costs.</strong> At the same starting cash, the rental path is ${money(rentalLast)} (mortgage equity plus the future value of net rental cash flows), versus ${money(etfLast)} in ETFs. The property-sale costs assumption alone would subtract approximately ${money(saleFee)} if all selected rentals were sold then. An illustrative full ETF sale could incur about ${money(etfTax)} in capital-gains tax before allowances; comparable property capital-gains taxes are not calculated here.`;
+ $('saleCaution').innerHTML=`<strong>Important:</strong> This is a marked-to-market investment comparison, not disposable household cash. Property equity is unrealized, sale fees (assumed ${x.saleCosts}%) and property tax on any taxable sale are excluded from the plotted rental result; the ETF line excludes eventual sale tax. A privately sold German investment property within 10 years may incur income tax on the gain depending on the facts. Renovation tax relief is only included in year 1 when expressly classified as deductible maintenance, and that classification must be verified. Year-1 purchase fees and renovations ARE included in the upfront cash tied up in the rental.`;
+}
+function hypotheticalCell(x,tax,p,cold,rate){const r={...p,kalt:cold,interest:rate,monthlyPayment:p.loan*(rate+p.repay)/1200};const row=simulateRentalProperty(r,1)[0];return (row.cash-rentalTaxStandalone(x,tax,r,row))/12;}
+function breakEvenRent(x,tax,p){if(hypotheticalCell(x,tax,p,0,p.interest)>=0)return 0;if(hypotheticalCell(x,tax,p,10000,p.interest)<0)return Infinity;let lo=0,hi=10000;for(let i=0;i<35;i++){const mid=(lo+hi)/2;if(hypotheticalCell(x,tax,p,mid,p.interest)>=0)hi=mid;else lo=mid;}return hi;}
+function heatmapModel(x,tax,rent){const id=$('comparisonProperty').value;const p=rent.properties.find(z=>String(z._id)===id)||rent.properties[0];
+ if(!p){set('heatCurrent','—');set('heatBreakRent','—');set('heatInputs','—');$('heatTable').innerHTML='<div class="chart-empty">Add at least one investment apartment to explore break-even rent</div>';return;}
+ const step=x.heatRentStep,stepRate=x.heatRateStep,baseRent=Math.max(0,p.kalt),rates=Array.from({length:7},(_,i)=>Math.max(0,p.interest+(i-3)*stepRate));const rents=Array.from({length:7},(_,i)=>Math.max(0,Math.round((baseRent+(i-3)*step)/25)*25));
+ const current=hypotheticalCell(x,tax,p,p.kalt,p.interest),threshold=breakEvenRent(x,tax,p);
+ set('heatCurrent',money(current)+'/mo');$('heatCurrent').className='v '+(current>=0?'green':'red');set('heatBreakRent',Number.isFinite(threshold)?money(Math.ceil(threshold/10)*10)+'/mo':'Above €10,000');set('heatInputs',money(p.kalt)+' · '+p.interest.toFixed(2)+'%');
+ let rows=`<table class="heat-grid" aria-label="Rental monthly cash flow after tax by cold rent and interest rate"><thead><tr><th>Cold rent ↓ / Rate →</th>${rates.map(rate=>`<th>${rate.toFixed(2)}%</th>`).join('')}</tr></thead><tbody>`;
+ rents.forEach((cold,i)=>{rows+=`<tr><th>${money(cold)}</th>`;rates.forEach((rate,j)=>{const v=hypotheticalCell(x,tax,p,cold,rate),intensity=Math.min(1,Math.abs(v)/600),rgb=v>=0?`rgba(19,143,104,${(.14+intensity*.54).toFixed(2)})`:`rgba(200,74,78,${(.10+intensity*.46).toFixed(2)})`,isCurrent=i===3&&j===3;
+ rows+=`<td class="${isCurrent?'selected':''}" style="background:${rgb};color:${intensity>.5?'#fff':'#253a46'}" title="Cold rent ${money(cold)}, mortgage interest ${rate.toFixed(2)}%, estimated cash flow ${money(v)} per month">${v>0?'+':''}${money(v)}</td>`;});rows+='</tr>';});
+ $('heatTable').innerHTML=rows+'</tbody></table><div class="fine">Highlighted cell uses the selected property’s current inputs. For higher rents, the model assumes the same tenant charges and operating costs.</div>';
+}
+function amortizationRows(principal,rate,payment,years,fixYears,refi,extra){let loan=principal;const out=[{year:0,debt:loan,interest:0,principal:0}];for(let y=1;y<=years;y++){let int=0,prin=0;for(let m=1;m<=12;m++){const rm=((y-1)*12+m)<=fixYears*12?rate:refi;const cost=loan*rm/1200;const paid=loan>0?Math.min(payment,loan+cost):0;let paidPrincipal=paid-cost;if(loan>0&&paidPrincipal<0){loan+=-paidPrincipal;paidPrincipal=0;}else{loan=Math.max(0,loan-paidPrincipal);}int+=cost;prin+=paidPrincipal;}
+ if(loan>0){const ep=Math.min(extra,loan);loan-=ep;prin+=ep;}
+ out.push({year:y,debt:loan,interest:int,principal:prin});}return out;}
+function amortizationPlot(x,rent){const id=$('amortTarget').value;const prop=rent.properties.find(p=>String(p._id)===id);const args=prop?[prop.loan,prop.interest,prop.monthlyPayment,x.years,x.years+1,prop.interest,0]:[x.loan,x.rate,x.emi,x.years,x.fixYears,x.refiRate,x.extra];
+ const rows=amortizationRows(...args),w=820,h=330,L=70,R=26,T=20,B=45,ww=w-L-R,hh=h-T-B,max=Math.max(1000,...rows.map(q=>q.debt),...rows.map(q=>q.interest+q.principal))*1.08;
+ const X=y=>L+ww*y/Math.max(1,x.years),Y=v=>T+hh-v/max*hh;let html='';for(let i=0;i<=4;i++){const val=max*i/4,yy=Y(val);html+=svgGridLine(null,L,yy,w-R,yy)+`<text x="${L-8}" y="${yy+3}" text-anchor="end" fill="#728390" font-size="11">${compactMoney(val)}</text>`;}
+ const bw=Math.min(18,ww/Math.max(2,x.years)*.66);for(const row of rows.slice(1)){const bx=X(row.year)-bw/2,base=Y(0);const ph=row.principal/max*hh,ih=row.interest/max*hh;
+ html+=`<rect x="${bx}" y="${base-ph}" width="${bw}" height="${Math.max(0,ph)}" fill="#158775"><title>Year ${row.year}: principal ${money(row.principal)}</title></rect><rect x="${bx}" y="${base-ph-ih}" width="${bw}" height="${Math.max(0,ih)}" fill="#d69d55"><title>Year ${row.year}: interest ${money(row.interest)}</title></rect>`;}
+ const pts=rows.map(r=>X(r.year)+','+Y(r.debt)).join(' ');html+=`<polyline points="${pts}" fill="none" stroke="#426da3" stroke-width="3"/><text x="${L}" y="${h-9}" font-size="11" fill="#718496">0y</text><text x="${w-R}" y="${h-9}" text-anchor="end" font-size="11" fill="#718496">${x.years}y</text>`;
+ $('amortChart').innerHTML=html;const totInt=rows.reduce((a,b)=>a+b.interest,0),totPrin=rows.reduce((a,b)=>a+b.principal,0);$('amortStats').innerHTML=`<span>Interest over horizon ${money(totInt)}</span><span>Principal repaid ${money(totPrin)}</span><span>Remaining balance ${money(rows.at(-1).debt)}</span><span>Blue: remaining debt · Orange: interest · Green: principal</span>`;
+}
+function gaussian(prng){const u=Math.max(1e-12,prng()),v=Math.max(1e-12,prng());return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function seededRandom(seed){let z=seed>>>0;return ()=>{z=(Math.imul(1664525,z)+1013904223)>>>0;return z/4294967296;};}
+function quantile(vals,q){const v=[...vals].sort((a,b)=>a-b),p=(v.length-1)*q,i=Math.floor(p),f=p-i;return v[i]*(1-f)+(v[Math.min(i+1,v.length-1)])*f;}
+function mcSimulation(x){const rng=seededRandom(238101),trials=x.mcTrials,vol=x.mcVol/100;let finals=[],failed=0;const atYear=Array.from({length:x.years+1},()=>[]),contributions=12*(x.monthlyH+x.monthlyW);
+ for(let j=0;j<trials;j++){let value=x.start,missed=false;atYear[0].push(value);for(let y=1;y<=x.years;y++){
+  const raw=Math.max(-.95,Math.min(2.0,x.ret/100+vol*gaussian(rng))),net=(1+raw)*(1-x.ter/100)-1;
+  value=Math.max(0,value*(1+net)+contributions);
+  const request=x.drawMode==='custom'?12*x.custom:x.drawMode==='full'?12*x.emi:x.drawMode==='interest'?x.loan*x.rate/100:0;
+  if(request>value+.01)missed=true;
+  value=Math.max(0,value-request);
+  atYear[y].push(value);
+ }if(missed)failed++;finals.push(value);}
+ return {p10:atYear.map(v=>quantile(v,.1)),p50:atYear.map(v=>quantile(v,.5)),p90:atYear.map(v=>quantile(v,.9)),lower:finals.filter(z=>z<x.start).length/trials,unfunded:failed/trials};
+}
+function riskPlot(x){const mc=mcSimulation(x);set('mcLow',money(mc.p10.at(-1)));set('mcMid',money(mc.p50.at(-1)));set('mcUnder',(mc.lower*100).toFixed(1)+'%');$('riskChart').innerHTML=chartFrame([{values:mc.p10,color:'#c57654',dash:true},{values:mc.p50,color:'#188675'},{values:mc.p90,color:'#8a75b4',dash:true}],x.years);
+ $('mcStats').innerHTML=`<span>90th-percentile ending portfolio ${money(mc.p90.at(-1))}</span><span>Illustrative withdrawal-shortfall frequency ${(mc.unfunded*100).toFixed(1)}%</span><span>${x.mcTrials} simulated paths · ${x.mcVol}% assumed volatility</span><span>Orange 10th · Teal median · Purple 90th</span>`;}
+function propertyRanking(x,tax,rent){if(!rent.properties.length){$('rankRows').innerHTML='<tr><td colspan="8">Add a rental apartment to compare.</td></tr>';$('rankingChart').innerHTML='';return;}
+ const ranked=rent.properties.map(p=>{const row=simulateRentalProperty(p,1)[0],delta=rentalTaxStandalone(x,tax,p,row),noi=row.collected-row.operating,invested=p.price*(1+p.buyCosts/100)+p.renovation;return {p,row,delta,grossYield:p.price?p.kalt*12/p.price:0,netYield:invested?noi/invested:0,cash:(row.cash-delta)/12,cashOnCash:p.upfront?(row.cash-delta)/p.upfront:0,dscr:row.payment?noi/row.payment:NaN};});
+ const metric=x.rankingMetric;ranked.sort((a,b)=>(Number.isFinite(b[metric])?b[metric]:-Infinity)-(Number.isFinite(a[metric])?a[metric]:-Infinity));const percent=n=>(n*100).toFixed(2)+'%';
+ $('rankRows').innerHTML=ranked.map((z,i)=>`<tr><td>${i+1}. ${safeText(z.p.name)}</td><td>${percent(z.grossYield)}</td><td>${percent(z.netYield)}</td><td class="${z.cash>=0?'green':'red'}">${money(z.cash)}</td><td class="${z.cashOnCash>=0?'green':'red'}">${percent(z.cashOnCash)}</td><td>${money(z.row.principal/12)}</td><td>${Number.isFinite(z.dscr)?z.dscr.toFixed(2)+'×':'No debt'}</td><td>${money(z.p.upfront)}</td></tr>`).join('');
+ const W=820,H=275,left=175,right=85,top=23,height=H-top-25,step=height/Math.max(1,ranked.length),largest=Math.max(250,...ranked.map(q=>Math.abs(q.cash)));let svg=`<line x1="${left+280}" x2="${left+280}" y1="${top}" y2="${H-9}" stroke="#9dadb5" stroke-dasharray="3,4"/>`;
+ ranked.forEach((z,i)=>{const y=top+i*step+step*.2,bh=Math.max(12,step*.57),bar=Math.abs(z.cash)/largest*245,start=z.cash>=0?left+280:left+280-bar;svg+=`<text x="10" y="${y+bh*.70}" font-size="12" fill="#445c6c">${safeText(z.p.name.slice(0,23))}</text><rect x="${start}" y="${y}" width="${Math.max(1,bar)}" height="${bh}" rx="4" fill="${z.cash>=0?'#15907b':'#c57972'}"><title>${safeText(z.p.name)}: ${money(z.cash)} / month</title></rect><text x="${z.cash>=0?start+bar+8:start-8}" y="${y+bh*.70}" font-size="11" text-anchor="${z.cash>=0?'start':'end'}" fill="#3c5260">${money(z.cash)}</text>`;});$('rankingChart').innerHTML=svg;
+}
+function renderAnalytics(x,tax,rent){propertySelectorUpdate(rent);compareModel(x,tax,rent);heatmapModel(x,tax,rent);amortizationPlot(x,rent);riskPlot(x);propertyRanking(x,tax,rent);}
+$('comparisonProperty').addEventListener('change',()=>render());$('amortTarget').addEventListener('change',()=>render());
+
+function render(){
+ profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
+ const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
+ const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
+ renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ for(const [prefix,person,attributedTax,est,used] of [
+   ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
+   ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
+ ]){
+   set(prefix+'Gross',money(person.gross));set(prefix+'Pension','−'+money(person.pension));
+   set(prefix+'Unemployment','−'+money(person.unemployment));set(prefix+'Health','−'+money(person.health));
+   set(prefix+'Tax','−'+money(attributedTax));set(prefix+'NetEstimate',money(est));set(prefix+'NetBudget',money(used));
+ }
+ set('kNet',money(c.net));set('kOutgo',money(c.mandatory));set('kFree',money(c.free));set('kAnnual',money(c.free*12));
+ $('kFree').className='big '+(c.free>=0?'green':'red');$('kAnnual').className='big '+(c.free>=0?'green':'red');
+ const enteredTaxPerMonth=x.withholdingH+x.soliH+x.churchH+(x.profileMode==='single'?0:x.withholdingW+x.soliW+x.churchW);
+ const estimatedWithheld=enteredTaxPerMonth*x.withholdingMonths;
+ const annualLiability=tax.taxes;
+ const withholdingDifference=estimatedWithheld-annualLiability;
+ const hasWithholding=enteredTaxPerMonth>0;
+ $('payrollReconciliation').innerHTML=[
+ ['Monthly entered withholding',money(enteredTaxPerMonth)],
+ ['Withholding in selected months',money(estimatedWithheld)],
+ ['Estimated annual income tax + surcharges',money(annualLiability)],
+ ['Difference: withheld minus estimated tax',hasWithholding?(withholdingDifference>=0?'+':'−')+money(Math.abs(withholdingDifference)):'Enter payslip deductions'],
+ ['Payroll tax classes',x.profileMode==='single'?x.taxClassH:x.taxClassH+' / '+x.taxClassW],
+ ['Assessment model',x.profileMode==='single'?'Individual':x.jointTax==='joint'?'Joint':'Separate']
+ ].map(([k,v])=>`<div class="report-item"><small>${k}</small><strong>${v}</strong></div>`).join('');
+ const assessment=compareAssessment2026(x,tax.baseH,tax.baseW);
+ $('assessmentCompareSection').hidden=x.profileMode==='single';
+ if(x.profileMode==='married'){
+   $('assessmentCompare').innerHTML=[
+     ['Joint splitting — annual tax',money(assessment.joint)],
+     ['Separate assessment — annual tax',money(assessment.separate)],
+     ['Estimated joint-assessment saving',money(assessment.difference)],
+     ['Selected assessment',x.jointTax==='joint'?'Joint splitting':'Separate']
+   ].map(([label,value])=>`<div class="report-item"><small>${label}</small><strong>${value}</strong></div>`).join('');
+   $('assessmentRecommendation').textContent=(assessment.difference>0?'The joint estimate is lower by '+money(assessment.difference)+' per year.':assessment.difference<0?'The separate estimate is lower by '+money(-assessment.difference)+' per year.':'Both estimates are equal.')+' This is not an official tax return calculation. Special deductions, other income, and tax-class withholding can change actual results.';
+   $('applyAssessment').dataset.target=assessment.recommended;
+   $('applyAssessment').disabled=x.jointTax===assessment.recommended;
+ }
+ $('taxAuditData').innerHTML=[
+ ['Assessment',x.profileMode==='single'?'Individual':(x.jointTax==='joint'?'Joint splitting':'Separate individual')],
+ ['Husband/individual taxable base',money(tax.baseH)],
+ ['Spouse taxable base',x.profileMode==='single'?'Not applicable':money(tax.baseW)],
+ ['Annual estimated income tax',money(tax.totalTax)],
+ ['First-person GKV/PKV employee cost',money(tax.h.healthInsurance)],
+ ['First-person Pflege employee cost',money(tax.h.careInsurance)],
+ ['First-person PKV employer subsidy estimate',money(tax.h.employerSubsidy)],
+ ...(x.profileMode==='single'?[]:[['Second-person GKV/PKV employee cost',money(tax.w.healthInsurance)],['Second-person Pflege employee cost',money(tax.w.careInsurance)],['Second-person PKV employer subsidy estimate',money(tax.w.employerSubsidy)]]),
+ ['Annual solidarity surcharge',money(tax.soli)],
+ ['Annual church tax',money(tax.church)],
+ ['Estimated annual total',money(tax.taxes)],
+ ['Change from rental income',(rent.first.deltaTax>=0?'+':'−')+money(Math.abs(rent.first.deltaTax))+' /year']
+ ].map(([k,v])=>`<div class="report-item"><small>${k}</small><strong>${v}</strong></div>`).join('');
+ set('kNetMode',x.incomeMode==='actual'?'Actual spendable net entered':'2026 '+(x.profileMode==='single'?'individual':(x.jointTax==='joint'?'joint':'separate'))+' annual-tax estimate');
+ $('taxMethodNote').textContent=x.incomeMode==='estimate'?'2026 gross-to-net estimate: joint/individual final-tax model, NOT monthly Lohnsteuer or an actual payslip. Enter actual net for a dependable budget.':'Actual mode: editable net salaries after all tax, social insurance and privately paid PKV; gross-based deductions below remain estimates for comparison only.';
+ const insuranceLabel=(person,health)=>health==='pkv'?`PKV employer subsidy estimated at ${money(person.subsidy/12)}/month and net premium paid is ${money(person.health/12)}/month`:`GKV + Pflege employee cost ${money(person.health/12)}/month`;
+ $('houseTaxSummary').innerHTML=`<strong>2026 ${x.profileMode==='single'?'individual':'household'} estimate:</strong> income tax ${money(tax.totalTax)}/yr · solidarity ${money(tax.soli)}/yr · church ${money(tax.church)}/yr. ${x.profileMode==='single'?'Individual': 'Husband'}: ${insuranceLabel(tax.h,x.healthH)}.${x.profileMode==='single'?'':` Wife: ${insuranceLabel(tax.w,x.healthW)}. ${x.jointTax==='joint'?'Joint tax is <strong>attributed proportionally for display</strong>, not actual payroll withholding.':'The model estimates each spouse’s tax individually; actual monthly withholding may differ.'}`}`;
+ for(const who of ['H','W']){for(const el of document.querySelectorAll('.pkv'+who+'-only'))el.hidden=x['health'+who]==='gkv';}
+ const fmtRow=(label,monthly,cls='',subtract=false)=>`<tr><td>${label}</td><td class="${cls}">${subtract?'−':''}${money(monthly)}</td><td class="${cls}">${subtract?'−':''}${money(monthly*12)}</td></tr>`;
+ $('cashRows').innerHTML=[
+ fmtRow(x.profileMode==='single'?'Individual spendable net':'Husband spendable net',tax.useH,'green'),...(x.profileMode==='single'?[]:[fmtRow('Wife spendable net',tax.useW,'green')]),fmtRow('Other after-tax income',x.otherNet,'green'),
+ fmtRow(x.housingType==='tenant'?'Housing mortgage (none)':'Housing mortgage payment',c.housing-x.owner,'',true),fmtRow(x.housingType==='tenant'?'Existing warm rent':'Owner costs / Hausgeld / maintenance',x.owner,'',true),
+ fmtRow('Utilities, groceries, transport, insurance, lifestyle and misc.',c.living,'',true),fmtRow('Other debt repayments',c.otherDebt,'',true),
+ fmtRow('Annual Sondertilgung reserve (monthly equivalent)',x.extra/12,'',true),
+ fmtRow('Rental cash flow, before annual tax settlement',c.rentalCash,c.rentalCash>=0?'green':'red'),
+ fmtRow('Rental tax provision / economic benefit (optional)',-c.taxProvision,-c.taxProvision>=0?'green':'red'),
+ fmtRow('ETF sale proceeds (selected strategy, first month)',c.sold,'green'),
+ fmtRow('Remaining BEFORE voluntary savings / new ETF purchases',c.before,'strong'),
+ fmtRow('New ETF contributions',c.invested,'',true),fmtRow('Cash savings transfer',c.monthlySaving,'',true),
+ fmtRow('FREE after all planned allocations',c.free,c.free>=0?'green':'red')
+ ].join('');
+ const setText=(id,value)=>set(id,value);
+ setText('cashBeforeAlloc',money(c.before));setText('reserveMonths',c.essentials>0?(x.cashReserve/c.essentials).toFixed(1)+' months':'—');
+ setText('housingRatio',c.net>0?pct(c.housing/c.net):'—');
+ const denominator=Math.max(.01,c.net+c.sold),segments=[c.housing,c.living+c.otherDebt+x.extra/12,c.invested+c.monthlySaving,Math.max(0,c.free)];
+ const denom=Math.max(denominator,segments.reduce((a,b)=>a+b,0));
+ [...$('cashbar').children].forEach((node,i)=>node.style.width=(Math.max(0,segments[i])/denom*100).toFixed(2)+'%');
+ const upfront=x.homeAcquisitionCash+x.start+rent.upfront,availableAfter=x.availableCapital-upfront,reserveGap=x.cashReserve-availableAfter;
+ $('upfrontSummary').innerHTML=`<strong>Upfront affordability check:</strong> You entered ${money(x.availableCapital)} of liquid capital before the property purchase. ${x.homeNewPurchase?'The new-home deposit and purchase fees, ':'No primary-home acquisition cash, '}${x.profileMode==='single'?'your ETF investment':'both ETF investments'}, rental property down payments, rental fees and upfront renovation cash require ${money(upfront)} upfront. This leaves ${money(availableAfter)} before your ${money(x.cashReserve)} target emergency cash. ${reserveGap>0.005?'<strong style="color:#a3434d">Additional funds needed: '+money(reserveGap)+'</strong>.':'<strong>Extra liquid cash after reserve: '+money(Math.max(0,-reserveGap))+'</strong>.'} These are separate from the salary cash-flow figures.`;
+ $('householdTakeaway').innerHTML=`<h3>${c.free>=0?'Monthly cash left: '+money(c.free):'Monthly cash deficit: '+money(-c.free)}</h3><p>${money(c.net)} of spendable income ${c.sold>0?'plus '+money(c.sold)+' from modeled ETF sales ':''}minus ${money(c.mandatory)} of your home, living and debt commitments, plus ${money(c.rentalCash)} net rental cash ${c.taxProvision!==0?`and ${money(-c.taxProvision)} estimated rental tax cash-equivalent`:``}, and ${money(c.discretionaryAllocation)} directed to ETF/cash savings leaves ${money(c.free)} per month (${money(c.free*12)} annually). Savings transfers still build your wealth; they are excluded from free spending money.</p>`;
+ $('houseAnnualRows').innerHTML=projectedCash.map(r=>`<tr><td>${r.year}</td><td>${money(r.net)}</td><td>${money(r.living)}</td><td>${money(r.mortgage)}</td><td>${money(r.rentalCash)}</td><td>${money(r.rentalTax)}</td><td>${money(r.newETF)}</td><td>${money(r.receipts)}</td><td class="${r.change>=0?'green':'red'}">${money(r.change)}</td><td class="${r.balance>=0?'green':'red'}">${money(r.balance)}</td></tr>`).join('');
+ const lastCash=projectedCash.at(-1);
+ $('projectionTakeaway').innerHTML=`<h3>Cash reserves in year ${x.years}: ${money(lastCash.balance)}</h3><p>Starts from the ${money(x.cashReserve)} desired cash reserve (assuming upfront funding is sufficient). Assumes household spendable income changes by ${x.netGrowth}% annually and living/owner costs by ${x.expenseGrowth}% annually. This projection includes recurring rental cash flows. Rental income-tax changes are included only if the tax provision option is selected, as annualized economic approximations. It excludes rental acquisition costs already counted upfront, one-time renovation cash already counted upfront, savings-account interest, tax changes and wage taxes on future salary increases. A negative cash balance means a funding gap, not available money.</p>`;
+ set('mPortfolio',money(x.start));set('mSplit',x.profileMode==='single'?money(x.husband)+' individual ETF':money(x.husband)+' husband · '+money(x.wife)+' wife');set('mHousing',money(allCosts));set('mProfit',money(monthly));set('mGap',money(Math.abs(gap))+(gap>=0?' short':' surplus'));$('mProfit').className='big '+(monthly>=0?'green':'red');$('mGap').className='big '+(gap>=0?'red':'green');
+ set('mortgagePrincipal',money(x.loan));set('mortgageInterest',money(interest));set('mortgageAmort',money(principal));set('mortgagePayoff',payoff===Infinity?'Does not repay':payoff===0?'No loan':(payoff/12).toFixed(1)+' years');set('cashNeeded',money(x.homeAcquisitionCash+x.start));set('monthlyTotal',money(allCosts));set('monthlySaving',money(x.monthlyH+x.monthlyW));
+ set('investSplit',x.profileMode==='single'?money(x.husband):money(x.husband)+' / '+money(x.wife));set('grossGain',money(e.gross));set('feeVal','−'+money(e.fee));set('taxVal','−'+money(e.tax));set('netAnnual',money(e.net));const need=capitalToMatch(x,offsetTarget,firstReturn);set('needCapital',Number.isFinite(need)?money(need):'Not achievable');
+ const coverage=offsetTarget>0?monthly/offsetTarget:0;$('coverageBar').style.width=(Math.max(0,Math.min(1,coverage))*100)+'%';set('coverageNote',pct(Math.max(0,coverage))+' of the '+(x.homeNewPurchase?'mortgage EMI':'existing housing cost')+' covered by hypothetical after-tax annualized gains. This is NOT guaranteed monthly cash.');
+ $('takeaway').innerHTML=`<h3>${gap>0?'Modeled gap: '+money(gap)+'/month': 'Modeled surplus: '+money(-gap)+'/month'}</h3><p>At ${firstReturn.toFixed(1)}% modeled first-year return, hypothetical realized ETF gains would ${gap>0?'fall short of':'exceed'} ${x.homeNewPurchase?'the mortgage EMI':'the existing housing cost'} by ${money(Math.abs(gap))}/month. ${x.homeNewPurchase?'Add '+money(x.owner)+'/month of owner costs. ':'Housing already includes existing owner costs or rent. '}Don't assume smooth yearly ETF returns. ${x.loan>0?'Initial mortgage interest is '+money(interest)+'/month; principal payments build equity.':'There is no home mortgage interest in this setup.'}</p>`;
+ let errors=[];if(x.loan>0&&x.emi<=interest&&x.extra===0)errors.push('Your monthly payment does not cover the initial mortgage interest. Debt may rise instead of amortizing.');if(x.homeNewPurchase&&x.down>0&&x.start===0)errors.push('There is no starting ETF investment in this scenario.');if(x.homeNewPurchase&&x.price===0)errors.push('Enter a positive property price to model a home purchase.');if(sim.negativeAmort&&x.loan>0)errors.push('At some point the mortgage payment does not fully cover interest. Check the refinancing rate or increase your monthly payment.');if(reserveGap>0)errors.push('Initial liquid capital is insufficient to fund the down payment, purchase costs, planned ETF investments and target emergency cash.');if(rent.perProperty.some(r=>r.info.renoType==='maintenance'&&r.info.renovation/1.19>r.info.renovationThreshold))errors.push('At least one renovation exceeds the 15% building-cost threshold, so the selected immediate maintenance deduction may not be valid.');if(c.free<0)errors.push('Your household budget is negative after planned saving and investing. Reduce allocations or spending, or enter a higher verified net salary.');if(x.incomeMode==='actual'&&(x.actualH===0&&x.grossH>0||(x.profileMode==='married'&&x.actualW===0&&x.grossW>0)))errors.push('An actual net salary is zero while gross salary is positive; verify the payslip inputs.');$('errors').innerHTML=errors.map(s=>`<div class="error">${s}</div>`).join('');
+ set('withdrawFirst',money(sim.firstWithdraw));set('salaryFirst',money(sim.firstSalary));set('unfundedAmount',money(sim.unfunded));
+ $('cashCaution').innerHTML=x.drawMode==='none'?`<h3>No ETF sales: household income still pays for housing</h3><p>You need approximately ${money(allCosts)} cash each month for the selected housing arrangement, plus ${money(x.monthlyH+x.monthlyW)} of new ETF purchases (and any annual extra repayment), even in years when your ETFs rise in value. The gains remain in the portfolio unless you sell shares.</p>`:`<h3>Sale proceeds are real cash—but selling can consume principal</h3><p>The model plans ${x.drawMode==='full'?'the mortgage EMI':x.drawMode==='interest'?'mortgage interest':money(x.custom)+' net monthly'} from share sales. The amount available depends on remaining ETF value and sale taxes. After ${x.years} years, ${money(sim.withdrawn)} was withdrawn and ${money(sim.unfunded)} of requested withdrawals could not be funded. Salary and cash reserves must bridge any difference.</p>`;
+ let values=[-40,-25,-10,0,3,5,7,10,12];if(!values.some(v=>Math.abs(v-x.ret)<.000001))values.push(x.ret);values.sort((a,b)=>a-b);$('scenarios').innerHTML=values.map(v=>{const z=expected(x,v),monthly=z.net/12,gap=offsetTarget-monthly,whole=allCosts-monthly,selected=Math.abs(v-x.ret)<1e-9;return `<tr ${selected?'class="scenario-selected"':''}><td>${v>0?'+':''}${v.toFixed(1)}%</td><td class="${z.net>=0?'green':'red'}">${money(z.net)}</td><td>${money(monthly)}</td><td>${gap>=0?money(gap)+' short':money(-gap)+' surplus'}</td><td>${whole>=0?money(whole)+' short':money(-whole)+' surplus'}</td></tr>`}).join('');
+ drawChart(sim.traces,x.years);set('endEtf',money(sim.last.portfolio));set('endMortgage',money(sim.last.mortgage));set('endEquity',money(sim.last.homeEquity));$('annualRows').innerHTML=sim.rows.map(p=>`<tr><td>${p.year}</td><td>${money(p.mortgage)}</td><td>${money(p.homeEquity)}</td><td>${money(p.noSales)}</td><td>${money(p.portfolio)}</td><td>${money(p.withdrawn)}</td><td>${money(p.tax)}</td></tr>`).join('');
+ const discountedEquity=sim.last.homeEquity/Math.pow(1+x.inflation/100,x.years);$('drawExplain').textContent=`At the end of ${x.years} years, modeled home equity is ${money(sim.last.homeEquity)} (about ${money(discountedEquity)} in today's purchasing power at ${x.inflation}% inflation), plus ${money(sim.last.portfolio)} of remaining ETF holdings under your selected withdrawal approach. This is not total household net worth: the chart includes modeled cash reserves, but this particular summary omits them, taxes on any unsold ETF gains, property sale expenses, and other assets/debts. The year-1 shock option is a simplified scenario, not a prediction.`;
+ $('customLine').hidden=x.drawMode!=='custom';window.currentSummary={x,e,sim,gap,tax,c,projectedCash,rent};
+ try{localStorage.setItem(storageKey,JSON.stringify({fields:Object.fromEntries(ids.map(id=>[id,$(id).value])),rentalItems,rentalTaxTiming:rent.taxTiming,profileAllowances,comparisonProperty:$('comparisonProperty').value,amortTarget:$('amortTarget').value}));}catch(_){/* Privacy restrictions may block local storage */}
+}
+for(const id of ids){if(id==='profileMode'||id==='homeMode')continue;$(id).addEventListener('input',()=>{if(id==='existingType')updateHomeUI();render();});$(id).addEventListener('change',()=>{if(id==='existingType')updateHomeUI();render();});}for(const b of document.querySelectorAll('[data-switch-home]'))b.addEventListener('click',()=>switchHome(b.dataset.switchHome));for(const b of document.querySelectorAll('[data-switch-profile]'))b.addEventListener('click',()=>switchProfile(b.dataset.switchProfile));for(const btn of document.querySelectorAll('[data-half]'))btn.addEventListener('click',()=>{$('husband').value=btn.dataset.half;if($('profileMode').value==='married')$('wife').value=btn.dataset.half;render();});
+$('reset').addEventListener('click',()=>{for(const [key,value] of Object.entries(defaults))$(key).value=value;profileAllowances.single=1000;profileAllowances.married=2000;updateProfileUI();updateHomeUI();rentalSeq=1;rentalItems=[{...rentSeed,_id:1}];$('rentalTaxTiming').value='cash';renderRentalInputs();render();set('liveStatus','Defaults restored. Results recalculated.');});$('print').addEventListener('click',()=>window.print());$('copy').addEventListener('click',async()=>{const {x,e,sim,gap}=window.currentSummary;const value=`${x.profileMode==='single'?'Individual':'Married couple'} ${x.homeNewPurchase?'new home + rental':'existing housing + rental-investment'} scenario\nHousing: ${x.housingLabel}; home value: ${money(x.price)}; mortgage ${money(x.loan)} at ${x.rate}%\nMonthly mortgage payment: ${money(x.emi)}; other monthly owner costs: ${money(x.owner)}\n${x.profileMode==='single'?'Individual ETF: '+money(x.husband):'Husband ETF: '+money(x.husband)+', wife ETF: '+money(x.wife)}\nAssumed ETF return: ${x.ret}%, fee: ${x.ter}%\nEconomic after-tax annual ETF gain estimate: ${money(e.net)}\nMonthly-equivalent EMI ${gap>=0?'shortfall':'surplus'}: ${money(Math.abs(gap))}\nWithdrawal plan: ${x.drawMode}; end mortgage ${money(sim.last.mortgage)}; end ETF ${money(sim.last.portfolio)}\nMonthly household net: ${money(window.currentSummary.c.net)}; rental cash: ${money(window.currentSummary.rent.first.cash/12)}; yearly rental tax change: ${money(window.currentSummary.rent.first.deltaTax)}; free cash: ${money(window.currentSummary.c.free)}; annual: ${money(window.currentSummary.c.free*12)}\nNot guaranteed income. No investment borrowing.`;try{await navigator.clipboard.writeText(value);set('liveStatus','Scenario summary copied.');}catch(_){const a=document.createElement('textarea');a.value=value;document.body.append(a);a.select();document.execCommand('copy');a.remove();set('liveStatus','Scenario summary copied.');}});
+$('applyAssessment').addEventListener('click',()=>{if($('profileMode').value!=='married')return;$('jointTax').value=$('applyAssessment').dataset.target;render();});
+window.__payrollReconciliation={year:2026,method:'Observed payslip deductions compared with approximate annual income tax; not PAP',calculate:(x,tax)=>{const monthly=x.withholdingH+x.soliH+x.churchH+(x.profileMode==='single'?0:x.withholdingW+x.soliW+x.churchW);return {monthly,withheld:monthly*x.withholdingMonths,liability:tax.taxes,difference:monthly*x.withholdingMonths-tax.taxes};}};
+window.__taxAuditChecks={est2026IncomeTax,careEmployeeRate,calculatePerson,householdTax,germanTotalTax,annualRentalTaxDelta,compareAssessment2026};
+render();
+})();
+</script>
+<script>
+(()=>{
+  const categories=['properties','household','household','investments','properties','investments','compare'];
+  const titles={overview:['Your financial overview','Income, spending and wealth in one place. Use the other tabs to edit assumptions.'],household:['Household budget','Manage salaries, health insurance, expenses and disposable cash.'],properties:['Property planning','Edit your primary home, rental properties, financing and tax assumptions.'],investments:['ETF investments','Review savings, expected returns and the household investment offset.'],compare:['Decision studio','Compare property investment, ETF alternatives, financing and risk.'],reports:['Reports and detailed figures','Inspect full calculations and print or copy your financial plan.']};
+  const sidebar=document.querySelector('.sidebar');
+  const sections=[...sidebar.querySelectorAll(':scope > .section')];
+  sections.forEach((sec,i)=>{
+    sec.dataset.category=categories[i]||'reports';
+    const h=sec.querySelector(':scope > h2');
+    if(!h)return;
+    const btn=document.createElement('button');btn.className='section-toggle';btn.type='button';btn.setAttribute('aria-expanded','false');
+    h.parentNode.insertBefore(btn,h);btn.appendChild(h);
+    const caret=document.createElement('span');caret.className='caret';caret.textContent='▼';caret.setAttribute('aria-hidden','true');btn.append(caret);
+    btn.addEventListener('click',()=>{sec.classList.toggle('expanded');btn.setAttribute('aria-expanded',String(sec.classList.contains('expanded')))});
+  });
+  const firstInCategory=(c)=>sections.filter(s=>s.dataset.category===c);
+  // Keep detailed results computed by the original engine, only change their presentation.
+  const content=[...document.querySelectorAll('.maincol > .content-card')];
+  content.forEach((card)=>{
+    const h=card.querySelector('h2')?.textContent||'';
+    if(/Live household overview|Actual cash flow|Market-return sensitivity|Housing debt and investment projection/.test(h)) card.dataset.investmentPanel='true';
+  });
+  function showView(v){
+    if(!titles[v])v='overview';
+    document.body.dataset.view=v;
+    document.querySelectorAll('.app-tabs [data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));
+    document.getElementById('viewTitle').textContent=titles[v][0];
+    document.getElementById('viewDescription').textContent=titles[v][1];
+    firstInCategory(v).forEach((s,i)=>{if(i===0){s.classList.add('expanded');s.querySelector('.section-toggle')?.setAttribute('aria-expanded','true')}});
+    history.replaceState(null,'','#'+v);
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  document.querySelectorAll('.app-tabs [data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+  document.getElementById('editAllInputs').addEventListener('click',()=>showView('household'));
+  const nums=['kFree','kNet'];
+  function sync(){
+    const q=id=>document.getElementById(id)?.textContent||'—';
+    document.getElementById('stickyFree').textContent=q('kFree');
+    document.getElementById('stickyNet').textContent=q('kNet');
+    const rental=q('rentalMonthlyCash')!=='—'?q('rentalMonthlyCash'):'See properties';
+    document.getElementById('stickyRental').textContent=rental;
+  }
+  const observer=new MutationObserver(sync);
+  ['kFree','kNet'].forEach(id=>{let el=document.getElementById(id);if(el)observer.observe(el,{childList:true,characterData:true,subtree:true})});
+  sidebar.addEventListener('input',()=>queueMicrotask(sync));
+  document.querySelectorAll('[data-switch-home],[data-switch-profile]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(sync)));
+  showView(location.hash.slice(1) in titles?location.hash.slice(1):'overview');sync();
+})();
+</script>
+
+<script>
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const KEY='home_etf_saved_scenarios_v9',LIVE_KEY='home_etf_rentals_analytics_v7';
+ let records=[];let selected=[];
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const euro=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v)):'—';
+ const makeId=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'_'+Math.random().toString(36).slice(2);
+ function note(msg){$('scenarioNotice').textContent=msg;}
+ try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))records=raw.filter(r=>r&&typeof r.id==='string'&&r.snapshot&&r.stats).slice(0,30);}catch(_){note('Local storage is unavailable; backup is recommended.');}
+ function persist(){try{localStorage.setItem(KEY,JSON.stringify(records));return true;}catch(_){note('Browser storage blocked or full. Export your backup to keep these scenarios.');return false;}}
+ function stats(){const z=window.currentSummary;if(!z)return null;const {x,e,sim,c,rent}=z;const rentalCash=Number(rent?.first?.cash||0)/12;
+  return {net:Number(c.net),free:Number(c.free),rentalCash,etf:Number(x.start),rentals:Number(rent?.perProperty?.length||0),loan:Number(x.loan),homeValue:Number(x.price),upfront:Number(x.homeAcquisitionCash||0)+Number(x.start||0)+Number(rent?.initialCash||0),endEtf:Number(sim.last?.portfolio||0),endHomeEquity:Number(sim.last?.homeEquity||0),annualGain:Number(e.net),years:Number(x.years),mode:x.profileMode,housing:x.homeMode};}
+ function capture(){const current=localStorage.getItem(LIVE_KEY);if(!current)throw new Error('Enter or change a calculator input first.');const state=JSON.parse(current);if(!state.fields)throw new Error('Calculator state unavailable.');return {snapshot:JSON.parse(JSON.stringify(state)),stats:stats()};}
+ function save(){const name=$('scenarioName').value.trim()||`Plan ${records.length+1}`;try{const values=capture();if(!values.stats)throw new Error('Financial figures not ready.');if(records.length>=30){note('Maximum 30 plans. Remove a plan before saving another.');return;}const id=makeId();records.push({id,name,created:new Date().toISOString(),...values});selected=[...selected,id].slice(-3);persist();draw();$('scenarioName').value='';note(`Saved “${name}”. Choose it to restore all input values.`);}catch(e){note(e.message);}}
+ function restore(rec){if(!confirm(`Load “${rec.name}”? This replaces the currently displayed unsaved input values.`))return;try{localStorage.setItem(LIVE_KEY,JSON.stringify(rec.snapshot));location.reload();}catch(_){note('Cannot restore: browser storage disabled.');}}
+ function changeName(rec){const next=prompt('Rename scenario',rec.name);if(next===null)return;const value=next.trim().slice(0,70);if(!value)return;rec.name=value;persist();draw();note('Renamed.');}
+ function remove(rec){if(!confirm(`Delete “${rec.name}”?`))return;records=records.filter(r=>r.id!==rec.id);selected=selected.filter(id=>id!==rec.id);persist();draw();note('Scenario deleted.');}
+ function duplicate(rec){if(records.length>=30){note('Maximum 30 plans.');return;}const copy={...rec,id:makeId(),name:`${rec.name} (copy)`.slice(0,70),created:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(rec.snapshot)),stats:{...rec.stats}};records.push(copy);persist();draw();note('Duplicated. Restore the copy to edit it independently.');}
+ function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(Boolean);if(list.length<2)return '<h3>Compare saved scenarios</h3><div class="scenario-empty">Select at least two saved plans using Compare.</div>';
+ const data=[['Household net income / month','net','€',false],['Disposable cash / month','free','€',true],['Rental cash flow / month','rentalCash','€',true],['Upfront capital modeled','upfront','€',false],['Initial ETF balance','etf','€',false],['Own-home mortgage debt','loan','€',false],['Illustrative ETF gain / year','annualGain','€',true],['ETF value at projection end','endEtf','€',true],['Home equity at projection end','endHomeEquity','€',true]];
+ let html='<h3>Compare saved scenarios</h3><div class="table-scroll"><table><thead><tr><th>Financial measure</th>'+list.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
+ for(const [label,key,_,highlight] of data){const best=Math.max(...list.map(r=>Number(r.stats[key])||0));html+=`<tr><td>${label}</td>`+list.map(r=>{const value=Number(r.stats[key]);return `<td class="${highlight&&value===best?'best':''} ${value<0?'negative':''}">${euro(value)}</td>`}).join('')+'</tr>';}
+ const base=list[0];if(list.length>1){html+='</tbody></table></div><div class="delta-cards">'+list.slice(1).map(r=>{const d=(k)=>Number(r.stats[k]||0)-Number(base.stats[k]||0);return `<article class="delta-card"><strong>${esc(r.name)} vs ${esc(base.name)}</strong><p>Monthly disposable change: <b class="${d('free')>=0?'green':'red'}">${d('free')>=0?'+':''}${euro(d('free'))}</b></p><p>Upfront capital difference: <b>${d('upfront')>=0?'+':''}${euro(d('upfront'))}</b></p><p>Rental cash-flow difference: <b class="${d('rentalCash')>=0?'green':'red'}">${d('rentalCash')>=0?'+':''}${euro(d('rentalCash'))}/mo</b></p><p>End ETF difference: <b>${d('endEtf')>=0?'+':''}${euro(d('endEtf'))}</b></p></article>`}).join('')+'</div>';}else html+='</tbody></table></div>';return html+'<p class="scenario-footnote">Saved snapshots use each scenario’s projection horizon, tax assumptions and financial inputs. Compare the same horizon and starting capital for meaningful conclusions. Future ETF growth is hypothetical, not cash income. Estimated rental tax savings may not arrive monthly.</p>';
+ }
+ function draw(){selected=selected.filter(id=>records.some(r=>r.id===id)).slice(0,3);$('scenarioCards').innerHTML=records.length?records.map(r=>`<article class="scenario-tile ${selected.includes(r.id)?'active':''}"><strong>${esc(r.name)}</strong><div class="small">${r.stats.mode==='single'?'Single':'Married'} · ${r.stats.housing==='buy'?'Buying home':'Existing housing'} · ${r.stats.rentals} rental(s)</div><div class="small">Free cash <strong style="display:inline">${euro(r.stats.free)}/mo</strong><br>ETFs ${euro(r.stats.etf)} · ${r.stats.years} years</div><label class="small" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" data-compare="${esc(r.id)}" ${selected.includes(r.id)?'checked':''}> Compare</label><div class="actions"><button class="btn primary" data-action="load" data-id="${esc(r.id)}">Load</button><button class="btn" data-action="duplicate" data-id="${esc(r.id)}">Duplicate</button><button class="btn" data-action="rename" data-id="${esc(r.id)}">Rename</button><button class="btn" data-action="delete" data-id="${esc(r.id)}">Delete</button></div></article>`).join(''):'<div class="scenario-empty">No saved plans yet. Try saving “Home only”, then add a rental and save “Home + rental”.</div>';
+ $('scenarioCompare').innerHTML=table();}
+ $('saveScenario').addEventListener('click',save);$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
+ $('scenarioCards').addEventListener('change',e=>{const cb=e.target.closest('[data-compare]');if(!cb)return;const id=cb.dataset.compare;if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios at once.');return;}selected.push(id);}else selected=selected.filter(x=>x!==id);draw();});
+ $('scenarioCards').addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const r=records.find(x=>x.id===btn.dataset.id);if(!r)return;({load:restore,duplicate,rename:changeName,delete:remove})[btn.dataset.action]?.(r);});
+ $('exportScenario').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,exported:new Date().toISOString(),scenarios:records},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='wealth-planner-scenarios.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);note('Backup downloaded. Treat it as private financial information.');});
+ $('importScenario').addEventListener('click',()=>$('scenarioFile').click());$('scenarioFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>2e6)throw Error('Backup is too large.');const data=JSON.parse(await f.text());if(!Array.isArray(data.scenarios))throw Error('Invalid scenario backup.');const valid=data.scenarios.filter(r=>r&&typeof r.name==='string'&&r.snapshot?.fields&&r.stats&&typeof r.stats.free==='number').slice(0,30);if(!valid.length)throw Error('Backup has no valid scenarios.');if(!confirm(`Import ${valid.length} scenarios? Existing saved plans will be replaced.`))return;records=valid.map(r=>({...r,id:makeId(),name:r.name.slice(0,70)}));selected=[];persist();draw();note(`Imported ${records.length} scenarios.`);}catch(err){note(`Import failed: ${err.message}`);}finally{e.target.value='';}});
+ draw();
+})();
+</script>
+
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id),euro=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n)||0);
+const guide=$('guideDialog');let step=0;
+const options=[
+ {title:'Who is planning?',message:'Select a single person or married household. Tax allowances and second-person inputs respond automatically.',html:'<label class="guide-option"><input name="gProfile" type="radio" value="single"> Single person</label><label class="guide-option"><input name="gProfile" type="radio" value="married" checked> Married household</label>'},
+ {title:'What are you planning?',message:'Choose whether to buy an own-use home or use an existing home and focus on rental investments.',html:'<label class="guide-option"><input name="gHome" type="radio" value="buy" checked> Buy a home + invest</label><label class="guide-option"><input name="gHome" type="radio" value="existing"> Already housed; evaluate rental investments</label>'},
+ {title:'Enter verified household income',message:'Next, adjust gross and actual net salaries on the Household tab. Using net payslip amounts reduces budgeting errors.',html:'<p>Use payslip mode if available. Check whether private health insurance is paid separately or already included in net income.</p>'},
+ {title:'Set up assets and assumptions',message:'Edit home, rental and ETF assumptions, then save your first scenario to compare alternatives.',html:'<p>Keep an emergency reserve separate from purchase costs. Investment returns and rental tax benefits are not guaranteed spendable cash.</p>'}
+];
+function paintGuide(){const g=options[step];$('guideStepText').innerHTML=`<p class="fine">Step ${step+1} of ${options.length}</p><h3>${g.title}</h3><p>${g.message}</p>${g.html}`;$('guideBack').disabled=step===0;$('guideNext').textContent=step===options.length-1?'Finish':'Next';if(step===0) guide.querySelector(`[name=gProfile][value=${$('profileMode').value}]`)?.click();if(step===1)guide.querySelector(`[name=gHome][value=${$('homeMode').value}]`)?.click();}
+$('openGuide').onclick=()=>{step=0;paintGuide();guide.showModal()};$('closeGuide').onclick=()=>guide.close();$('guideBack').onclick=()=>{step=Math.max(0,step-1);paintGuide()};$('guideNext').onclick=()=>{if(step===0){let mode=guide.querySelector('input[name=gProfile]:checked')?.value;document.querySelector(`[data-switch-profile="${mode}"]`)?.click()}if(step===1){let mode=guide.querySelector('input[name=gHome]:checked')?.value;document.querySelector(`[data-switch-home="${mode}"]`)?.click()}if(step>=options.length-1){guide.close();document.querySelector('.app-tabs [data-view="household"]')?.click()}else{step++;paintGuide()}};
+const themeKey='wealthPlanner_theme_v10';function applyTheme(mode){document.body.dataset.theme=mode;$('themeToggle').textContent=mode==='dark'?'☀ Light mode':'◐ Dark mode';try{localStorage.setItem(themeKey,mode)}catch(_){}}applyTheme((()=>{try{return localStorage.getItem(themeKey)}catch(_){return null}})()||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light'));$('themeToggle').onclick=()=>applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
+const fmtPct=x=>Number.isFinite(x)?x.toFixed(1)+'%':'—';
+function update(){const z=window.currentSummary;if(!z)return;const {x,c,rent,e,sim}=z;let net=Number(c.net)||0,free=Number(c.free)||0,monthlyHousing=(Number(x.emi)||0)+(Number(x.owner)||0), reserve=Number(x.cashReserve)||0;let essential=Math.max(1,net-free);let months=reserve/essential;let housingRatio=net>0?monthlyHousing/net*100:0, rentalCash=(Number(rent?.first?.cash)||0)/12;let grossDebt=Number(x.loan)||0;let monthlySavings=(Number(x.monthlyH)||0)+(Number(x.monthlyW)||0);let items=[{label:'Emergency reserve coverage',v:`${months.toFixed(1)} months`,detail:'Target cash ÷ modeled monthly outflows',bad:months<3},{label:'Housing payment burden',v:fmtPct(housingRatio),detail:'Mortgage and owner costs ÷ spendable net',bad:housingRatio>35},{label:'Budget after allocations',v:euro(free)+'/month',detail:'After regular costs, investing and savings',bad:free<0},{label:'Rental cash flow (before tax timing)',v:euro(rentalCash)+'/month',detail:'May require additional salary support',bad:rentalCash<0}];$('healthIndicators').innerHTML=items.map(q=>`<div class="health-item ${q.bad?'risk':'ok'}"><small>${q.label}</small><strong>${q.v}</strong><small>${q.detail}</small></div>`).join('');
+const rows=[['Profile',x.profileMode==='single'?'Single':'Married'],['Net household income',euro(net)+'/mo'],['Disposable cash',euro(free)+'/mo'],['Annual disposable cash',euro(free*12)],['Current mortgage balance',euro(grossDebt)],['Housing payments',euro(monthlyHousing)+'/mo'],['ETF holdings',euro(x.start)],['Annualized modeled ETF gain',euro(e.net)],['Rental cash flow before estimated tax',euro(rentalCash)+'/mo'],['Projected horizon',String(x.years)+' years'],['Projected ETF balance',euro(sim.last.portfolio)],['Emergency cash target',euro(reserve)]];
+$('reportSummary').innerHTML=rows.map(q=>`<div class="report-item"><small>${q[0]}</small><strong>${q[1]}</strong></div>`).join('');
+$('horizonControls').querySelectorAll('[data-horizon]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.horizon)===Number(x.years))));
+}
+$('horizonControls').addEventListener('click',e=>{const b=e.target.closest('[data-horizon]');if(!b)return;$('years').value=b.dataset.horizon;$('years').dispatchEvent(new Event('input',{bubbles:true}));$('horizonStatus').textContent=`Projection horizon updated to ${b.dataset.horizon} years.`;});
+$('chartVisibility').addEventListener('change',e=>{const b=e.target.closest('[data-chart]');if(!b)return;const node=$(b.dataset.chart);if(node){node.hidden=!b.checked;node.closest('.chart-scroll')?.classList.toggle('chart-collapsed',!b.checked)}});
+$('printDecisionReport').onclick=()=>window.print();$('copyDecisionReport').onclick=async()=>{const values=[...$('reportSummary').querySelectorAll('.report-item')].map(n=>n.innerText.replaceAll('\n',': ')).join('\n');const txt='Household Wealth Planner — financial decision report\n'+values+'\nIllustrative assumptions. Investment returns not guaranteed. Obtain professional tax advice.';try{await navigator.clipboard.writeText(txt);$('liveStatus').textContent='Decision report copied.'}catch(_){$('liveStatus').textContent='Clipboard unavailable. Use Print / save as PDF instead.'}};
+const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});['kFree','kNet','rentalMonthlyCash'].forEach(id=>{const el=$(id);if(el)obs.observe(el,{childList:true,subtree:true,characterData:true})});document.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',()=>queueMicrotask(update)));update();
+})();
+</script>
+</body></html>
