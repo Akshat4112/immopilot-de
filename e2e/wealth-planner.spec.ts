@@ -580,18 +580,12 @@ test('UX-026 shows a complete yearly wealth projection reconciled to signed comp
   )
 
   const last = planner.locator('#wealthTimelineRows tr').last()
-  const figures = await last.evaluate((node) => {
-    const v = (key: string) => Number((node as HTMLElement).dataset[key])
-    return {
-      net: v('net'),
-      home: v('homeEquity'),
-      rental: v('rentalEquity'),
-      etf: v('etf'),
-      cash: v('cash'),
-      homeLoan: v('homeLoan'),
-      rentalLoan: v('rentalLoan'),
-    }
-  })
+  const attrs = await Promise.all(
+    ['data-net', 'data-home-equity', 'data-rental-equity', 'data-etf',
+      'data-cash', 'data-home-loan', 'data-rental-loan'].map((name) => last.getAttribute(name)),
+  )
+  const [net, home, rental, etf, cash, homeLoan, rentalLoan] = attrs.map(Number)
+  const figures = { net, home, rental, etf, cash, homeLoan, rentalLoan }
   expect(figures.net).toBeCloseTo(
     figures.home + figures.rental + figures.etf + figures.cash,
     1,
@@ -657,10 +651,10 @@ test('UX-026 negative modeled cash lowers net worth and shows a visible warning'
   await expect(planner.locator('#wealthTimelineWarning')).toBeVisible()
   const yearOne = planner.locator('#wealthTimelineRows tr[data-wealth-row="1"]')
   expect(Number(await yearOne.getAttribute('data-cash'))).toBeLessThan(0)
-  const values = await yearOne.evaluate((node) => {
-    const d = (node as HTMLElement).dataset
-    return [d.homeEquity, d.rentalEquity, d.etf, d.cash, d.net].map(Number)
-  })
+  const values = (await Promise.all(
+    ['data-home-equity', 'data-rental-equity', 'data-etf', 'data-cash', 'data-net']
+      .map((name) => yearOne.getAttribute(name)),
+  )).map(Number)
   expect(values[4]).toBeCloseTo(values[0] + values[1] + values[2] + values[3], 1)
 })
 
