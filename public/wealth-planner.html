@@ -1407,7 +1407,7 @@ function renderOverviewDashboard(x,sim,rent,c,projectedCash){
  label('overviewEtfValue',money(x.start));
  label('overviewOpeningEquity',money(equityInitial));
  $('overviewOpeningEquity').classList.toggle('red',equityInitial<0);
- label('overviewEquityNote',x.homeNewPurchase||rent.properties.length?'Includes modeled equity in purchases, not yet owned':'Existing home equity; no new purchase modeled');
+ label('overviewEquityNote',x.homeNewPurchase||rent.properties.length?'Includes modeled purchases, not yet owned':x.housingType==='tenant'?'No property owned or purchased in this scenario':'Existing home equity; no new purchase modeled');
  label('overviewFutureLabel','Projected position · year '+x.years);
  label('overviewFutureWealth',money(wealthFuture));
  $('overviewFutureWealth').classList.toggle('red',wealthFuture<0);
@@ -1418,7 +1418,7 @@ function renderOverviewDashboard(x,sim,rent,c,projectedCash){
   ['overviewLivingAmt','overviewLivingBar',c.living+c.otherDebt],
   ['overviewInvestAmt','overviewInvestBar',c.invested],
   ['overviewSavingAmt','overviewSavingBar',c.monthlySaving],
-  ['overviewFreeAmt','overviewFreeBar',Math.max(0,c.free)]
+  ['overviewFreeAmt','overviewFreeBar',c.free]
  ];
  const denominator=Math.max(1,...uses.map(([, ,value])=>Math.max(0,value)));
  for(const [amountId,barId,value] of uses){
