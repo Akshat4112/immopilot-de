@@ -932,3 +932,156 @@ test('UX-028 mobile uses semantic table first and supports comparison interactio
   await expect(planner.locator('#rbChartPane')).toBeVisible()
   await page.screenshot({ path: test.info().outputPath('explorer-ux028-mobile.png') })
 })
+
+test('UX-029 mortgage opening debt and yearly balances reconcile to the household engine', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  const panel = planner.locator('#amortPanel')
+  await expect(panel).toBeVisible()
+  await expect(panel).toHaveAttribute('data-mortgage-reconciled', 'true')
+  await expect(planner.locator('#amortRows tr')).toHaveCount(26)
+  expect(Number(await panel.getAttribute('data-mortgage-opening'))).toBeCloseTo(200000, 1)
+  const original = planner.locator('#amortRows [data-amort-row="10"]')
+  const household = planner.locator('#wealthTimelineRows [data-wealth-row="10"]')
+  expect(Number(await original.getAttribute('data-amort-debt'))).toBeCloseTo(
+    Number(await household.getAttribute('data-home-loan')),
+    1,
+  )
+})
+
+test('UX-029 every annual debt balance obeys opening plus interest minus payments', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  for (const year of [1, 2, 5, 10, 20, 25]) {
+    const row = planner.locator('#amortRows [data-amort-row="' + year + '"]')
+    const attributes = await Promise.all(
+      ['data-amort-open', 'data-amort-interest', 'data-amort-paid',
+        'data-amort-extra', 'data-amort-debt'].map((name) => row.getAttribute(name)),
+    )
+    const [opening, interest, scheduled, extra, closing] = attributes.map(Number)
+    expect(opening + interest - scheduled - extra).toBeCloseTo(closing, 1)
+    expect(interest).toBeGreaterThanOrEqual(0)
+    expect(scheduled).toBeGreaterThanOrEqual(0)
+    expect(extra).toBeGreaterThanOrEqual(0)
+  }
+})
+
+test('UX-029 additional payments decrease loan balance and accrued interest but never change the main mortgage', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const originalEmi = await planner.locator('#emi').inputValue()
+  const originalExtra = await planner.locator('#extra').inputValue()
+  const originalHomeDebt = await planner.locator('#wealthTimelineRows [data-wealth-row="10"]').getAttribute('data-home-loan')
+  const tenth = planner.locator('#amortRows [data-amort-row="10"]')
+  const base = Number(await tenth.getAttribute('data-amort-debt'))
+  const alt = Number(await tenth.getAttribute('data-amort-alt-debt'))
+  expect(alt).toBeLessThan(base)
+  expect(Number(await tenth.getAttribute('data-amort-interest-saved'))).toBeGreaterThan(0)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await planner.locator('#mortgageExtraWhatIf').fill('0')
+  expect(Number(await tenth.getAttribute('data-amort-alt-debt'))).toBeCloseTo(base, 1)
+  expect(Number(await tenth.getAttribute('data-amort-interest-saved'))).toBeCloseTo(0, 1)
+  await expect(planner.locator('#emi')).toHaveValue(originalEmi)
+  await expect(planner.locator('#extra')).toHaveValue(originalExtra)
+  await expect(planner.locator('#wealthTimelineRows [data-wealth-row="10"]')).toHaveAttribute(
+    'data-home-loan',
+    originalHomeDebt ?? '',
+  )
+  await planner.locator('#mortgageExtraWhatIf').fill('3000')
+  await page.reload()
+  await expect(planner.locator('#mortgageExtraWhatIf')).toHaveValue('3000')
+})
+
+test('UX-029 makes negative amortization and negative property equity explicit', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  await planner.locator('#emi').fill('100')
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await expect(planner.locator('#amortWarning')).toContainText('Unpaid interest increases debt')
+  const first = planner.locator('#amortRows [data-amort-row="1"]')
+  expect(Number(await first.getAttribute('data-amort-unpaid'))).toBeGreaterThan(0)
+  expect(Number(await first.getAttribute('data-amort-debt'))).toBeGreaterThan(
+    Number(await first.getAttribute('data-amort-open')),
+  )
+  expect(Number(await first.getAttribute('data-amort-equity'))).toBeLessThan(0)
+  await expect(planner.locator('#amortPanel')).toHaveAttribute('data-mortgage-reconciled', 'true')
+})
+
+test('UX-029 rental selection reconciles to rental property engine and warns about tax effects', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await planner.locator('#amortTarget').selectOption({ index: 1 })
+  await expect(planner.locator('#amortPanel')).toHaveAttribute('data-mortgage-reconciled', 'true')
+  await expect(planner.locator('#amortWarning')).toContainText('Rental interest deductions')
+  expect(Number(await planner.locator('#amortRows [data-amort-row="0"]').getAttribute('data-amort-debt'))).toBeGreaterThan(0)
+  await planner.locator('#mortgageExtraWhatIf').fill('0')
+  const row = planner.locator('#amortRows [data-amort-row="10"]')
+  expect(Number(await row.getAttribute('data-amort-alt-debt'))).toBeCloseTo(
+    Number(await row.getAttribute('data-amort-debt')),
+    1,
+  )
+})
+
+test('UX-029 respects loan-free strategy without fabricating interest savings', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await expect(planner.locator('#amortWarning')).toContainText('No outstanding mortgage')
+  await expect(planner.locator('#amortBaseDebt')).toContainText('0')
+  expect(Number(await planner.locator('#amortRows [data-amort-row="5"]').getAttribute('data-amort-interest-saved'))).toBe(0)
+  await expect(planner.locator('#amortPanel')).toHaveAttribute('data-mortgage-reconciled', 'true')
+})
+
+test('UX-029 mortgage metric, year range and accessible table do not change the plan', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  const originalHorizon = await planner.locator('#years').inputValue()
+  await planner.locator('#mortgageYears').selectOption('5')
+  await expect(planner.locator('#amortRows tr')).toHaveCount(6)
+  await expect(planner.locator('#amortPanel')).toHaveAttribute('data-mortgage-horizon', '5')
+  await planner.locator('[data-mortgage-mode="payments"]').click()
+  await expect(planner.locator('#amortLegend')).toContainText('Accrued interest')
+  await planner.locator('[data-mortgage-mode="savings"]').click()
+  await expect(planner.locator('#amortLegend')).toContainText('Cumulative interest avoided')
+  await planner.locator('[data-mortgage-view="table"]').click()
+  await expect(planner.locator('#amortTablePane')).toBeVisible()
+  await expect(planner.locator('#amortChartPane')).toBeHidden()
+  await planner.locator('#amortRows [data-amort-row="3"]').focus()
+  await expect(planner.locator('#amortDetail')).toContainText('Year 3:')
+  await planner.locator('[data-mortgage-view="chart"]').click()
+  await planner.locator('#amortChart [data-amort-year="2"]').focus()
+  await expect(planner.locator('#amortDetail')).toContainText('Year 2:')
+  await expect(planner.locator('#years')).toHaveValue(originalHorizon)
+})
+
+test('UX-029 mobile defaults to a semantic annual mortgage table', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await expect(planner.locator('#amortTablePane')).toBeVisible()
+  await expect(planner.locator('#amortRows tr')).toHaveCount(26)
+  await planner.locator('[data-mortgage-view="chart"]').click()
+  await expect(planner.locator('#amortChartPane')).toBeVisible()
+  await expect(planner.locator('#amortChart [data-amort-year="10"]')).toHaveCount(1)
+  await page.screenshot({ path: test.info().outputPath('explorer-ux029-mobile.png') })
+})
