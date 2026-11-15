@@ -15,3 +15,6 @@ schemas/
 
 # npm owns the generated lockfile formatting.
 package-lock.json
+
+# Standalone wealth planner is maintained as an independent generated artifact.
+public/wealth-planner.html
