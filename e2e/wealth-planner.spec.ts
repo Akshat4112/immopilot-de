@@ -69,3 +69,39 @@ test('reconciles property AfA with 2026 rental tax and cash assumptions', async 
   await planner.locator('#r1_renoType').selectOption('capital')
   await expect(planner.locator('#rentalAfaAudit')).toContainText('Building basis')
 })
+
+test('ETF-only strategy excludes home purchase and rental properties without losing values', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only' }).click()
+  await expect(planner.locator('#strategyEtf')).toHaveValue('on')
+  await expect(planner.locator('#strategyRental')).toHaveValue('off')
+  await expect(planner.locator('#homeMode')).toHaveValue('existing')
+  await expect(planner.locator('#existingType')).toHaveValue('rent')
+  await expect(planner.locator('#rentalInputsSection')).toBeHidden()
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  await expect(planner.locator('#husband')).toHaveValue('75000')
+  await planner.getByRole('button', { name: 'All three' }).click()
+  await expect(planner.locator('#strategyRental')).toHaveValue('on')
+  await expect(planner.locator('#homeMode')).toHaveValue('buy')
+})
+
+test('all seven combinations can be selected independently', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const cases = [
+    ['ETF only', 'on', 'off', 'existing'],
+    ['Own home only', 'off', 'off', 'buy'],
+    ['Rental only', 'off', 'on', 'existing'],
+    ['ETF + home', 'on', 'off', 'buy'],
+    ['ETF + rental', 'on', 'on', 'existing'],
+    ['Home + rental', 'off', 'on', 'buy'],
+    ['All three', 'on', 'on', 'buy'],
+  ]
+  for (const [label, etf, rental, home] of cases) {
+    await planner.getByRole('button', { name: label, exact: true }).click()
+    await expect(planner.locator('#strategyEtf')).toHaveValue(etf)
+    await expect(planner.locator('#strategyRental')).toHaveValue(rental)
+    await expect(planner.locator('#homeMode')).toHaveValue(home)
+  }
+})
