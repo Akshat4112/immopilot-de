@@ -2062,16 +2062,274 @@ function drawChart(rows,years){const svg=$('chart'),W=760,H=320,l=75,r=19,t=18,b
  for(const [name,color,dash] of [['mortgage','#3779a4',''],['noSales','#8a73b7','6,5'],['portfolio','#15846e','']]){const points=rows.map(p=>X(p.year).toFixed(1)+','+Y(p[name]).toFixed(1)).join(' ');out+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round" ${dash?'stroke-dasharray="'+dash+'"':''}/>`;}svg.innerHTML=out;}
 function set(id,s){$(id).textContent=s;}
 
-function renderRentalBridge(rent){
- const el=$('rentalBridgeChart'),stats=$('rentalBridgeStats');
- if(!rent.properties.length){el.innerHTML='<text x="410" y="130" text-anchor="middle" font-size="18" fill="#748393">Add a rental apartment to see its cash-flow bridge</text>';stats.innerHTML='';return;}
- const p=rent.first,items=[['Rent + recoveries',p.collected/12,'#159076'],['Operating expenses',-p.operating/12,'#ca9262'],['Mortgage interest',-p.interest/12,'#8a73b7'],['Mortgage principal',-p.principal/12,'#4378a9'],['Income tax effect',-p.deltaTax/12,p.deltaTax>0?'#bb5760':'#2a9d88'],['Net after tax',p.afterTax/12,p.afterTax>=0?'#117e6c':'#bf5160']];
- const m=Math.max(1,...items.map(z=>Math.abs(z[1]))),axis=507,half=255,row=43;
- let svg='<line x1="507" x2="507" y1="23" y2="277" stroke="#bbcbd1" stroke-width="1.3" stroke-dasharray="3,5"/>';
- items.forEach(([label,v,color],i)=>{const y=26+i*43,w=Math.min(255,Math.abs(v)/m*245),start=v>=0?axis:axis-w;
- svg+=`<text x="18" y="${y+15}" fill="#344f60" font-size="14">${safeText(label)}</text><rect x="${start}" y="${y}" width="${Math.max(w,1)}" height="21" fill="${color}" rx="4"/><text x="${v>=0?Math.min(809,axis+w+8):start-8}" y="${y+15.5}" text-anchor="${v>=0?'start':'end'}" fill="#334a5a" font-size="12" font-weight="600">${v>=0?'+':'−'}${money(Math.abs(v))}</text>`;
- });el.innerHTML=svg;
- stats.innerHTML=`<span>Collected: ${money(p.collected/12)}/mo.</span><span>Before tax: ${money(p.cash/12)}/mo.</span><span>After estimated tax: ${money(p.afterTax/12)}/mo.</span>`;
+/* UX-030: visualize, do not re-model, canonical rental cash flow. Selected property
+   tax is explicitly a standalone household-tax illustration, not a portfolio allocation. */
+function rentalWaterfallLedger(rent,x,tax,scope,year){
+ const entries=scope==='all'?rent.perProperty:rent.perProperty.filter(v=>String(v.info._id)===scope);
+ if(!entries.length)return null;
+ const total=key=>entries.reduce((sum,z)=>sum+z.years[year-1][key],0);
+ const annual=entries.reduce((a,{info:p,years})=>{
+  const z=years[year-1];
+  const rentGrowth=Math.pow(1+p.rentGrowth/100,year-1);
+  const costGrowth=Math.pow(1+p.costGrowth/100,year-1);
+  const cold=p.kalt*rentGrowth*12,advances=p.tenantNk*rentGrowth*12;
+  a.cold+=cold;a.advances+=advances;a.vacancy-=(cold+advances)*p.vacancy/100;
+  a.recoverable-=p.recoverCost*costGrowth*12;
+  a.nonrecoverable-=p.nonrecover*costGrowth*12;
+  a.reserve-=p.reserve*costGrowth*12;
+  a.repairs-=p.repairs*costGrowth*12;
+  // The rental engine may accrue more interest than scheduled cash payments.
+  // Split actual cash only; the unfunded interest is a tax-model caveat, NOT cash paid.
+  const paidInterest=Math.min(z.interest,z.payment);
+  a.interest-=paidInterest;a.principal-=Math.max(0,z.payment-paidInterest);
+  a.unfundedInterest+=Math.max(0,z.interest-z.payment);
+  a.collected+=z.collected;a.pretax+=z.cash;a.payment+=z.payment;
+  return a;
+ },{cold:0,advances:0,vacancy:0,recoverable:0,nonrecoverable:0,
+  reserve:0,repairs:0,interest:0,principal:0,unfundedInterest:0,
+  collected:0,pretax:0,payment:0});
+ let deltaTax,after,source;
+ if(scope==='all'){
+  const ledger=rent.rows[year-1];
+  deltaTax=ledger.deltaTax;
+  after=ledger.afterTax;
+  source='portfolio';
+ }else{
+  const item=entries[0],p=item.info,z=item.years[year-1];
+  const maintenanceYear=Number((p.workPerformedDate||'').slice(0,4));
+  const oneTime=maintenanceYear===2025+year?(p.immediateMaintenance||0):0;
+  const alloc={h:0,w:0};addToAlloc(alloc,z.taxable-oneTime,p.owner);
+  deltaTax=annualRentalTaxDelta(x,tax,alloc);
+  after=z.cash-deltaTax;
+  source='standalone';
+ }
+ const fromRent=annual.cold+annual.advances+annual.vacancy;
+ const collectedResidual=annual.collected-fromRent;
+ const cashExpected=annual.collected+annual.recoverable+annual.nonrecoverable+
+  annual.reserve+annual.repairs+annual.interest+annual.principal;
+ const cashResidual=annual.pretax-cashExpected;
+ const entriesForChart=[
+  {key:'cold',name:'Scheduled cold rent',short:'Cold rent',value:annual.cold,
+   detail:'Contractual cold rent at the selected year’s growth rate, before vacancy allowance.'},
+  {key:'advances',name:'Tenant Nebenkosten advances',short:'NK advances',value:annual.advances,
+   detail:'Tenant recoverable-cost advances are receipts; recoverable operating costs are separately paid.'},
+  {key:'vacancy',name:'Vacancy / noncollection',short:'Vacancy',value:annual.vacancy,
+   detail:'Modeled loss of cold rent and tenant advances from the entered vacancy percentage.'}
+ ];
+ if(Math.abs(collectedResidual)>.00001)entriesForChart.push({
+  key:'collectionAdj',name:'Collection ledger reconciliation',short:'Rent adj.',value:collectedResidual,
+  detail:'Mismatch between selected assumptions and rental collection ledger; verify source calculations.'
+ });
+ entriesForChart.push(
+  {key:'recoverable',name:'Recoverable operating costs',short:'Recoverable',value:annual.recoverable,
+   detail:'Hausgeld or utilities eligible for tenant recovery; deducted even though tenant advances are collected.'},
+  {key:'nonrecoverable',name:'Nonrecoverable owner costs',short:'Owner costs',value:annual.nonrecoverable,
+   detail:'Landlord-borne nonrecoverable property expenses; recurring cash outflows.'},
+  {key:'reserve',name:'WEG reserve contributions',short:'WEG reserve',value:annual.reserve,
+   detail:'Payments to the reserve are cash outflows. Tax deduction generally arises only with eligible spending.'},
+  {key:'repairs',name:'Recurring repairs and maintenance',short:'Repairs',value:annual.repairs,
+   detail:'Recurring maintenance budget included as rental operating cash expenditure.'},
+  {key:'interest',name:'Interest covered by mortgage payments',short:'Interest',value:annual.interest,
+   detail:'Only mortgage interest paid in cash. The rental tax model may accrue more interest than cash covers.'},
+  {key:'principal',name:'Mortgage principal paid',short:'Principal',value:annual.principal,
+   detail:'Cash used to reduce rental mortgage debt; it builds property equity and is not a tax deduction.'}
+ );
+ if(Math.abs(cashResidual)>.00001)entriesForChart.push({
+  key:'adjustment',name:'Unreconciled rental cash ledger adjustment',short:'Cash adj.',value:cashResidual,
+  detail:'Difference between underlying rental pre-tax cash and income/expense rows; not assumed to be an ordinary expense.'
+ });
+ entriesForChart.push({
+  key:'tax',name:'Estimated household income-tax effect',short:'Tax effect',value:-deltaTax,
+  detail:scope==='all'?
+   'Change in estimated household income tax attributable to all selected rental properties, under assumed 2026 tax rules. Cash settlement may occur later.':
+   'Standalone tax effect if only this apartment were rented. This is not its additive share of portfolio tax and may include modeled renovation maintenance deductions.'
+ });
+ const before=annual.pretax;
+ const diff=entriesForChart.reduce((a,z)=>a+z.value,0)-after;
+ return {steps:entriesForChart,after,before,deltaTax,collected:annual.collected,
+  collectionResidual:collectedResidual,cashResidual,unfundedInterest:annual.unfundedInterest,
+  balanced:Math.abs(diff)<=.05&&Math.abs(collectedResidual)<=.05&&Math.abs(cashResidual)<=.05,
+  checkDifference:diff,source,year,scope,payment:annual.payment};
+}
+function renderRentalBridge(rent,x,tax){
+ const panel=$('rentalWaterfallPanel');
+ if(!panel)return;
+ const state=window._rentalWaterfall||(window._rentalWaterfall={
+  scope:'all',year:1,period:'month',
+  view:window.matchMedia&&window.matchMedia('(max-width: 600px)').matches?'table':'chart',
+  chosen:'tax',bound:false});
+ state.refs={rent,x,tax};
+ const scopePicker=$('rentalWaterfallScope'),yearPicker=$('rentalWaterfallYear');
+ const scopeValues=['all',...rent.properties.map(p=>String(p._id))];
+ if(!scopeValues.includes(state.scope))state.scope='all';
+ const scopeValue=state.scope;
+ scopePicker.innerHTML='<option value="all">All rental apartments</option>'+rent.properties.map(p=>
+  '<option value="'+p._id+'">'+safeText(p.name)+'</option>').join('');
+ scopePicker.value=scopeValue;
+ state.year=Math.min(x.years,Math.max(1,state.year));
+ yearPicker.innerHTML=Array.from({length:x.years},(_,i)=>
+  '<option value="'+(i+1)+'">Year '+(i+1)+' · '+(2026+i)+'</option>').join('');
+ yearPicker.value=String(state.year);
+ const data=rentalWaterfallLedger(rent,x,tax,state.scope,state.year);
+ state.data=data;
+ const chart=$('rentalBridgeChart'),table=$('rentalWaterfallRows'),warn=$('rentalWaterfallWarning');
+ if(!data){
+  panel.dataset.waterfallBalanced='true';
+  panel.dataset.waterfallStatus='empty';
+  chart.innerHTML='<text x="550" y="196" text-anchor="middle" fill="#758983" font-size="19">Add a rental apartment to see cash flowing through the investment</text>';
+  table.innerHTML='<tr><td colspan="4">No rental apartment is modeled. Add one in Properties to see its cash flow.</td></tr>';
+  warn.textContent='';
+  for(const id of ['rentalWaterfallCollected','rentalWaterfallBefore','rentalWaterfallTax','rentalWaterfallAfter'])set(id,'—');
+  $('rentalWaterfallLegend').innerHTML='';
+  $('rentalBridgeStats').innerHTML='';
+  $('rentalWaterfallDetail').textContent='Add a rental property to see the cash-flow breakdown.';
+ }else{
+  const factor=state.period==='month'?1/12:1,fmt=n=>Number(n).toFixed(2);
+  const amt=n=>money(n*factor);
+  const signed=n=>(n>=0?'+':'−')+amt(Math.abs(n));
+  panel.dataset.waterfallBalanced=String(data.balanced);
+  panel.dataset.waterfallStatus='available';
+  panel.dataset.waterfallCollected=fmt(data.collected);
+  panel.dataset.waterfallBefore=fmt(data.before);
+  panel.dataset.waterfallTax=fmt(data.deltaTax);
+  panel.dataset.waterfallAfter=fmt(data.after);
+  panel.dataset.waterfallSource=data.source;
+  set('rentalWaterfallCollected',amt(data.collected));
+  set('rentalWaterfallBefore',signed(data.before));
+  set('rentalWaterfallTax',signed(-data.deltaTax));
+  set('rentalWaterfallAfter',signed(data.after));
+  for(const id of ['rentalWaterfallBefore','rentalWaterfallAfter']){
+   $(id).classList.toggle('negative',(id==='rentalWaterfallBefore'?data.before:data.after)<0);
+  }
+  const warnings=[];
+  if(data.source==='standalone')warnings.push('Selected apartment: tax effect is a standalone household illustration, NOT an additive portion of whole-portfolio income tax.');
+  if(data.unfundedInterest>.05)warnings.push('Mortgage interest accrued exceeds scheduled cash paid by '+money(data.unfundedInterest)+
+   ' in this year. The legacy rental loan model does not capitalize unpaid interest; tax/financing results need review.');
+  if(!data.balanced)warnings.push('Rental ledger has a nonzero reconciliation adjustment. Income/cost steps differ from the original calculation by up to '+
+   money(Math.max(Math.abs(data.collectionResidual),Math.abs(data.cashResidual),Math.abs(data.checkDifference)))+'. Review source assumptions.');
+  if(data.after<0)warnings.push('Negative after-tax rental cash requires funding from other household cash or reserves.');
+  warn.textContent=warnings.join(' ');
+  let running=0;
+  const flow=data.steps.map(z=>{
+   const from=running;running+=z.value;
+   return {...z,from,to:running,amount:z.value*factor,opening:from*factor,closing:running*factor};
+  });
+  const totals=[0,...flow.flatMap(z=>[z.opening,z.closing]),data.after*factor];
+  const min=Math.min(...totals),max=Math.max(...totals);
+  const low=min<0?min-Math.max(50,(max-min)*.1):0;
+  const high=max+Math.max(50,(max-min)*.1);
+  const W=1100,H=420,L=85,R=26,T=34,B=85,w=W-L-R,h=H-T-B;
+  const Y=v=>T+h*(high-v)/Math.max(1,high-low);
+  const tick=n=>Math.abs(n)>=1e6?(n/1e6).toFixed(1)+'m':Math.abs(n)>=1000?Math.round(n/1000)+'k':Math.round(n).toString();
+  const X=i=>L+(i+.5)*w/(flow.length+1),bw=Math.min(54,w/(flow.length+1)*.58);
+  let svg='';
+  for(let k=0;k<=4;k++){
+   const val=low+(high-low)*k/4,cy=Y(val);
+   svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+fmt(cy)+'" y2="'+fmt(cy)+
+    '" stroke="#d6e4df" stroke-width="1"/><text x="'+(L-12)+'" y="'+fmt(cy+4)+
+    '" text-anchor="end" fill="#668079" font-size="12">'+tick(val)+'</text>';
+  }
+  const colors={income:'#178f72',cost:'#c68856',finance:'#8870b9',tax:'#528ba9',final:'#187c68'};
+  const category=z=>['cold','advances'].includes(z.key)?'income':
+   ['interest','principal'].includes(z.key)?'finance':z.key==='tax'?'tax':'cost';
+  flow.forEach((z,i)=>{
+   const xx=X(i),y1=Y(z.opening),y2=Y(z.closing);
+   const y=Math.min(y1,y2),height=Math.max(1,Math.abs(y1-y2));
+   const categoryColor=z.key==='tax'&&z.value>0?'#179b7a':colors[category(z)];
+   if(i>0){
+    const prev=X(i-1)+bw/2;
+    svg+='<line x1="'+fmt(prev)+'" y1="'+fmt(y1)+'" x2="'+fmt(xx-bw/2)+
+     '" y2="'+fmt(y1)+'" stroke="#819991" stroke-dasharray="3,3"/>';
+   }
+   svg+='<g data-waterfall-step="'+z.key+'" tabindex="0" role="button" aria-label="'+
+    safeText(z.name+': '+signed(z.value))+'"><rect x="'+fmt(xx-bw/2)+'" y="'+fmt(y)+
+    '" width="'+fmt(bw)+'" height="'+fmt(height)+'" rx="3" fill="'+categoryColor+
+    '"><title>'+safeText(z.name+': '+signed(z.value))+'</title></rect>'+
+    '<text x="'+fmt(xx)+'" y="'+(H-57)+'" text-anchor="middle" font-size="11" fill="#58716a">'+
+    safeText(z.short)+'</text><text x="'+fmt(xx)+'" y="'+(H-40)+'" text-anchor="middle" font-size="10" fill="#58716a">'+
+    (z.value>=0?'+':'−')+tick(Math.abs(z.amount))+'</text></g>';
+  });
+  const finalX=X(flow.length),finalY=Y(data.after*factor),zeroY=Y(0);
+  const finalColor=data.after>=0?colors.final:'#c45767';
+  svg+='<line x1="'+fmt(X(flow.length-1)+bw/2)+'" x2="'+fmt(finalX-bw/2)+
+   '" y1="'+fmt(finalY)+'" y2="'+fmt(finalY)+'" stroke="#819991" stroke-dasharray="3,3"/>';
+  svg+='<g data-waterfall-step="result" role="button" tabindex="0" aria-label="After-tax cash '+signed(data.after)+
+   '"><rect x="'+fmt(finalX-bw/2)+'" y="'+fmt(Math.min(finalY,zeroY))+'" width="'+fmt(bw)+
+   '" height="'+fmt(Math.max(1,Math.abs(finalY-zeroY)))+'" rx="3" fill="'+finalColor+
+   '"/><text x="'+fmt(finalX)+'" y="'+(H-57)+'" text-anchor="middle" font-size="11" fill="#58716a">Net cash</text>'+
+   '<text x="'+fmt(finalX)+'" y="'+(H-40)+'" text-anchor="middle" font-size="10" fill="#58716a">'+
+   (data.after>=0?'+':'−')+tick(Math.abs(data.after*factor))+'</text></g>';
+  chart.innerHTML=svg;
+  chart.setAttribute('aria-label','Cash-flow waterfall for '+(state.scope==='all'?'all rental apartments':'selected apartment')+
+   ', year '+state.year+', '+(state.period==='month'?'monthly':'annual')+' run-rate');
+  $('rentalWaterfallLegend').innerHTML=[
+   ['Rent inflows',colors.income],['Operating expenses',colors.cost],
+   ['Mortgage cash paid',colors.finance],['Income-tax effect',colors.tax],
+   ['Net after tax',colors.final]
+  ].map(([label,color])=>'<span><i style="background:'+color+'"></i>'+label+'</span>').join('');
+  table.innerHTML=flow.map(z=>'<tr tabindex="0" data-waterfall-row="'+z.key+
+   '" data-waterfall-value="'+fmt(z.value)+'" data-waterfall-running="'+fmt(z.to)+
+   '" aria-selected="'+(state.chosen===z.key)+'"><th scope="row">'+safeText(z.name)+
+   '</th><td>'+signed(z.value)+'</td><td>'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
+   '<tr tabindex="0" data-waterfall-row="result" data-waterfall-value="'+fmt(data.after)+
+   '" data-waterfall-running="'+fmt(data.after)+'" aria-selected="'+(state.chosen==='result')+
+   '"><th scope="row">After-tax recurring cash</th><td>'+signed(data.after)+'</td>'+
+   '<td>'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
+  $('rentalBridgeStats').innerHTML='<span>Collected '+amt(data.collected)+
+   '</span><span>Pre-tax '+signed(data.before)+'</span><span>Tax effect '+signed(-data.deltaTax)+
+   '</span><span>After estimated tax '+signed(data.after)+'</span>';
+  const choose=key=>{
+   const item=flow.find(q=>q.key===key);
+   const detail=item?item.name+': '+signed(item.value)+'; balance '+signed(item.to)+'. '+item.detail:
+    key==='result'?'Net after estimated tax: '+signed(data.after)+
+     '. Equals the canonical rental ledger before taxes, minus its estimated household income-tax change.':'';
+   if(!detail)return;
+   state.chosen=key;
+   $('rentalWaterfallDetail').textContent=detail;
+   for(const bar of chart.querySelectorAll('[data-waterfall-step]'))
+    bar.classList.toggle('selected',bar.dataset.waterfallStep===key);
+   for(const tr of table.querySelectorAll('[data-waterfall-row]'))
+    tr.setAttribute('aria-selected',String(tr.dataset.waterfallRow===key));
+  };
+  state.choose=choose;
+  choose(flow.some(z=>z.key===state.chosen)?state.chosen:'result');
+ }
+ for(const b of panel.querySelectorAll('[data-waterfall-period]'))
+  b.setAttribute('aria-pressed',String(b.dataset.waterfallPeriod===state.period));
+ for(const b of panel.querySelectorAll('[data-waterfall-view]'))
+  b.setAttribute('aria-pressed',String(b.dataset.waterfallView===state.view));
+ $('rentalWaterfallChartPane').hidden=state.view!=='chart';
+ $('rentalWaterfallTablePane').hidden=state.view!=='table';
+ if(!state.bound){
+  state.bound=true;
+  panel.addEventListener('click',e=>{
+   const unit=e.target.closest('[data-waterfall-period]'),view=e.target.closest('[data-waterfall-view]');
+   const selected=e.target.closest('[data-waterfall-step],[data-waterfall-row]');
+   if(unit||view){
+    if(unit)state.period=unit.dataset.waterfallPeriod;
+    if(view)state.view=view.dataset.waterfallView;
+    const refs=state.refs;renderRentalBridge(refs.rent,refs.x,refs.tax);
+   }else if(selected&&state.choose)state.choose(selected.dataset.waterfallStep??selected.dataset.waterfallRow);
+  });
+  panel.addEventListener('change',e=>{
+   if(e.target.id==='rentalWaterfallScope'||e.target.id==='rentalWaterfallYear'){
+    if(e.target.id==='rentalWaterfallScope')state.scope=e.target.value;
+    else state.year=Number(e.target.value);
+    const refs=state.refs;renderRentalBridge(refs.rent,refs.x,refs.tax);
+   }
+  });
+  panel.addEventListener('focusin',e=>{
+   const elem=e.target.closest('[data-waterfall-step],[data-waterfall-row]');
+   if(elem&&state.choose)state.choose(elem.dataset.waterfallStep??elem.dataset.waterfallRow);
+  });
+  panel.addEventListener('keydown',e=>{
+   const elem=e.target.closest('[data-waterfall-step],[data-waterfall-row]');
+   if(elem&&(e.key==='Enter'||e.key===' ')){
+    e.preventDefault();
+    state.choose?.(elem.dataset.waterfallStep??elem.dataset.waterfallRow);
+   }
+  });
+ }
 }
 function renderWealthComposition(x,sim,rent,houseCash){
  const root=$('wealthTimeline'),chart=$('wealthCompositionChart');
@@ -2896,7 +3154,7 @@ function render(){
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent,x,tax);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
