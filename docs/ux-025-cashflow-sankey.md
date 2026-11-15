@@ -22,7 +22,7 @@ Net household cash + ETF share-sales proceeds + net rental receipts - optional r
 - The central node pools household cash. Ribbons **do not claim** that a particular euro of salary funds a specific expense.
 
 ## Accessibility and interaction
-- The Sankey uses the standalone client-side `public/wealth-sankey.js` file, loaded without additional libraries, network calls or analytics.
+- The Sankey runs as an isolated inline JavaScript module inside the existing generated standalone `public/wealth-planner.html` artifact. It does not fetch additional scripts, libraries, account data or analytics.
 - Sources and allocations form two banks, joined through pooled cash. Ribbons are proportional to **positive** flow values, contain text labels/amounts and SVG titles, and respond to pointer, click, keyboard focus, Enter and Space. The detail description below the chart gives a full explanation.
 - Diagram/Table switch; the semantic HTML detail table is the default at viewport widths 600px or below. The desktop chart can be scrolled horizontally and is keyboard focusable.
 - Monthly vs Annual run-rate multiplies current monthly values by twelve; it is **not** the year-by-year projection and does not infer future income growth or rental tax settlement dates.
