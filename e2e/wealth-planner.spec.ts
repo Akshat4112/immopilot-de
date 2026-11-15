@@ -199,3 +199,83 @@ test('the guided setup offers all seven combinations on mobile', async ({ page }
   await expect(guide.getByRole('radio')).toHaveCount(7)
   await expect(guide.getByRole('radio', { name: /All three/ })).toBeChecked()
 })
+
+test('UX-022 dashboard reflects existing household and ETF calculations', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const dashboard = planner.locator('#overviewDashboard')
+  await expect(dashboard).toBeVisible()
+  await expect(planner.locator('#overviewFreeCash')).toHaveText(
+    (await planner.locator('#kFree').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewEtfValue')).toHaveText(
+    (await planner.locator('#mPortfolio').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewFutureLabel')).toContainText('year 25')
+  await page.screenshot({ path: test.info().outputPath('explorer-ux022-desktop.png') })
+
+  await planner.locator('[data-overview-jump="household"]').click()
+  await expect(planner.getByRole('tab', { name: /Household/ })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
+  await expect(dashboard).toBeHidden()
+})
+
+test('UX-022 dashboard zeroes inactive investment categories and retains inputs', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await expect(planner.locator('#overviewOpeningEquity')).toHaveText(
+    (await planner.locator('#overviewAssetHomeAmt').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewAssetRentalAmt')).toHaveText(
+    (await planner.locator('#overviewAssetHomeAmt').textContent()) ?? '',
+  )
+  await planner.getByRole('button', { name: 'Own home only', exact: true }).click()
+  await expect(planner.locator('#overviewEtfValue')).toHaveText(
+    (await planner.locator('#mPortfolio').textContent()) ?? '',
+  )
+})
+
+test('UX-022 shows a funding gap and adjusts projection horizon', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+
+  // Exercise the visible form, not a script-based mutation of a hidden input.
+  await planner.getByRole('tab', { name: /Household/i }).click()
+  const expenses = planner.locator('#utilities').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  const expenseToggle = expenses.locator('.section-toggle')
+  if ((await expenseToggle.getAttribute('aria-expanded')) === 'false') {
+    await expenseToggle.click()
+  }
+  await planner.locator('#utilities').fill('50000')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
+  await expect(planner.locator('#overviewCashStatus')).toContainText('funding gap')
+  await expect(planner.locator('#overviewFreeCash')).toHaveClass(/red/)
+
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  const outlook = planner.locator('#years').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  const outlookToggle = outlook.locator('.section-toggle')
+  if ((await outlookToggle.getAttribute('aria-expanded')) === 'false') {
+    await outlookToggle.click()
+  }
+  await planner.locator('#years').fill('5')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
+  await expect(planner.locator('#overviewFutureLabel')).toContainText('year 5')
+})
+
+test('UX-022 KPI grid remains readable on mobile without hiding the goal launcher', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#overviewDashboard')).toBeVisible()
+  await expect(planner.locator('.overview-kpi')).toHaveCount(4)
+  await expect(planner.locator('#goalLauncher')).toBeVisible()
+  const dashboardBox = await planner.locator('#overviewDashboard').boundingBox()
+  expect(dashboardBox).not.toBeNull()
+  expect(dashboardBox?.width).toBeLessThanOrEqual(376)
+  await page.screenshot({ path: test.info().outputPath('explorer-ux022-mobile.png') })
+})
