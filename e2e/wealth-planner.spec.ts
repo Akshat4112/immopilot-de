@@ -7,6 +7,7 @@ test('loads Household Wealth Planner as the public homepage', async ({ page }) =
   await expect(
     planner.getByRole('heading', { name: /Household · Housing · ETFs · Rentals/i }),
   ).toBeVisible()
+  await planner.getByRole('tab', { name: /Properties/i }).click()
   await expect(planner.locator('#price')).toHaveValue('200000')
   await planner.locator('#price').fill('250000')
   await expect(planner.locator('#price')).toHaveValue('250000')
