@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Payroll2026Panel } from './components/Payroll2026Panel'
 import { calculateRentalBuildingAfa } from './domain/rentalAfa'
 import { calculateRentalExpenseBreakdown } from './domain/rentalExpenses'
+import { evaluateRenovation15Percent } from './domain/renovation15'
 import './styles/tokens.css'
 import './styles/global.css'
 import './styles/shell.css'
@@ -22,6 +23,7 @@ Object.assign(window, {
   __immopilotRentalV2: {
     calculateAfa: calculateRentalBuildingAfa,
     calculateExpenses: calculateRentalExpenseBreakdown,
+    classifyRenovation: evaluateRenovation15Percent,
   },
 })
 
