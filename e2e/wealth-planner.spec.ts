@@ -478,3 +478,92 @@ test('UX-024 comparison warns when projection horizons differ', async ({ page })
   await planner.locator('#saveScenario').click()
   await expect(planner.locator('#scenarioCompare')).toContainText('different projection horizons')
 })
+
+test('UX-025 reconciles source and allocation values from the live cash ledger', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const source = Number(await planner.locator('#sankeyAccounting').getAttribute('data-in'))
+  const spent = Number(await planner.locator('#sankeyAccounting').getAttribute('data-out'))
+  expect(source).toBeGreaterThan(0)
+  expect(Math.abs(source - spent)).toBeLessThanOrEqual(0.02)
+  await expect(planner.locator('#sankeyAccounting')).toHaveAttribute('data-balanced', 'true')
+  await expect(planner.locator('#sankeyChart .sankey-link')).not.toHaveCount(0)
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="principal"]')).toHaveCount(1)
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="interest"]')).toHaveCount(1)
+  // Zero monthly contributions do not create a fabricated ETF purchase ribbon.
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="etfbuy"]')).toHaveCount(0)
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  const etfSection = planner.locator('#etfInputsSection')
+  if ((await etfSection.locator('.section-toggle').getAttribute('aria-expanded')) === 'false') {
+    await etfSection.locator('.section-toggle').click()
+  }
+  await planner.locator('#monthlyH').fill('500')
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="etfbuy"]')).toHaveCount(1)
+})
+
+test('UX-025 annual run rate is 12 times monthly and view can toggle without changing inputs', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const monthly = Number(await planner.locator('#sankeyAccounting').getAttribute('data-in'))
+  const price = await planner.locator('#price').inputValue()
+  await planner.locator('[data-sankey-period="year"]').click()
+  const annual = Number(await planner.locator('#sankeyAccounting').getAttribute('data-in'))
+  expect(annual).toBeCloseTo(monthly * 12, 1)
+  await expect(planner.locator('#sankeyPeriodName')).toContainText('annualized')
+  await planner.locator('[data-sankey-view="table"]').click()
+  await expect(planner.locator('#sankeyTableWrap')).toBeVisible()
+  await expect(planner.locator('#sankeyChartScroll')).toBeHidden()
+  await planner.locator('[data-sankey-view="diagram"]').click()
+  await expect(planner.locator('#sankeyChartScroll')).toBeVisible()
+  await expect(planner.locator('#price')).toHaveValue(price)
+})
+
+test('UX-025 displays a funding-gap source when cash use exceeds inflows', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Household/i }).click()
+  const expenses = planner.locator('#utilities').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  if ((await expenses.locator('.section-toggle').getAttribute('aria-expanded')) === 'false') {
+    await expenses.locator('.section-toggle').click()
+  }
+  await planner.locator('#utilities').fill('50000')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
+  await expect(planner.locator('#sankeyFundingWarning')).toBeVisible()
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="gap"]')).toHaveCount(1)
+  await expect(planner.locator('#sankeyAccounting')).toHaveAttribute('data-balanced', 'true')
+})
+
+test('UX-025 ETF-only removes mortgage flows and preserves existing rental accounting', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="principal"]')).toHaveCount(0)
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="interest"]')).toHaveCount(0)
+  await expect(planner.locator('#sankeyAccounting')).toHaveAttribute('data-balanced', 'true')
+  await planner.getByRole('button', { name: 'All three', exact: true }).click()
+  await expect(planner.locator('#sankeyTableRows [data-sankey-row="principal"]')).toHaveCount(1)
+  await expect(planner.locator('#sankeyAccounting')).toHaveAttribute('data-balanced', 'true')
+})
+
+test('UX-025 mobile defaults to an accessible table and supports keyboard flow selection', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#sankeyTableWrap')).toBeVisible()
+  await planner.locator('[data-sankey-view="diagram"]').click()
+  await expect(planner.locator('#sankeyChartScroll')).toBeVisible()
+  const firstFlow = planner.locator('#sankeyChart [data-sankey-id]').first()
+  await firstFlow.focus()
+  await expect(planner.locator('#sankeyDetail')).toContainText('per month')
+  await firstFlow.press('Enter')
+  await expect(firstFlow).toHaveClass(/selected/)
+  await page.screenshot({ path: test.info().outputPath('explorer-ux025-mobile.png') })
+})
