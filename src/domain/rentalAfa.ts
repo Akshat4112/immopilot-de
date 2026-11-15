@@ -92,7 +92,9 @@ export function calculateRentalBuildingAfa(input: RentalBuildingAfaInput): Renta
   const buildingRatio = input.buildingSharePercent / 100
   const rentalRatio = input.rentalUsePercent / 100
   const originalBuildingBasis = roundCents(totalAcquisitionCostEuro * buildingRatio)
-  const depreciableBuildingBasisEuro = roundCents(originalBuildingBasis + (input.capitalisedImprovementEuro ?? 0))
+  const depreciableBuildingBasisEuro = roundCents(
+    originalBuildingBasis + (input.capitalisedImprovementEuro ?? 0),
+  )
   const landAndOtherBasisEuro = roundCents(totalAcquisitionCostEuro - originalBuildingBasis)
   const annualRatePercent = linearResidentialAfaRate(input.completionYear)
   const rentalBuildingBasisEuro = roundCents(depreciableBuildingBasisEuro * rentalRatio)
