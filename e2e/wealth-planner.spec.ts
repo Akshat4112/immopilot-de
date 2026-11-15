@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
 
 const frameSelector = 'iframe[title="ImmoPilot Household Wealth Planner"]'
 
@@ -437,4 +438,43 @@ test('UX-024 scenario switcher is usable on mobile', async ({ page }) => {
   await expect(planner.locator('#activeScenario')).toBeVisible()
   await expect(planner.locator('#undoScenarioLoad')).toBeDisabled()
   await page.screenshot({ path: test.info().outputPath('explorer-ux024-mobile.png') })
+})
+
+test('UX-024 can migrate a previously exported v1 scenario backup', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  page.on('dialog', (dialog) => dialog.accept())
+  await planner.locator('#scenarioName').fill('Legacy plan')
+  await planner.locator('#saveScenario').click()
+  const downloadPromise = page.waitForEvent('download')
+  await planner.locator('#exportScenario').click()
+  const download = await downloadPromise
+  const payload = (await readFile(await download.path())).toString('utf8')
+  expect(payload).toContain('"version": 2')
+  const previousSchema = payload.replace('"version": 2', '"version": 1')
+
+  await planner.locator('#scenarioFile').setInputFiles({
+    name: 'old-scenarios.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(previousSchema),
+  })
+  await expect(planner.locator('#scenarioNotice')).toContainText('Backup upgraded to version 2')
+  await expect(planner.locator('#scenarioCards .scenario-tile')).toHaveCount(1)
+  await expect(planner.locator('#scenarioCards')).toContainText('Legacy plan')
+})
+
+test('UX-024 comparison warns when projection horizons differ', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#scenarioName').fill('Long horizon')
+  await planner.locator('#saveScenario').click()
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  const outlook = planner.locator('#years').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  if ((await outlook.locator('.section-toggle').getAttribute('aria-expanded')) === 'false') {
+    await outlook.locator('.section-toggle').click()
+  }
+  await planner.locator('#years').fill('5')
+  await planner.locator('#scenarioName').fill('Short horizon')
+  await planner.locator('#saveScenario').click()
+  await expect(planner.locator('#scenarioCompare')).toContainText('different projection horizons')
 })
