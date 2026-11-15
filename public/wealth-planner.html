@@ -121,6 +121,12 @@ body[data-existing-type="rent"] .existing-paid-note{display:none!important}
 .view-intro strong{font-size:1.02rem}.view-intro p{font-size:.78rem;color:#54736e;margin:4px 0 0}
 .sticky-kpis{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#193f42;color:#e5f6f1;padding:11px 16px;border-radius:12px;margin:0 0 14px;box-shadow:0 6px 20px #19473d20}
 .sticky-kpis span{font-size:.77rem;display:flex;gap:9px;align-items:center}.sticky-kpis strong{font-size:1.05rem;color:#fff;font-variant-numeric:tabular-nums}
+.strategy-presets{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0}
+.strategy-presets button{cursor:pointer;border:1px solid #b7d0cb;border-radius:9px;padding:8px 11px;background:#fff;color:#17463e;font-weight:650;font-size:.82rem}
+.strategy-presets button[aria-pressed="true"]{background:#175c53;color:#fff;border-color:#175c53}
+.strategy-controls{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0}
+.strategy-controls label{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.85rem}
+body[data-etf-enabled="false"] #etfInputsSection,body[data-rental-enabled="false"] #rentalInputsSection{display:none}
 body[data-view="overview"] .sidebar{display:none}
 body[data-view="overview"] .layout{display:block}
 body[data-view="overview"] .maincol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -193,8 +199,25 @@ body[data-view="reports"] .maincol > #printableReport{display:block!important}
   <div class="profile-note" id="profileDescription">Married household: two incomes, two ETFs, and a joint tax estimate. Separate assessment is also available below.</div>
   <input type="hidden" id="profileMode" value="married">
 </div>
-<div class="card strategy-card" aria-label="Property planning strategy">
- <strong>What are you planning?</strong>
+<div class="card strategy-card" aria-label="Investment strategy">
+ <strong>Choose what you want to calculate</strong>
+ <p class="muted">Use one investment type or combine ETFs, a home to live in and rental properties. Your existing rent or mortgage costs remain in your household budget.</p>
+ <div class="strategy-presets" role="group" aria-label="Investment strategy presets">
+  <button type="button" data-strategy="etf">ETF only</button>
+  <button type="button" data-strategy="home">Own home only</button>
+  <button type="button" data-strategy="rental">Rental only</button>
+  <button type="button" data-strategy="etf-home">ETF + home</button>
+  <button type="button" data-strategy="etf-rental">ETF + rental</button>
+  <button type="button" data-strategy="home-rental">Home + rental</button>
+  <button type="button" data-strategy="all">All three</button>
+ </div>
+ <div class="strategy-controls">
+  <label><input type="checkbox" id="strategyEtfToggle" checked> Include ETFs</label>
+  <label><input type="checkbox" id="strategyRentalToggle" checked> Include rental properties</label>
+ </div>
+ <div id="activeStrategySummary" class="strategy-note" aria-live="polite">ETFs + home purchase + rentals.</div>
+ <input type="hidden" id="strategyEtf" value="on">
+ <input type="hidden" id="strategyRental" value="on">
  <div class="profile-picker" role="group" aria-label="Housing strategy">
   <button type="button" data-switch-home="buy" aria-pressed="true">Buy a home + invest</button>
   <button type="button" data-switch-home="existing" aria-pressed="false">Invest in rentals only</button>
@@ -287,7 +310,7 @@ body[data-view="reports"] .maincol > #printableReport{display:block!important}
 <div class="row-field"><label for="expenseGrowth">Future living cost growth (% / yr)</label><input id="expenseGrowth" type="number" value="2" min="0" max="20" step="0.5"></div>
 <div class="info-panel">Default salaries and spending are illustrative, <strong>not your verified payslip figures</strong>. Replace them with your household numbers.</div>
 </div>
-<div class="section"><h2><span class="num">4</span> <span id="etfSectionTitle">Two ETF accounts (no loan)</span></h2>
+<div class="section" id="etfInputsSection"><h2><span class="num">4</span> <span id="etfSectionTitle">Two ETF accounts (no loan)</span></h2>
 <div class="row-field"><label for="husband" id="firstEtfLabel">Husband initial ETF (€)</label><input id="husband" type="number" value="75000" min="0" step="5000"></div>
 <div class="row-field second-person"><label for="wife">Wife initial ETF (€)</label><input id="wife" type="number" value="75000" min="0" step="5000"></div>
 <div class="presets"><button data-half="50000" type="button">€50k each</button><button data-half="75000" type="button">€75k each</button><button data-half="100000" type="button">€100k each</button></div>
@@ -536,11 +559,11 @@ body[data-view="reports"] .maincol > #printableReport{display:block!important}
 <script>
 (()=>{
 'use strict';
-const defaults={homeMode:'buy',existingType:'mortgage',existingValue:250000,existingOwner:300,existingLoan:110000,existingRate:3.5,existingEmi:700,existingFix:8,existingRefi:4.5,existingExtra:0,existingRent:1500,profileMode:'married',price:200000,down:0,purchase:10,rate:4.5,emi:1100,fixYears:10,refiRate:4.5,extra:0,owner:250,husband:75000,wife:75000,monthlyH:0,monthlyW:0,ret:7,ter:.14,allow:2000,drawMode:'none',custom:500,years:25,houseGrowth:2,inflation:2,crash:'0',incomeMode:'estimate',grossH:100000,grossW:70000,healthH:'pkv',healthW:'pkv',pkvH:450,pkvW:450,actualH:4500,actualW:3200,jointTax:'joint',childless:'yes',childlessW:'yes',careRegion:'other',eligibleChildren:0,eligibleChildrenW:0,gkvExtra:2.9,pkvDeductible:85,churchTax:'no',otherNet:0,utilities:250,groceries:650,transport:250,otherInsurance:100,lifestyle:400,misc:300,otherDebt:0,cashSaving:0,cashReserve:10000,availableCapital:180000,netGrowth:2,expenseGrowth:2,heatRentStep:100,heatRateStep:0.5,saleCosts:3,mcVol:18,mcTrials:500,rankingMetric:"cash",taxClassH:'IV',taxClassW:'IV',withholdingH:0,withholdingW:0,soliH:0,soliW:0,churchH:0,churchW:0,withholdingMonths:12};
+const defaults={strategyEtf:'on',strategyRental:'on',homeMode:'buy',existingType:'mortgage',existingValue:250000,existingOwner:300,existingLoan:110000,existingRate:3.5,existingEmi:700,existingFix:8,existingRefi:4.5,existingExtra:0,existingRent:1500,profileMode:'married',price:200000,down:0,purchase:10,rate:4.5,emi:1100,fixYears:10,refiRate:4.5,extra:0,owner:250,husband:75000,wife:75000,monthlyH:0,monthlyW:0,ret:7,ter:.14,allow:2000,drawMode:'none',custom:500,years:25,houseGrowth:2,inflation:2,crash:'0',incomeMode:'estimate',grossH:100000,grossW:70000,healthH:'pkv',healthW:'pkv',pkvH:450,pkvW:450,actualH:4500,actualW:3200,jointTax:'joint',childless:'yes',childlessW:'yes',careRegion:'other',eligibleChildren:0,eligibleChildrenW:0,gkvExtra:2.9,pkvDeductible:85,churchTax:'no',otherNet:0,utilities:250,groceries:650,transport:250,otherInsurance:100,lifestyle:400,misc:300,otherDebt:0,cashSaving:0,cashReserve:10000,availableCapital:180000,netGrowth:2,expenseGrowth:2,heatRentStep:100,heatRateStep:0.5,saleCosts:3,mcVol:18,mcTrials:500,rankingMetric:"cash",taxClassH:'IV',taxClassW:'IV',withholdingH:0,withholdingW:0,soliH:0,soliW:0,churchH:0,churchW:0,withholdingMonths:12};
 const $=id=>document.getElementById(id);const ids=Object.keys(defaults);
 const n=id=>Number($(id).value)||0;const money=x=>Number.isFinite(x)?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(x):'—';
 const pct=x=>Number.isFinite(x)?(100*x).toFixed(1)+'%':'—';const taxRate=.26375, taxableShare=.70;
-function inputs(){const x={};for(const id of ids){x[id]=(['homeMode','existingType','profileMode','drawMode','crash','incomeMode','healthH','healthW','jointTax','childless','childlessW','careRegion','churchTax','rankingMetric','taxClassH','taxClassW'].includes(id))?$(id).value:n(id);}for(const id of ['existingValue','existingOwner','existingLoan','existingRate','existingEmi','existingFix','existingRefi','existingExtra','existingRent','price','down','purchase','rate','emi','fixYears','refiRate','extra','owner','husband','wife','monthlyH','monthlyW','ter','allow','custom','years','inflation','grossH','grossW','pkvH','pkvW','actualH','actualW','gkvExtra','pkvDeductible','eligibleChildren','eligibleChildrenW','otherNet','utilities','groceries','transport','otherInsurance','lifestyle','misc','otherDebt','cashSaving','cashReserve','availableCapital','heatRentStep','heatRateStep','saleCosts','mcVol','mcTrials','withholdingH','withholdingW','soliH','soliW','churchH','churchW','withholdingMonths'])x[id]=Math.max(0,x[id]);x.withholdingMonths=Math.min(12,Math.max(1,Math.round(x.withholdingMonths)));x.heatRentStep=Math.max(25,Math.min(2000,x.heatRentStep));x.heatRateStep=Math.max(.25,Math.min(2,x.heatRateStep));x.mcVol=Math.min(60,x.mcVol);x.mcTrials=Math.min(1000,Math.max(250,Math.floor(x.mcTrials)));x.saleCosts=Math.min(15,x.saleCosts);x.down=Math.min(x.price,x.down);x.purchase=Math.min(30,x.purchase);x.allow=Math.min(x.profileMode==='single'?1000:2000,x.allow);x.fixYears=Math.max(1,Math.floor(x.fixYears));x.years=Math.max(1,Math.min(40,Math.floor(x.years)));x.ret=Math.max(-90,Math.min(40,x.ret));x.ter=Math.min(5,x.ter);x.houseGrowth=Math.max(-10,Math.min(15,x.houseGrowth));x.netGrowth=Math.min(20,Math.max(-10,x.netGrowth));x.expenseGrowth=Math.min(20,Math.max(0,x.expenseGrowth));x.gkvExtra=Math.min(10,x.gkvExtra);x.pkvDeductible=Math.min(100,x.pkvDeductible);x.husband=Math.min(x.husband,1e8);x.wife=x.profileMode==='single'?0:Math.min(x.wife,1e8);if(x.profileMode==='single'){x.grossW=0;x.pkvW=0;x.actualW=0;x.monthlyW=0;x.jointTax='separate';}x.start=x.husband+x.wife;x.loan=x.price-x.down;
+function inputs(){const x={};for(const id of ids){x[id]=(['strategyEtf','strategyRental','homeMode','existingType','profileMode','drawMode','crash','incomeMode','healthH','healthW','jointTax','childless','childlessW','careRegion','churchTax','rankingMetric','taxClassH','taxClassW'].includes(id))?$(id).value:n(id);}for(const id of ['existingValue','existingOwner','existingLoan','existingRate','existingEmi','existingFix','existingRefi','existingExtra','existingRent','price','down','purchase','rate','emi','fixYears','refiRate','extra','owner','husband','wife','monthlyH','monthlyW','ter','allow','custom','years','inflation','grossH','grossW','pkvH','pkvW','actualH','actualW','gkvExtra','pkvDeductible','eligibleChildren','eligibleChildrenW','otherNet','utilities','groceries','transport','otherInsurance','lifestyle','misc','otherDebt','cashSaving','cashReserve','availableCapital','heatRentStep','heatRateStep','saleCosts','mcVol','mcTrials','withholdingH','withholdingW','soliH','soliW','churchH','churchW','withholdingMonths'])x[id]=Math.max(0,x[id]);x.withholdingMonths=Math.min(12,Math.max(1,Math.round(x.withholdingMonths)));x.heatRentStep=Math.max(25,Math.min(2000,x.heatRentStep));x.heatRateStep=Math.max(.25,Math.min(2,x.heatRateStep));x.mcVol=Math.min(60,x.mcVol);x.mcTrials=Math.min(1000,Math.max(250,Math.floor(x.mcTrials)));x.saleCosts=Math.min(15,x.saleCosts);x.down=Math.min(x.price,x.down);x.purchase=Math.min(30,x.purchase);x.allow=Math.min(x.profileMode==='single'?1000:2000,x.allow);x.fixYears=Math.max(1,Math.floor(x.fixYears));x.years=Math.max(1,Math.min(40,Math.floor(x.years)));x.ret=Math.max(-90,Math.min(40,x.ret));x.ter=Math.min(5,x.ter);x.houseGrowth=Math.max(-10,Math.min(15,x.houseGrowth));x.netGrowth=Math.min(20,Math.max(-10,x.netGrowth));x.expenseGrowth=Math.min(20,Math.max(0,x.expenseGrowth));x.gkvExtra=Math.min(10,x.gkvExtra);x.pkvDeductible=Math.min(100,x.pkvDeductible);x.husband=Math.min(x.husband,1e8);x.wife=x.profileMode==='single'?0:Math.min(x.wife,1e8);if(x.profileMode==='single'){x.grossW=0;x.pkvW=0;x.actualW=0;x.monthlyW=0;x.jointTax='separate';}if(x.strategyEtf==='off'){x.husband=0;x.wife=0;x.monthlyH=0;x.monthlyW=0;x.drawMode='none';}x.start=x.husband+x.wife;x.loan=x.price-x.down;
  if(x.homeMode==='existing'){
   x.homeNewPurchase=false;
   if(x.existingType==='rent'){
@@ -675,6 +698,31 @@ function switchHome(next){if(!['buy','existing'].includes(next)||$('homeMode').v
  $('homeMode').value=next;updateHomeUI();render();
  set('liveStatus',next==='buy'?'Home-purchase strategy loaded; existing-housing inputs retained.':'Investment-only strategy loaded; new-home purchase inputs retained.');
 }
+const strategies={
+ etf:{etf:true,home:false,rental:false},home:{etf:false,home:true,rental:false},rental:{etf:false,home:false,rental:true},
+ 'etf-home':{etf:true,home:true,rental:false},'etf-rental':{etf:true,home:false,rental:true},
+ 'home-rental':{etf:false,home:true,rental:true},all:{etf:true,home:true,rental:true}
+};
+function applyStrategy(key){
+ const preset=strategies[key];if(!preset)return;
+ $('strategyEtf').value=preset.etf?'on':'off';$('strategyRental').value=preset.rental?'on':'off';
+ $('homeMode').value=preset.home?'buy':'existing';
+ if(!preset.home)$('existingType').value='rent';
+ syncStrategyUI();updateHomeUI();render();
+ set('liveStatus',key.toUpperCase().replaceAll('-',' + ')+' strategy enabled. Previously entered amounts are preserved.');
+}
+function syncStrategyUI(){
+ const hasEtf=$('strategyEtf').value==='on',hasRental=$('strategyRental').value==='on',hasHome=$('homeMode').value==='buy';
+ $('strategyEtfToggle').checked=hasEtf;$('strategyRentalToggle').checked=hasRental;
+ document.body.dataset.etfEnabled=String(hasEtf);document.body.dataset.rentalEnabled=String(hasRental);
+ for(const b of document.querySelectorAll('[data-strategy]'))b.setAttribute('aria-pressed',String(strategies[b.dataset.strategy].etf===hasEtf&&strategies[b.dataset.strategy].home===hasHome&&strategies[b.dataset.strategy].rental===hasRental));
+ const items=[hasEtf?'ETF investments':null,hasHome?'New own-home purchase':'Current housing',hasRental?'Rental investments':null].filter(Boolean);
+ set('activeStrategySummary','Calculating '+items.join(' + ')+'. Inactive investments are excluded without clearing their saved values.');
+}
+document.querySelectorAll('[data-strategy]').forEach(b=>b.addEventListener('click',()=>applyStrategy(b.dataset.strategy)));
+for(const [toggle,field] of [['strategyEtfToggle','strategyEtf'],['strategyRentalToggle','strategyRental']]){
+ $(toggle).addEventListener('change',()=>{$(field).value=$(toggle).checked?'on':'off';syncStrategyUI();render();});
+}
 function updateProfileUI(){
  const single=$('profileMode').value==='single';document.body.dataset.profile=single?'single':'married';
  for(const btn of document.querySelectorAll('[data-switch-profile]'))btn.setAttribute('aria-pressed',String(btn.dataset.switchProfile===(single?'single':'married')));
@@ -698,7 +746,7 @@ function switchProfile(next){if(!['single','married'].includes(next)||$('profile
 function renderRentalInputs(){ $('rentalInputs').innerHTML=rentalItems.length?rentalItems.map((r,i)=>`<div class="rental-property" data-key="${r._id}"><div class="rental-head"><b>Apartment ${i+1}</b><button type="button" class="btn" data-remove="${r._id}">Remove</button></div><div class="rental-grid">${rentalCore.map(k=>rentalFieldHtml(r,k)).join('')}</div><details><summary>Depreciation, renovation & growth assumptions</summary><div class="rental-grid">${rentalAdvanced.map(k=>rentalFieldHtml(r,k)).join('')}</div></details></div>`).join(''):'<div class="info-panel">No rental property added. The household results show only your home and ETFs.</div>';
  $('addRental').disabled=rentalItems.length>=4;
 }
-function rentalsFromForm(){return rentalItems.map(p=>{
+function rentalsFromForm(){if($('strategyRental').value==='off')return [];return rentalItems.map(p=>{
   const r={...p};for(const k of Object.keys(rentalFields)){const el=$('r'+p._id+'_'+k);if(el)r[k]=['name','owner','renoType','withinThreeYears','eligibleFromDate'].includes(k)?el.value:(Number(el.value)||0);}
   if($('profileMode').value==='single')r.owner='h';
   for(const k of ['price','down','buyCosts','interest','repay','kalt','tenantNk','recoverCost','nonrecover','reserve','repairs','vacancy','buildingShare','rentalUsePercent','renovation'])r[k]=Math.max(0,r[k]);
@@ -825,7 +873,7 @@ $('rentalInputs').addEventListener('change',e=>{if(e.target.dataset.rental)rende
 $('rentalInputs').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;rentalItems=rentalItems.filter(r=>r._id!==Number(b.dataset.remove));renderRentalInputs();render();});
 $('addRental').addEventListener('click',()=>{if(rentalItems.length>=4)return;const id=++rentalSeq;rentalItems.push({...rentSeed,_id:id,name:'Rental '+id});renderRentalInputs();render();});
 $('rentalTaxTiming').addEventListener('change',render);
-updateProfileUI();updateHomeUI();renderRentalInputs();
+updateProfileUI();updateHomeUI();syncStrategyUI();renderRentalInputs();
 
 function familyMonthly(x,sim,tax,rent){const net=tax.useH+tax.useW+x.otherNet;
  const living=x.utilities+x.groceries+x.transport+x.otherInsurance+x.lifestyle+x.misc;
@@ -1035,6 +1083,7 @@ function renderAnalytics(x,tax,rent){propertySelectorUpdate(rent);compareModel(x
 $('comparisonProperty').addEventListener('change',()=>render());$('amortTarget').addEventListener('change',()=>render());
 
 function render(){
+ syncStrategyUI();
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
