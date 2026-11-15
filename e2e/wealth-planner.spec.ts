@@ -199,3 +199,74 @@ test('the guided setup offers all seven combinations on mobile', async ({ page }
   await expect(guide.getByRole('radio')).toHaveCount(7)
   await expect(guide.getByRole('radio', { name: /All three/ })).toBeChecked()
 })
+
+test('UX-022 dashboard reflects existing household and ETF calculations', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const dashboard = planner.locator('#overviewDashboard')
+  await expect(dashboard).toBeVisible()
+  await expect(planner.locator('#overviewFreeCash')).toHaveText(
+    (await planner.locator('#kFree').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewEtfValue')).toHaveText(
+    (await planner.locator('#mPortfolio').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewFutureLabel')).toContainText('year 25')
+
+  await planner.locator('[data-overview-jump="household"]').click()
+  await expect(planner.getByRole('tab', { name: /Household/ })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
+  await expect(dashboard).toBeHidden()
+})
+
+test('UX-022 dashboard zeroes inactive investment categories and retains inputs', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  await expect(planner.locator('#overviewOpeningEquity')).toHaveText(
+    (await planner.locator('#overviewAssetHomeAmt').textContent()) ?? '',
+  )
+  await expect(planner.locator('#overviewAssetRentalAmt')).toHaveText(
+    (await planner.locator('#overviewAssetHomeAmt').textContent()) ?? '',
+  )
+  await planner.getByRole('button', { name: 'Own home only', exact: true }).click()
+  await expect(planner.locator('#overviewEtfValue')).toHaveText(
+    (await planner.locator('#mPortfolio').textContent()) ?? '',
+  )
+})
+
+test('UX-022 shows a funding gap and adjusts projection horizon', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#utilities').evaluate((node) => {
+    const input = node as HTMLInputElement
+    input.value = '50000'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+  await expect(planner.locator('#overviewCashStatus')).toContainText('funding gap')
+  await expect(planner.locator('#overviewFreeCash')).toHaveClass(/red/)
+  await planner.locator('#years').evaluate((node) => {
+    const input = node as HTMLInputElement
+    input.value = '5'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+  await expect(planner.locator('#overviewFutureLabel')).toContainText('year 5')
+})
+
+test('UX-022 KPI grid remains readable on mobile without hiding the goal launcher', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#overviewDashboard')).toBeVisible()
+  await expect(planner.locator('.overview-kpi')).toHaveCount(4)
+  await expect(planner.locator('#goalLauncher')).toBeVisible()
+  const sizes = await planner.locator('#overviewDashboard').evaluate((element) => ({
+    contentWidth: element.getBoundingClientRect().width,
+    viewportWidth: element.ownerDocument.documentElement.clientWidth,
+  }))
+  expect(sizes.contentWidth).toBeLessThanOrEqual(sizes.viewportWidth + 1)
+})
