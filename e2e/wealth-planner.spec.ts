@@ -567,3 +567,120 @@ test('UX-025 mobile defaults to an accessible table and supports keyboard flow s
   await expect(firstFlow).toHaveClass(/selected/)
   await page.screenshot({ path: test.info().outputPath('explorer-ux025-mobile.png') })
 })
+
+test('UX-026 shows a complete yearly wealth projection reconciled to signed components', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const years = Number(await planner.locator('#years').inputValue())
+  await expect(planner.locator('#wealthTimelineRows tr')).toHaveCount(years + 1)
+  await expect(planner.locator('#wealthCompositionChart [data-wealth-year]')).toHaveCount(
+    years + 1,
+  )
+
+  const last = planner.locator('#wealthTimelineRows tr').last()
+  const figures = await last.evaluate((node) => {
+    const v = (key: string) => Number((node as HTMLElement).dataset[key])
+    return {
+      net: v('net'),
+      home: v('homeEquity'),
+      rental: v('rentalEquity'),
+      etf: v('etf'),
+      cash: v('cash'),
+      homeLoan: v('homeLoan'),
+      rentalLoan: v('rentalLoan'),
+    }
+  })
+  expect(figures.net).toBeCloseTo(
+    figures.home + figures.rental + figures.etf + figures.cash,
+    1,
+  )
+  expect(figures.homeLoan).toBeGreaterThanOrEqual(0)
+  expect(figures.rentalLoan).toBeGreaterThanOrEqual(0)
+  await expect(planner.locator('#wealthChartStats')).toContainText('signed net position')
+})
+
+test('UX-026 switches equity and gross asset views without altering investment inputs', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const initial = await planner.locator('#wealthTimelineRows tr').last().getAttribute('data-net')
+  const price = await planner.locator('#price').inputValue()
+  await planner.locator('[data-wealth-mode="gross"]').click()
+  await expect(planner.locator('[data-wealth-mode="gross"]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(planner.locator('#wealthTimelineLegend')).toContainText('Home value')
+  await expect(planner.locator('#wealthTimelineLegend')).toContainText('Property debt')
+  await expect(planner.locator('#wealthTimelineRows tr').last()).toHaveAttribute(
+    'data-net',
+    initial ?? '',
+  )
+  await planner.locator('[data-wealth-mode="equity"]').click()
+  await expect(planner.locator('#wealthTimelineLegend')).toContainText('Home equity')
+  await expect(planner.locator('#price')).toHaveValue(price)
+})
+
+test('UX-026 selectable timeline range leaves the full planner horizon unchanged', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const horizon = await planner.locator('#years').inputValue()
+  await planner.locator('#wealthRange').selectOption('5')
+  await expect(planner.locator('#wealthTimelineRows tr')).toHaveCount(6)
+  await expect(planner.locator('#wealthTimelineRows tr').last()).toHaveAttribute(
+    'data-wealth-row',
+    '5',
+  )
+  await planner.locator('#wealthRange').selectOption('10')
+  await expect(planner.locator('#wealthTimelineRows tr')).toHaveCount(11)
+  await planner.locator('#wealthRange').selectOption('all')
+  await expect(planner.locator('#years')).toHaveValue(horizon)
+})
+
+test('UX-026 negative modeled cash lowers net worth and shows a visible warning', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Household/i }).click()
+  const expenses = planner.locator('#utilities').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  if ((await expenses.locator('.section-toggle').getAttribute('aria-expanded')) === 'false') {
+    await expenses.locator('.section-toggle').click()
+  }
+  await planner.locator('#utilities').fill('50000')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
+  await expect(planner.locator('#wealthTimelineWarning')).toBeVisible()
+  const yearOne = planner.locator('#wealthTimelineRows tr[data-wealth-row="1"]')
+  expect(Number(await yearOne.getAttribute('data-cash'))).toBeLessThan(0)
+  const values = await yearOne.evaluate((node) => {
+    const d = (node as HTMLElement).dataset
+    return [d.homeEquity, d.rentalEquity, d.etf, d.cash, d.net].map(Number)
+  })
+  expect(values[4]).toBeCloseTo(values[0] + values[1] + values[2] + values[3], 1)
+})
+
+test('UX-026 ETF-only removes property debt and mobile year-by-year table is accessible', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('button', { name: 'ETF only', exact: true }).click()
+  const first = planner.locator('#wealthTimelineRows tr').first()
+  expect(Number(await first.getAttribute('data-home-loan'))).toBe(0)
+  expect(Number(await first.getAttribute('data-rental-loan'))).toBe(0)
+  await planner.locator('[data-wealth-view="table"]').click()
+  await expect(planner.locator('#wealthTimelineTablePane')).toBeVisible()
+  await expect(planner.locator('#wealthTimelineChartPane')).toBeHidden()
+  const selected = planner.locator('#wealthTimelineRows tr[data-wealth-row="5"]')
+  await selected.focus()
+  await expect(planner.locator('#wealthTimelineDetail')).toContainText('Year 5:')
+  await planner.locator('[data-wealth-view="chart"]').click()
+  await expect(planner.locator('#wealthTimelineChartPane')).toBeVisible()
+  await page.screenshot({ path: test.info().outputPath('explorer-ux026-mobile.png') })
+})
