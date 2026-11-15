@@ -881,6 +881,13 @@ test('UX-028 shows negative property equity and isolates hypothetical buying in 
   await planner.getByRole('button', { name: 'All three', exact: true }).click()
   await planner.getByRole('tab', { name: /Investments/i }).click()
   await planner.getByRole('button', { name: 'All details', exact: true }).click()
+  const outlook = planner.locator('#houseGrowth').locator(
+    'xpath=ancestor::div[contains(@class,"section")][1]',
+  )
+  const toggle = outlook.locator('.section-toggle')
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+    await toggle.click()
+  }
   await expect(planner.locator('#houseGrowth')).toBeVisible()
   await planner.locator('#houseGrowth').fill('-10')
   const yearOne = planner.locator('#rbRows [data-rb-year-row="1"]')
