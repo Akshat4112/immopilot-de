@@ -146,7 +146,10 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     amount('Purchase price', lot.purchasePricePerUnitEuro)
     amount('Earlier assessed advance', lot.previousAdvancePerUnitEuro)
   }
-  if (input.soldUnits > input.lotsOldestFirst.reduce((sum, lot) => sum + lot.units, 0) + 1e-9) {
+  if (
+    input.soldUnits >
+    input.lotsOldestFirst.reduce((sum, lot) => sum + lot.units, 0) + 1e-9
+  ) {
     throw new Error('Sale exceeds available units')
   }
   const lines: SaleLine[] = []
@@ -172,12 +175,17 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     left -= taken
   }
   const totalProceedsEuro = cents(input.soldUnits * input.salePricePerUnitEuro)
-  const totalCostBasisEuro = cents(lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0))
+  const totalCostBasisEuro = cents(
+    lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0),
+  )
   const totalAdvanceOffsetEuro = cents(
     lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0),
   )
   const gain = cents(
-    totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro,
+    totalProceedsEuro -
+      totalCostBasisEuro -
+      totalAdvanceOffsetEuro -
+      input.saleCostsEuro,
   )
   return {
     lines,
