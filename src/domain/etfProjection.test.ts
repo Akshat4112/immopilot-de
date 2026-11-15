@@ -62,11 +62,17 @@ describe('ETF-002 after-tax comparison ledger', () => {
     expect(row.liquidationValueEuro).toBe(8500)
   })
 
-  it('rejects inconsistent accounting inputs', () => {
+  it('allows an initial unrealized loss but rejects negative accounting inputs', () => {
+    const [loss] = projectAfterTaxETF({
+      ...baseline,
+      initialCostBasisEuro: 12000,
+    })
+    expect(loss.investedCostEuro).toBe(12000)
+
     expect(() =>
       projectAfterTaxETF({
         ...baseline,
-        initialCostBasisEuro: 12000,
+        initialCostBasisEuro: -1,
       }),
     ).toThrow('Invalid initial')
   })
