@@ -686,10 +686,10 @@ test('UX-027 starts with an exact baseline and no invented life-event impact', a
   await expect(planner.locator('#lifeEventsRows tr')).toHaveCount(horizon + 1)
   await expect(planner.locator('#lifeEventsList')).toContainText('No life events yet')
   await expect(planner.locator('#lifeEventsChart [data-event-year]')).toHaveCount(horizon + 1)
-  const allDeltas = await planner.locator('#lifeEventsRows tr').evaluateAll(
-    "(nodes) => nodes.map(node => Number(node.getAttribute('data-life-diff')))",
-  )
-  expect(allDeltas.every((v) => Math.abs(v) < 0.01)).toBe(true)
+  for (let year = 0; year <= horizon; year++) {
+    const delta = Number(await planner.locator('#lifeEventsRows tr').nth(year).getAttribute('data-life-diff'))
+    expect(Math.abs(delta)).toBeLessThan(0.01)
+  }
 })
 
 test('UX-027 salary event changes net cash from the chosen year, not earlier', async ({ page }) => {
