@@ -2109,7 +2109,10 @@ function renderRentBuyExplorer(x){
   $('rbRows').innerHTML='';$('rbDetail').textContent='No comparable housing purchase is configured.';
   return;
  }
+ root.dataset.rbPool=model.upfront.toFixed(2);
+ root.dataset.rbFees=model.fees.toFixed(2);
  const maxYear=s.years==='all'?x.years:Math.min(x.years,Number(s.years));
+ root.dataset.rbHorizon=String(maxYear);
  const rows=model.rows.filter(p=>p.year<=maxYear);
  if(s.year===null||s.year>maxYear)s.year=maxYear;
  const last=rows.at(-1);
