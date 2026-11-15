@@ -2418,7 +2418,7 @@ render();
  function liveSnapshot(){try{const raw=localStorage.getItem(LIVE_KEY),v=raw?JSON.parse(raw):null;return object(v)&&object(v.fields)?v:null;}catch(_){return null;}}
  function snapshotSignature(v){if(!object(v))return '';return JSON.stringify({
   fields:v.fields||{},rentalItems:v.rentalItems||[],rentalTaxTiming:v.rentalTaxTiming||'cash',
-  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home'
+  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home',lifeEvents:v.lifeEvents||[]
  });}
  function writeActive(){try{if(activeId)localStorage.setItem(ACTIVE_KEY,activeId);else localStorage.removeItem(ACTIVE_KEY);}catch(_){note('Active-plan selection cannot be stored.');}}
  function readUndo(){try{const v=JSON.parse(sessionStorage.getItem(UNDO_KEY)||'null');return object(v)&&object(v.snapshot)&&object(v.snapshot.fields)?v:null;}catch(_){return null;}}
@@ -2517,6 +2517,8 @@ function validateImportedRecord(r){
   !known.has(key)||!['number','string'].includes(typeof val)||
   typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
  ))throw Error('Unsupported calculator input in backup.');
+ const events=r.snapshot.lifeEvents||[];
+ if(!Array.isArray(events)||events.length>15||events.some(e=>!window.ImmoPilotLifeEvents?.validate(e)))throw Error('Invalid life events in backup.');
  const items=r.snapshot.rentalItems||[];
  if(!Array.isArray(items)||items.length>4||items.some(item=>
   !object(item)||Object.entries(item).some(([key,val])=>
