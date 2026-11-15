@@ -688,7 +688,7 @@ test('UX-027 starts with an exact baseline and no invented life-event impact', a
   await expect(planner.locator('#lifeEventsChart [data-event-year]')).toHaveCount(horizon + 1)
   const allDeltas = await planner.locator('#lifeEventsRows tr').evaluateAll(
     "(nodes) => nodes.map(node => Number(node.getAttribute('data-life-diff')))",
-  ) as number[]
+  )
   expect(allDeltas.every((v) => Math.abs(v) < 0.01)).toBe(true)
 })
 
@@ -769,6 +769,7 @@ test('UX-027 events survive refresh, saved scenario load and one-step undo', asy
   await expect(planner.locator('#lifeEventsList')).toContainText('Job raise')
   await planner.locator('#lifeEventsList [data-remove-life]').first().click()
   await expect(planner.locator('#scenarioSaveStatus')).toContainText('Unsaved edits')
+  await planner.locator('#activeScenario').selectOption('')
   await planner.locator('#activeScenario').selectOption({ label: 'Raise plan' })
   await expect(planner.locator('#lifeEventsList')).toContainText('Job raise')
   await planner.locator('#undoScenarioLoad').click()
