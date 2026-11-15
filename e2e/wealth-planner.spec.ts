@@ -687,7 +687,9 @@ test('UX-027 starts with an exact baseline and no invented life-event impact', a
   await expect(planner.locator('#lifeEventsList')).toContainText('No life events yet')
   await expect(planner.locator('#lifeEventsChart [data-event-year]')).toHaveCount(horizon + 1)
   for (let year = 0; year <= horizon; year++) {
-    const delta = Number(await planner.locator('#lifeEventsRows tr').nth(year).getAttribute('data-life-diff'))
+    const delta = Number(
+      await planner.locator('#lifeEventsRows tr').nth(year).getAttribute('data-life-diff'),
+    )
     expect(Math.abs(delta)).toBeLessThan(0.01)
   }
 })
