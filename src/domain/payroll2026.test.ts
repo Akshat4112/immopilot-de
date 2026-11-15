@@ -58,7 +58,6 @@ describe('2026 BMF PAP wage-tax adapter', () => {
   })
 })
 
-
 describe('2026 published BMF API reference vectors across payroll classes', () => {
   // Cent values sourced from the open-source implementation's collected BMF API fixture.
   const fixtures = [
@@ -70,12 +69,15 @@ describe('2026 published BMF API reference vectors across payroll classes', () =
     { taxClass: 6, wageTaxCents: 136766 },
   ]
 
-  it.each(fixtures)('matches class $taxClass at €5,000 monthly without optional inputs', ({ taxClass, wageTaxCents }) => {
-    const pap = new Pap2026()
-    pap.setInputs({ LZZ: 2, RE4: 500000, STKL: taxClass })
-    pap.calculate()
-    expect(pap.getOutputs().LSTLZZ).toBe(wageTaxCents)
-  })
+  it.each(fixtures)(
+    'matches class $taxClass at €5,000 monthly without optional inputs',
+    ({ taxClass, wageTaxCents }) => {
+      const pap = new Pap2026()
+      pap.setInputs({ LZZ: 2, RE4: 500000, STKL: taxClass })
+      pap.calculate()
+      expect(pap.getOutputs().LSTLZZ).toBe(wageTaxCents)
+    },
+  )
 
   it('matches the documented GKV and Pflegeversicherung example', () => {
     const pap = new Pap2026()
