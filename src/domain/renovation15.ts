@@ -41,7 +41,7 @@ export interface RenovationRuleResult {
 /** Invalid dates are not silently coerced into eligible tax deductions. */
 function validatedDate(raw: string): Date | null {
   if (!raw) return null
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(raw)) throw new Error('Use YYYY-MM-DD dates')
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) throw new Error('Use YYYY-MM-DD dates')
   const date = new Date(raw + 'T00:00:00Z')
   if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== raw) {
     throw new Error('Invalid calendar date')
