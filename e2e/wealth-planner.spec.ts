@@ -686,9 +686,9 @@ test('UX-027 starts with an exact baseline and no invented life-event impact', a
   await expect(planner.locator('#lifeEventsRows tr')).toHaveCount(horizon + 1)
   await expect(planner.locator('#lifeEventsList')).toContainText('No life events yet')
   await expect(planner.locator('#lifeEventsChart [data-event-year]')).toHaveCount(horizon + 1)
-  const allDeltas = await planner.locator('#lifeEventsRows tr').evaluateAll((nodes) =>
-    nodes.map((node) => Number((node as HTMLElement).getAttribute('data-life-diff'))),
-  )
+  const allDeltas = await planner.locator('#lifeEventsRows tr').evaluateAll(
+    "(nodes) => nodes.map(node => Number(node.getAttribute('data-life-diff')))",
+  ) as number[]
   expect(allDeltas.every((v) => Math.abs(v) < 0.01)).toBe(true)
 })
 
@@ -723,14 +723,14 @@ test('UX-027 ETF contribution and refinance events affect only their respective 
   expect(Number(await planner.locator('#lifeEventsRows tr').nth(3).getAttribute('data-life-diff'))).toBeCloseTo(0, 1)
   expect(Math.abs(Number(await planner.locator('#lifeEventsRows tr').nth(5).getAttribute('data-life-diff')))).toBeGreaterThan(0.1)
 
+  const sixthBefore = Number(await planner.locator('#lifeEventsRows tr').nth(6).getAttribute('data-life-diff'))
   await planner.locator('#lifeEventType').selectOption('refinance')
   await planner.locator('#lifeEventYear').fill('6')
   await planner.locator('#lifeEventAmount').fill('6')
   await planner.locator('#lifeEventAdd').click()
   await expect(planner.locator('#lifeEventsList')).toContainText('Home refinancing rate')
   const sixth = Number(await planner.locator('#lifeEventsRows tr').nth(6).getAttribute('data-life-diff'))
-  const fifth = Number(await planner.locator('#lifeEventsRows tr').nth(5).getAttribute('data-life-diff'))
-  expect(sixth).not.toBeCloseTo(fifth, 1)
+  expect(sixth).not.toBeCloseTo(sixthBefore, 1)
 })
 
 test('UX-027 expense event reduces reserves, removal restores baseline and milestone is annotation-only', async ({
