@@ -1,26 +1,22 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { I18nextProvider } from 'react-i18next'
-import { HashRouter } from 'react-router-dom'
-import App from './app/App.tsx'
-import i18n from './i18n/config.ts'
 import './styles/tokens.css'
 import './styles/global.css'
 import './styles/shell.css'
 import './styles/app.css'
 
-const rootElement = document.getElementById('root')
+// The v14 standalone planner is the canonical public application.
+// The previous React feature modules are retained for a gradual migration.
+const root = document.getElementById('root')
+if (!root) throw new Error('Application root element was not found')
 
-if (!rootElement) {
-  throw new Error('Application root element was not found')
-}
-
-createRoot(rootElement).render(
-  <StrictMode>
-    <I18nextProvider i18n={i18n}>
-      <HashRouter>
-        <App />
-      </HashRouter>
-    </I18nextProvider>
-  </StrictMode>,
+document.title = 'ImmoPilot DE · Household Wealth Planner'
+const plannerUrl = `${import.meta.env.BASE_URL}wealth-planner.html`
+createRoot(root).render(
+  <main style={{ margin: 0, padding: 0, width: '100%', height: '100dvh' }}>
+    <iframe
+      title="ImmoPilot Household Wealth Planner"
+      src={plannerUrl}
+      style={{ display: 'block', border: 0, width: '100%', height: '100%', minHeight: '100dvh' }}
+    />
+  </main>,
 )
