@@ -385,6 +385,43 @@ body[data-theme="dark"] .overview-bar-label{color:#e5f2ef}
 }
 @media print{.overview-kpi,.overview-panel{box-shadow:none!important;background:white!important;color:#111!important}}
 
+
+/* UX-023: progressive-disclosure input controls. Existing model fields stay mounted. */
+.input-experience{position:sticky;top:71px;z-index:8;background:var(--ux-surface,#fff);border:1px solid var(--ux-line,#dae6e0);border-radius:14px;padding:12px;margin:0 0 13px;box-shadow:var(--ux-shadow)}
+.input-experience-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.input-experience-heading strong{font-size:.93rem;letter-spacing:-.01em}
+.input-experience p{font-size:.75rem;line-height:1.5;color:var(--muted);margin:5px 0}
+.input-mode-buttons{display:flex;gap:5px;background:#eaf1eb;border-radius:10px;padding:4px}
+.input-mode-buttons button{font-size:.76rem;padding:7px 10px;min-height:35px;border:1px solid transparent;border-radius:8px;background:transparent;color:#42645c;font-weight:750}
+.input-mode-buttons button[aria-pressed="true"]{background:#176b5e;color:#fff}
+.input-mode-buttons button:focus-visible{outline:3px solid var(--ux-focus);outline-offset:2px}
+#uxInputContext{font-weight:700;color:var(--ink)}
+#uxInputStatus{font-size:.73rem;line-height:1.5;margin:7px 0 0;color:var(--muted)}
+#uxInputStatus[data-customized="true"]{color:#945a18}
+body[data-input-mode="essential"] .sidebar .ux-advanced-field{display:none!important}
+.sidebar .section:not(.expanded)>.ux-term-help{display:none}
+.sidebar .ux-term-help{border:1px solid var(--ux-line,#dae6e0);border-radius:10px;background:#f2f8f4;margin:8px 0 13px;padding:9px 11px}
+.sidebar .ux-term-help summary{cursor:pointer;font-size:.77rem;font-weight:750;color:#205f52}
+.sidebar .ux-term-help dl{margin:10px 0 0}
+.sidebar .ux-term-help dt{font-size:.75rem;font-weight:800;margin-top:9px;color:var(--ink)}
+.sidebar .ux-term-help dd{font-size:.73rem;line-height:1.5;margin:2px 0 0;color:var(--muted)}
+.sidebar .section .ux-advanced-field input,.sidebar .section .ux-advanced-field select{max-width:100%}
+body[data-view="compare"] .input-experience,body[data-view="reports"] .input-experience{display:none}
+body[data-theme="dark"] .input-experience{background:#1a2836}
+body[data-theme="dark"] .input-mode-buttons{background:#273e3e}
+body[data-theme="dark"] .input-mode-buttons button{color:#cee6dd}
+body[data-theme="dark"] .input-mode-buttons button[aria-pressed="true"]{background:#176b5e;color:#fff}
+body[data-theme="dark"] .sidebar .ux-term-help{background:#203a37}
+body[data-theme="dark"] .sidebar .ux-term-help summary{color:#b9e5d7}
+body[data-theme="dark"] #uxInputStatus[data-customized="true"]{color:#f2d18c}
+@media(max-width:870px){.input-experience{position:static}}
+@media(max-width:580px){
+ .input-experience{padding:11px}
+ .input-experience-heading{align-items:flex-start}
+ .input-mode-buttons button{min-height:40px}
+}
+@media print{.input-experience,.sidebar .ux-term-help{display:none!important}body[data-input-mode="essential"] .ux-advanced-field{display:initial!important}}
+
 </style>
 </head>
 <body><main>
@@ -504,6 +541,17 @@ body[data-theme="dark"] .overview-bar-label{color:#e5f2ef}
 </div>
 <div class="layout">
 <aside class="card sidebar" aria-label="Calculator inputs">
+<div class="input-experience" id="uxInputToolbar" aria-label="Input complexity controls">
+ <div class="input-experience-heading"><strong>Your assumptions</strong>
+  <div class="input-mode-buttons" role="group" aria-label="Input detail level">
+   <button id="uxEssentialMode" type="button" aria-pressed="true" data-ux-mode="essential">Essentials</button>
+   <button id="uxAdvancedMode" type="button" aria-pressed="false" data-ux-mode="advanced">All details</button>
+  </div>
+ </div>
+ <p id="uxInputContext">Choose your financial strategy to see relevant fields.</p>
+ <p id="uxInputStatus" role="status" aria-live="polite">Core inputs shown. Advanced assumptions remain active in calculations.</p>
+</div>
+
 <div class="section"><h2><span class="num">1</span> <span id="homeInputsTitle">Home purchase & mortgage</span></h2><div id="newHomeInputs">
 <div class="row-field"><label for="price">Home price (€)</label><input id="price" type="number" value="200000" min="0" step="5000"></div>
 <div class="row-field"><label for="down">Down payment (€)<small>On top of the ETF investments</small></label><input id="down" type="number" value="0" min="0" step="5000"></div>
@@ -1747,4 +1795,115 @@ $('printDecisionReport').onclick=()=>window.print();$('copyDecisionReport').oncl
 const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});['kFree','kNet','rentalMonthlyCash'].forEach(id=>{const el=$(id);if(el)obs.observe(el,{childList:true,subtree:true,characterData:true})});document.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',()=>queueMicrotask(update)));update();
 })();
 </script>
+<script>
+/* UX-023: field visibility only. Preserve original input nodes, values, events, IDs,
+   persistence, projections and all seven investment configurations. */
+(()=>{
+ 'use strict';
+ const get=id=>document.getElementById(id);
+ const sidebar=document.querySelector('.sidebar');
+ const toolbar=get('uxInputToolbar');
+ if(!sidebar||!toolbar)return;
+ const advancedIds=[
+  'refiRate','extra','existingRefi','existingExtra',
+  'careRegion','eligibleChildren','eligibleChildrenW','gkvExtra','pkvDeductible','churchTax',
+  'netGrowth','expenseGrowth','allow','rentalTaxTiming',
+  'drawMode','custom','houseGrowth','inflation','crash',
+  'comparisonProperty','heatRentStep','heatRateStep','saleCosts',
+  'mcVol','mcTrials','rankingMetric'
+ ];
+ const advancedControls=advancedIds.map(id=>get(id)).filter(Boolean);
+ for(const control of advancedControls){
+  const field=control.closest('.row-field');
+  if(field)field.classList.add('ux-advanced-field');
+ }
+ // Salary, housing payments, purchase costs, ETF savings, essential expenses,
+ // and emergency reserves are never suppressed in Essentials mode.
+ const dictionary=[
+  [['Grunderwerbsteuer (transfer tax)','A one-off German property purchase tax. Include it with notary and broker fees in the purchase-cost percentage.'],
+   ['Sondertilgung (extra repayment)','Optional additional mortgage principal payment. Actual eligibility depends on your loan agreement.'],
+   ['Hausgeld','Monthly owner-occupied or rental apartment charges. Only some operating costs can be passed through to a tenant.']],
+  [['Actual net salary','For cash budgets, use payslip net after any privately paid PKV. Gross-to-net mode is a simplified annual tax estimate.'],
+   ['PKV / GKV','Private versus statutory health insurance. Check premiums and the employer subsidy rather than counting premiums twice.'],
+   ['Steuerklasse','Payroll withholding category, not necessarily the final annual income-tax outcome.']],
+  [['Warm rent / Nebenkosten','If heating is part of your rent, do not count it again in monthly utilities.'],
+   ['Emergency reserve','Money you choose to keep available. This input is a target, not a verified bank balance.']],
+  [['TER','Ongoing ETF fund expenses, expressed annually. These are not the same as German income tax.'],
+   ['Vorabpauschale','A German investment-fund advance tax amount may arise without selling ETF shares. The current live planner does not yet accurately model all such payments.'],
+   ['Tax allowance','The annual Sparer-Pauschbetrag is shared across eligible capital income; it is not automatically available in full for each investment.']],
+  [['Kaltmiete','Cold rent before recoverable tenant service charges.'],
+   ['AfA','Depreciation of the eligible rental building basis may reduce taxable rental income; owner-occupied homes do not receive rental AfA.'],
+   ['WEG reserve','Maintenance-reserve contributions are generally not deductible solely when paid; treatment depends on eligible actual spending.']],
+  [['Projection horizon','How far the scenario models your investments and debt; the outcome is not a return guarantee.'],
+   ['Refinancing and risk','Later borrowing rates and investment volatility are scenarios, not forecasts.']]
+ ];
+ const sections=[...sidebar.querySelectorAll(':scope > .section')];
+ sections.forEach((section,i)=>{
+  const terms=dictionary[i];if(!terms)return;
+  const help=document.createElement('details');help.className='ux-term-help';
+  const summary=document.createElement('summary');summary.textContent='Explain financial terms';
+  const dl=document.createElement('dl');
+  for(const [name,description] of terms){
+   const dt=document.createElement('dt');dt.textContent=name;
+   const dd=document.createElement('dd');dd.textContent=description;
+   dl.append(dt,dd);
+  }
+  help.append(summary,dl);
+  const toggle=section.querySelector(':scope > .section-toggle');
+  if(toggle)toggle.after(help);
+  else section.prepend(help);
+ });
+ function defaultValue(control){
+  if(control.tagName==='SELECT'){
+   const selected=[...control.options].find(option=>option.defaultSelected);
+   return selected?selected.value:(control.options[0]?.value||'');
+  }
+  return control.defaultValue;
+ }
+ function changedAdvancedCount(){
+  return advancedControls.filter(control=>control.value!==defaultValue(control)).length;
+ }
+ function strategyLabel(){
+  const etf=get('strategyEtf')?.value==='on';
+  const rental=get('strategyRental')?.value==='on';
+  const home=get('homeMode')?.value==='buy';
+  const types=[etf?'ETFs':null,home?'new home':null,rental?'rentals':null].filter(Boolean);
+  return types.length?types.join(' + '):'existing housing';
+ }
+ function updateContext(){
+  const view=document.body.dataset.view||'overview';
+  const context={
+   household:'Check your actual income, insurance and monthly essentials.',
+   properties:'Review purchase costs, ongoing housing costs and rental cash flow.',
+   investments:'Adjust ETF savings, returns and projection assumptions.'
+  }[view]||'Choose a section to edit your financial plan.';
+  get('uxInputContext').textContent=strategyLabel()+' · '+context;
+  const count=changedAdvancedCount();
+  const basic=document.body.dataset.inputMode!=='advanced';
+  const status=get('uxInputStatus');
+  status.dataset.customized=String(basic&&count>0);
+  status.textContent=basic
+   ?'Essentials shown. '+(count?count+' customized advanced setting'+(count===1?'':'s')+' still affect the results.':'All hidden advanced fields use their default values.')+' Select All details to inspect them.'
+   :'All calculator controls shown. Original values and current scenario are preserved.';
+ }
+ function applyMode(mode){
+  const advanced=mode==='advanced';
+  document.body.dataset.inputMode=advanced?'advanced':'essential';
+  get('uxEssentialMode').setAttribute('aria-pressed',String(!advanced));
+  get('uxAdvancedMode').setAttribute('aria-pressed',String(advanced));
+  updateContext();
+ }
+ for(const button of toolbar.querySelectorAll('[data-ux-mode]')){
+  button.addEventListener('click',()=>applyMode(button.dataset.uxMode));
+ }
+ // Recompute descriptive status on all existing user interactions (without
+ // dispatching input events or interfering with the existing calculation flow).
+ document.addEventListener('input',updateContext);
+ document.addEventListener('change',updateContext);
+ document.querySelectorAll('.app-tabs [data-view],[data-strategy],[data-switch-home],[data-switch-profile]')
+  .forEach(button=>button.addEventListener('click',()=>queueMicrotask(updateContext)));
+ applyMode('essential');
+})();
+</script>
+
 </body></html>
