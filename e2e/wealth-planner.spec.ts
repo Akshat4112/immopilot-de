@@ -124,7 +124,7 @@ test('classifies renovation from actual acquisition date, VAT and 15 percent thr
   await rental.locator('details summary').first().click()
   await planner.locator('#r1_acquisitionDate').fill('2026-01-15')
   await planner.locator('#r1_workPerformedDate').fill('2026-04-01')
-  await planner.locator('#r1_renovation').fill('30000')
+  await planner.locator('#r1_renovation').fill('40000')
   await planner.locator('#r1_renoType').selectOption('maintenance')
   await expect(planner.locator('#renovationAudit tbody')).toContainText('capitalized')
   await planner.locator('#r1_workPerformedDate').fill('2030-04-01')
