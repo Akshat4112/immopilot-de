@@ -681,6 +681,55 @@ body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mort
 @media(max-width:640px){.mortgage-explorer-controls{grid-template-columns:1fr}.mortgage-explorer-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.mortgage-switch{width:100%}.mortgage-switch button{flex:1;padding:8px 6px}.maincol svg.mortgage-chart-svg{min-width:790px!important}}
 @media print{.mortgage-explorer-controls,.mortgage-explorer-switches,#amortChartPane{display:none!important}#amortTablePane{display:block!important}.mortgage-explorer-table-scroll{max-height:none}}
 
+
+/* UX-030: auditable signed rental waterfall */
+.rental-waterfall{min-width:0}
+.rental-waterfall-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.rental-waterfall-heading h3{font-size:1.08rem;letter-spacing:-.018em;margin:0 0 6px}
+.rental-waterfall-heading p{max-width:760px;line-height:1.6}
+.rental-waterfall-controls{display:grid;grid-template-columns:1.3fr .8fr auto auto;gap:10px;margin:16px 0;align-items:end}
+.rental-waterfall-controls>label{display:flex;flex-direction:column;gap:6px;font-size:.75rem;font-weight:750;color:var(--ink);min-width:0}
+.rental-waterfall-controls select{min-width:0;width:100%;min-height:42px;border-radius:9px;border:1px solid var(--ux-line,#d9e7de);padding:8px;background:var(--ux-surface,#fff);color:var(--ink);font-size:.8rem}
+.rental-waterfall-toggle{display:inline-flex;gap:3px;padding:4px;background:#e8f2ec;border-radius:11px}
+.rental-waterfall-toggle button{border:0;border-radius:8px;background:transparent;color:#45685d;font-weight:750;font-size:.76rem;min-height:36px;cursor:pointer;padding:7px 10px;white-space:nowrap}
+.rental-waterfall-toggle button[aria-pressed="true"]{background:#176b5e;color:#fff}
+.rental-waterfall-toggle button:focus-visible,.rental-waterfall-controls select:focus-visible,.rental-waterfall-svg [data-waterfall-step]:focus-visible,.rental-waterfall-table tr:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.rental-waterfall-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
+.rental-waterfall-kpis>div{padding:12px;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);background:var(--ux-surface-soft,#f4f9f5);min-width:0}
+.rental-waterfall-kpis small{color:var(--muted);font-size:.7rem;line-height:1.5;display:block}
+.rental-waterfall-kpis strong{color:var(--ink);font-size:1.04rem;font-variant-numeric:tabular-nums;display:block;margin-top:6px}
+.rental-waterfall-kpis strong.negative{color:#b54454}
+.rental-waterfall-warning{color:#a94852;font-size:.77rem;line-height:1.6;font-weight:650;margin:9px 0}
+.rental-waterfall-warning:empty{display:none}
+.rental-waterfall-graph{overflow-x:auto;max-width:100%;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);background:var(--ux-surface-soft,#f5faf6)}
+.rental-waterfall-svg{width:100%;height:auto;min-width:950px!important;display:block}
+.rental-waterfall-svg [data-waterfall-step]{cursor:pointer}
+.rental-waterfall-svg [data-waterfall-step].selected rect,.rental-waterfall-svg [data-waterfall-step]:hover rect,.rental-waterfall-svg [data-waterfall-step]:focus-visible rect{stroke:#1d3e4c;stroke-width:2.7}
+.rental-waterfall-table-scroll{overflow:auto;max-width:100%;max-height:470px;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);margin-top:10px}
+.rental-waterfall-table{min-width:740px;width:100%;border-collapse:collapse}
+.rental-waterfall-table th,.rental-waterfall-table td{padding:9px 11px;font-size:.75rem;line-height:1.5;border-bottom:1px solid var(--ux-line,#d9e7de);text-align:left;vertical-align:top}
+.rental-waterfall-table td:nth-child(2),.rental-waterfall-table td:nth-child(3){text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:650}
+.rental-waterfall-table th:nth-child(2),.rental-waterfall-table th:nth-child(3){text-align:right}
+.rental-waterfall-table thead{background:#e9f4eb}
+.rental-waterfall-table tbody tr{cursor:pointer}
+.rental-waterfall-table tbody tr[aria-selected="true"]{background:#dff3e5}
+.rental-waterfall-legend{display:flex;gap:11px 17px;flex-wrap:wrap;margin:12px 0}
+.rental-waterfall-legend span{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--ink)}
+.rental-waterfall-legend i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.rental-waterfall-detail{font-size:.79rem;line-height:1.65;color:var(--ink);background:#ebf5ee;padding:10px 12px;border-radius:11px;margin:12px 0}
+.rental-waterfall-footnote{font-size:.72rem;line-height:1.7;color:var(--muted);margin:10px 0 0}
+#rentalWaterfallChartPane[hidden],#rentalWaterfallTablePane[hidden]{display:none!important}
+body[data-theme="dark"] .rental-waterfall-toggle{background:#29413e}
+body[data-theme="dark"] .rental-waterfall-toggle button{color:#cce4dc}
+body[data-theme="dark"] .rental-waterfall-toggle button[aria-pressed="true"]{color:#fff;background:#176b5e}
+body[data-theme="dark"] .rental-waterfall-controls select{background:#203b3f}
+body[data-theme="dark"] .rental-waterfall-kpis>div,body[data-theme="dark"] .rental-waterfall-graph,body[data-theme="dark"] .rental-waterfall-detail{background:#25403a}
+body[data-theme="dark"] .rental-waterfall-table thead,body[data-theme="dark"] .rental-waterfall-table tbody tr[aria-selected="true"]{background:#25403a}
+body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .rental-waterfall-kpis strong.negative{color:#f1aab4}
+@media(max-width:1000px){.rental-waterfall-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.rental-waterfall-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:590px){.rental-waterfall-controls{grid-template-columns:1fr}.rental-waterfall-toggle button{flex:1}.rental-waterfall-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.maincol svg.rental-waterfall-svg{min-width:950px!important}}
+@media print{.rental-waterfall-controls,#rentalWaterfallChartPane{display:none!important}#rentalWaterfallTablePane{display:block!important}.rental-waterfall-table-scroll{max-height:none}}
+
 </style>
 </head>
 <body><main>
@@ -1060,11 +1109,44 @@ body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mort
 <section class="card content-card" id="visualizationsSection">
  <h2>Visual insights · how rental investments change your finances</h2>
  <p class="note">These charts recalculate immediately when you change a salary, housing setup, ETF amount or rental property. They separate <strong>spendable cash</strong> from mortgage principal paid and unrealized asset growth.</p>
- <div class="plot-card">
-  <h3>Rental cash-flow bridge · first full year</h3>
-  <p class="note">All rental apartments combined. Positive bars bring cash into your household; negative bars consume it. Tax effects are annual estimates, not monthly payouts.</p>
-  <svg class="plot-chart" id="rentalBridgeChart" viewBox="0 0 820 300" role="img" aria-label="Rental receipts, running costs, interest, principal and tax effects per month"></svg>
+ <div class="plot-card rental-waterfall" id="rentalWaterfallPanel">
+  <div class="rental-waterfall-heading">
+   <div><h3>Rental cash-flow waterfall · from tenant payments to cash</h3>
+    <p class="note">Follow potential rent, vacancy, operating costs, debt service and estimated household tax effects. Select an apartment or the full portfolio and examine any modeled year.</p></div>
+   <span class="fine">Existing rental ledger · no new tax assumptions</span>
+  </div>
+  <div class="rental-waterfall-controls">
+   <label for="rentalWaterfallScope">Apartments<select id="rentalWaterfallScope"><option value="all">All rental apartments</option></select></label>
+   <label for="rentalWaterfallYear">Projection year<select id="rentalWaterfallYear"><option value="1">Year 1 · 2026</option></select></label>
+   <div class="rental-waterfall-toggle" role="group" aria-label="Rental cash flow time unit">
+    <button type="button" data-waterfall-period="month" aria-pressed="true">€/month</button>
+    <button type="button" data-waterfall-period="year" aria-pressed="false">€/year</button>
+   </div>
+   <div class="rental-waterfall-toggle" role="group" aria-label="Rental cash flow display">
+    <button type="button" data-waterfall-view="chart" aria-pressed="true">Chart</button>
+    <button type="button" data-waterfall-view="table" aria-pressed="false">Table</button>
+   </div>
+  </div>
+  <div class="rental-waterfall-kpis">
+   <div><small>Collected rent and advances</small><strong id="rentalWaterfallCollected">—</strong></div>
+   <div><small>Cash before estimated income tax</small><strong id="rentalWaterfallBefore">—</strong></div>
+   <div><small>Estimated income-tax effect</small><strong id="rentalWaterfallTax">—</strong></div>
+   <div><small>Cash after estimated income tax</small><strong id="rentalWaterfallAfter">—</strong></div>
+  </div>
+  <p class="rental-waterfall-warning" id="rentalWaterfallWarning" role="status" aria-live="polite"></p>
+  <div id="rentalWaterfallChartPane" class="rental-waterfall-graph" role="region" tabindex="0" aria-label="Interactive rental cash-flow waterfall, horizontally scrollable">
+   <svg class="rental-waterfall-svg" id="rentalBridgeChart" viewBox="0 0 1100 420" role="group" aria-label="Signed rental waterfall: income, vacancy, expenses, debt and tax"></svg>
+  </div>
+  <div id="rentalWaterfallTablePane" class="rental-waterfall-table-scroll" role="region" tabindex="0" aria-label="Accessible rental cash-flow reconciliation table" hidden>
+   <table class="rental-waterfall-table">
+    <thead><tr><th scope="col">Step</th><th scope="col">Cash movement</th><th scope="col">Running cash</th><th scope="col">What it means</th></tr></thead>
+    <tbody id="rentalWaterfallRows"></tbody>
+   </table>
+  </div>
+  <div id="rentalWaterfallLegend" class="rental-waterfall-legend"></div>
+  <p class="rental-waterfall-detail" id="rentalWaterfallDetail" role="status" aria-live="polite">Select a step for its exact amount and purpose.</p>
   <div class="plot-stat-row" id="rentalBridgeStats"></div>
+  <p class="rental-waterfall-footnote"><strong>Cash vs tax vs wealth:</strong> Tenant Nebenkosten advances are receipts, but recoverable operating costs are paid out. WEG reserves are cash outflows, not automatically tax deductible; mortgage principal uses cash and builds equity. AfA is a noncash deduction, so it is <em>not</em> subtracted from cash here. Estimated income tax follows the 2026 household model and may settle later, not monthly. A single property's tax estimate is standalone, not an additive share of the portfolio tax. Acquisition costs, renovations and purchase cash are excluded from recurring flow.</p>
  </div>
  <div class="plot-card wealth-timeline" id="wealthTimeline">
   <h3>Lifetime wealth · assets, equity and debt</h3>
