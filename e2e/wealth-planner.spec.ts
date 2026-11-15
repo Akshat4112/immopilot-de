@@ -111,3 +111,22 @@ test('all seven combinations can be selected independently', async ({ page }) =>
     await expect(planner.locator('#homeMode')).toHaveValue(home)
   }
 })
+
+test('classifies renovation from actual acquisition date, VAT and 15 percent threshold', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Properties/i }).click()
+  const rental = planner.locator('#rentalInputsSection')
+  const sectionToggle = rental.locator('.section-toggle')
+  if ((await sectionToggle.getAttribute('aria-expanded')) === 'false') {
+    await sectionToggle.click()
+  }
+  await rental.locator('details summary').first().click()
+  await planner.locator('#r1_acquisitionDate').fill('2026-01-15')
+  await planner.locator('#r1_workPerformedDate').fill('2026-04-01')
+  await planner.locator('#r1_renovation').fill('30000')
+  await planner.locator('#r1_renoType').selectOption('maintenance')
+  await expect(planner.locator('#renovationAudit tbody')).toContainText('capitalized')
+  await planner.locator('#r1_workPerformedDate').fill('2030-04-01')
+  await expect(planner.locator('#renovationAudit tbody')).toContainText('deductible')
+})
