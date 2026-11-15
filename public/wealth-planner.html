@@ -422,6 +422,36 @@ body[data-theme="dark"] #uxInputStatus[data-customized="true"]{color:#f2d18c}
 }
 @media print{.input-experience,.sidebar .ux-term-help{display:none!important}body[data-input-mode="essential"] .ux-advanced-field{display:initial!important}}
 
+
+/* UX-024: persistent, unobtrusive scenario switcher and dirty-status feedback. */
+.scenario-quickbar{position:sticky;top:72px;z-index:32;display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:10px 14px;padding:12px 15px;margin:0 0 12px;background:var(--ux-surface,#fff);
+ border:1px solid var(--ux-line,#dae6e0);border-radius:14px;box-shadow:0 5px 21px rgba(22,54,47,.09)}
+.scenario-quickbar-info{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0;flex:1}
+.scenario-quickbar-info label{color:var(--ink);font-size:.8rem;font-weight:750;white-space:nowrap}
+.scenario-quickbar-info select{width:clamp(165px,27vw,300px);max-width:100%;min-height:39px;
+ border:1px solid var(--ux-line,#dae6e0);border-radius:10px;background:var(--ux-surface,#fff);
+ color:var(--ink);padding:6px 10px;font-size:.82rem}
+.scenario-save-status{display:inline-block;font-weight:750;font-size:.74rem;color:#27775e;
+ padding:5px 9px;border-radius:9px;background:#eaf6ef}
+.scenario-save-status[data-dirty="true"]{color:#975718;background:#fff1d8}
+.scenario-quickbar-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.scenario-quickbar-buttons .btn:disabled{opacity:.43;cursor:not-allowed}
+.scenario-quickbar select:focus-visible,.scenario-quickbar .btn:focus-visible{
+ outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+body[data-theme="dark"] .scenario-quickbar{background:#1a2836;border-color:#354e52}
+body[data-theme="dark"] .scenario-quickbar-info select{background:#213641;border-color:#354e52}
+body[data-theme="dark"] .scenario-save-status{background:#26473d;color:#b6eedc}
+body[data-theme="dark"] .scenario-save-status[data-dirty="true"]{background:#51432a;color:#ffe1a1}
+@media(max-width:870px){.scenario-quickbar{position:static}}
+@media(max-width:530px){
+ .scenario-quickbar{padding:11px}
+ .scenario-quickbar-info select{width:100%;flex:1 1 100%}
+ .scenario-quickbar-buttons{width:100%}
+ .scenario-quickbar-buttons .btn{flex:1}
+}
+@media print{.scenario-quickbar{display:none!important}}
+
 </style>
 </head>
 <body><main>
@@ -497,11 +527,22 @@ body[data-theme="dark"] #uxInputStatus[data-customized="true"]{color:#f2d18c}
  </div>
 </section>
 <section class="card content-card health-card" id="healthCard" aria-label="Financial health check"><div class="scenario-head"><h2>Financial health checks</h2><span class="fine">Estimates · updated with inputs</span></div><div id="healthIndicators" class="health-grid">Calculating risk indicators…</div><p class="fine">Signals use editable reserve and spending assumptions. These are screening indicators, not lending approvals or guarantees.</p></section>
+<div class="scenario-quickbar" id="scenarioQuickbar" aria-label="Active financial scenario">
+ <div class="scenario-quickbar-info">
+  <label for="activeScenario">Active plan</label>
+  <select id="activeScenario" aria-label="Switch saved scenario"><option value="">Unsaved working plan</option></select>
+  <span id="scenarioSaveStatus" class="scenario-save-status" role="status" aria-live="polite">Unsaved working plan</span>
+ </div>
+ <div class="scenario-quickbar-buttons">
+  <button id="updateScenario" class="btn primary" type="button" disabled>Save changes</button>
+  <button id="undoScenarioLoad" class="btn" type="button" disabled>Undo last load</button>
+ </div>
+</div>
 <section class="card scenario-workspace" id="scenarioWorkspace" aria-label="Saved financial scenarios">
- <div class="scenario-head"><div><h2>Scenario workspace <span style="font-size:.7rem;color:#7b8b96">NEW IN V9</span></h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save current plan</button></div></div>
+ <div class="scenario-head"><div><h2>Scenario workspace</h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save as new plan</button></div></div>
  <div class="scenario-notice" id="scenarioNotice" role="status" aria-live="polite">Saved locally on this device. Use Backup to keep a portable copy.</div>
  <div class="scenario-cards" id="scenarioCards"></div>
- <div class="scenario-compare" id="scenarioCompare"><h3>Compare saved scenarios</h3><p class="muted">Select up to three plans using their Compare checkboxes. Numbers are captured when you save each plan.</p><div class="scenario-empty">Save at least two plans to compare them side by side.</div></div>
+ <div class="scenario-compare" id="scenarioCompare"><h3>Compare saved scenarios</h3><p class="muted">Select up to three saved plans using their Compare checkboxes. Saved calculations do not update until you save changes.</p><div class="scenario-empty">Save at least two plans to compare them side by side.</div></div>
  <div class="scenario-controls" style="margin-top:14px"><button class="btn" type="button" id="exportScenario">Backup scenarios (.json)</button><button class="btn" type="button" id="importScenario">Restore backup</button><input type="file" id="scenarioFile" accept="application/json,.json" hidden></div>
 </section>
 <div class="card profile-card" aria-label="Household profile">
