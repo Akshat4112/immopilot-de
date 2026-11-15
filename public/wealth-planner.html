@@ -423,7 +423,7 @@ body[data-view="reports"] .maincol > #printableReport{display:block!important}
 <div class="kv"><span>Annual cash flow, before income tax</span><strong id="rentCashAnnual">—</strong></div>
 <div class="kv"><span>Estimated recurring income-tax saving / extra tax</span><strong id="rentTaxSaving">—</strong></div>
 <div class="kv"><span>Potential tax effect in acquisition/renovation year</span><strong id="rentOneTimeTax">—</strong></div></div></div>
-<div class="highlight warn" id="rentalNotes"></div><div id="rentalAfaAudit" class="info-panel" aria-live="polite"></div>
+<div class="highlight warn" id="rentalNotes"></div><div id="renovationAudit" class="info-panel" aria-live="polite"></div><div id="rentalAfaAudit" class="info-panel" aria-live="polite"></div>
 <h3>Long-term rental portfolio projection</h3>
 <p class="note">Loans amortize at the entered starting annuity and rate throughout this simplified projection. Rent and costs grow at each property's selected rates; property values may rise or fall. Future tax results use the current estimated taxable-income baseline, not future tax-law forecasts.</p>
 <div class="table-scroll"><table class="data"><thead><tr><th>Year</th><th>Rental cash before tax</th><th>Est. rental income-tax effect</th><th>After-tax economic cash</th><th>Loan balance</th><th>Property value</th><th>Property equity</th></tr></thead><tbody id="rentalAnnualRows"></tbody></table></div>
@@ -650,7 +650,7 @@ function householdTax(x){const h=calculatePerson(x,'h'),w=x.profileMode==='singl
   useH:x.incomeMode==='actual'?x.actualH:netH,useW:x.profileMode==='single'?0:(x.incomeMode==='actual'?x.actualW:netW)};
 }
 // Rental module: 1–4 individually configurable German buy-to-let properties.
-const rentSeed={name:'Rental 1 · Möhringen example',owner:'joint',price:199000,down:20000,buyCosts:10,interest:4.5,repay:2,kalt:800,tenantNk:180,recoverCost:180,nonrecover:81,reserve:60,repairs:40,vacancy:3,buildingShare:80,buildYear:1992,eligibleFromDate:'2026-01-01',rentalUsePercent:100,withinThreeYears:'yes',renovation:0,renoType:'none',rentGrowth:2,costGrowth:2,appreciation:2};
+const rentSeed={name:'Rental 1 · Möhringen example',owner:'joint',price:199000,down:20000,buyCosts:10,interest:4.5,repay:2,kalt:800,tenantNk:180,recoverCost:180,nonrecover:81,reserve:60,repairs:40,vacancy:3,buildingShare:80,buildYear:1992,eligibleFromDate:'2026-01-01',rentalUsePercent:100,acquisitionDate:'',workPerformedDate:'',renovationVat:19,renovationCategory:'modernization',withinThreeYears:'yes',renovation:0,renoType:'none',rentGrowth:2,costGrowth:2,appreciation:2};
 let rentalSeq=1;
 let rentalItems=[{...rentSeed,_id:1}];
 const storageKey='home_etf_rentals_analytics_v7',previousStorageKey='home_etf_rentals_modes_v6';
@@ -663,12 +663,14 @@ const rentalFields={
  kalt:['Cold rent / month (€)','number',10],tenantNk:['Tenant Nebenkosten advance / month (€)','number',10],recoverCost:['Recoverable running costs paid / month (€)','number',10],
  nonrecover:['Non-recoverable owner costs / month (€)','number',10],reserve:['WEG maintenance reserve / month (€)','number',10],repairs:['Eligible recurring upkeep / month (€)','number',10],vacancy:['Vacancy / unpaid rent (%)','number',1],
  buildingShare:['Building allocation, excluding land (%)','number',5],buildYear:['Year of completion','number',1],
- eligibleFromDate:['First qualifying rental use (AfA)','date',null],rentalUsePercent:['Qualifying rental-use share (%)','number',5],withinThreeYears:['Renovation within 3 years of purchase?','select',[['yes','Yes / assume within 3 years'],['no','No / outside initial 3 years']]],
+ eligibleFromDate:['First qualifying rental use (AfA)','date',null],rentalUsePercent:['Qualifying rental-use share (%)','number',5],
+ acquisitionDate:['Economic ownership transfer date','date',null],workPerformedDate:['Renovation work performed date','date',null],renovationVat:['Renovation VAT rate (%)','select',[['19','19%'],['7','7%'],['0','0%']]],
+ renovationCategory:['Type of building work','select',[['modernization','Repairs / modernization (15% test)'],['annual-maintenance','Routine annual maintenance (excluded)'],['extension','Building extension (capitalize)'],['subsequent-damage','Documented post-purchase damage (excluded)'],['capital-improvement','Capital improvement (capitalize)']]],
  renovation:['One-time renovation (€), cash','number',1000],renoType:['One-time renovation tax classification','select',[['none','None / no renovation deduction'],['maintenance','Eligible immediate maintenance (subject to rules)'],['capital','Capitalized building improvement']]],
  rentGrowth:['Annual rent growth (%)','number',.5],costGrowth:['Annual running-cost growth (%)','number',.5],appreciation:['Annual property value growth (%)','number',.5]
 };
 const rentalCore=['name','owner','price','down','buyCosts','interest','repay','kalt','tenantNk','recoverCost','nonrecover','reserve','repairs','vacancy'];
-const rentalAdvanced=['buildingShare','buildYear','eligibleFromDate','rentalUsePercent','renovation','renoType','withinThreeYears','rentGrowth','costGrowth','appreciation'];
+const rentalAdvanced=['buildingShare','buildYear','eligibleFromDate','rentalUsePercent','acquisitionDate','workPerformedDate','renovation','renoType','renovationVat','renovationCategory','rentGrowth','costGrowth','appreciation'];
 function rentalFieldHtml(r,k){const [label,kind,sourceOptions]=rentalFields[k];const meta=(k==='owner'&&$('profileMode').value==='single')?[['h','Single owner · 100%']]:sourceOptions;const id='r'+r._id+'_'+k;
   const field=kind==='select'?`<select id="${id}" data-rental="${r._id}" data-field="${k}">${meta.map(([v,l])=>`<option value="${v}" ${String(r[k])===v?'selected':''}>${safeText(l)}</option>`).join('')}</select>`:`<input id="${id}" data-rental="${r._id}" data-field="${k}" type="${kind}" ${kind==='number'?`step="${meta}" min="${k==='buildYear'?'1800':k==='rentGrowth'||k==='costGrowth'||k==='appreciation'?'-30':'0'}"`:''} value="${safeText(r[k])}">`;
  return `<div class="property-field ${k==='name'||k==='renoType'?'full':''}"><label for="${id}">${safeText(label)}</label>${field}</div>`;}
@@ -747,7 +749,7 @@ function renderRentalInputs(){ $('rentalInputs').innerHTML=rentalItems.length?re
  $('addRental').disabled=rentalItems.length>=4;
 }
 function rentalsFromForm(){if($('strategyRental').value==='off')return [];return rentalItems.map(p=>{
-  const r={...p};for(const k of Object.keys(rentalFields)){const el=$('r'+p._id+'_'+k);if(el)r[k]=['name','owner','renoType','withinThreeYears','eligibleFromDate'].includes(k)?el.value:(Number(el.value)||0);}
+  const r={...p};for(const k of Object.keys(rentalFields)){const el=$('r'+p._id+'_'+k);if(el)r[k]=['name','owner','renoType','renovationCategory','acquisitionDate','workPerformedDate','eligibleFromDate'].includes(k)?el.value:(Number(el.value)||0);}
   if($('profileMode').value==='single')r.owner='h';
   for(const k of ['price','down','buyCosts','interest','repay','kalt','tenantNk','recoverCost','nonrecover','reserve','repairs','vacancy','buildingShare','rentalUsePercent','renovation'])r[k]=Math.max(0,r[k]);
   r.down=Math.min(r.price,r.down);r.buyCosts=Math.min(r.buyCosts,25);r.vacancy=Math.min(r.vacancy,100);r.buildingShare=Math.min(r.buildingShare,100);r.rentalUsePercent=Math.min(r.rentalUsePercent,100);r.buildYear=Math.max(1800,Math.min(2200,r.buildYear));
@@ -755,8 +757,18 @@ function rentalsFromForm(){if($('strategyRental').value==='off')return [];return
   r.loan=Math.max(0,r.price-r.down);r.monthlyPayment=r.loan*(r.interest+r.repay)/1200;
   r.afaRate=r.buildYear<1925?.025:r.buildYear>=2023?.03:.02;
   r.renovationThreshold=r.price*(1+r.buyCosts/100)*r.buildingShare/100*.15;
-  r.autoCapitalize=r.renoType==='maintenance'&&r.withinThreeYears==='yes'&&r.renovation/1.19>r.renovationThreshold;
-  r.capitalisedImprovement=(r.renoType==='capital'||r.autoCapitalize)?r.renovation:0;
+  const renovationEngine=window.parent!==window?window.parent.__immopilotRentalV2:null;
+  r.renovationAssessment=renovationEngine&&r.renoType!=='none'
+   ?renovationEngine.classifyRenovation({
+     acquisitionDate:r.acquisitionDate,workPerformedDate:r.workPerformedDate,
+     buildingAcquisitionCostEuro:r.price*(1+r.buyCosts/100)*r.buildingShare/100,
+     workGrossEuro:r.renovation,vatRatePercent:Number(r.renovationVat),
+     category:r.renoType==='capital'?'capital-improvement':r.renovationCategory
+    })
+   :null;
+  r.autoCapitalize=r.renovationAssessment?.disposition==='capitalized';
+  r.capitalisedImprovement=r.renovationAssessment?r.renovationAssessment.totalCapitalizedEuro:(r.renoType==='capital'?r.renovation:0);
+  r.immediateMaintenance=r.renovationAssessment?r.renovationAssessment.immediatelyDeductibleEuro:0;
   r.buildingBasis=r.price*(1+r.buyCosts/100)*r.buildingShare/100+r.capitalisedImprovement;
   r.afa=r.buildingBasis*r.afaRate;
   r.upfront=r.down+r.price*r.buyCosts/100+r.renovation;
@@ -837,7 +849,7 @@ function rentalPortfolio(x,tax){
  }
  const first=rows[0]||{year:1,cash:0,taxable:0,debt:0,homeVal:0,equity:0,deltaTax:0,afterTax:0,interest:0,afa:0,deductible:0,collected:0,reserve:0,principal:0,payment:0};
  const firstYearAlloc={h:0,w:0};for(const item of perProperty){const p=item.years[0];if(!p)continue;
- const maintenance=item.info.renoType==='maintenance'&&!item.info.autoCapitalize?item.info.renovation:0;addToAlloc(firstYearAlloc,p.taxable-maintenance,item.info.owner);}
+ const maintenance=item.info.immediateMaintenance||0;addToAlloc(firstYearAlloc,p.taxable-maintenance,item.info.owner);}
  const acquisitionTaxDelta=annualRentalTaxDelta(x,tax,firstYearAlloc);
  return {properties,perProperty,rows,first,acquisitionTaxDelta,upfront:properties.reduce((s,p)=>s+p.upfront,0),taxTiming:$('rentalTaxTiming').value};
 }
@@ -854,11 +866,12 @@ function renderRentalResults(x,tax,rent,c){
  $('rentalCashKpi').className='v '+(first.cash>=0?'green':'red');$('rentalAfterKpi').className='v '+(first.afterTax>=0?'green':'red');
  $('withRentalFree').className='v '+(c.free>=0?'green':'red');
  $('rentalRows').innerHTML=perProperty.map(({info:r,years})=>{const z=years[0],rentReceipts=z.collected/12,cash=z.cash/12,other=z.operating/12,grossYield=r.price>0?r.kalt*12/r.price:0;return `<tr><td>${safeText(r.name)}</td><td>${money(r.price)}</td><td>${pct(grossYield)}</td><td>${money(r.upfront)}</td><td>${money(rentReceipts)}</td><td>${money(z.payment/12)}</td><td>${money(other)}</td><td class="${cash>=0?'green':'red'}">${signed(cash)}</td><td class="${z.taxable>=0?'green':'red'}">${signed(z.taxable)}</td><td>${money(z.principal/12)}</td></tr>`;}).join('')||'<tr><td colspan="10">No rental investment. Add an apartment to compare against your current household budget.</td></tr>';
+ $('renovationAudit').innerHTML='<strong>Renovation classification · §6(1) no. 1a EStG</strong><div class="table-scroll"><table class="data"><thead><tr><th>Property</th><th>Gross cash cost</th><th>Net qualifying work</th><th>15% threshold</th><th>Tax treatment</th></tr></thead><tbody>'+properties.map(r=>{const a=r.renovationAssessment;return `<tr><td>${safeText(r.name)}</td><td>${money(r.renovation)}</td><td>${a?money(a.qualifyingNetEuro):'—'}</td><td>${a?money(a.thresholdEuro):'—'}</td><td>${a?safeText(a.disposition):'No assessed work'}</td></tr>`;}).join('')+'</tbody></table></div><p class="fine">Date-sensitive test uses work-performance date from transfer of economic ownership. Excludes routine annual maintenance, extensions and documented later damage as separate categories. Multiple work invoices must be aggregated. Missing dates are NOT treated as an immediate tax deduction.</p>';
  $('rentalAfaAudit').innerHTML='<strong>Rental depreciation audit · 2026</strong><div class="table-scroll"><table class="data"><thead><tr><th>Property</th><th>Building basis</th><th>AfA rate</th><th>Qualifying months</th><th>2026 AfA</th><th>Principal (not deductible)</th><th>WEG reserve (not immediately deductible)</th></tr></thead><tbody>'+perProperty.map(({info:r,years})=>{const a=r.afABridge?r.afABridge.calculateAfa({purchasePriceEuro:r.price,acquisitionCostsEuro:r.price*r.buyCosts/100,buildingSharePercent:r.buildingShare,completionYear:r.buildYear,eligibleFromDate:r.eligibleFromDate||'2026-01-01',taxYear:2026,rentalUsePercent:r.rentalUsePercent,capitalisedImprovementEuro:r.capitalisedImprovement}):null;const z=years[0];return `<tr><td>${safeText(r.name)}</td><td>${money(a?a.rentalBuildingBasisEuro:r.buildingBasis)}</td><td>${pct(r.afaRate)}</td><td>${a?a.qualifyingMonths:'Estimate'}</td><td>${money(z.afa)}</td><td>${money(z.principal)}</td><td>${money(z.reserve)}</td></tr>`;}).join('')+'</tbody></table></div><p class="fine">First qualifying rental use and building share are assumptions; verify with your deed, cost allocation and tax adviser. Capital improvements enter the building AfA basis, not an immediate deduction. Recurring rental cash excludes upfront renovation and acquisition fees, which are tracked separately.</p>';
  set('rentRevenue',money(first.collected));set('rentInterest','−'+money(first.interest));set('rentAfa','−'+money(first.afa));set('rentDeductible','−'+money(first.deductible));set('rentTaxable',signed(first.taxable));
  set('rentPrincipal',money(first.principal));set('rentReserves',money(first.reserve));set('rentCashAnnual',signed(first.cash));set('rentTaxSaving',(taxEffect>=0?'+':'−')+money(Math.abs(taxEffect)));set('rentOneTimeTax',(rent.acquisitionTaxDelta<=0?'Potential saving ':'Additional tax ')+money(Math.abs(rent.acquisitionTaxDelta)));
  $('rentalAnnualRows').innerHTML=rows.map(z=>`<tr><td>${z.year}</td><td class="${z.cash>=0?'green':'red'}">${signed(z.cash)}</td><td>${signed(-z.deltaTax)}</td><td class="${z.afterTax>=0?'green':'red'}">${signed(z.afterTax)}</td><td>${money(z.debt)}</td><td>${money(z.homeVal)}</td><td>${money(z.equity)}</td></tr>`).join('')||'<tr><td colspan="7">No rental property modeled</td></tr>';
- let warnings=[];for(const r of properties){if(r.renoType==='maintenance'&&r.renovation/1.19>r.renovationThreshold)warnings.push(`${safeText(r.name)}: the estimated net renovation spending exceeds the 15% building acquisition threshold. The model automatically CAPITALIZES that renovation rather than deducting it immediately. Confirm acquisition timing and included works with a tax adviser.`);
+ let warnings=[];for(const r of properties){if(r.renovationAssessment&&r.renovation>0)warnings.push(`${safeText(r.name)} renovation: ${safeText(r.renovationAssessment.reason)}. Net qualifying cost ${money(r.renovationAssessment.qualifyingNetEuro)} versus 15% building threshold ${money(r.renovationAssessment.thresholdEuro)}. This tests ONE work item; aggregate all works during the three-year window before filing.`);
  if(r.eligibleFromDate&&r.eligibleFromDate>'2026-01-01')warnings.push(`${safeText(r.name)}: first-year AfA is prorated from the entered date, but the rent and operating budget still assume a full calendar year.`);
  if(r.kalt>0&&r.vacancy>=30)warnings.push(`${safeText(r.name)}: high vacancy assumptions may require additional tax and economic review.`);
  if(r.tenantNk>0&&Math.abs(r.tenantNk-r.recoverCost)>100)warnings.push(`${safeText(r.name)}: tenant advances and recoverable operating costs differ substantially; check utility settlement.`);
