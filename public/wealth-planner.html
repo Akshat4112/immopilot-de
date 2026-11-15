@@ -778,12 +778,23 @@ function rentalsFromForm(){if($('strategyRental').value==='off')return [];return
   r.afABridge=bridge;
   r.afaForYear=(year)=>{
    if(!bridge)return r.afa;
-   return bridge.calculateAfa({
+   const base=bridge.calculateAfa({
     purchasePriceEuro:r.price,acquisitionCostsEuro:r.price*r.buyCosts/100,
     buildingSharePercent:r.buildingShare,completionYear:r.buildYear,
     eligibleFromDate:r.eligibleFromDate||'2026-01-01',taxYear:year,
+    rentalUsePercent:r.rentalUsePercent,capitalisedImprovementEuro:0
+   }).taxYearAfaEuro;
+   if(!r.capitalisedImprovement)return base;
+   // Subsequent building work starts its own deduction schedule when performed,
+   // rather than retroactively raising AfA before the work existed.
+   const date=r.workPerformedDate||r.eligibleFromDate||'2026-01-01';
+   const start=date>(r.eligibleFromDate||'2026-01-01')?date:(r.eligibleFromDate||'2026-01-01');
+   const improvements=bridge.calculateAfa({
+    purchasePriceEuro:0,acquisitionCostsEuro:0,buildingSharePercent:100,
+    completionYear:r.buildYear,eligibleFromDate:start,taxYear:year,
     rentalUsePercent:r.rentalUsePercent,capitalisedImprovementEuro:r.capitalisedImprovement
    }).taxYearAfaEuro;
+   return base+improvements;
   };
   r.afa=r.afaForYear(2026);
   return r;
@@ -841,15 +852,18 @@ function rentalPortfolio(x,tax){
  const rows=[];
  for(let y=1;y<=x.years;y++){
   const alloc={h:0,w:0};let cash=0,taxable=0,debt=0,homeVal=0,equity=0,interest=0,afa=0,deductible=0,collected=0,reserve=0,principal=0,payment=0;
-  for(const item of perProperty){const p=item.years[y-1];addToAlloc(alloc,p.taxable,item.info.owner);
-   cash+=p.cash;taxable+=p.taxable;debt+=p.loan;homeVal+=p.homeVal;equity+=p.equity;interest+=p.interest;afa+=p.afa;deductible+=p.deductible;collected+=p.collected;reserve+=p.reserve;principal+=p.principal;payment+=p.payment;
+  for(const item of perProperty){const p=item.years[y-1];
+   const maintenanceYear=Number((item.info.workPerformedDate||'').slice(0,4));
+   const oneTimeMaintenance=maintenanceYear===2025+y?(item.info.immediateMaintenance||0):0;
+   addToAlloc(alloc,p.taxable-oneTimeMaintenance,item.info.owner);
+   cash+=p.cash;taxable+=p.taxable-oneTimeMaintenance;debt+=p.loan;homeVal+=p.homeVal;equity+=p.equity;interest+=p.interest;afa+=p.afa;deductible+=p.deductible;collected+=p.collected;reserve+=p.reserve;principal+=p.principal;payment+=p.payment;
   }
   const deltaTax=annualRentalTaxDelta(x,tax,alloc);
   rows.push({year:y,cash,taxable,debt,homeVal,equity,deltaTax,afterTax:cash-deltaTax,interest,afa,deductible,collected,reserve,principal,payment});
  }
  const first=rows[0]||{year:1,cash:0,taxable:0,debt:0,homeVal:0,equity:0,deltaTax:0,afterTax:0,interest:0,afa:0,deductible:0,collected:0,reserve:0,principal:0,payment:0};
  const firstYearAlloc={h:0,w:0};for(const item of perProperty){const p=item.years[0];if(!p)continue;
- const maintenance=item.info.immediateMaintenance||0;addToAlloc(firstYearAlloc,p.taxable-maintenance,item.info.owner);}
+ const maintenance=Number((item.info.workPerformedDate||'').slice(0,4))===2026?(item.info.immediateMaintenance||0):0;addToAlloc(firstYearAlloc,p.taxable-maintenance,item.info.owner);}
  const acquisitionTaxDelta=annualRentalTaxDelta(x,tax,firstYearAlloc);
  return {properties,perProperty,rows,first,acquisitionTaxDelta,upfront:properties.reduce((s,p)=>s+p.upfront,0),taxTiming:$('rentalTaxTiming').value};
 }
