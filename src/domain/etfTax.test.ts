@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { calculateAdvanceTax, calculateFifoSale, privateFundTaxableShare } from './etfTax'
+import {
+  calculateAdvanceTax,
+  calculateFifoSale,
+  privateFundTaxableShare,
+} from './etfTax'
 
 describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => {
   const base = {
@@ -42,7 +46,9 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     expect(privateFundTaxableShare('other')).toBe(1)
   })
   it('rejects invalid or missing basis interest and acquisitions', () => {
-    expect(() => calculateAdvanceTax({ ...base, basisInterestRate: Number.NaN })).toThrow()
+    expect(() =>
+      calculateAdvanceTax({ ...base, basisInterestRate: Number.NaN }),
+    ).toThrow()
     expect(() => calculateAdvanceTax({ ...base, acquisitionMonth: 0 })).toThrow()
     expect(() => calculateAdvanceTax({ ...base, units: -1 })).toThrow()
   })
