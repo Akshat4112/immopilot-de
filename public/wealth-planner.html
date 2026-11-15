@@ -422,6 +422,36 @@ body[data-theme="dark"] #uxInputStatus[data-customized="true"]{color:#f2d18c}
 }
 @media print{.input-experience,.sidebar .ux-term-help{display:none!important}body[data-input-mode="essential"] .ux-advanced-field{display:initial!important}}
 
+
+/* UX-024: persistent, unobtrusive scenario switcher and dirty-status feedback. */
+.scenario-quickbar{position:sticky;top:72px;z-index:32;display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:10px 14px;padding:12px 15px;margin:0 0 12px;background:var(--ux-surface,#fff);
+ border:1px solid var(--ux-line,#dae6e0);border-radius:14px;box-shadow:0 5px 21px rgba(22,54,47,.09)}
+.scenario-quickbar-info{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0;flex:1}
+.scenario-quickbar-info label{color:var(--ink);font-size:.8rem;font-weight:750;white-space:nowrap}
+.scenario-quickbar-info select{width:clamp(165px,27vw,300px);max-width:100%;min-height:39px;
+ border:1px solid var(--ux-line,#dae6e0);border-radius:10px;background:var(--ux-surface,#fff);
+ color:var(--ink);padding:6px 10px;font-size:.82rem}
+.scenario-save-status{display:inline-block;font-weight:750;font-size:.74rem;color:#27775e;
+ padding:5px 9px;border-radius:9px;background:#eaf6ef}
+.scenario-save-status[data-dirty="true"]{color:#975718;background:#fff1d8}
+.scenario-quickbar-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.scenario-quickbar-buttons .btn:disabled{opacity:.43;cursor:not-allowed}
+.scenario-quickbar select:focus-visible,.scenario-quickbar .btn:focus-visible{
+ outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+body[data-theme="dark"] .scenario-quickbar{background:#1a2836;border-color:#354e52}
+body[data-theme="dark"] .scenario-quickbar-info select{background:#213641;border-color:#354e52}
+body[data-theme="dark"] .scenario-save-status{background:#26473d;color:#b6eedc}
+body[data-theme="dark"] .scenario-save-status[data-dirty="true"]{background:#51432a;color:#ffe1a1}
+@media(max-width:870px){.scenario-quickbar{position:static}}
+@media(max-width:530px){
+ .scenario-quickbar{padding:11px}
+ .scenario-quickbar-info select{width:100%;flex:1 1 100%}
+ .scenario-quickbar-buttons{width:100%}
+ .scenario-quickbar-buttons .btn{flex:1}
+}
+@media print{.scenario-quickbar{display:none!important}}
+
 </style>
 </head>
 <body><main>
@@ -497,11 +527,22 @@ body[data-theme="dark"] #uxInputStatus[data-customized="true"]{color:#f2d18c}
  </div>
 </section>
 <section class="card content-card health-card" id="healthCard" aria-label="Financial health check"><div class="scenario-head"><h2>Financial health checks</h2><span class="fine">Estimates · updated with inputs</span></div><div id="healthIndicators" class="health-grid">Calculating risk indicators…</div><p class="fine">Signals use editable reserve and spending assumptions. These are screening indicators, not lending approvals or guarantees.</p></section>
+<div class="scenario-quickbar" id="scenarioQuickbar" aria-label="Active financial scenario">
+ <div class="scenario-quickbar-info">
+  <label for="activeScenario">Active plan</label>
+  <select id="activeScenario" aria-label="Switch saved scenario"><option value="">Unsaved working plan</option></select>
+  <span id="scenarioSaveStatus" class="scenario-save-status" role="status" aria-live="polite">Unsaved working plan</span>
+ </div>
+ <div class="scenario-quickbar-buttons">
+  <button id="updateScenario" class="btn primary" type="button" disabled>Save changes</button>
+  <button id="undoScenarioLoad" class="btn" type="button" disabled>Undo last load</button>
+ </div>
+</div>
 <section class="card scenario-workspace" id="scenarioWorkspace" aria-label="Saved financial scenarios">
- <div class="scenario-head"><div><h2>Scenario workspace <span style="font-size:.7rem;color:#7b8b96">NEW IN V9</span></h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save current plan</button></div></div>
+ <div class="scenario-head"><div><h2>Scenario workspace</h2><p class="muted" style="margin:0">Save versions of your plan, switch between them, and compare outcomes without downloading CSV files.</p></div><div class="scenario-controls"><input id="scenarioName" aria-label="Scenario name" placeholder="e.g. Home + one rental" maxlength="70"><button type="button" class="btn primary" id="saveScenario">Save as new plan</button></div></div>
  <div class="scenario-notice" id="scenarioNotice" role="status" aria-live="polite">Saved locally on this device. Use Backup to keep a portable copy.</div>
  <div class="scenario-cards" id="scenarioCards"></div>
- <div class="scenario-compare" id="scenarioCompare"><h3>Compare saved scenarios</h3><p class="muted">Select up to three plans using their Compare checkboxes. Numbers are captured when you save each plan.</p><div class="scenario-empty">Save at least two plans to compare them side by side.</div></div>
+ <div class="scenario-compare" id="scenarioCompare"><h3>Compare saved scenarios</h3><p class="muted">Select up to three saved plans using their Compare checkboxes. Saved calculations do not update until you save changes.</p><div class="scenario-empty">Save at least two plans to compare them side by side.</div></div>
  <div class="scenario-controls" style="margin-top:14px"><button class="btn" type="button" id="exportScenario">Backup scenarios (.json)</button><button class="btn" type="button" id="importScenario">Restore backup</button><input type="file" id="scenarioFile" accept="application/json,.json" hidden></div>
 </section>
 <div class="card profile-card" aria-label="Household profile">
@@ -1663,36 +1704,194 @@ render();
 (()=>{
  'use strict';
  const $=id=>document.getElementById(id);
- const KEY='home_etf_saved_scenarios_v9',LIVE_KEY='home_etf_rentals_analytics_v7';
+ const KEY='home_etf_saved_scenarios_v9',LIVE_KEY='home_etf_rentals_analytics_v7',ACTIVE_KEY='home_etf_active_scenario_v10',UNDO_KEY='home_etf_undo_load_v10';
+ let activeId=null;
+ const object=v=>Boolean(v)&&typeof v==='object'&&!Array.isArray(v);
+ function liveSnapshot(){try{const raw=localStorage.getItem(LIVE_KEY),v=raw?JSON.parse(raw):null;return object(v)&&object(v.fields)?v:null;}catch(_){return null;}}
+ function snapshotSignature(v){if(!object(v))return '';return JSON.stringify({
+  fields:v.fields||{},rentalItems:v.rentalItems||[],rentalTaxTiming:v.rentalTaxTiming||'cash',
+  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home'
+ });}
+ function writeActive(){try{if(activeId)localStorage.setItem(ACTIVE_KEY,activeId);else localStorage.removeItem(ACTIVE_KEY);}catch(_){note('Active-plan selection cannot be stored.');}}
+ function readUndo(){try{const v=JSON.parse(sessionStorage.getItem(UNDO_KEY)||'null');return object(v)&&object(v.snapshot)&&object(v.snapshot.fields)?v:null;}catch(_){return null;}}
+ function updateStatus(){
+  const rec=records.find(r=>r.id===activeId);
+  const dirty=rec?snapshotSignature(liveSnapshot())!==snapshotSignature(rec.snapshot):true;
+  const el=$('scenarioSaveStatus');el.dataset.dirty=String(dirty);
+  el.textContent=rec?(dirty?'Unsaved edits · '+rec.name:'Saved · '+rec.name):'Unsaved working plan';
+  $('updateScenario').disabled=!rec||!dirty;$('undoScenarioLoad').disabled=!readUndo();
+ }
+ function syncSelector(){
+  const sel=$('activeScenario');
+  sel.innerHTML='<option value="">Unsaved working plan</option>'+
+   records.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.name)+'</option>').join('');
+  if(activeId&&records.some(r=>r.id===activeId))sel.value=activeId;
+  else{activeId=null;sel.value='';}
+  updateStatus();
+ }
  let records=[];let selected=[];
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const euro=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v)):'—';
  const makeId=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'_'+Math.random().toString(36).slice(2);
  function note(msg){$('scenarioNotice').textContent=msg;}
- try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))records=raw.filter(r=>r&&typeof r.id==='string'&&r.snapshot&&r.stats).slice(0,30);}catch(_){note('Local storage is unavailable; backup is recommended.');}
+ try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))records=raw.filter(r=>r&&typeof r.id==='string'&&r.snapshot&&r.stats).slice(0,30);activeId=localStorage.getItem(ACTIVE_KEY);}catch(_){note('Local storage is unavailable; backup is recommended.');}
  function persist(){try{localStorage.setItem(KEY,JSON.stringify(records));return true;}catch(_){note('Browser storage blocked or full. Export your backup to keep these scenarios.');return false;}}
  function stats(){const z=window.currentSummary;if(!z)return null;const {x,e,sim,c,rent}=z;const rentalCash=Number(rent?.first?.cash||0)/12;
   return {net:Number(c.net),free:Number(c.free),rentalCash,etf:Number(x.start),rentals:Number(rent?.perProperty?.length||0),loan:Number(x.loan),homeValue:Number(x.price),upfront:Number(x.homeAcquisitionCash||0)+Number(x.start||0)+Number(rent?.initialCash||0),endEtf:Number(sim.last?.portfolio||0),endHomeEquity:Number(sim.last?.homeEquity||0),annualGain:Number(e.net),years:Number(x.years),mode:x.profileMode,housing:x.homeMode};}
  function capture(){const current=localStorage.getItem(LIVE_KEY);if(!current)throw new Error('Enter or change a calculator input first.');const state=JSON.parse(current);if(!state.fields)throw new Error('Calculator state unavailable.');return {snapshot:JSON.parse(JSON.stringify(state)),stats:stats()};}
- function save(){const name=$('scenarioName').value.trim()||`Plan ${records.length+1}`;try{const values=capture();if(!values.stats)throw new Error('Financial figures not ready.');if(records.length>=30){note('Maximum 30 plans. Remove a plan before saving another.');return;}const id=makeId();records.push({id,name,created:new Date().toISOString(),...values});selected=[...selected,id].slice(-3);persist();draw();$('scenarioName').value='';note(`Saved “${name}”. Choose it to restore all input values.`);}catch(e){note(e.message);}}
- function restore(rec){if(!confirm(`Load “${rec.name}”? This replaces the currently displayed unsaved input values.`))return;try{localStorage.setItem(LIVE_KEY,JSON.stringify(rec.snapshot));location.reload();}catch(_){note('Cannot restore: browser storage disabled.');}}
- function changeName(rec){const next=prompt('Rename scenario',rec.name);if(next===null)return;const value=next.trim().slice(0,70);if(!value)return;rec.name=value;persist();draw();note('Renamed.');}
- function remove(rec){if(!confirm(`Delete “${rec.name}”?`))return;records=records.filter(r=>r.id!==rec.id);selected=selected.filter(id=>id!==rec.id);persist();draw();note('Scenario deleted.');}
- function duplicate(rec){if(records.length>=30){note('Maximum 30 plans.');return;}const copy={...rec,id:makeId(),name:`${rec.name} (copy)`.slice(0,70),created:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(rec.snapshot)),stats:{...rec.stats}};records.push(copy);persist();draw();note('Duplicated. Restore the copy to edit it independently.');}
- function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(Boolean);if(list.length<2)return '<h3>Compare saved scenarios</h3><div class="scenario-empty">Select at least two saved plans using Compare.</div>';
+ function save(){
+ const name=$('scenarioName').value.trim().slice(0,70)||'Plan '+(records.length+1);
+ try{
+  if(records.length>=30){note('Maximum 30 plans.');return;}
+  const data=capture();if(!data.stats)throw Error('Financial figures not ready.');
+  const rec={id:makeId(),name,created:new Date().toISOString(),...data};
+  records.push(rec);if(!persist()){records.pop();return;}
+  activeId=rec.id;writeActive();
+  selected=[...selected.filter(id=>id!==rec.id),rec.id].slice(-3);
+  draw();$('scenarioName').value='';note('Created “'+name+'”. Use Save changes after editing.');
+ }catch(e){note(e.message);}
+}
+function updateActive(){
+ const i=records.findIndex(r=>r.id===activeId);
+ if(i<0){note('Select a saved plan or save as new.');return;}
+ try{
+  const data=capture();if(!data.stats)throw Error('Financial figures not ready.');
+  const old=records[i];records[i]={...old,...data,updated:new Date().toISOString()};
+  if(!persist()){records[i]=old;return;}
+  draw();note('Saved changes to “'+old.name+'”.');
+ }catch(e){note(e.message);}
+}
+function restore(rec){
+ if(!confirm('Load “'+rec.name+'”? This replaces current inputs, including unsaved edits. You may undo one load.')){syncSelector();return;}
+ try{
+  const prev=liveSnapshot();if(!prev)throw Error('Cannot back up current working inputs.');
+  try{sessionStorage.setItem(UNDO_KEY,JSON.stringify({snapshot:prev,activeId}));}
+  catch(_){note('Undo unavailable because session storage is blocked.');}
+  localStorage.setItem(LIVE_KEY,JSON.stringify(rec.snapshot));
+  activeId=rec.id;writeActive();location.reload();
+ }catch(e){note('Load failed: '+e.message);syncSelector();}
+}
+function undoLoad(){
+ const prev=readUndo();if(!prev){note('No previous load to undo.');return;}
+ if(!confirm('Undo the last load? Current inputs will be replaced.'))return;
+ try{
+  localStorage.setItem(LIVE_KEY,JSON.stringify(prev.snapshot));
+  activeId=records.some(r=>r.id===prev.activeId)?prev.activeId:null;
+  writeActive();sessionStorage.removeItem(UNDO_KEY);location.reload();
+ }catch(_){note('Undo failed because storage is unavailable.');}
+}
+function changeName(rec){
+ const next=prompt('Rename scenario',rec.name);if(next===null)return;
+ const value=next.trim().slice(0,70);if(!value)return;
+ const before=rec.name;rec.name=value;if(!persist()){rec.name=before;return;}
+ draw();note('Renamed.');
+}
+function remove(rec){
+ if(!confirm('Delete “'+rec.name+'”? This cannot be undone.'))return;
+ const before=records;records=records.filter(r=>r.id!==rec.id);
+ if(!persist()){records=before;return;}
+ if(activeId===rec.id){activeId=null;writeActive();}
+ selected=selected.filter(id=>id!==rec.id);draw();note('Scenario deleted.');
+}
+function duplicate(rec){
+ if(records.length>=30){note('Maximum 30 plans.');return;}
+ const copy={...rec,id:makeId(),name:(rec.name+' (copy)').slice(0,70),
+  created:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(rec.snapshot)),stats:{...rec.stats}};
+ records.push(copy);if(!persist()){records.pop();return;}
+ draw();note('Duplicated. Load the copy to edit it independently.');
+}
+function validateImportedRecord(r){
+ if(!object(r)||typeof r.name!=='string'||!r.name.trim()||r.name.length>70||
+  !object(r.snapshot)||!object(r.snapshot.fields)||!object(r.stats))throw Error('Invalid scenario record.');
+ const known=new Set([...document.querySelectorAll('input[id],select[id]')].map(e=>e.id));
+ const entries=Object.entries(r.snapshot.fields);
+ if(entries.length<1||entries.length>250||entries.some(([key,val])=>
+  !known.has(key)||!['number','string'].includes(typeof val)||
+  typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
+ ))throw Error('Unsupported calculator input in backup.');
+ const items=r.snapshot.rentalItems||[];
+ if(!Array.isArray(items)||items.length>4||items.some(item=>
+  !object(item)||Object.entries(item).some(([key,val])=>
+   !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)||key==='constructor'||key==='__proto__'||
+   !['number','string'].includes(typeof val)||
+   typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
+  )
+ ))throw Error('Invalid rental data in backup.');
+ for(const key of ['net','free','rentalCash','etf','rentals','loan','homeValue','upfront','endEtf',
+  'endHomeEquity','annualGain','years'])if(!Number.isFinite(r.stats[key]))throw Error('Invalid saved financial figures.');
+ return {id:makeId(),name:r.name.trim(),created:typeof r.created==='string'?r.created:new Date().toISOString(),
+  snapshot:JSON.parse(JSON.stringify(r.snapshot)),stats:JSON.parse(JSON.stringify(r.stats))};
+}
+function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(Boolean);if(list.length<2)return '<h3>Compare saved scenarios</h3><div class="scenario-empty">Select at least two saved plans using Compare.</div>';
  const data=[['Household net income / month','net','€',false],['Disposable cash / month','free','€',true],['Rental cash flow / month','rentalCash','€',true],['Upfront capital modeled','upfront','€',false],['Initial ETF balance','etf','€',false],['Own-home mortgage debt','loan','€',false],['Illustrative ETF gain / year','annualGain','€',true],['ETF value at projection end','endEtf','€',true],['Home equity at projection end','endHomeEquity','€',true]];
  let html='<h3>Compare saved scenarios</h3><div class="table-scroll"><table><thead><tr><th>Financial measure</th>'+list.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
  for(const [label,key,_,highlight] of data){const best=Math.max(...list.map(r=>Number(r.stats[key])||0));html+=`<tr><td>${label}</td>`+list.map(r=>{const value=Number(r.stats[key]);return `<td class="${highlight&&value===best?'best':''} ${value<0?'negative':''}">${euro(value)}</td>`}).join('')+'</tr>';}
- const base=list[0];if(list.length>1){html+='</tbody></table></div><div class="delta-cards">'+list.slice(1).map(r=>{const d=(k)=>Number(r.stats[k]||0)-Number(base.stats[k]||0);return `<article class="delta-card"><strong>${esc(r.name)} vs ${esc(base.name)}</strong><p>Monthly disposable change: <b class="${d('free')>=0?'green':'red'}">${d('free')>=0?'+':''}${euro(d('free'))}</b></p><p>Upfront capital difference: <b>${d('upfront')>=0?'+':''}${euro(d('upfront'))}</b></p><p>Rental cash-flow difference: <b class="${d('rentalCash')>=0?'green':'red'}">${d('rentalCash')>=0?'+':''}${euro(d('rentalCash'))}/mo</b></p><p>End ETF difference: <b>${d('endEtf')>=0?'+':''}${euro(d('endEtf'))}</b></p></article>`}).join('')+'</div>';}else html+='</tbody></table></div>';return html+'<p class="scenario-footnote">Saved snapshots use each scenario’s projection horizon, tax assumptions and financial inputs. Compare the same horizon and starting capital for meaningful conclusions. Future ETF growth is hypothetical, not cash income. Estimated rental tax savings may not arrive monthly.</p>';
+ const mismatch=list.some(r=>r.stats.years!==list[0].stats.years||Math.abs(r.stats.upfront-list[0].stats.upfront)>1);if(mismatch)html+='<tr><td colspan="'+(list.length+1)+'"><strong>Compare carefully:</strong> these plans have different projection horizons or upfront capital.</td></tr>';const base=list[0];if(list.length>1){html+='</tbody></table></div><div class="delta-cards">'+list.slice(1).map(r=>{const d=(k)=>Number(r.stats[k]||0)-Number(base.stats[k]||0);return `<article class="delta-card"><strong>${esc(r.name)} vs ${esc(base.name)}</strong><p>Monthly disposable change: <b class="${d('free')>=0?'green':'red'}">${d('free')>=0?'+':''}${euro(d('free'))}</b></p><p>Upfront capital difference: <b>${d('upfront')>=0?'+':''}${euro(d('upfront'))}</b></p><p>Rental cash-flow difference: <b class="${d('rentalCash')>=0?'green':'red'}">${d('rentalCash')>=0?'+':''}${euro(d('rentalCash'))}/mo</b></p><p>End ETF difference: <b>${d('endEtf')>=0?'+':''}${euro(d('endEtf'))}</b></p></article>`}).join('')+'</div>';}else html+='</tbody></table></div>';return html+'<p class="scenario-footnote">Saved snapshots use each scenario’s projection horizon, tax assumptions and financial inputs. Compare the same horizon and starting capital for meaningful conclusions. Future ETF growth is hypothetical, not cash income. Estimated rental tax savings may not arrive monthly.</p>';
  }
  function draw(){selected=selected.filter(id=>records.some(r=>r.id===id)).slice(0,3);$('scenarioCards').innerHTML=records.length?records.map(r=>`<article class="scenario-tile ${selected.includes(r.id)?'active':''}"><strong>${esc(r.name)}</strong><div class="small">${r.stats.mode==='single'?'Single':'Married'} · ${r.stats.housing==='buy'?'Buying home':'Existing housing'} · ${r.stats.rentals} rental(s)</div><div class="small">Free cash <strong style="display:inline">${euro(r.stats.free)}/mo</strong><br>ETFs ${euro(r.stats.etf)} · ${r.stats.years} years</div><label class="small" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" data-compare="${esc(r.id)}" ${selected.includes(r.id)?'checked':''}> Compare</label><div class="actions"><button class="btn primary" data-action="load" data-id="${esc(r.id)}">Load</button><button class="btn" data-action="duplicate" data-id="${esc(r.id)}">Duplicate</button><button class="btn" data-action="rename" data-id="${esc(r.id)}">Rename</button><button class="btn" data-action="delete" data-id="${esc(r.id)}">Delete</button></div></article>`).join(''):'<div class="scenario-empty">No saved plans yet. Try saving “Home only”, then add a rental and save “Home + rental”.</div>';
- $('scenarioCompare').innerHTML=table();}
- $('saveScenario').addEventListener('click',save);$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
- $('scenarioCards').addEventListener('change',e=>{const cb=e.target.closest('[data-compare]');if(!cb)return;const id=cb.dataset.compare;if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios at once.');return;}selected.push(id);}else selected=selected.filter(x=>x!==id);draw();});
- $('scenarioCards').addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const r=records.find(x=>x.id===btn.dataset.id);if(!r)return;({load:restore,duplicate,rename:changeName,delete:remove})[btn.dataset.action]?.(r);});
- $('exportScenario').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,exported:new Date().toISOString(),scenarios:records},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='wealth-planner-scenarios.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);note('Backup downloaded. Treat it as private financial information.');});
- $('importScenario').addEventListener('click',()=>$('scenarioFile').click());$('scenarioFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>2e6)throw Error('Backup is too large.');const data=JSON.parse(await f.text());if(!Array.isArray(data.scenarios))throw Error('Invalid scenario backup.');const valid=data.scenarios.filter(r=>r&&typeof r.name==='string'&&r.snapshot?.fields&&r.stats&&typeof r.stats.free==='number').slice(0,30);if(!valid.length)throw Error('Backup has no valid scenarios.');if(!confirm(`Import ${valid.length} scenarios? Existing saved plans will be replaced.`))return;records=valid.map(r=>({...r,id:makeId(),name:r.name.slice(0,70)}));selected=[];persist();draw();note(`Imported ${records.length} scenarios.`);}catch(err){note(`Import failed: ${err.message}`);}finally{e.target.value='';}});
+ $('scenarioCompare').innerHTML=table();syncSelector();}
+ $('saveScenario').addEventListener('click',save);
+$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
+$('updateScenario').addEventListener('click',updateActive);
+$('undoScenarioLoad').addEventListener('click',undoLoad);
+$('activeScenario').addEventListener('change',e=>{
+ const rec=records.find(r=>r.id===e.target.value);
+ if(rec)restore(rec);
+ else{activeId=null;writeActive();updateStatus();note('Detached working inputs. Save as new to keep a copy.');}
+});
+$('scenarioCards').addEventListener('change',e=>{
+ const cb=e.target.closest('[data-compare]');if(!cb)return;
+ const id=cb.dataset.compare;
+ if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios.');return;}selected.push(id);}
+ else selected=selected.filter(x=>x!==id);
  draw();
+});
+$('scenarioCards').addEventListener('click',e=>{
+ const b=e.target.closest('[data-action]');if(!b)return;
+ const rec=records.find(r=>r.id===b.dataset.id);if(!rec)return;
+ ({load:restore,duplicate,rename:changeName,delete:remove})[b.dataset.action]?.(rec);
+});
+$('exportScenario').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),scenarios:records},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;
+ a.download='wealth-planner-scenarios.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);
+ note('Backup downloaded. It contains private financial assumptions: store it securely.');
+});
+$('importScenario').addEventListener('click',()=>$('scenarioFile').click());
+$('scenarioFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  if(f.size>2e6)throw Error('Backup is too large.');
+  const data=JSON.parse(await f.text());
+  if(!object(data)||![1,2].includes(data.version??1)||!Array.isArray(data.scenarios)||
+   !data.scenarios.length||data.scenarios.length>30)
+   throw Error('Unsupported backup version or scenario count.');
+  // V1 backups are migrated; every record must validate. No silent partial import.
+  const valid=data.scenarios.map(validateImportedRecord);
+  if(!confirm('Replace '+records.length+' saved plan(s) with '+valid.length+
+   ' imported plan(s)? Please export a backup first.'))return;
+  const previous=records;records=valid;
+  if(!persist()){records=previous;return;}
+  activeId=null;writeActive();selected=[];draw();
+  note('Imported '+records.length+' scenarios. Backup upgraded to version 2.');
+ }catch(err){note('Import failed: '+err.message);}
+ finally{e.target.value='';}
+});
+// Original calculator renders and persists on input/change. Check the saved
+// snapshot afterward without altering any financial inputs or scenario modes.
+document.addEventListener('input',e=>{
+ if(e.target.closest('#scenarioWorkspace,#scenarioQuickbar'))return;
+ queueMicrotask(updateStatus);
+});
+document.addEventListener('change',e=>{
+ if(e.target.closest('#scenarioWorkspace,#scenarioQuickbar'))return;
+ queueMicrotask(updateStatus);
+});
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-strategy],[data-switch-home],[data-switch-profile],'+
+  '[data-half],#reset,#addRental,[data-rental-action]'))queueMicrotask(updateStatus);
+});
+draw();
 })();
 </script>
 
