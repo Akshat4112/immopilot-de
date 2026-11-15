@@ -20,16 +20,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Keep the existing React experience available in local development.
-      // GitHub Pages opens the Household Wealth Planner as the public homepage.
-      if (
-        location.hostname === 'akshat4112.github.io' &&
-        /^\/immopilot-de\/(?:index\.html)?$/.test(location.pathname)
-      ) {
-        location.replace('/immopilot-de/wealth-planner.html' + location.search + location.hash)
-      }
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
