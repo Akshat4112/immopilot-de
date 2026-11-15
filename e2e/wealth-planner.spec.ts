@@ -1196,6 +1196,12 @@ test('UX-030 rental cash waterfall is economic even when household tax timing is
   const taxBefore = await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-tax')
   const cashBefore = await planner.locator('#rentalWaterfallPanel').getAttribute('data-waterfall-after')
   await planner.getByRole('tab', { name: /Properties/i }).click()
+  const rentalSection = planner.locator('#rentalInputsSection')
+  const toggle = rentalSection.locator('.section-toggle')
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+    await toggle.click()
+  }
+  await expect(planner.locator('#rentalTaxTiming')).toBeVisible()
   await planner.locator('#rentalTaxTiming').selectOption('accrual')
   await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-tax', taxBefore ?? '')
   await expect(planner.locator('#rentalWaterfallPanel')).toHaveAttribute('data-waterfall-after', cashBefore ?? '')
