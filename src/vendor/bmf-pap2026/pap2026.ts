@@ -251,14 +251,11 @@ export class Pap2026 implements PapInstance {
   // -------------------------------------------------------------------------
   private readonly ZAHL1 = new Decimal(1);
   private readonly ZAHL2 = new Decimal(2);
-  private readonly ZAHL5 = new Decimal(5);
   private readonly ZAHL7 = new Decimal(7);
   private readonly ZAHL12 = new Decimal(12);
   private readonly ZAHL100 = new Decimal(100);
   private readonly ZAHL360 = new Decimal(360);
-  private readonly ZAHL500 = new Decimal(500);
   private readonly ZAHL700 = new Decimal(700);
-  private readonly ZAHL1000 = new Decimal(1000);
   private readonly ZAHL10000 = new Decimal(10000);
 
   // =========================================================================
@@ -509,15 +506,15 @@ export class Pap2026 implements PapInstance {
 
       if (this.LZZ === 1) {
         this.VBEZB = this.VBEZM.times(new Decimal(this.ZMVB)).plus(this.VBEZS);
-        this.HFVB = this.TAB2[this.J].div(this.ZAHL12).times(new Decimal(this.ZMVB)).toDP(0, Decimal.ROUND_UP);
-        this.FVBZ = this.TAB3[this.J].div(this.ZAHL12).times(new Decimal(this.ZMVB)).toDP(0, Decimal.ROUND_UP);
+        this.HFVB = this.TAB2[this.J]!.div(this.ZAHL12).times(new Decimal(this.ZMVB)).toDP(0, Decimal.ROUND_UP);
+        this.FVBZ = this.TAB3[this.J]!.div(this.ZAHL12).times(new Decimal(this.ZMVB)).toDP(0, Decimal.ROUND_UP);
       } else {
         this.VBEZB = this.VBEZM.times(this.ZAHL12).plus(this.VBEZS).toDP(2, Decimal.ROUND_DOWN);
-        this.HFVB = this.TAB2[this.J];
-        this.FVBZ = this.TAB3[this.J];
+        this.HFVB = this.TAB2[this.J]!;
+        this.FVBZ = this.TAB3[this.J]!;
       }
 
-      this.FVB = this.VBEZB.times(this.TAB1[this.J]).div(this.ZAHL100).toDP(2, Decimal.ROUND_UP);
+      this.FVB = this.VBEZB.times(this.TAB1[this.J]!).div(this.ZAHL100).toDP(2, Decimal.ROUND_UP);
       if (this.FVB.cmp(this.HFVB) === 1) {
         this.FVB = this.HFVB;
       }
@@ -525,9 +522,9 @@ export class Pap2026 implements PapInstance {
         this.FVB = this.ZVBEZJ;
       }
 
-      this.FVBSO = this.FVB.plus(this.VBEZBSO.times(this.TAB1[this.J]).div(this.ZAHL100)).toDP(2, Decimal.ROUND_UP);
-      if (this.FVBSO.cmp(this.TAB2[this.J]) === 1) {
-        this.FVBSO = this.TAB2[this.J];
+      this.FVBSO = this.FVB.plus(this.VBEZBSO.times(this.TAB1[this.J]!).div(this.ZAHL100)).toDP(2, Decimal.ROUND_UP);
+      if (this.FVBSO.cmp(this.TAB2[this.J]!) === 1) {
+        this.FVBSO = this.TAB2[this.J]!;
       }
 
       this.HFVBZSO = this.VBEZB.plus(this.VBEZBSO).div(this.ZAHL100).minus(this.FVBSO).toDP(2, Decimal.ROUND_DOWN);
@@ -535,8 +532,8 @@ export class Pap2026 implements PapInstance {
       if (this.FVBZSO.cmp(this.HFVBZSO) === 1) {
         this.FVBZSO = this.HFVBZSO.toDP(0, Decimal.ROUND_UP);
       }
-      if (this.FVBZSO.cmp(this.TAB3[this.J]) === 1) {
-        this.FVBZSO = this.TAB3[this.J];
+      if (this.FVBZSO.cmp(this.TAB3[this.J]!) === 1) {
+        this.FVBZSO = this.TAB3[this.J]!;
       }
 
       this.HFVBZ = this.VBEZB.div(this.ZAHL100).minus(this.FVB).toDP(2, Decimal.ROUND_DOWN);
@@ -564,8 +561,8 @@ export class Pap2026 implements PapInstance {
       }
 
       this.BMG = this.ZRE4J.minus(this.ZVBEZJ);
-      this.ALTE = this.BMG.times(this.TAB4[this.K]).toDP(0, Decimal.ROUND_UP);
-      this.HBALTE = this.TAB5[this.K];
+      this.ALTE = this.BMG.times(this.TAB4[this.K]!).toDP(0, Decimal.ROUND_UP);
+      this.HBALTE = this.TAB5[this.K]!;
       if (this.ALTE.cmp(this.HBALTE) === 1) {
         this.ALTE = this.HBALTE;
       }
