@@ -14,7 +14,7 @@ if (!root) throw new Error('Application root element was not found')
 document.title = 'ImmoPilot DE · Household Wealth Planner'
 const plannerUrl = `${import.meta.env.BASE_URL}wealth-planner.html`
 
-function Planner() {
+export function Planner() {
   const plannerFrame = useRef<HTMLIFrameElement>(null)
 
   return (
