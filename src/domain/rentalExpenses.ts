@@ -37,12 +37,19 @@ export function calculateRentalExpenseBreakdown(input: RentalExpenseInput): Rent
       throw new Error(`${name} must be finite, positive or zero, and within €100 million`)
     }
   }
-  if (input.mortgagePaymentEuro + 0.01 < input.mortgageInterestEuro + input.mortgagePrincipalEuro) {
+  if (
+    input.mortgagePaymentEuro + 0.01 <
+    input.mortgageInterestEuro + input.mortgagePrincipalEuro
+  ) {
     throw new Error('Mortgage payments must cover principal plus interest')
   }
-  const deductibleOperatingEuro = input.recoverableCostsEuro + input.nonrecoverableCostsEuro + input.eligibleRepairsEuro
+  const deductibleOperatingEuro =
+    input.recoverableCostsEuro + input.nonrecoverableCostsEuro + input.eligibleRepairsEuro
   const annualRecurringTaxableEuro =
-    input.collectedRentEuro - deductibleOperatingEuro - input.mortgageInterestEuro - input.buildingAfaEuro
+    input.collectedRentEuro -
+    deductibleOperatingEuro -
+    input.mortgageInterestEuro -
+    input.buildingAfaEuro
   const annualCashBeforeIncomeTaxEuro =
     input.collectedRentEuro -
     (deductibleOperatingEuro + input.wegReserveContributionEuro) -
