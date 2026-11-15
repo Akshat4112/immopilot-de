@@ -2048,6 +2048,177 @@ function propertySelectorUpdate(rent){
  $('amortTarget').innerHTML='<option value="home">Primary / existing home</option>'+rent.properties.map(p=>`<option value="${p._id}">${safeText(p.name)}</option>`).join('');
  $('amortTarget').value=[...$('amortTarget').options].some(v=>v.value===amortOld)?amortOld:'home';delete window._loadAmortTarget;
 }
+/* UX-028: equal-upfront-cash, equal-annual-housing-budget decision comparison.
+   This isolates the new home decision from shared investments and household income. */
+function calculateRentBuyPaths(x){
+ const price=Math.max(0,n('price')),down=Math.min(price,Math.max(0,n('down')));
+ const purchasePct=Math.max(0,n('purchase')),fees=price*purchasePct/100;
+ const upfront=down+fees,owner=Math.max(0,n('owner')),emi=Math.max(0,n('emi'));
+ if(!price||!Number.isFinite(price)||!Number.isFinite(upfront))return {valid:false,reason:'Enter a positive hypothetical home purchase price in the Properties inputs to compare the alternatives.'};
+ const buy={...x,homeMode:'buy',homeNewPurchase:true,housingType:'new-owner',
+  price,down,loan:price-down,purchase:purchasePct,homeAcquisitionCash:upfront,
+  rate:Math.max(0,n('rate')),emi,fixYears:Math.max(1,Math.floor(n('fixYears'))),
+  refiRate:Math.max(0,n('refiRate')),extra:Math.max(0,n('extra')),owner,
+  husband:0,wife:0,monthlyH:0,monthlyW:0,start:0,drawMode:'none',strategyEtf:'off'};
+ const mortgage=simulate(buy);
+ let homeEtf=0,renterEtf=upfront,renterCash=upfront,cumBuy=0,cumRent=0;
+ let cumBuyCost=fees,cumRentCost=0;
+ const points=[{year:0,buy:down,etf:upfront,cash:upfront,homeEquity:down,
+  buyPaid:0,rentPaid:0,buyCost:fees,rentCost:0,budget:0,buyContribution:0,rentContribution:0,
+  homeDebt:buy.loan,homeValue:price,interest:0}];
+ for(let year=1;year<=x.years;year++){
+  const today=mortgage.rows[year],yesterday=mortgage.rows[year-1];
+  const debtPaid=today.mortgagePaid+today.extraPaid;
+  const principal=yesterday.mortgage-today.mortgage;
+  const accruedInterest=Math.max(0,debtPaid-principal);
+  const homeRunning=owner*12*Math.pow(1+x.expenseGrowth/100,year-1);
+  const homeOutgo=debtPaid+homeRunning;
+  const warmRent=x.decisionRent*12*Math.pow(1+x.decisionRentGrowth/100,year-1);
+  const budget=Math.max(homeOutgo,warmRent);
+  const buyContribution=Math.max(0,budget-homeOutgo);
+  const rentContribution=Math.max(0,budget-warmRent);
+  const effectiveReturn=year===1&&Number(x.crash)<0?Number(x.crash):x.ret;
+  const growth=Math.pow(Math.max(.001,(1+effectiveReturn/100)*(1-x.ter/100)),1/12)-1;
+  for(let month=0;month<12;month++){
+   homeEtf=Math.max(0,homeEtf*(1+growth)+buyContribution/12);
+   renterEtf=Math.max(0,renterEtf*(1+growth)+rentContribution/12);
+  }
+  renterCash+=rentContribution;
+  cumBuy+=homeOutgo;cumRent+=warmRent;
+  cumBuyCost+=homeRunning+accruedInterest;cumRentCost+=warmRent;
+  points.push({year,buy:today.homeEquity+homeEtf,etf:renterEtf,cash:renterCash,
+   homeEquity:today.homeEquity,homeDebt:today.mortgage,homeValue:today.homeEquity+today.mortgage,
+   buyPaid:cumBuy,rentPaid:cumRent,buyCost:cumBuyCost,rentCost:cumRentCost,
+   budget,buyContribution,rentContribution,interest:accruedInterest});
+ }
+ return {valid:true,rows:points,upfront,fees,price,down,buy,mortgage};
+}
+function renderRentBuyExplorer(x){
+ const root=$('rentBuyExplorer');if(!root)return;
+ const s=window._rentBuyUI||(window._rentBuyUI={
+  years:'all',metric:'wealth',view:window.matchMedia&&window.matchMedia('(max-width: 600px)').matches?'table':'chart',
+  year:null,bound:false
+ });
+ const model=calculateRentBuyPaths(x);s.model=model;
+ const euro=money;
+ const warnings=[];
+ if(!model.valid){
+  $('rbWarnings').textContent=model.reason;
+  for(const id of ['rbBuyValue','rbEtfValue','rbCashValue'])set(id,'—');
+  $('rbChart').innerHTML='<text x="460" y="180" text-anchor="middle" fill="#73847e" font-size="16">Enter a home price to begin</text>';
+  $('rbRows').innerHTML='';$('rbDetail').textContent='No comparable housing purchase is configured.';
+  return;
+ }
+ const maxYear=s.years==='all'?x.years:Math.min(x.years,Number(s.years));
+ const rows=model.rows.filter(p=>p.year<=maxYear);
+ if(s.year===null||s.year>maxYear)s.year=maxYear;
+ const last=rows.at(-1);
+ set('rbBuyValue',euro(last.buy));set('rbEtfValue',euro(last.etf));set('rbCashValue',euro(last.cash));
+ $('rbBuyLabel').textContent='Buy home · net wealth in year '+maxYear;
+ if(x.homeMode!=='buy')warnings.push('This compares a NEW hypothetical own-home purchase using the Properties purchase inputs, even though your active strategy does not buy a home. An already-owned home is excluded.');
+ const remaining=Math.max(0,x.availableCapital-x.cashReserve-x.start);
+ if(model.upfront>remaining+.01)warnings.push('Upfront requirement '+euro(model.upfront)+' exceeds the '+euro(remaining)+' modeled liquid capital left after the desired reserve and existing ETF investments. This what-if assumes the cash is available.');
+ if(model.mortgage.negativeAmort)warnings.push('The entered mortgage payment is insufficient to cover interest in at least one month; loan debt can increase.');
+ if(x.decisionRent===0)warnings.push('The rent alternative is €0/month. Enter a realistic warm rent to make this comparison meaningful.');
+ $('rbWarnings').textContent=warnings.join(' ');
+ const vals=[
+  s.metric==='wealth'?['buy','etf','cash']:s.metric==='paid'?['buyPaid','rentPaid']:['buyCost','rentCost']
+ ];
+ const keys=vals[0];
+ const labels=s.metric==='wealth'?['Buy home + invested surplus','Rent + ETF','Rent + cash']:
+  s.metric==='paid'?['Buy · cumulative housing cash paid','Rent · cumulative housing cash paid']:
+   ['Buy · fees + interest + operating costs','Rent · cumulative warm rent'];
+ const colors=s.metric==='wealth'?['#167f70','#7d64b4','#c09553']:['#167f70','#7d64b4'];
+ const W=920,H=380,L=91,R=25,T=33,B=53,ww=W-L-R,hh=H-T-B;
+ const minRaw=Math.min(0,...rows.flatMap(p=>keys.map(k=>p[k])));
+ const maxRaw=Math.max(1000,...rows.flatMap(p=>keys.map(k=>p[k])));
+ const lo=minRaw<0?minRaw*1.12:0,hi=maxRaw*1.12;
+ const X=y=>L+ww*(maxYear?y/maxYear:0),Y=v=>T+hh*(hi-v)/(hi-lo),fmt=n=>n.toFixed(2);
+ const compact=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'m':Math.abs(v)>=1000?Math.round(v/1000)+'k':Math.round(v).toString();
+ let svg='';
+ for(let i=0;i<=4;i++){
+  const v=lo+(hi-lo)*i/4,y=Y(v);
+  svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+fmt(y)+'" y2="'+fmt(y)+
+   '" stroke="#d7e6de"/><text x="'+(L-12)+'" y="'+fmt(y+4)+
+   '" text-anchor="end" fill="#66827a" font-size="12">'+compact(v)+'</text>';
+ }
+ for(const yr of [...new Set([0,Math.min(5,maxYear),Math.min(10,maxYear),Math.min(20,maxYear),maxYear])].sort((a,b)=>a-b)){
+  svg+='<text x="'+fmt(X(yr))+'" y="'+(H-20)+'" fill="#66827a" text-anchor="middle" font-size="12">'+yr+'y</text>';
+ }
+ for(let k=0;k<keys.length;k++){
+  const path=rows.map(p=>fmt(X(p.year))+','+fmt(Y(p[keys[k]]))).join(' ');
+  svg+='<polyline points="'+path+'" fill="none" stroke="'+colors[k]+
+   '" stroke-width="3.1" stroke-linejoin="round"'+(k===2?' stroke-dasharray="6,5"':'')+'><title>'+labels[k]+'</title></polyline>';
+ }
+ for(const p of rows){
+  svg+='<g data-rb-year="'+p.year+'" role="button" tabindex="0" aria-label="Year '+p.year+
+   ': '+labels[0]+' '+euro(p[keys[0]])+'"><circle class="rb-dot" cx="'+fmt(X(p.year))+
+   '" cy="'+fmt(Y(p[keys[0]]))+'" r="5" fill="#fff" stroke="'+colors[0]+
+   '" stroke-width="2"/><title>Year '+p.year+': '+euro(p[keys[0]])+'</title></g>';
+ }
+ $('rbChart').innerHTML=svg;
+ $('rbChart').setAttribute('aria-label',labels.join(', ')+' through year '+maxYear);
+ $('rbLegend').innerHTML=labels.map((label,i)=>'<span><i style="background:'+colors[i]+
+  '"></i>'+label+'</span>').join('');
+ $('rbRows').innerHTML=rows.map(p=>{
+  const nums=[p.buy,p.etf,p.cash,p.homeEquity,p.buyPaid,p.rentPaid,p.buyCost,p.rentCost,p.budget];
+  return '<tr tabindex="0" data-rb-year-row="'+p.year+'" data-rb-buy="'+fmt(p.buy)+
+   '" data-rb-etf="'+fmt(p.etf)+'" data-rb-cash="'+fmt(p.cash)+
+   '" data-rb-budget="'+fmt(p.budget)+'" data-rb-buy-contribution="'+fmt(p.buyContribution)+
+   '" data-rb-rent-contribution="'+fmt(p.rentContribution)+'" data-rb-buy-annual="'+fmt(p.buyPaid-(model.rows[p.year-1]?.buyPaid||0))+
+   '" data-rb-rent-annual="'+fmt(p.rentPaid-(model.rows[p.year-1]?.rentPaid||0))+
+   '" aria-selected="'+(p.year===s.year)+'"><th scope="row">Year '+p.year+'</th>'+
+   nums.map(n=>'<td'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
+ }).join('');
+ function focusYear(year){
+  const p=rows.find(z=>z.year===year);if(!p)return;
+  s.year=p.year;
+  $('rbDetail').textContent='Year '+p.year+': buy wealth '+euro(p.buy)+' (home equity '+euro(p.homeEquity)+
+   '), rent + ETF '+euro(p.etf)+', rent + cash '+euro(p.cash)+
+   '. Cumulative housing cash paid: buy '+euro(p.buyPaid)+' versus rent '+euro(p.rentPaid)+
+   '. Starting matched cash '+euro(model.upfront)+'; annual year-'+p.year+' budget '+euro(p.budget)+'.';
+  for(const dot of $('rbChart').querySelectorAll('[data-rb-year]')){
+   dot.classList.toggle('selected',Number(dot.dataset.rbYear)===year);
+  }
+  for(const tr of $('rbRows').querySelectorAll('[data-rb-year-row]')){
+   tr.setAttribute('aria-selected',String(Number(tr.dataset.rbYearRow)===year));
+  }
+ }
+ s.focusYear=focusYear;focusYear(s.year);
+ $('rbYears').value=s.years;
+ for(const button of root.querySelectorAll('[data-rb-metric]'))button.setAttribute('aria-pressed',String(button.dataset.rbMetric===s.metric));
+ for(const button of root.querySelectorAll('[data-rb-view]'))button.setAttribute('aria-pressed',String(button.dataset.rbView===s.view));
+ $('rbChartPane').hidden=s.view!=='chart';$('rbTablePane').hidden=s.view!=='table';
+ if(!s.bound){
+  s.bound=true;
+  root.addEventListener('click',e=>{
+   const metric=e.target.closest('[data-rb-metric]'),view=e.target.closest('[data-rb-view]');
+   const year=e.target.closest('[data-rb-year],[data-rb-year-row]');
+   if(metric||view){
+    if(metric)s.metric=metric.dataset.rbMetric;
+    if(view)s.view=view.dataset.rbView;
+    renderRentBuyExplorer(inputs());
+   }else if(year)s.focusYear(Number(year.dataset.rbYear??year.dataset.rbYearRow));
+  });
+  root.addEventListener('change',e=>{
+   if(e.target.id==='rbYears'){s.years=e.target.value;renderRentBuyExplorer(inputs());}
+  });
+  root.addEventListener('focusin',e=>{
+   const p=e.target.closest('[data-rb-year],[data-rb-year-row]');
+   if(p)s.focusYear(Number(p.dataset.rbYear??p.dataset.rbYearRow));
+  });
+  root.addEventListener('pointerover',e=>{
+   const p=e.target.closest('[data-rb-year]');
+   if(p&&Number(p.dataset.rbYear)!==s.year)s.focusYear(Number(p.dataset.rbYear));
+  });
+  root.addEventListener('keydown',e=>{
+   const p=e.target.closest('[data-rb-year],[data-rb-year-row]');
+   if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();s.focusYear(Number(p.dataset.rbYear??p.dataset.rbYearRow));}
+  });
+ }
+ window.ImmoPilotRentBuyExplorer={calculate:calculateRentBuyPaths};
+}
+
 function compareModel(x,tax,rent){
  const selected=$('comparisonProperty').value;
  const selection=selected==='all'?rent.properties:rent.properties.filter(p=>String(p._id)===selected);
@@ -2118,7 +2289,7 @@ function propertyRanking(x,tax,rent){if(!rent.properties.length){$('rankRows').i
  const W=820,H=275,left=175,right=85,top=23,height=H-top-25,step=height/Math.max(1,ranked.length),largest=Math.max(250,...ranked.map(q=>Math.abs(q.cash)));let svg=`<line x1="${left+280}" x2="${left+280}" y1="${top}" y2="${H-9}" stroke="#9dadb5" stroke-dasharray="3,4"/>`;
  ranked.forEach((z,i)=>{const y=top+i*step+step*.2,bh=Math.max(12,step*.57),bar=Math.abs(z.cash)/largest*245,start=z.cash>=0?left+280:left+280-bar;svg+=`<text x="10" y="${y+bh*.70}" font-size="12" fill="#445c6c">${safeText(z.p.name.slice(0,23))}</text><rect x="${start}" y="${y}" width="${Math.max(1,bar)}" height="${bh}" rx="4" fill="${z.cash>=0?'#15907b':'#c57972'}"><title>${safeText(z.p.name)}: ${money(z.cash)} / month</title></rect><text x="${z.cash>=0?start+bar+8:start-8}" y="${y+bh*.70}" font-size="11" text-anchor="${z.cash>=0?'start':'end'}" fill="#3c5260">${money(z.cash)}</text>`;});$('rankingChart').innerHTML=svg;
 }
-function renderAnalytics(x,tax,rent){propertySelectorUpdate(rent);compareModel(x,tax,rent);heatmapModel(x,tax,rent);amortizationPlot(x,rent);riskPlot(x);propertyRanking(x,tax,rent);}
+function renderAnalytics(x,tax,rent){propertySelectorUpdate(rent);renderRentBuyExplorer(x);compareModel(x,tax,rent);heatmapModel(x,tax,rent);amortizationPlot(x,rent);riskPlot(x);propertyRanking(x,tax,rent);}
 $('comparisonProperty').addEventListener('change',()=>render());$('amortTarget').addEventListener('change',()=>render());
 
 
