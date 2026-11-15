@@ -31,8 +31,8 @@ test('the planner remains usable on mobile @cross-browser', async ({ page }) => 
   const heading = planner.getByRole('heading', { name: /Household · Housing/ })
   await expect(heading).toBeVisible()
 
-  const outerOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  const outerOverflow = await page.evaluate<boolean>(
+    'document.documentElement.scrollWidth > document.documentElement.clientWidth',
   )
   expect(outerOverflow).toBe(false)
 })
