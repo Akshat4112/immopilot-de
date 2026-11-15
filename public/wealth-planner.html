@@ -540,6 +540,48 @@ body[data-theme="dark"] .wealth-timeline-warning{color:#f8b2bd}
 .wealth-timeline-table tr:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:-3px}
 @media print{.wealth-timeline-controls,#wealthTimelineChartPane{display:none!important}#wealthTimelineTablePane{display:block!important}}
 
+
+/* UX-027 — year-specific planning events and baseline comparison */
+.life-events-panel{margin-top:16px;min-width:0}
+.life-events-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.life-events-head h3{font-size:1.1rem;margin:0 0 5px}
+.life-events-head p{font-size:.79rem;color:var(--muted);line-height:1.55;margin:0;max-width:730px}
+.life-events-form{display:grid;grid-template-columns:1.3fr .65fr 1fr 1.2fr auto;gap:9px;align-items:end;margin:16px 0}
+.life-events-form label{font-size:.73rem;line-height:1.4;font-weight:750;color:var(--ink);display:flex;flex-direction:column;gap:5px;min-width:0}
+.life-events-form input,.life-events-form select{border:1px solid var(--ux-line,#dae6e0);border-radius:9px;min-height:40px;width:100%;padding:8px 9px;font-size:.8rem;background:var(--ux-surface,#fff);color:var(--ink);min-width:0}
+.life-events-form input:focus-visible,.life-events-form select:focus-visible,.life-events-form button:focus-visible,.life-events-list button:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:2px}
+.life-events-form button{min-height:40px}
+.life-events-list{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}
+.life-event-pill{display:flex;align-items:center;gap:8px;border:1px solid var(--ux-line,#dae6e0);border-radius:10px;padding:7px 9px;background:var(--ux-surface-soft,#f4f8f5);font-size:.75rem}
+.life-event-pill strong{color:var(--ink)}
+.life-event-pill button{min-height:28px;font-size:.71rem;padding:4px 7px;border:1px solid #bdcfc7;border-radius:7px;background:var(--ux-surface,#fff);color:var(--ink);cursor:pointer}
+.life-events-stats{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}
+.life-events-stats span{font-size:.8rem;color:var(--ink)}
+.life-events-stats strong{font-variant-numeric:tabular-nums}
+.life-events-graph{overflow-x:auto;max-width:100%;border:1px solid var(--ux-line,#dae6e0);border-radius:12px;background:var(--ux-surface-soft,#f4f8f5)}
+.life-events-svg{min-width:720px!important;width:100%;height:auto;display:block}
+.life-events-svg [data-event-year]{cursor:pointer}
+.life-events-svg [data-event-year]:focus-visible{outline:3px solid var(--ux-focus,#147d66);outline-offset:-3px}
+.life-events-table-scroll{overflow:auto;max-width:100%;max-height:420px;margin-top:13px;border:1px solid var(--ux-line,#dae6e0);border-radius:12px}
+.life-events-table{min-width:800px;width:100%;border-collapse:collapse}
+.life-events-table td,.life-events-table th{border-bottom:1px solid var(--ux-line,#dae6e0);padding:8px 10px;font-size:.77rem;text-align:right;font-variant-numeric:tabular-nums}
+.life-events-table td:first-child,.life-events-table th:first-child{text-align:left}
+.life-events-table td:last-child,.life-events-table th:last-child{text-align:left;white-space:normal;min-width:180px}
+.life-events-table thead{background:#e9f3ed}
+.life-events-table .event-positive{color:#0c785e;font-weight:750}
+.life-events-table .event-negative{color:#ae4351;font-weight:750}
+.life-events-note{font-size:.73rem;color:var(--muted);line-height:1.65;margin:10px 0}
+.life-events-warning{font-size:.78rem;line-height:1.5;color:#aa424c;font-weight:650}
+.life-events-detail{font-size:.8rem;line-height:1.5;margin:10px 0;color:var(--ink)}
+body[data-theme="dark"] .life-event-pill,body[data-theme="dark"] .life-events-graph{background:#20393b}
+body[data-theme="dark"] .life-events-form input,body[data-theme="dark"] .life-events-form select,body[data-theme="dark"] .life-event-pill button{background:#243c40}
+body[data-theme="dark"] .life-events-table thead{background:#28433d}
+body[data-theme="dark"] .life-events-warning,body[data-theme="dark"] .life-events-table .event-negative{color:#f2a6b1}
+body[data-theme="dark"] .life-events-table .event-positive{color:#70dab7}
+@media(max-width:1020px){.life-events-form{grid-template-columns:repeat(2,minmax(0,1fr))}.life-events-form button{grid-column:1/-1}}
+@media(max-width:580px){.life-events-form{grid-template-columns:1fr}.life-events-form button{grid-column:auto}.maincol svg.life-events-svg{min-width:720px!important}}
+@media print{.life-events-form,.life-event-pill button{display:none!important}.life-events-table-scroll{max-height:none}}
+
 </style>
 </head>
 <body><main>
@@ -951,6 +993,35 @@ body[data-theme="dark"] .wealth-timeline-warning{color:#f8b2bd}
   <p class="wealth-timeline-warning" id="wealthTimelineWarning" hidden></p>
   <p class="wealth-timeline-footnote">Net position = home equity + rental equity + ETF holdings + modeled cash. Gross assets view displays market values and property debt separately, without subtracting loans twice. Negative balances affect the net line and table, but are not stacked as positive assets. Year 0 is the modeled opening/purchase position. Cash is a reserve assumption, not verified bank holdings. No ETF liquidation tax, property sale costs or unmodeled liabilities are included.</p>
  </div>
+<div class="plot-card life-events-panel" id="lifeEventsPanel" aria-labelledby="lifeEventsTitle">
+ <div class="life-events-head"><div><h3 id="lifeEventsTitle">Life-event planner · compare your future</h3>
+ <p>Schedule changes in net income, first-person ETF contributions, mortgage rates or one-time expenses. See what changes year by year versus the original plan.</p></div><span class="fine">What-if overlay · not a second saved plan</span></div>
+ <form class="life-events-form" id="lifeEventForm">
+  <label for="lifeEventType">Event type<select id="lifeEventType" required>
+   <option value="salary">Net income change</option><option value="etf">ETF contributions change</option>
+   <option value="refinance">Home mortgage rate change</option><option value="expense">One-time expense</option>
+   <option value="milestone">Property purchase milestone (annotation)</option>
+  </select></label>
+  <label for="lifeEventYear">Starting year<input type="number" id="lifeEventYear" min="1" max="40" value="3" step="1" required></label>
+  <label for="lifeEventAmount"><span id="lifeEventAmountLabel">Net change €/month</span><input type="number" id="lifeEventAmount" min="-20000" max="20000" step="50" value="500" required></label>
+  <label for="lifeEventName">Event label<input type="text" id="lifeEventName" maxlength="60" placeholder="e.g. Salary raise" autocomplete="off"></label>
+  <button class="btn primary" type="submit" id="lifeEventAdd">Add event</button>
+ </form>
+ <p class="life-events-note" id="lifeEventMeaning">A net salary change starts in the selected year, continues afterward, and is added after the existing income-growth assumption. It is not a gross-salary or income-tax recalculation.</p>
+ <p id="lifeEventStatus" role="status" aria-live="polite" class="life-events-warning"></p>
+ <div class="life-events-list" id="lifeEventsList" aria-label="Scheduled life events"></div>
+ <div class="life-events-stats"><span>Baseline final: <strong id="lifeBaselineTotal">—</strong></span>
+  <span>With life events: <strong id="lifeEventsTotal">—</strong></span>
+  <span>Difference: <strong id="lifeEventsDifference">—</strong></span></div>
+ <div class="life-events-graph" role="region" tabindex="0" aria-label="Baseline wealth versus event-adjusted wealth; horizontally scrollable">
+  <svg id="lifeEventsChart" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
+ </div>
+ <p id="lifeEventsDetail" class="life-events-detail" role="status" aria-live="polite">Select a year to see the difference.</p>
+ <div class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
+  <table class="life-events-table"><thead><tr><th scope="col">Year</th><th scope="col">Baseline net</th><th scope="col">With events</th><th scope="col">Difference</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
+ </div>
+ <p class="life-events-note"><strong>Scope:</strong> Effective from the start of a modeled year; one-time expenses happen within that year. ETF contribution changes affect the first person's fund purchases and the cash budget. Mortgage-rate events affect only the own-home loan; its scheduled payment stays unchanged. Property milestones are annotations: use the Properties tab to model purchases at the starting date. Future gross pay taxes, delayed property acquisition and changed rental tax are not recalculated. The chart is before liquidation costs and taxes; projected negative cash is a funding shortfall.</p>
+</div>
 </section>
 
 <section class="card content-card report-card" id="printableReport"><h2>One-page financial decision report</h2><p class="note">Always uses the currently displayed inputs. It includes household cash-flow, mortgage, ETF and rentals, plus critical assumptions.</p><div id="reportSummary" class="report-grid"></div><div class="flexbuttons"><button type="button" class="btn primary" id="printDecisionReport">Print / save as PDF</button><button type="button" class="btn" id="copyDecisionReport">Copy report text</button></div></section>
@@ -1380,8 +1451,29 @@ function householdTax(x){const h=calculatePerson(x,'h'),w=x.profileMode==='singl
 const rentSeed={name:'Rental 1 · Möhringen example',owner:'joint',price:199000,down:20000,buyCosts:10,interest:4.5,repay:2,kalt:800,tenantNk:180,recoverCost:180,nonrecover:81,reserve:60,repairs:40,vacancy:3,buildingShare:80,buildYear:1992,eligibleFromDate:'2026-01-01',rentalUsePercent:100,acquisitionDate:'',workPerformedDate:'',renovationVat:19,renovationCategory:'modernization',withinThreeYears:'yes',renovation:0,renoType:'none',rentGrowth:2,costGrowth:2,appreciation:2};
 let rentalSeq=1;
 let rentalItems=[{...rentSeed,_id:1}];
+let lifeEvents=[];
+const lifeTypes=['salary','etf','refinance','expense','milestone'];
+function validLifeEvent(v){
+ if(!v||typeof v!=='object'||Array.isArray(v))return false;
+ if(typeof v.id!=='string'||v.id.length>90||!/^[a-zA-Z0-9_-]+$/.test(v.id))return false;
+ if(!lifeTypes.includes(v.type)||!Number.isInteger(v.year)||v.year<1||v.year>40)return false;
+ if(typeof v.name!=='string'||v.name.length>60||typeof v.amount!=='number'||!Number.isFinite(v.amount))return false;
+ const [min,max]=v.type==='salary'?[-20000,20000]:v.type==='etf'?[-10000,10000]:
+  v.type==='refinance'?[0,25]:v.type==='expense'?[0,10000000]:[0,0];
+ return v.amount>=min&&v.amount<=max;
+}
+function normalizeLifeEvents(values){return Array.isArray(values)?values.filter(validLifeEvent).slice(0,15):[];}
+function lifeEventConfig(year,events,x){
+ const due=events.filter(e=>e.year<=year).sort((a,b)=>a.year-b.year);
+ const salary=due.filter(e=>e.type==='salary').reduce((v,e)=>v+e.amount,0);
+ const etf=x.strategyEtf==='off'?0:due.filter(e=>e.type==='etf').reduce((v,e)=>v+e.amount,0);
+ const refi=due.filter(e=>e.type==='refinance').at(-1);
+ const expense=due.filter(e=>e.type==='expense'&&e.year===year).reduce((v,e)=>v+e.amount,0);
+ return {salary,etf,refiRate:refi?refi.amount:null,expense};
+}
+window.ImmoPilotLifeEvents={validate:validLifeEvent,get:()=>lifeEvents.map(e=>({...e}))};
 const storageKey='home_etf_rentals_analytics_v7',previousStorageKey='home_etf_rentals_modes_v6';
-try{const saved=JSON.parse(localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey)||'null');if(saved&&saved.fields){for(const id of ids){if(Object.prototype.hasOwnProperty.call(saved.fields,id))$(id).value=saved.fields[id];}if(Array.isArray(saved.rentalItems)&&saved.rentalItems.length<=4){rentalItems=saved.rentalItems.map((r,i)=>({...rentSeed,...r,_id:Number(r._id)||i+1}));rentalSeq=Math.max(1,...rentalItems.map(r=>r._id));}if(saved.rentalTaxTiming==='accrual')$('rentalTaxTiming').value='accrual';if(saved.profileAllowances)window._loadedProfileAllowances=saved.profileAllowances;if(saved.comparisonProperty)window._loadComparisonProperty=saved.comparisonProperty;if(saved.amortTarget)window._loadAmortTarget=saved.amortTarget;}}catch(_){/* Browser may restrict local storage; calculator still works */} 
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey)||'null');if(saved&&saved.fields){for(const id of ids){if(Object.prototype.hasOwnProperty.call(saved.fields,id))$(id).value=saved.fields[id];}if(Array.isArray(saved.rentalItems)&&saved.rentalItems.length<=4){rentalItems=saved.rentalItems.map((r,i)=>({...rentSeed,...r,_id:Number(r._id)||i+1}));rentalSeq=Math.max(1,...rentalItems.map(r=>r._id));}if(saved.rentalTaxTiming==='accrual')$('rentalTaxTiming').value='accrual';if(saved.profileAllowances)window._loadedProfileAllowances=saved.profileAllowances;if(saved.comparisonProperty)window._loadComparisonProperty=saved.comparisonProperty;if(saved.amortTarget)window._loadAmortTarget=saved.amortTarget;if(saved.lifeEvents)lifeEvents=normalizeLifeEvents(saved.lifeEvents);}}catch(_){/* Browser may restrict local storage; calculator still works */} 
 function safeText(v){return String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 const rentalFields={
  name:['Property label','text',null],owner:['Tax ownership','select',[['joint','Joint · 50/50'],['h','Husband 100%'],['w','Wife 100%']]],
@@ -1645,33 +1737,35 @@ function familyMonthly(x,sim,tax,rent){const net=tax.useH+tax.useW+x.otherNet;
  const essentials=housing+x.utilities+x.groceries+x.transport+x.otherInsurance+otherDebt+x.extra/12;
  return {net,living,housing,otherDebt,invested,sold,monthlySaving:x.cashSaving,mandatory,discretionaryAllocation,free,baseFree,rentalCash,taxProvision,before,essentials};
 }
-function householdCashProjection(x,tax,sim,rent){const startNet=(tax.useH+tax.useW+x.otherNet)*12;
+function householdCashProjection(x,tax,sim,rent,events=[]){const startNet=(tax.useH+tax.useW+x.otherNet)*12;
  const living=(x.utilities+x.groceries+x.transport+x.otherInsurance+x.lifestyle+x.misc+x.otherDebt)*12;
  let balance=x.cashReserve;
  const rows=[];let priorDraw=0;
  for(const r of sim.rows.slice(1)){
-   const i=r.year-1,net=startNet*Math.pow(1+x.netGrowth/100,i);
+   const i=r.year-1,plan=lifeEventConfig(r.year,events,x),net=startNet*Math.pow(1+x.netGrowth/100,i)+plan.salary*12;
    const recurringLiving=(living+x.owner*12)*Math.pow(1+x.expenseGrowth/100,i);
    const mortgage=r.mortgagePaid+r.extraPaid;
-   const newETF=(x.monthlyH+x.monthlyW)*12;
+   const newETF=r.newETF??(x.monthlyH+x.monthlyW)*12;
    const receipts=r.withdrawn-priorDraw;priorDraw=r.withdrawn;
    const rentalYear=rent.rows[i]||{cash:0,deltaTax:0};
    const rentalCash=rentalYear.cash,rentalTax=rent.taxTiming==='accrual'?-rentalYear.deltaTax:0;
-   const change=net+receipts+rentalCash+rentalTax-recurringLiving-mortgage-newETF;
+   const change=net+receipts+rentalCash+rentalTax-recurringLiving-mortgage-newETF-plan.expense;
    balance+=change;
-   rows.push({year:r.year,net,living:recurringLiving,mortgage,newETF,receipts,rentalCash,rentalTax,change,balance});
+   rows.push({year:r.year,net,living:recurringLiving,mortgage,newETF,receipts,rentalCash,rentalTax,lifeExpense:plan.expense,change,balance});
  }
  return rows;
 }
-function simulate(x){
+function simulate(x,events=[]){
  let h=x.husband,w=x.wife,basisH=h,basisW=w,loan=x.loan,home=x.price,nominalNoSales=x.start,withdrawn=0,paidTax=0,unfunded=0,allMortgageInterest=0,totalMortgagePaid=0,totalIncomeCash=0,firstWithdraw=0,firstSalary=0,month=0,negativeAmort=false,payoffMonth=null;
  const rows=[{year:0,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn:0,tax:0}],traces=[{year:0,mortgage:loan,portfolio:h+w,noSales:nominalNoSales}];
  for(let yr=1;yr<=x.years;yr++){
-  let allowance=x.allow,allowanceH=Math.min(1000,x.allow/2),allowanceW=Math.min(1000,x.allow/2),yearPaid=0,yearExtra=0;const yearReturn=yr===1&&Number(x.crash)<0?Number(x.crash)/100:x.ret/100;
+  let allowance=x.allow,allowanceH=Math.min(1000,x.allow/2),allowanceW=Math.min(1000,x.allow/2),yearPaid=0,yearExtra=0;
+  const plan=lifeEventConfig(yr,events,x),monthlyH=Math.max(0,x.monthlyH+plan.etf);
+  const yearReturn=yr===1&&Number(x.crash)<0?Number(x.crash)/100:x.ret/100;
   const growth=Math.pow(Math.max(.001,(1+yearReturn)*(1-x.ter/100)),1/12)-1;
   for(let mm=1;mm<=12;mm++){
    month++;
-   const currentRate=(month<=x.fixYears*12?x.rate:x.refiRate)/100/12;
+   const currentRate=(plan.refiRate===null?(month<=x.fixYears*12?x.rate:x.refiRate):plan.refiRate)/100/12;
    const interest=loan*currentRate;
    const pay=loan>0?Math.min(x.emi,loan+interest):0;
    if(loan>0&&pay<=interest+0.000001)negativeAmort=true;
@@ -1679,9 +1773,9 @@ function simulate(x){
    if(month%12===0&&loan>0){const extraPay=Math.min(x.extra,loan);yearExtra+=extraPay;loan=Math.max(0,loan-extraPay);}
    if(loan<=0.00001&&payoffMonth===null)payoffMonth=month;
    allMortgageInterest+=interest;totalMortgagePaid+=pay;yearPaid+=pay;
-   h=Math.max(0,h*(1+growth)+x.monthlyH);w=Math.max(0,w*(1+growth)+x.monthlyW);
-   nominalNoSales=Math.max(0,nominalNoSales*(1+growth)+x.monthlyH+x.monthlyW);
-   basisH+=x.monthlyH;basisW+=x.monthlyW;
+   h=Math.max(0,h*(1+growth)+monthlyH);w=Math.max(0,w*(1+growth)+x.monthlyW);
+   nominalNoSales=Math.max(0,nominalNoSales*(1+growth)+monthlyH+x.monthlyW);
+   basisH+=monthlyH;basisW+=x.monthlyW;
    const houseCost=pay+x.owner;
    let target=0;if(x.drawMode==='interest')target=interest;else if(x.drawMode==='full')target=pay+(x.housingType==='tenant'?x.owner:0);else if(x.drawMode==='custom')target=x.custom;
    let actualNet=0;const market=h+w;
@@ -1701,7 +1795,7 @@ function simulate(x){
    if(month===1){firstWithdraw=actualNet;firstSalary=incomeCash;}
   }
   home*=1+x.houseGrowth/100;
-  const row={year:yr,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn,tax:paidTax,mortgagePaid:yearPaid,extraPaid:yearExtra};rows.push(row);traces.push(row);
+  const row={year:yr,mortgage:loan,homeEquity:home-loan,portfolio:h+w,noSales:nominalNoSales,withdrawn,tax:paidTax,mortgagePaid:yearPaid,extraPaid:yearExtra,newETF:(monthlyH+x.monthlyW)*12};rows.push(row);traces.push(row);
  }
  if(x.drawMode==='none')firstSalary=x.emi*(x.loan>0?1:0)+x.owner;
  return {rows,traces,last:rows.at(-1),withdrawn,paidTax,unfunded,allMortgageInterest,totalMortgagePaid,totalIncomeCash,firstWithdraw,firstSalary,payoffMonth,negativeAmort};
@@ -1995,12 +2089,173 @@ function renderOverviewDashboard(x,sim,rent,c,projectedCash){
    :'Bars compare positive category values. They are not a verified current net-worth statement.');
 }
 
+function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
+ const panel=$('lifeEventsPanel');if(!panel)return;
+ const horizon=x.years;
+ const types={salary:'Net salary',etf:'ETF monthly contributions',refinance:'Home refinancing rate',
+  expense:'One-time expense',milestone:'Property purchase milestone'};
+ const note=$('lifeEventStatus'),number=v=>new Intl.NumberFormat('de-DE',{
+  style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+ const compact=v=>Math.abs(v)>=1000000?(v/1000000).toFixed(1)+'m':
+  Math.abs(v)>=1000?Math.round(v/1000)+'k':Math.round(v).toString();
+ const active=lifeEvents.filter(e=>e.year<=horizon);
+ const eventSim=active.some(e=>e.type!=='milestone')?simulate(x,active):baseSim;
+ const eventCash=eventSim===baseSim?baseCash:householdCashProjection(x,tax,eventSim,rent,active);
+ const upfrontRent=rent.properties.reduce((v,p)=>v+p.price-p.loan,0);
+ function points(sim,rows){
+  return sim.rows.map(sr=>{
+   const y=sr.year,rental=y?(rent.rows[y-1]?.equity||0):upfrontRent;
+   const cash=y?(rows[y-1]?.balance||0):x.cashReserve;
+   return {year:y,home:sr.homeEquity||0,rental,etf:sr.portfolio||0,cash,
+    net:(sr.homeEquity||0)+rental+(sr.portfolio||0)+cash};
+  });
+ }
+ const baseline=points(baseSim,baseCash),adjusted=points(eventSim,eventCash);
+ const rows=baseline.map((p,i)=>({year:p.year,base:p.net,next:adjusted[i].net,
+  diff:adjusted[i].net-p.net,events:active.filter(e=>e.year===p.year)}));
+ const end=rows.at(-1);
+ $('lifeBaselineTotal').textContent=number(end.base);
+ $('lifeEventsTotal').textContent=number(end.next);
+ $('lifeEventsDifference').textContent=(end.diff>=0?'+':'')+number(end.diff);
+ $('lifeEventsDifference').style.color=end.diff<-.005?'#b24752':end.diff>.005?'#0b8065':'inherit';
+ $('lifeEventYear').max=String(horizon);
+ if(Number($('lifeEventYear').value)>horizon)$('lifeEventYear').value=String(horizon);
+ const esc=safeText;
+ $('lifeEventsList').innerHTML=lifeEvents.length?
+  lifeEvents.slice().sort((a,b)=>a.year-b.year).map(e=>{
+   const inactive=e.year>horizon;
+   const amt=e.type==='milestone'?'annotation only':e.type==='refinance'?e.amount+'%':
+    (e.amount>=0?'+':'')+number(e.amount)+(e.type==='expense'?' once':'/month');
+   return '<div class="life-event-pill"><strong>Year '+e.year+
+    '</strong> '+esc(e.name||types[e.type])+' · '+amt+(inactive?' (outside selected horizon)':'')+
+    ' <button type="button" data-remove-life="'+e.id+'" aria-label="Remove '+esc(e.name||types[e.type])+
+    ' from year '+e.year+'">Remove</button></div>';
+  }).join(''):
+  '<p class="life-events-note">No life events yet. Add an event to see the future-wealth difference.</p>';
+ $('lifeEventsRows').innerHTML=rows.map(r=>{
+  const labels=r.events.map(e=>esc(e.name||types[e.type])+
+   (e.type==='milestone'?' (annotation)':'')).join(' · ');
+  return '<tr data-life-row="'+r.year+'" data-life-baseline="'+r.base.toFixed(2)+
+   '" data-life-projected="'+r.next.toFixed(2)+'" data-life-diff="'+r.diff.toFixed(2)+
+   '"><th scope="row">Year '+r.year+'</th><td>'+number(r.base)+'</td><td>'+number(r.next)+
+   '</td><td class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
+   (r.diff>=0?'+':'')+number(r.diff)+'</td><td>'+(labels||'—')+'</td></tr>';
+ }).join('');
+ const W=920,H=370,L=85,R=20,T=22,B=49,h=H-T-B,w=W-L-R;
+ const minimum=Math.min(0,...rows.flatMap(r=>[r.base,r.next]));
+ const maximum=Math.max(1000,...rows.flatMap(r=>[r.base,r.next]));
+ const min=minimum<0?minimum*1.1:0,max=maximum*1.11;
+ const X=y=>L+w*y/horizon,Y=v=>T+(max-v)/(max-min)*h,round=n=>n.toFixed(2);
+ let svg='';
+ for(let i=0;i<=4;i++){
+  const v=min+(max-min)*i/4;
+  svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+round(Y(v))+'" y2="'+round(Y(v))+
+   '" stroke="#cfddd5" stroke-width="1"/><text x="'+(L-11)+'" y="'+round(Y(v)+4)+
+   '" text-anchor="end" font-size="12" fill="#627e78">'+compact(v)+'</text>';
+ }
+ for(const y of [0,Math.floor(horizon/4),Math.floor(horizon/2),Math.floor(3*horizon/4),horizon]){
+  svg+='<text x="'+round(X(y))+'" y="'+(H-17)+
+   '" text-anchor="middle" font-size="12" fill="#627e78">'+y+'y</text>';
+ }
+ for(const e of active){
+  svg+='<line x1="'+round(X(e.year))+'" x2="'+round(X(e.year))+
+   '" y1="'+T+'" y2="'+(H-B)+'" stroke="#b78451" stroke-dasharray="3,6" opacity=".65"/>';
+ }
+ const poly=key=>rows.map(r=>round(X(r.year))+','+round(Y(r[key]))).join(' ');
+ svg+='<polyline points="'+poly('base')+'" fill="none" stroke="#5176a0" stroke-width="3.2" stroke-linejoin="round"><title>Baseline net position</title></polyline>';
+ svg+='<polyline points="'+poly('next')+'" fill="none" stroke="#14876b" stroke-width="3.5" stroke-linejoin="round"><title>With planned life events</title></polyline>';
+ for(const r of rows){
+  svg+='<g data-event-year="'+r.year+'" role="button" tabindex="0" aria-label="Year '+r.year+
+   ', events adjusted net '+number(r.next)+'"><circle cx="'+round(X(r.year))+
+   '" cy="'+round(Y(r.next))+'" r="5" fill="#fff" stroke="#14876b" stroke-width="2"/>'+
+   '<title>Year '+r.year+': '+number(r.next)+' (difference '+number(r.diff)+')</title></g>';
+ }
+ svg+='<text x="'+(L+10)+'" y="17" fill="#5176a0" font-size="13" font-weight="700">━ Baseline</text>'+
+  '<text x="'+(L+150)+'" y="17" fill="#14876b" font-size="13" font-weight="700">━ With events</text>';
+ $('lifeEventsChart').innerHTML=svg;
+ const state=window._lifeEventView||(window._lifeEventView={year:null});
+ if(state.year===null||state.year>horizon)state.year=horizon;
+ function selectYear(year){
+  const r=rows.find(z=>z.year===year);if(!r)return;
+  state.year=year;
+  $('lifeEventsDetail').textContent='Year '+r.year+': baseline '+number(r.base)+
+   ' vs events '+number(r.next)+'; change '+(r.diff>=0?'+':'')+number(r.diff)+
+   (r.events.length?'. Milestones: '+r.events.map(e=>e.name||types[e.type]).join(', '):'.');
+  for(const marker of $('lifeEventsChart').querySelectorAll('[data-event-year]')){
+   const on=Number(marker.dataset.eventYear)===year;
+   marker.setAttribute('aria-pressed',String(on));
+   marker.querySelector('circle')?.setAttribute('r',on?'7':'5');
+  }
+ }
+ state.selectYear=selectYear;
+ selectYear(state.year);
+ const ignored=lifeEvents.filter(e=>e.year>horizon).length;
+ const annotations=active.filter(e=>e.type==='milestone').length;
+ const dormant=active.filter(e=>e.type==='refinance'&&x.loan<=0||e.type==='etf'&&x.strategyEtf==='off').length;
+ note.textContent=[
+  ignored?ignored+' event(s) are outside the '+horizon+'-year projection and have no effect.':'',
+  annotations?annotations+' property milestone(s) are annotations only; acquisition cash, timing and equity are unchanged.':'',
+  dormant?dormant+' event(s) cannot affect the current strategy (no applicable mortgage or ETF).':''
+ ].filter(Boolean).join(' ');
+ if(!state.bound){
+  state.bound=true;
+  const desc={
+   salary:['Net change €/month','A change in spendable household net salary continues from the selected year. Future income tax is not recalculated.','500','-20000','20000','50'],
+   etf:['First person ETF €/month','Change in monthly ETF contributions for the first person; the amount is capped at zero after changes.','200','-10000','10000','50'],
+   refinance:['New annual interest %','New interest rate on the existing own-home loan from the selected year. Monthly payment stays fixed; loan terms may prohibit early refinancing.','4','0','25','0.1'],
+   expense:['One-time cost €','A one-time cost is deducted from modeled cash reserves in the selected year; it does not create a new asset.','10000','0','10000000','100'],
+   milestone:['Annotation only','A future purchase marker does not create a property or schedule its cash flows. Configure existing purchases in Properties.','0','0','0','1']
+  };
+  $('lifeEventType').addEventListener('change',()=>{
+   const [label,help,val,minV,maxV,step]=desc[$('lifeEventType').value];
+   $('lifeEventAmountLabel').textContent=label;
+   $('lifeEventMeaning').textContent=help;
+   $('lifeEventAmount').value=val;$('lifeEventAmount').min=minV;
+   $('lifeEventAmount').max=maxV;$('lifeEventAmount').step=step;
+   $('lifeEventAmount').disabled=$('lifeEventType').value==='milestone';
+   $('lifeEventAmount').required=$('lifeEventType').value!=='milestone';
+  });
+  $('lifeEventForm').addEventListener('submit',e=>{
+   e.preventDefault();
+   const type=$('lifeEventType').value,year=Number($('lifeEventYear').value);
+   const amount=type==='milestone'?0:Number($('lifeEventAmount').value);
+   const name=$('lifeEventName').value.trim().slice(0,60)||types[type];
+   const item={id:'evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
+    year,type,amount,name};
+   if(!validLifeEvent(item)||year>x.years){note.textContent='Enter a valid year within the current projection, and an amount within the allowed range.';return;}
+   if(lifeEvents.length>=15){note.textContent='Maximum 15 events. Remove an existing event before adding another.';return;}
+   lifeEvents.push(item);
+   $('lifeEventName').value='';
+   render();
+   $('lifeEventName').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+  $('lifeEventsList').addEventListener('click',e=>{
+   const remove=e.target.closest('[data-remove-life]');if(!remove)return;
+   lifeEvents=lifeEvents.filter(z=>z.id!==remove.dataset.removeLife);
+   render();
+   $('lifeEventName').dispatchEvent(new Event('input',{bubbles:true}));
+  });
+  panel.addEventListener('click',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot)state.selectYear(Number(dot.dataset.eventYear));
+  });
+  panel.addEventListener('focusin',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot)state.selectYear(Number(dot.dataset.eventYear));
+  });
+  panel.addEventListener('keydown',e=>{
+   const dot=e.target.closest('[data-event-year]');
+   if(dot&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.selectYear(Number(dot.dataset.eventYear));}
+  });
+ }
+}
+
 function render(){
  syncStrategyUI();
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
@@ -2093,10 +2348,10 @@ function render(){
  drawChart(sim.traces,x.years);set('endEtf',money(sim.last.portfolio));set('endMortgage',money(sim.last.mortgage));set('endEquity',money(sim.last.homeEquity));$('annualRows').innerHTML=sim.rows.map(p=>`<tr><td>${p.year}</td><td>${money(p.mortgage)}</td><td>${money(p.homeEquity)}</td><td>${money(p.noSales)}</td><td>${money(p.portfolio)}</td><td>${money(p.withdrawn)}</td><td>${money(p.tax)}</td></tr>`).join('');
  const discountedEquity=sim.last.homeEquity/Math.pow(1+x.inflation/100,x.years);$('drawExplain').textContent=`At the end of ${x.years} years, modeled home equity is ${money(sim.last.homeEquity)} (about ${money(discountedEquity)} in today's purchasing power at ${x.inflation}% inflation), plus ${money(sim.last.portfolio)} of remaining ETF holdings under your selected withdrawal approach. This is not total household net worth: the chart includes modeled cash reserves, but this particular summary omits them, taxes on any unsold ETF gains, property sale expenses, and other assets/debts. The year-1 shock option is a simplified scenario, not a prediction.`;
  $('customLine').hidden=x.drawMode!=='custom';window.currentSummary={x,e,sim,gap,tax,c,projectedCash,rent};
- try{localStorage.setItem(storageKey,JSON.stringify({fields:Object.fromEntries(ids.map(id=>[id,$(id).value])),rentalItems,rentalTaxTiming:rent.taxTiming,profileAllowances,comparisonProperty:$('comparisonProperty').value,amortTarget:$('amortTarget').value}));}catch(_){/* Privacy restrictions may block local storage */}
+ try{localStorage.setItem(storageKey,JSON.stringify({fields:Object.fromEntries(ids.map(id=>[id,$(id).value])),rentalItems,rentalTaxTiming:rent.taxTiming,profileAllowances,comparisonProperty:$('comparisonProperty').value,amortTarget:$('amortTarget').value,lifeEvents}));}catch(_){/* Privacy restrictions may block local storage */}
 }
 for(const id of ids){if(id==='profileMode'||id==='homeMode')continue;$(id).addEventListener('input',()=>{if(id==='existingType')updateHomeUI();render();});$(id).addEventListener('change',()=>{if(id==='existingType')updateHomeUI();render();});}for(const b of document.querySelectorAll('[data-switch-home]'))b.addEventListener('click',()=>switchHome(b.dataset.switchHome));for(const b of document.querySelectorAll('[data-switch-profile]'))b.addEventListener('click',()=>switchProfile(b.dataset.switchProfile));for(const btn of document.querySelectorAll('[data-half]'))btn.addEventListener('click',()=>{$('husband').value=btn.dataset.half;if($('profileMode').value==='married')$('wife').value=btn.dataset.half;render();});
-$('reset').addEventListener('click',()=>{for(const [key,value] of Object.entries(defaults))$(key).value=value;profileAllowances.single=1000;profileAllowances.married=2000;updateProfileUI();updateHomeUI();rentalSeq=1;rentalItems=[{...rentSeed,_id:1}];$('rentalTaxTiming').value='cash';renderRentalInputs();render();set('liveStatus','Defaults restored. Results recalculated.');});$('print').addEventListener('click',()=>window.print());$('copy').addEventListener('click',async()=>{const {x,e,sim,gap}=window.currentSummary;const value=`${x.profileMode==='single'?'Individual':'Married couple'} ${x.homeNewPurchase?'new home + rental':'existing housing + rental-investment'} scenario\nHousing: ${x.housingLabel}; home value: ${money(x.price)}; mortgage ${money(x.loan)} at ${x.rate}%\nMonthly mortgage payment: ${money(x.emi)}; other monthly owner costs: ${money(x.owner)}\n${x.profileMode==='single'?'Individual ETF: '+money(x.husband):'Husband ETF: '+money(x.husband)+', wife ETF: '+money(x.wife)}\nAssumed ETF return: ${x.ret}%, fee: ${x.ter}%\nEconomic after-tax annual ETF gain estimate: ${money(e.net)}\nMonthly-equivalent EMI ${gap>=0?'shortfall':'surplus'}: ${money(Math.abs(gap))}\nWithdrawal plan: ${x.drawMode}; end mortgage ${money(sim.last.mortgage)}; end ETF ${money(sim.last.portfolio)}\nMonthly household net: ${money(window.currentSummary.c.net)}; rental cash: ${money(window.currentSummary.rent.first.cash/12)}; yearly rental tax change: ${money(window.currentSummary.rent.first.deltaTax)}; free cash: ${money(window.currentSummary.c.free)}; annual: ${money(window.currentSummary.c.free*12)}\nNot guaranteed income. No investment borrowing.`;try{await navigator.clipboard.writeText(value);set('liveStatus','Scenario summary copied.');}catch(_){const a=document.createElement('textarea');a.value=value;document.body.append(a);a.select();document.execCommand('copy');a.remove();set('liveStatus','Scenario summary copied.');}});
+$('reset').addEventListener('click',()=>{for(const [key,value] of Object.entries(defaults))$(key).value=value;profileAllowances.single=1000;profileAllowances.married=2000;updateProfileUI();updateHomeUI();rentalSeq=1;rentalItems=[{...rentSeed,_id:1}];lifeEvents=[];$('rentalTaxTiming').value='cash';renderRentalInputs();render();set('liveStatus','Defaults restored. Results recalculated.');});$('print').addEventListener('click',()=>window.print());$('copy').addEventListener('click',async()=>{const {x,e,sim,gap}=window.currentSummary;const value=`${x.profileMode==='single'?'Individual':'Married couple'} ${x.homeNewPurchase?'new home + rental':'existing housing + rental-investment'} scenario\nHousing: ${x.housingLabel}; home value: ${money(x.price)}; mortgage ${money(x.loan)} at ${x.rate}%\nMonthly mortgage payment: ${money(x.emi)}; other monthly owner costs: ${money(x.owner)}\n${x.profileMode==='single'?'Individual ETF: '+money(x.husband):'Husband ETF: '+money(x.husband)+', wife ETF: '+money(x.wife)}\nAssumed ETF return: ${x.ret}%, fee: ${x.ter}%\nEconomic after-tax annual ETF gain estimate: ${money(e.net)}\nMonthly-equivalent EMI ${gap>=0?'shortfall':'surplus'}: ${money(Math.abs(gap))}\nWithdrawal plan: ${x.drawMode}; end mortgage ${money(sim.last.mortgage)}; end ETF ${money(sim.last.portfolio)}\nMonthly household net: ${money(window.currentSummary.c.net)}; rental cash: ${money(window.currentSummary.rent.first.cash/12)}; yearly rental tax change: ${money(window.currentSummary.rent.first.deltaTax)}; free cash: ${money(window.currentSummary.c.free)}; annual: ${money(window.currentSummary.c.free*12)}\nNot guaranteed income. No investment borrowing.`;try{await navigator.clipboard.writeText(value);set('liveStatus','Scenario summary copied.');}catch(_){const a=document.createElement('textarea');a.value=value;document.body.append(a);a.select();document.execCommand('copy');a.remove();set('liveStatus','Scenario summary copied.');}});
 $('applyAssessment').addEventListener('click',()=>{if($('profileMode').value!=='married')return;$('jointTax').value=$('applyAssessment').dataset.target;render();});
 window.__payrollReconciliation={year:2026,method:'Observed payslip deductions compared with approximate annual income tax; not PAP',calculate:(x,tax)=>{const monthly=x.withholdingH+x.soliH+x.churchH+(x.profileMode==='single'?0:x.withholdingW+x.soliW+x.churchW);return {monthly,withheld:monthly*x.withholdingMonths,liability:tax.taxes,difference:monthly*x.withholdingMonths-tax.taxes};}};
 window.__taxAuditChecks={est2026IncomeTax,careEmployeeRate,calculatePerson,householdTax,germanTotalTax,annualRentalTaxDelta,compareAssessment2026};
@@ -2163,7 +2418,7 @@ render();
  function liveSnapshot(){try{const raw=localStorage.getItem(LIVE_KEY),v=raw?JSON.parse(raw):null;return object(v)&&object(v.fields)?v:null;}catch(_){return null;}}
  function snapshotSignature(v){if(!object(v))return '';return JSON.stringify({
   fields:v.fields||{},rentalItems:v.rentalItems||[],rentalTaxTiming:v.rentalTaxTiming||'cash',
-  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home'
+  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home',lifeEvents:v.lifeEvents||[]
  });}
  function writeActive(){try{if(activeId)localStorage.setItem(ACTIVE_KEY,activeId);else localStorage.removeItem(ACTIVE_KEY);}catch(_){note('Active-plan selection cannot be stored.');}}
  function readUndo(){try{const v=JSON.parse(sessionStorage.getItem(UNDO_KEY)||'null');return object(v)&&object(v.snapshot)&&object(v.snapshot.fields)?v:null;}catch(_){return null;}}
@@ -2262,6 +2517,8 @@ function validateImportedRecord(r){
   !known.has(key)||!['number','string'].includes(typeof val)||
   typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
  ))throw Error('Unsupported calculator input in backup.');
+ const events=r.snapshot.lifeEvents||[];
+ if(!Array.isArray(events)||events.length>15||events.some(e=>!window.ImmoPilotLifeEvents?.validate(e)))throw Error('Invalid life events in backup.');
  const items=r.snapshot.rentalItems||[];
  if(!Array.isArray(items)||items.length>4||items.some(item=>
   !object(item)||Object.entries(item).some(([key,val])=>
