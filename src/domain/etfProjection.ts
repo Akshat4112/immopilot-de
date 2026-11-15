@@ -53,8 +53,7 @@ export function projectAfterTaxETF(input: ETFProjectionInput): ETFProjectionRow[
     input.annualContributionEuro,
   ]
   if (
-    values.some((value) => !Number.isFinite(value) || value < 0) ||
-    input.initialCostBasisEuro > input.initialValueEuro + 1e-9
+    values.some((value) => !Number.isFinite(value) || value < 0)
   ) {
     throw new Error('Invalid initial ETF value, basis or contribution')
   }
