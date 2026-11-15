@@ -241,14 +241,27 @@ test('UX-022 dashboard zeroes inactive investment categories and retains inputs'
 test('UX-022 shows a funding gap and adjusts projection horizon', async ({ page }) => {
   await page.goto('./')
   const planner = page.frameLocator(frameSelector)
-  await planner.locator('#utilities').evaluate(
-    "(node) => { node.value = '50000'; node.dispatchEvent(new Event('input', { bubbles: true })); }",
-  )
+
+  // Exercise the visible form, not a script-based mutation of a hidden input.
+  await planner.getByRole('tab', { name: /Household/i }).click()
+  const expenses = planner.locator('#utilities').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  const expenseToggle = expenses.locator('.section-toggle')
+  if ((await expenseToggle.getAttribute('aria-expanded')) === 'false') {
+    await expenseToggle.click()
+  }
+  await planner.locator('#utilities').fill('50000')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
   await expect(planner.locator('#overviewCashStatus')).toContainText('funding gap')
   await expect(planner.locator('#overviewFreeCash')).toHaveClass(/red/)
-  await planner.locator('#years').evaluate(
-    "(node) => { node.value = '5'; node.dispatchEvent(new Event('input', { bubbles: true })); }",
-  )
+
+  await planner.getByRole('tab', { name: /Investments/i }).click()
+  const outlook = planner.locator('#years').locator('xpath=ancestor::div[contains(@class,"section")][1]')
+  const outlookToggle = outlook.locator('.section-toggle')
+  if ((await outlookToggle.getAttribute('aria-expanded')) === 'false') {
+    await outlookToggle.click()
+  }
+  await planner.locator('#years').fill('5')
+  await planner.getByRole('tab', { name: /Overview/i }).click()
   await expect(planner.locator('#overviewFutureLabel')).toContainText('year 5')
 })
 
