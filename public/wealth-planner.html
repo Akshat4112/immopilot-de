@@ -1704,30 +1704,132 @@ render();
 (()=>{
  'use strict';
  const $=id=>document.getElementById(id);
- const KEY='home_etf_saved_scenarios_v9',LIVE_KEY='home_etf_rentals_analytics_v7';
+ const KEY='home_etf_saved_scenarios_v9',LIVE_KEY='home_etf_rentals_analytics_v7',ACTIVE_KEY='home_etf_active_scenario_v10',UNDO_KEY='home_etf_undo_load_v10';
+ let activeId=null;
+ const object=v=>Boolean(v)&&typeof v==='object'&&!Array.isArray(v);
+ function liveSnapshot(){try{const raw=localStorage.getItem(LIVE_KEY),v=raw?JSON.parse(raw):null;return object(v)&&object(v.fields)?v:null;}catch(_){return null;}}
+ function snapshotSignature(v){if(!object(v))return '';return JSON.stringify({
+  fields:v.fields||{},rentalItems:v.rentalItems||[],rentalTaxTiming:v.rentalTaxTiming||'cash',
+  profileAllowances:v.profileAllowances||{},comparisonProperty:v.comparisonProperty||'all',amortTarget:v.amortTarget||'home'
+ });}
+ function writeActive(){try{if(activeId)localStorage.setItem(ACTIVE_KEY,activeId);else localStorage.removeItem(ACTIVE_KEY);}catch(_){note('Active-plan selection cannot be stored.');}}
+ function readUndo(){try{const v=JSON.parse(sessionStorage.getItem(UNDO_KEY)||'null');return object(v)&&object(v.snapshot)&&object(v.snapshot.fields)?v:null;}catch(_){return null;}}
+ function updateStatus(){
+  const rec=records.find(r=>r.id===activeId);
+  const dirty=rec?snapshotSignature(liveSnapshot())!==snapshotSignature(rec.snapshot):true;
+  const el=$('scenarioSaveStatus');el.dataset.dirty=String(dirty);
+  el.textContent=rec?(dirty?'Unsaved edits · '+rec.name:'Saved · '+rec.name):'Unsaved working plan';
+  $('updateScenario').disabled=!rec||!dirty;$('undoScenarioLoad').disabled=!readUndo();
+ }
+ function syncSelector(){
+  const sel=$('activeScenario');
+  sel.innerHTML='<option value="">Unsaved working plan</option>'+
+   records.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.name)+'</option>').join('');
+  if(activeId&&records.some(r=>r.id===activeId))sel.value=activeId;
+  else{activeId=null;sel.value='';}
+  updateStatus();
+ }
  let records=[];let selected=[];
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const euro=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v)):'—';
  const makeId=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'_'+Math.random().toString(36).slice(2);
  function note(msg){$('scenarioNotice').textContent=msg;}
- try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))records=raw.filter(r=>r&&typeof r.id==='string'&&r.snapshot&&r.stats).slice(0,30);}catch(_){note('Local storage is unavailable; backup is recommended.');}
+ try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))records=raw.filter(r=>r&&typeof r.id==='string'&&r.snapshot&&r.stats).slice(0,30);activeId=localStorage.getItem(ACTIVE_KEY);}catch(_){note('Local storage is unavailable; backup is recommended.');}
  function persist(){try{localStorage.setItem(KEY,JSON.stringify(records));return true;}catch(_){note('Browser storage blocked or full. Export your backup to keep these scenarios.');return false;}}
  function stats(){const z=window.currentSummary;if(!z)return null;const {x,e,sim,c,rent}=z;const rentalCash=Number(rent?.first?.cash||0)/12;
   return {net:Number(c.net),free:Number(c.free),rentalCash,etf:Number(x.start),rentals:Number(rent?.perProperty?.length||0),loan:Number(x.loan),homeValue:Number(x.price),upfront:Number(x.homeAcquisitionCash||0)+Number(x.start||0)+Number(rent?.initialCash||0),endEtf:Number(sim.last?.portfolio||0),endHomeEquity:Number(sim.last?.homeEquity||0),annualGain:Number(e.net),years:Number(x.years),mode:x.profileMode,housing:x.homeMode};}
  function capture(){const current=localStorage.getItem(LIVE_KEY);if(!current)throw new Error('Enter or change a calculator input first.');const state=JSON.parse(current);if(!state.fields)throw new Error('Calculator state unavailable.');return {snapshot:JSON.parse(JSON.stringify(state)),stats:stats()};}
- function save(){const name=$('scenarioName').value.trim()||`Plan ${records.length+1}`;try{const values=capture();if(!values.stats)throw new Error('Financial figures not ready.');if(records.length>=30){note('Maximum 30 plans. Remove a plan before saving another.');return;}const id=makeId();records.push({id,name,created:new Date().toISOString(),...values});selected=[...selected,id].slice(-3);persist();draw();$('scenarioName').value='';note(`Saved “${name}”. Choose it to restore all input values.`);}catch(e){note(e.message);}}
- function restore(rec){if(!confirm(`Load “${rec.name}”? This replaces the currently displayed unsaved input values.`))return;try{localStorage.setItem(LIVE_KEY,JSON.stringify(rec.snapshot));location.reload();}catch(_){note('Cannot restore: browser storage disabled.');}}
- function changeName(rec){const next=prompt('Rename scenario',rec.name);if(next===null)return;const value=next.trim().slice(0,70);if(!value)return;rec.name=value;persist();draw();note('Renamed.');}
- function remove(rec){if(!confirm(`Delete “${rec.name}”?`))return;records=records.filter(r=>r.id!==rec.id);selected=selected.filter(id=>id!==rec.id);persist();draw();note('Scenario deleted.');}
- function duplicate(rec){if(records.length>=30){note('Maximum 30 plans.');return;}const copy={...rec,id:makeId(),name:`${rec.name} (copy)`.slice(0,70),created:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(rec.snapshot)),stats:{...rec.stats}};records.push(copy);persist();draw();note('Duplicated. Restore the copy to edit it independently.');}
- function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(Boolean);if(list.length<2)return '<h3>Compare saved scenarios</h3><div class="scenario-empty">Select at least two saved plans using Compare.</div>';
+ function save(){
+ const name=$('scenarioName').value.trim().slice(0,70)||'Plan '+(records.length+1);
+ try{
+  if(records.length>=30){note('Maximum 30 plans.');return;}
+  const data=capture();if(!data.stats)throw Error('Financial figures not ready.');
+  const rec={id:makeId(),name,created:new Date().toISOString(),...data};
+  records.push(rec);if(!persist()){records.pop();return;}
+  activeId=rec.id;writeActive();
+  selected=[...selected.filter(id=>id!==rec.id),rec.id].slice(-3);
+  draw();$('scenarioName').value='';note('Created “'+name+'”. Use Save changes after editing.');
+ }catch(e){note(e.message);}
+}
+function updateActive(){
+ const i=records.findIndex(r=>r.id===activeId);
+ if(i<0){note('Select a saved plan or save as new.');return;}
+ try{
+  const data=capture();if(!data.stats)throw Error('Financial figures not ready.');
+  const old=records[i];records[i]={...old,...data,updated:new Date().toISOString()};
+  if(!persist()){records[i]=old;return;}
+  draw();note('Saved changes to “'+old.name+'”.');
+ }catch(e){note(e.message);}
+}
+function restore(rec){
+ if(!confirm('Load “'+rec.name+'”? This replaces current inputs, including unsaved edits. You may undo one load.')){syncSelector();return;}
+ try{
+  const prev=liveSnapshot();if(!prev)throw Error('Cannot back up current working inputs.');
+  try{sessionStorage.setItem(UNDO_KEY,JSON.stringify({snapshot:prev,activeId}));}
+  catch(_){note('Undo unavailable because session storage is blocked.');}
+  localStorage.setItem(LIVE_KEY,JSON.stringify(rec.snapshot));
+  activeId=rec.id;writeActive();location.reload();
+ }catch(e){note('Load failed: '+e.message);syncSelector();}
+}
+function undoLoad(){
+ const prev=readUndo();if(!prev){note('No previous load to undo.');return;}
+ if(!confirm('Undo the last load? Current inputs will be replaced.'))return;
+ try{
+  localStorage.setItem(LIVE_KEY,JSON.stringify(prev.snapshot));
+  activeId=records.some(r=>r.id===prev.activeId)?prev.activeId:null;
+  writeActive();sessionStorage.removeItem(UNDO_KEY);location.reload();
+ }catch(_){note('Undo failed because storage is unavailable.');}
+}
+function changeName(rec){
+ const next=prompt('Rename scenario',rec.name);if(next===null)return;
+ const value=next.trim().slice(0,70);if(!value)return;
+ const before=rec.name;rec.name=value;if(!persist()){rec.name=before;return;}
+ draw();note('Renamed.');
+}
+function remove(rec){
+ if(!confirm('Delete “'+rec.name+'”? This cannot be undone.'))return;
+ const before=records;records=records.filter(r=>r.id!==rec.id);
+ if(!persist()){records=before;return;}
+ if(activeId===rec.id){activeId=null;writeActive();}
+ selected=selected.filter(id=>id!==rec.id);draw();note('Scenario deleted.');
+}
+function duplicate(rec){
+ if(records.length>=30){note('Maximum 30 plans.');return;}
+ const copy={...rec,id:makeId(),name:(rec.name+' (copy)').slice(0,70),
+  created:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(rec.snapshot)),stats:{...rec.stats}};
+ records.push(copy);if(!persist()){records.pop();return;}
+ draw();note('Duplicated. Load the copy to edit it independently.');
+}
+function validateImportedRecord(r){
+ if(!object(r)||typeof r.name!=='string'||!r.name.trim()||r.name.length>70||
+  !object(r.snapshot)||!object(r.snapshot.fields)||!object(r.stats))throw Error('Invalid scenario record.');
+ const known=new Set([...document.querySelectorAll('input[id],select[id]')].map(e=>e.id));
+ const entries=Object.entries(r.snapshot.fields);
+ if(entries.length<1||entries.length>250||entries.some(([key,val])=>
+  !known.has(key)||!['number','string'].includes(typeof val)||
+  typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
+ ))throw Error('Unsupported calculator input in backup.');
+ const items=r.snapshot.rentalItems||[];
+ if(!Array.isArray(items)||items.length>4||items.some(item=>
+  !object(item)||Object.entries(item).some(([key,val])=>
+   !/^[a-zA-Z][a-zA-Z0-9]*$/.test(key)||key==='constructor'||
+   !['number','string'].includes(typeof val)||
+   typeof val==='number'&&!Number.isFinite(val)||typeof val==='string'&&val.length>300
+  )
+ ))throw Error('Invalid rental data in backup.');
+ for(const key of ['net','free','rentalCash','etf','rentals','loan','homeValue','upfront','endEtf',
+  'endHomeEquity','annualGain','years'])if(!Number.isFinite(r.stats[key]))throw Error('Invalid saved financial figures.');
+ return {id:makeId(),name:r.name.trim(),created:typeof r.created==='string'?r.created:new Date().toISOString(),
+  snapshot:JSON.parse(JSON.stringify(r.snapshot)),stats:JSON.parse(JSON.stringify(r.stats))};
+}
+function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(Boolean);if(list.length<2)return '<h3>Compare saved scenarios</h3><div class="scenario-empty">Select at least two saved plans using Compare.</div>';
  const data=[['Household net income / month','net','€',false],['Disposable cash / month','free','€',true],['Rental cash flow / month','rentalCash','€',true],['Upfront capital modeled','upfront','€',false],['Initial ETF balance','etf','€',false],['Own-home mortgage debt','loan','€',false],['Illustrative ETF gain / year','annualGain','€',true],['ETF value at projection end','endEtf','€',true],['Home equity at projection end','endHomeEquity','€',true]];
  let html='<h3>Compare saved scenarios</h3><div class="table-scroll"><table><thead><tr><th>Financial measure</th>'+list.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
  for(const [label,key,_,highlight] of data){const best=Math.max(...list.map(r=>Number(r.stats[key])||0));html+=`<tr><td>${label}</td>`+list.map(r=>{const value=Number(r.stats[key]);return `<td class="${highlight&&value===best?'best':''} ${value<0?'negative':''}">${euro(value)}</td>`}).join('')+'</tr>';}
- const base=list[0];if(list.length>1){html+='</tbody></table></div><div class="delta-cards">'+list.slice(1).map(r=>{const d=(k)=>Number(r.stats[k]||0)-Number(base.stats[k]||0);return `<article class="delta-card"><strong>${esc(r.name)} vs ${esc(base.name)}</strong><p>Monthly disposable change: <b class="${d('free')>=0?'green':'red'}">${d('free')>=0?'+':''}${euro(d('free'))}</b></p><p>Upfront capital difference: <b>${d('upfront')>=0?'+':''}${euro(d('upfront'))}</b></p><p>Rental cash-flow difference: <b class="${d('rentalCash')>=0?'green':'red'}">${d('rentalCash')>=0?'+':''}${euro(d('rentalCash'))}/mo</b></p><p>End ETF difference: <b>${d('endEtf')>=0?'+':''}${euro(d('endEtf'))}</b></p></article>`}).join('')+'</div>';}else html+='</tbody></table></div>';return html+'<p class="scenario-footnote">Saved snapshots use each scenario’s projection horizon, tax assumptions and financial inputs. Compare the same horizon and starting capital for meaningful conclusions. Future ETF growth is hypothetical, not cash income. Estimated rental tax savings may not arrive monthly.</p>';
+ const mismatch=list.some(r=>r.stats.years!==list[0].stats.years||Math.abs(r.stats.upfront-list[0].stats.upfront)>1);if(mismatch)html+='<tr><td colspan="'+(list.length+1)+'"><strong>Compare carefully:</strong> these plans have different projection horizons or upfront capital.</td></tr>';const base=list[0];if(list.length>1){html+='</tbody></table></div><div class="delta-cards">'+list.slice(1).map(r=>{const d=(k)=>Number(r.stats[k]||0)-Number(base.stats[k]||0);return `<article class="delta-card"><strong>${esc(r.name)} vs ${esc(base.name)}</strong><p>Monthly disposable change: <b class="${d('free')>=0?'green':'red'}">${d('free')>=0?'+':''}${euro(d('free'))}</b></p><p>Upfront capital difference: <b>${d('upfront')>=0?'+':''}${euro(d('upfront'))}</b></p><p>Rental cash-flow difference: <b class="${d('rentalCash')>=0?'green':'red'}">${d('rentalCash')>=0?'+':''}${euro(d('rentalCash'))}/mo</b></p><p>End ETF difference: <b>${d('endEtf')>=0?'+':''}${euro(d('endEtf'))}</b></p></article>`}).join('')+'</div>';}else html+='</tbody></table></div>';return html+'<p class="scenario-footnote">Saved snapshots use each scenario’s projection horizon, tax assumptions and financial inputs. Compare the same horizon and starting capital for meaningful conclusions. Future ETF growth is hypothetical, not cash income. Estimated rental tax savings may not arrive monthly.</p>';
  }
  function draw(){selected=selected.filter(id=>records.some(r=>r.id===id)).slice(0,3);$('scenarioCards').innerHTML=records.length?records.map(r=>`<article class="scenario-tile ${selected.includes(r.id)?'active':''}"><strong>${esc(r.name)}</strong><div class="small">${r.stats.mode==='single'?'Single':'Married'} · ${r.stats.housing==='buy'?'Buying home':'Existing housing'} · ${r.stats.rentals} rental(s)</div><div class="small">Free cash <strong style="display:inline">${euro(r.stats.free)}/mo</strong><br>ETFs ${euro(r.stats.etf)} · ${r.stats.years} years</div><label class="small" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" data-compare="${esc(r.id)}" ${selected.includes(r.id)?'checked':''}> Compare</label><div class="actions"><button class="btn primary" data-action="load" data-id="${esc(r.id)}">Load</button><button class="btn" data-action="duplicate" data-id="${esc(r.id)}">Duplicate</button><button class="btn" data-action="rename" data-id="${esc(r.id)}">Rename</button><button class="btn" data-action="delete" data-id="${esc(r.id)}">Delete</button></div></article>`).join(''):'<div class="scenario-empty">No saved plans yet. Try saving “Home only”, then add a rental and save “Home + rental”.</div>';
- $('scenarioCompare').innerHTML=table();}
+ $('scenarioCompare').innerHTML=table();syncSelector();}
  $('saveScenario').addEventListener('click',save);$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
  $('scenarioCards').addEventListener('change',e=>{const cb=e.target.closest('[data-compare]');if(!cb)return;const id=cb.dataset.compare;if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios at once.');return;}selected.push(id);}else selected=selected.filter(x=>x!==id);draw();});
  $('scenarioCards').addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const r=records.find(x=>x.id===btn.dataset.id);if(!r)return;({load:restore,duplicate,rename:changeName,delete:remove})[btn.dataset.action]?.(r);});
