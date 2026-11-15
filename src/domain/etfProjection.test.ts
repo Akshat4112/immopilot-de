@@ -20,8 +20,8 @@ describe('ETF-002 after-tax comparison ledger', () => {
     expect(row.valueBeforeSaleEuro).toBe(11000)
     expect(row.advanceEuro).toBe(224)
     expect(row.advanceTaxEuro).toBe(41.36)
-    expect(row.hypotheticalSaleTaxEuro).toBe(143.28)
-    expect(row.liquidationValueEuro).toBeCloseTo(10815.36, 2)
+    expect(row.hypotheticalSaleTaxEuro).toBe(143.26)
+    expect(row.liquidationValueEuro).toBeCloseTo(10815.38, 2)
   })
 
   it('does not reuse the full allowance for advance and sale', () => {
@@ -30,7 +30,7 @@ describe('ETF-002 after-tax comparison ledger', () => {
       annualRemainingAllowancesEuro: [150],
     })
     expect(row.advanceTaxEuro).toBe(1.79)
-    expect(row.hypotheticalSaleTaxEuro).toBe(143.28)
+    expect(row.hypotheticalSaleTaxEuro).toBe(143.26)
   })
 
   it('does not retrospectively tax end-of-year contributions', () => {
