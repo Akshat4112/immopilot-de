@@ -1830,12 +1830,68 @@ function table(){const list=selected.map(id=>records.find(r=>r.id===id)).filter(
  }
  function draw(){selected=selected.filter(id=>records.some(r=>r.id===id)).slice(0,3);$('scenarioCards').innerHTML=records.length?records.map(r=>`<article class="scenario-tile ${selected.includes(r.id)?'active':''}"><strong>${esc(r.name)}</strong><div class="small">${r.stats.mode==='single'?'Single':'Married'} · ${r.stats.housing==='buy'?'Buying home':'Existing housing'} · ${r.stats.rentals} rental(s)</div><div class="small">Free cash <strong style="display:inline">${euro(r.stats.free)}/mo</strong><br>ETFs ${euro(r.stats.etf)} · ${r.stats.years} years</div><label class="small" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" data-compare="${esc(r.id)}" ${selected.includes(r.id)?'checked':''}> Compare</label><div class="actions"><button class="btn primary" data-action="load" data-id="${esc(r.id)}">Load</button><button class="btn" data-action="duplicate" data-id="${esc(r.id)}">Duplicate</button><button class="btn" data-action="rename" data-id="${esc(r.id)}">Rename</button><button class="btn" data-action="delete" data-id="${esc(r.id)}">Delete</button></div></article>`).join(''):'<div class="scenario-empty">No saved plans yet. Try saving “Home only”, then add a rental and save “Home + rental”.</div>';
  $('scenarioCompare').innerHTML=table();syncSelector();}
- $('saveScenario').addEventListener('click',save);$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
- $('scenarioCards').addEventListener('change',e=>{const cb=e.target.closest('[data-compare]');if(!cb)return;const id=cb.dataset.compare;if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios at once.');return;}selected.push(id);}else selected=selected.filter(x=>x!==id);draw();});
- $('scenarioCards').addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const r=records.find(x=>x.id===btn.dataset.id);if(!r)return;({load:restore,duplicate,rename:changeName,delete:remove})[btn.dataset.action]?.(r);});
- $('exportScenario').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,exported:new Date().toISOString(),scenarios:records},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='wealth-planner-scenarios.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);note('Backup downloaded. Treat it as private financial information.');});
- $('importScenario').addEventListener('click',()=>$('scenarioFile').click());$('scenarioFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>2e6)throw Error('Backup is too large.');const data=JSON.parse(await f.text());if(!Array.isArray(data.scenarios))throw Error('Invalid scenario backup.');const valid=data.scenarios.filter(r=>r&&typeof r.name==='string'&&r.snapshot?.fields&&r.stats&&typeof r.stats.free==='number').slice(0,30);if(!valid.length)throw Error('Backup has no valid scenarios.');if(!confirm(`Import ${valid.length} scenarios? Existing saved plans will be replaced.`))return;records=valid.map(r=>({...r,id:makeId(),name:r.name.slice(0,70)}));selected=[];persist();draw();note(`Imported ${records.length} scenarios.`);}catch(err){note(`Import failed: ${err.message}`);}finally{e.target.value='';}});
+ $('saveScenario').addEventListener('click',save);
+$('scenarioName').addEventListener('keydown',e=>{if(e.key==='Enter')save()});
+$('updateScenario').addEventListener('click',updateActive);
+$('undoScenarioLoad').addEventListener('click',undoLoad);
+$('activeScenario').addEventListener('change',e=>{
+ const rec=records.find(r=>r.id===e.target.value);
+ if(rec)restore(rec);
+ else{activeId=null;writeActive();updateStatus();note('Detached working inputs. Save as new to keep a copy.');}
+});
+$('scenarioCards').addEventListener('change',e=>{
+ const cb=e.target.closest('[data-compare]');if(!cb)return;
+ const id=cb.dataset.compare;
+ if(cb.checked){if(selected.length>=3){cb.checked=false;note('Compare up to three scenarios.');return;}selected.push(id);}
+ else selected=selected.filter(x=>x!==id);
  draw();
+});
+$('scenarioCards').addEventListener('click',e=>{
+ const b=e.target.closest('[data-action]');if(!b)return;
+ const rec=records.find(r=>r.id===b.dataset.id);if(!rec)return;
+ ({load:restore,duplicate,rename:changeName,delete:remove})[b.dataset.action]?.(rec);
+});
+$('exportScenario').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),scenarios:records},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;
+ a.download='wealth-planner-scenarios.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);
+ note('Backup downloaded. It contains private financial assumptions: store it securely.');
+});
+$('importScenario').addEventListener('click',()=>$('scenarioFile').click());
+$('scenarioFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  if(f.size>2e6)throw Error('Backup is too large.');
+  const data=JSON.parse(await f.text());
+  if(!object(data)||![1,2].includes(data.version??1)||!Array.isArray(data.scenarios)||
+   !data.scenarios.length||data.scenarios.length>30)
+   throw Error('Unsupported backup version or scenario count.');
+  // V1 backups are migrated; every record must validate. No silent partial import.
+  const valid=data.scenarios.map(validateImportedRecord);
+  if(!confirm('Replace '+records.length+' saved plan(s) with '+valid.length+
+   ' imported plan(s)? Please export a backup first.'))return;
+  const previous=records;records=valid;
+  if(!persist()){records=previous;return;}
+  activeId=null;writeActive();selected=[];draw();
+  note('Imported '+records.length+' scenarios. Backup upgraded to version 2.');
+ }catch(err){note('Import failed: '+err.message);}
+ finally{e.target.value='';}
+});
+// Original calculator renders and persists on input/change. Check the saved
+// snapshot afterward without altering any financial inputs or scenario modes.
+document.addEventListener('input',e=>{
+ if(e.target.closest('#scenarioWorkspace,#scenarioQuickbar'))return;
+ queueMicrotask(updateStatus);
+});
+document.addEventListener('change',e=>{
+ if(e.target.closest('#scenarioWorkspace,#scenarioQuickbar'))return;
+ queueMicrotask(updateStatus);
+});
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-strategy],[data-switch-home],[data-switch-profile],'+
+  '[data-half],#reset,#addRental,[data-rental-action]'))queueMicrotask(updateStatus);
+});
+draw();
 })();
 </script>
 
