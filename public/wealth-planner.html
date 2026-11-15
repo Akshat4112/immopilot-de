@@ -768,7 +768,7 @@ function rentalsFromForm(){if($('strategyRental').value==='off')return [];return
    :null;
   r.autoCapitalize=r.renovationAssessment?.disposition==='capitalized';
   r.capitalisedImprovement=r.renovationAssessment?r.renovationAssessment.totalCapitalizedEuro:(r.renoType==='capital'?r.renovation:0);
-  r.immediateMaintenance=r.renovationAssessment?r.renovationAssessment.immediatelyDeductibleEuro:0;
+  r.immediateMaintenance=r.renovationAssessment?r.renovationAssessment.immediatelyDeductibleEuro*r.rentalUsePercent/100:0;
   r.buildingBasis=r.price*(1+r.buyCosts/100)*r.buildingShare/100+r.capitalisedImprovement;
   r.afa=r.buildingBasis*r.afaRate;
   r.upfront=r.down+r.price*r.buyCosts/100+r.renovation;
