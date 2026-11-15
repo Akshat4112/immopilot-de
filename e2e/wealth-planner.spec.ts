@@ -1245,7 +1245,6 @@ test('UX-030 table and interactive waterfall bars support keyboard selection and
 test('ETF tax visualizer shows source-backed values and does not invent liquidation tax', async ({ page }) => {
   await page.goto('./')
   const planner = page.frameLocator(frameSelector)
-  await planner.getByRole('tab', { name: /Visual Insights/i }).click()
   const panel = planner.locator('#etfTaxPanel')
   await expect(panel).toBeVisible()
   await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
@@ -1255,14 +1254,14 @@ test('ETF tax visualizer shows source-backed values and does not invent liquidat
   await expect(panel).toHaveAttribute('data-selected-year', '5')
   await panel.locator('#etfTaxDisplay').selectOption('table')
   await expect(panel.locator('#etfTaxChartPane')).toBeHidden()
-  await expect(panel.locator('#etfTaxRows tr')).toHaveCount(31)
+  const years = Number(await planner.locator('#years').inputValue())
+  await expect(panel.locator('#etfTaxRows tr')).toHaveCount(years + 1)
 })
 
 test('ETF tax visualizer has an accessible mobile table fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./')
   const planner = page.frameLocator(frameSelector)
-  await planner.getByRole('tab', { name: /Visual Insights/i }).click()
   const panel = planner.locator('#etfTaxPanel')
   await expect(panel).toBeVisible()
   await expect(panel.locator('#etfTaxChartPane')).toBeHidden()
