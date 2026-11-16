@@ -83,8 +83,7 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
   const capped = Math.min(grossBasis, growthPlusDistributions)
   // §18(1): advance is the capped basic yield not already covered by actual distributions.
   const afterDistributions = Math.max(0, capped - input.distributionsEuro)
-  const fraction =
-    input.acquisitionMonth === undefined ? 1 : (13 - input.acquisitionMonth) / 12
+  const fraction = input.acquisitionMonth === undefined ? 1 : (13 - input.acquisitionMonth) / 12
   const advanceAmountEuro = cents(afterDistributions * fraction)
   return {
     basicYieldEuro: cents(grossBasis),
@@ -146,10 +145,7 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     amount('Purchase price', lot.purchasePricePerUnitEuro)
     amount('Earlier assessed advance', lot.previousAdvancePerUnitEuro)
   }
-  if (
-    input.soldUnits >
-    input.lotsOldestFirst.reduce((sum, lot) => sum + lot.units, 0) + 1e-9
-  ) {
+  if (input.soldUnits > input.lotsOldestFirst.reduce((sum, lot) => sum + lot.units, 0) + 1e-9) {
     throw new Error('Sale exceeds available units')
   }
   const lines: SaleLine[] = []
@@ -175,17 +171,12 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     left -= taken
   }
   const totalProceedsEuro = cents(input.soldUnits * input.salePricePerUnitEuro)
-  const totalCostBasisEuro = cents(
-    lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0),
-  )
+  const totalCostBasisEuro = cents(lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0))
   const totalAdvanceOffsetEuro = cents(
     lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0),
   )
   const gain = cents(
-    totalProceedsEuro -
-      totalCostBasisEuro -
-      totalAdvanceOffsetEuro -
-      input.saleCostsEuro,
+    totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro,
   )
   return {
     lines,
