@@ -103,7 +103,9 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(() =>
       calculateFifoSale({
         ...base,
-        lotsOldestFirst: [base.lotsOldestFirst[0], base.lotsOldestFirst[0]],
+        lotsOldestFirst: base.lotsOldestFirst.flatMap((lot) =>
+          lot.lotId === '2024' ? [lot, lot] : [],
+        ),
       }),
     ).toThrow()
   })
