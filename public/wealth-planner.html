@@ -3196,7 +3196,7 @@ function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
 function renderEtfTaxPanel(x,sim){
  const root=$('etfTaxPanel');if(!root)return;
  const yearSelect=$('etfTaxYear'),viewSelect=$('etfTaxDisplay');
- const previous=Math.max(0,Math.min(x.years,Number(yearSelect.value)||x.years));
+ const previous=yearSelect.value===''?x.years:Math.max(0,Math.min(x.years,Number(yearSelect.value)));
  if(yearSelect.options.length!==x.years+1){
   yearSelect.innerHTML=Array.from({length:x.years+1},(_,i)=>'<option value="'+i+'">Year '+i+'</option>').join('');
   yearSelect.value=String(previous);
