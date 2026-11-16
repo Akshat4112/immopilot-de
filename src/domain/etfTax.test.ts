@@ -57,6 +57,23 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     expect(result.advanceAmountEuro).toBe(0)
     expect(result.taxableAdvanceEuro).toBe(0)
   })
+  it('applies full-year January acquisition and December one-month proration', () => {
+    const january = calculateAdvanceTax({ ...base, acquisitionMonth: 1 })
+    const december = calculateAdvanceTax({ ...base, acquisitionMonth: 12 })
+    expect(january.advanceAmountEuro).toBe(224)
+    expect(december.advanceAmountEuro).toBe(18.67)
+    expect(december.taxableAdvanceEuro).toBe(13.07)
+  })
+  it('keeps the pretax advance unchanged across fund partial-exemption categories', () => {
+    const equity = calculateAdvanceTax(base)
+    const mixed = calculateAdvanceTax({ ...base, category: 'mixed' })
+    const other = calculateAdvanceTax({ ...base, category: 'other' })
+    expect([equity.advanceAmountEuro, mixed.advanceAmountEuro, other.advanceAmountEuro]).toEqual([
+      224, 224, 224,
+    ])
+    expect(mixed.taxableAdvanceEuro).toBe(190.4)
+    expect(other.taxableAdvanceEuro).toBe(224)
+  })
   it('uses applicable partial exemption for equity, mixed and other funds', () => {
     expect(privateFundTaxableShare('equity')).toBe(0.7)
     expect(privateFundTaxableShare('mixed')).toBe(0.85)
