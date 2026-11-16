@@ -136,6 +136,9 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   ] as const) {
     amount(label, val)
   }
+  if (input.soldUnits === 0 && input.saleCostsEuro !== 0) {
+    throw new Error('Sale costs require sold units')
+  }
   const share = privateFundTaxableShare(input.category)
   const seen = new Set<string>()
   for (const lot of input.lotsOldestFirst) {
