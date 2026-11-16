@@ -36,6 +36,12 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      - name: Show formatter diff on failure
+        if: failure()
+        run: |
+          npx prettier --write src/domain/etfTax.ts src/domain/etfTax.test.ts
+          git diff -- src/domain/etfTax.ts src/domain/etfTax.test.ts
+
       - name: Lint
         run: npm run lint
 
