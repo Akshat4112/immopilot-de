@@ -46,6 +46,17 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     expect(result.advanceAmountEuro).toBe(0)
     expect(result.taxableAdvanceEuro).toBe(0)
   })
+  it('caps a falling-price fund with distributions at its total annual return', () => {
+    const result = calculateAdvanceTax({
+      ...base,
+      closingPriceEuro: 99,
+      distributionsEuro: 150,
+    })
+    expect(result.basicYieldEuro).toBe(224)
+    expect(result.cappedBasicYieldEuro).toBe(50)
+    expect(result.advanceAmountEuro).toBe(0)
+    expect(result.taxableAdvanceEuro).toBe(0)
+  })
   it('uses applicable partial exemption for equity, mixed and other funds', () => {
     expect(privateFundTaxableShare('equity')).toBe(0.7)
     expect(privateFundTaxableShare('mixed')).toBe(0.85)
