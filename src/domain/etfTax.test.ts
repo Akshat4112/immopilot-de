@@ -68,9 +68,9 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     const equity = calculateAdvanceTax(base)
     const mixed = calculateAdvanceTax({ ...base, category: 'mixed' })
     const other = calculateAdvanceTax({ ...base, category: 'other' })
-    expect([equity.advanceAmountEuro, mixed.advanceAmountEuro, other.advanceAmountEuro]).toEqual([
-      224, 224, 224,
-    ])
+    expect([equity.advanceAmountEuro, mixed.advanceAmountEuro, other.advanceAmountEuro]).toEqual(
+      [224, 224, 224],
+    )
     expect(mixed.taxableAdvanceEuro).toBe(190.4)
     expect(other.taxableAdvanceEuro).toBe(224)
   })
