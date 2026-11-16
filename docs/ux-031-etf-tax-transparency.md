@@ -23,3 +23,6 @@ This change adds a visual ETF ledger under **Visual Insights** while deliberatel
 **Tax references to verify before enabling:** InvStG §§ 16, 18 and 20; EStG § 20; BMF Basiszins announcements for each tax year.
 
 This staged implementation tracks issue #93 UX-031. **Do not mark UX-031 finished** on the tracker or merge without verification; no CI was run by this connector session.
+
+## Year-zero UI regression
+The projection-year selector preserves an explicit **Year 0** selection when unrelated planner inputs trigger a rerender. The end-to-end test changes the projection horizon after choosing Year 0 and checks that the selected year remains zero. This fixes a JavaScript `||` fallback that previously treated the valid numeric zero as missing.
