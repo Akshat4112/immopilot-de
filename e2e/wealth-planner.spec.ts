@@ -1252,8 +1252,12 @@ test('ETF tax visualizer shows source-backed values and does not invent liquidat
   await expect(panel.locator('#etfTaxRows tr').first()).toContainText('Not modeled')
   await panel.locator('#etfTaxYear').selectOption('0')
   await expect(panel).toHaveAttribute('data-selected-year', '0')
-  await planner.locator('#years').fill('25')
-  await planner.locator('#years').dispatchEvent('change')
+  // Projection horizon is in a collapsed advanced panel; update the input and
+  // dispatch its normal change event without relying on visibility.
+  await planner.locator('#years').evaluate((input: HTMLInputElement) => {
+    input.value = '25'
+    input.dispatchEvent(new Event('change', { bubbles: true }))
+  })
   await expect(panel.locator('#etfTaxYear')).toHaveValue('0')
   await expect(panel).toHaveAttribute('data-selected-year', '0')
   await panel.locator('#etfTaxYear').selectOption('5')
