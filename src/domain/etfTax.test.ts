@@ -122,6 +122,26 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(result.gainBeforePartialExemptionEuro).toBe(600)
     expect(result.taxableGainEuro).toBe(510)
   })
+  it('preserves advance offsets on remaining FIFO units across sequential sales', () => {
+    const first = calculateFifoSale({ ...base, soldUnits: 12 })
+    expect(first.totalAdvanceOffsetEuro).toBe(44)
+    expect(first.remainingLots).toEqual([
+      {
+        lotId: '2025',
+        units: 8,
+        purchasePricePerUnitEuro: 120,
+        previousAdvancePerUnitEuro: 2,
+      },
+    ])
+    const second = calculateFifoSale({
+      ...base,
+      lotsOldestFirst: first.remainingLots,
+      soldUnits: 8,
+    })
+    expect(second.totalAdvanceOffsetEuro).toBe(16)
+    expect(second.remainingLots).toEqual([])
+    expect(first.totalAdvanceOffsetEuro + second.totalAdvanceOffsetEuro).toBe(60)
+  })
   it('rejects overselling, invalid amounts and duplicate lot IDs', () => {
     expect(() => calculateFifoSale({ ...base, soldUnits: 21 })).toThrow()
     expect(() => calculateFifoSale({ ...base, saleCostsEuro: -1 })).toThrow()
