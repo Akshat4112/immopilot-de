@@ -154,6 +154,8 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   const lines: SaleLine[] = []
   const remainingLots: FifoLot[] = []
   let left = input.soldUnits
+  let rawCostBasis = 0
+  let rawAdvanceOffset = 0
   for (const lot of input.lotsOldestFirst) {
     const taken = Math.min(left, lot.units)
     const remaining = Math.max(0, lot.units - taken)
@@ -161,6 +163,8 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
       const proceeds = taken * input.salePricePerUnitEuro
       const basis = taken * lot.purchasePricePerUnitEuro
       const offset = taken * lot.previousAdvancePerUnitEuro
+      rawCostBasis += basis
+      rawAdvanceOffset += offset
       lines.push({
         lotId: lot.lotId,
         units: taken,
@@ -174,10 +178,27 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     left -= taken
   }
   const totalProceedsEuro = cents(input.soldUnits * input.salePricePerUnitEuro)
-  const totalCostBasisEuro = cents(lines.reduce((sum, lot) => sum + lot.costBasisEuro, 0))
-  const totalAdvanceOffsetEuro = cents(
-    lines.reduce((sum, lot) => sum + lot.previousAdvanceOffsetEuro, 0),
-  )
+  // Round aggregate amounts once; reconcile the final FIFO line to the totals.
+  const totalCostBasisEuro = cents(rawCostBasis)
+  const totalAdvanceOffsetEuro = cents(rawAdvanceOffset)
+  if (lines.length > 0) {
+    const last = lines[lines.length - 1]
+    last.proceedsEuro = cents(
+      last.proceedsEuro + totalProceedsEuro - lines.reduce((sum, line) => sum + line.proceedsEuro, 0),
+    )
+    last.costBasisEuro = cents(
+      last.costBasisEuro + totalCostBasisEuro - lines.reduce((sum, line) => sum + line.costBasisEuro, 0),
+    )
+    last.previousAdvanceOffsetEuro = cents(
+      last.previousAdvanceOffsetEuro + totalAdvanceOffsetEuro -
+        lines.reduce((sum, line) => sum + line.previousAdvanceOffsetEuro, 0),
+    )
+    for (const line of lines) {
+      line.gainAfterAdvanceOffsetEuro = cents(
+        line.proceedsEuro - line.costBasisEuro - line.previousAdvanceOffsetEuro,
+      )
+    }
+  }
   const gain = cents(
     totalProceedsEuro - totalCostBasisEuro - totalAdvanceOffsetEuro - input.saleCostsEuro,
   )
