@@ -185,9 +185,15 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(r.totalProceedsEuro).toBe(0.67)
     expect(r.totalCostBasisEuro).toBe(0.67)
     expect(r.totalAdvanceOffsetEuro).toBe(0.67)
-    expect(r.lines.reduce((sum, line) => sum + line.proceedsEuro, 0)).toBeCloseTo(r.totalProceedsEuro)
-    expect(r.lines.reduce((sum, line) => sum + line.costBasisEuro, 0)).toBeCloseTo(r.totalCostBasisEuro)
-    expect(r.lines.reduce((sum, line) => sum + line.previousAdvanceOffsetEuro, 0)).toBeCloseTo(r.totalAdvanceOffsetEuro)
+    expect(r.lines.reduce((sum, line) => sum + line.proceedsEuro, 0)).toBeCloseTo(
+      r.totalProceedsEuro,
+    )
+    expect(r.lines.reduce((sum, line) => sum + line.costBasisEuro, 0)).toBeCloseTo(
+      r.totalCostBasisEuro,
+    )
+    expect(r.lines.reduce((sum, line) => sum + line.previousAdvanceOffsetEuro, 0)).toBeCloseTo(
+      r.totalAdvanceOffsetEuro,
+    )
     expect(r.gainBeforePartialExemptionEuro).toBe(-0.67)
   })
   it('rejects overselling, invalid amounts and duplicate lot IDs', () => {
