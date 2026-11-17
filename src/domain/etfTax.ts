@@ -190,7 +190,8 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
       last.costBasisEuro + totalCostBasisEuro - lines.reduce((sum, line) => sum + line.costBasisEuro, 0),
     )
     last.previousAdvanceOffsetEuro = cents(
-      last.previousAdvanceOffsetEuro + totalAdvanceOffsetEuro -
+      last.previousAdvanceOffsetEuro +
+        totalAdvanceOffsetEuro -
         lines.reduce((sum, line) => sum + line.previousAdvanceOffsetEuro, 0),
     )
     for (const line of lines) {
