@@ -183,17 +183,19 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   const totalAdvanceOffsetEuro = cents(rawAdvanceOffset)
   if (lines.length > 0) {
     const last = lines[lines.length - 1]
-    last.proceedsEuro = cents(
-      last.proceedsEuro + totalProceedsEuro - lines.reduce((sum, line) => sum + line.proceedsEuro, 0),
-    )
-    last.costBasisEuro = cents(
-      last.costBasisEuro + totalCostBasisEuro - lines.reduce((sum, line) => sum + line.costBasisEuro, 0),
-    )
+    let summedProceeds = 0
+    let summedCostBasis = 0
     let summedAdvanceOffsets = 0
     for (const line of lines) {
+      summedProceeds += line.proceedsEuro
+      summedCostBasis += line.costBasisEuro
       summedAdvanceOffsets += line.previousAdvanceOffsetEuro
     }
+    const proceedsDifference = totalProceedsEuro - summedProceeds
+    const costBasisDifference = totalCostBasisEuro - summedCostBasis
     const advanceOffsetDifference = totalAdvanceOffsetEuro - summedAdvanceOffsets
+    last.proceedsEuro = cents(last.proceedsEuro + proceedsDifference)
+    last.costBasisEuro = cents(last.costBasisEuro + costBasisDifference)
     last.previousAdvanceOffsetEuro = cents(last.previousAdvanceOffsetEuro + advanceOffsetDifference)
     for (const line of lines) {
       line.gainAfterAdvanceOffsetEuro = cents(
