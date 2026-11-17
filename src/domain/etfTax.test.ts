@@ -174,8 +174,18 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
   it('reconciles fractional-share lot cents to once-rounded transaction totals', () => {
     const r = calculateFifoSale({
       lotsOldestFirst: [
-        { lotId: 'a', units: 1, purchasePricePerUnitEuro: 0.335, previousAdvancePerUnitEuro: 0.335 },
-        { lotId: 'b', units: 1, purchasePricePerUnitEuro: 0.335, previousAdvancePerUnitEuro: 0.335 },
+        {
+          lotId: 'a',
+          units: 1,
+          purchasePricePerUnitEuro: 0.335,
+          previousAdvancePerUnitEuro: 0.335,
+        },
+        {
+          lotId: 'b',
+          units: 1,
+          purchasePricePerUnitEuro: 0.335,
+          previousAdvancePerUnitEuro: 0.335,
+        },
       ],
       soldUnits: 2,
       salePricePerUnitEuro: 0.335,
