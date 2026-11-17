@@ -171,6 +171,25 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(second.remainingLots).toEqual([])
     expect(first.totalAdvanceOffsetEuro + second.totalAdvanceOffsetEuro).toBe(60)
   })
+  it('reconciles fractional-share lot cents to once-rounded transaction totals', () => {
+    const r = calculateFifoSale({
+      lotsOldestFirst: [
+        { lotId: 'a', units: 1, purchasePricePerUnitEuro: 0.335, previousAdvancePerUnitEuro: 0.335 },
+        { lotId: 'b', units: 1, purchasePricePerUnitEuro: 0.335, previousAdvancePerUnitEuro: 0.335 },
+      ],
+      soldUnits: 2,
+      salePricePerUnitEuro: 0.335,
+      saleCostsEuro: 0,
+      category: 'other',
+    })
+    expect(r.totalProceedsEuro).toBe(0.67)
+    expect(r.totalCostBasisEuro).toBe(0.67)
+    expect(r.totalAdvanceOffsetEuro).toBe(0.67)
+    expect(r.lines.reduce((sum, line) => sum + line.proceedsEuro, 0)).toBeCloseTo(r.totalProceedsEuro)
+    expect(r.lines.reduce((sum, line) => sum + line.costBasisEuro, 0)).toBeCloseTo(r.totalCostBasisEuro)
+    expect(r.lines.reduce((sum, line) => sum + line.previousAdvanceOffsetEuro, 0)).toBeCloseTo(r.totalAdvanceOffsetEuro)
+    expect(r.gainBeforePartialExemptionEuro).toBe(-0.67)
+  })
   it('rejects overselling, invalid amounts and duplicate lot IDs', () => {
     expect(() => calculateFifoSale({ ...base, soldUnits: 21 })).toThrow()
     expect(() => calculateFifoSale({ ...base, saleCostsEuro: -1 })).toThrow()
