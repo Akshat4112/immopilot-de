@@ -1,8 +1,4 @@
-import {
-  calculateAdvanceTax,
-  calculateDisposalTax,
-  type FundCategory,
-} from './etfTax'
+import { calculateAdvanceTax, calculateDisposalTax, type FundCategory } from './etfTax'
 
 /**
  * ETF-002: conservative annual portfolio tax ledger for a single ETF.
@@ -47,14 +43,8 @@ export function projectAfterTaxETF(input: ETFProjectionInput): ETFProjectionRow[
   ) {
     throw new Error('Invalid projection period')
   }
-  const values = [
-    input.initialValueEuro,
-    input.initialCostBasisEuro,
-    input.annualContributionEuro,
-  ]
-  if (
-    values.some((value) => !Number.isFinite(value) || value < 0)
-  ) {
+  const values = [input.initialValueEuro, input.initialCostBasisEuro, input.annualContributionEuro]
+  if (values.some((value) => !Number.isFinite(value) || value < 0)) {
     throw new Error('Invalid initial ETF value, basis or contribution')
   }
   for (const [name, entries] of [
@@ -115,10 +105,7 @@ export function projectAfterTaxETF(input: ETFProjectionInput): ETFProjectionRow[
       saleProceedsEuro: value,
       purchaseCostEuro: cost,
       historicalAssessedAdvanceEuro: assessedAdvance,
-      remainingAllowanceEuro: Math.max(
-        0,
-        allowance - advance.allowanceUsedEuro,
-      ),
+      remainingAllowanceEuro: Math.max(0, allowance - advance.allowanceUsedEuro),
     })
     // Distributions are separate cash receipts. Tax on distributions is NOT
     // modelled, so values cannot be described as total after-tax household wealth.
@@ -132,8 +119,7 @@ export function projectAfterTaxETF(input: ETFProjectionInput): ETFProjectionRow[
       cumulativeAdvanceTaxEuro: cumulativeAdvanceTax,
       hypotheticalSaleTaxEuro: disposal.estimatedTaxEuro,
       cumulativeTaxEuro: cumulativeAdvanceTax + disposal.estimatedTaxEuro,
-      liquidationValueEuro:
-        value - cumulativeAdvanceTax - disposal.estimatedTaxEuro,
+      liquidationValueEuro: value - cumulativeAdvanceTax - disposal.estimatedTaxEuro,
     })
   }
   return rows
