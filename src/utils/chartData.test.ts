@@ -3,7 +3,7 @@ import { chartRowsToCsv, escapeChartCell } from './chartData';
 
 describe('accessible chart CSV', () => {
   it('escapes delimiters, quotes and newlines', () => {
-    expect(escapeChartCell('a,"b"\\nc')).toBe('"a,""b""\\nc"');
+    expect(escapeChartCell('a,"b"\nc')).toBe('"a,""b""\nc"');
   });
   it('neutralizes untrusted spreadsheet formulas without altering numeric negatives', () => {
     expect(escapeChartCell('=1+1')).toBe("'=1+1");
@@ -11,7 +11,7 @@ describe('accessible chart CSV', () => {
     expect(escapeChartCell(-42)).toBe('-42');
   });
   it('validates shape and preserves null cells', () => {
-    expect(chartRowsToCsv(['Year', 'EUR'], [[2026, null]])).toBe('\\uFEFFYear,EUR\\r\\n2026,\\r\\n');
+    expect(chartRowsToCsv(['Year', 'EUR'], [[2026, null]])).toBe('\uFEFFYear,EUR\r\n2026,\r\n');
     expect(() => chartRowsToCsv(['Year'], [[2026, 3]])).toThrow('width mismatch');
   });
 });
