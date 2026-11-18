@@ -115,6 +115,9 @@ export interface SaleLine {
   proceedsEuro: number
   costBasisEuro: number
   previousAdvanceOffsetEuro: number
+  /** Sale transaction fees allocated to this FIFO line, rounded to cents. */
+  allocatedSaleCostsEuro: number
+  /** Net line gain after acquisition basis, prior advances and allocated fees. */
   gainAfterAdvanceOffsetEuro: number
 }
 export interface FifoSaleResult {
@@ -171,6 +174,7 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
         proceedsEuro: cents(proceeds),
         costBasisEuro: cents(basis),
         previousAdvanceOffsetEuro: cents(offset),
+        allocatedSaleCostsEuro: 0,
         gainAfterAdvanceOffsetEuro: cents(proceeds - basis - offset),
       })
     }
@@ -197,9 +201,16 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
     last.proceedsEuro = cents(last.proceedsEuro + proceedsDifference)
     last.costBasisEuro = cents(last.costBasisEuro + costBasisDifference)
     last.previousAdvanceOffsetEuro = cents(last.previousAdvanceOffsetEuro + advanceOffsetDifference)
+    // Allocate fees by sold units; assign the rounding remainder to the final FIFO line.
+    let allocatedFees = 0
+    for (const line of lines.slice(0, -1)) {
+      line.allocatedSaleCostsEuro = cents((input.saleCostsEuro * line.units) / input.soldUnits)
+      allocatedFees += line.allocatedSaleCostsEuro
+    }
+    last.allocatedSaleCostsEuro = cents(input.saleCostsEuro - allocatedFees)
     for (const line of lines) {
       line.gainAfterAdvanceOffsetEuro = cents(
-        line.proceedsEuro - line.costBasisEuro - line.previousAdvanceOffsetEuro,
+        line.proceedsEuro - line.costBasisEuro - line.previousAdvanceOffsetEuro - line.allocatedSaleCostsEuro,
       )
     }
   }
