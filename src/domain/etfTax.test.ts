@@ -30,6 +30,14 @@ describe('ETF-001: explicit year-based German Vorabpauschale primitives', () => 
     expect(calculateAdvanceTax({ ...base, acquisitionMonth: 7 }).advanceAmountEuro).toBe(112)
     expect(calculateAdvanceTax({ ...base, acquisitionMonth: 12 }).advanceAmountEuro).toBe(18.67)
   })
+  it('subtracts distributions before acquisition-month proration under InvStG §18(1)–(2)', () => {
+    // €224 Basisertrag minus €100 distributions = €124; July purchase reduces by 6/12.
+    // https://www.gesetze-im-internet.de/invstg_2018/__18.html
+    const result = calculateAdvanceTax({ ...base, distributionsEuro: 100, acquisitionMonth: 7 })
+    expect(result.cappedBasicYieldEuro).toBe(224)
+    expect(result.advanceAmountEuro).toBe(62)
+    expect(result.taxableAdvanceEuro).toBe(43.4)
+  })
   it('does not invent an advance for an explicitly supplied zero basis rate', () => {
     const result = calculateAdvanceTax({ ...base, basisInterestRate: 0 })
     expect(result.basicYieldEuro).toBe(0)
