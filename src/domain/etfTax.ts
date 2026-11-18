@@ -181,8 +181,8 @@ export function calculateFifoSale(input: FifoSaleInput): FifoSaleResult {
   // Round aggregate amounts once; reconcile the final FIFO line to the totals.
   const totalCostBasisEuro = cents(rawCostBasis)
   const totalAdvanceOffsetEuro = cents(rawAdvanceOffset)
-  if (lines.length > 0) {
-    const last = lines[lines.length - 1]
+  const last = lines.at(-1)
+  if (last) {
     let summedProceeds = 0
     let summedCostBasis = 0
     let summedAdvanceOffsets = 0
