@@ -140,6 +140,13 @@ describe('ETF-002: FIFO sale and previously taxed advance offsets', () => {
     expect(r.gainBeforePartialExemptionEuro).toBe(570)
     expect(r.taxableGainEuro).toBe(399)
   })
+  it('allocates transaction costs across FIFO lines and reconciles net gains', () => {
+    const r = calculateFifoSale({ ...base, saleCostsEuro: 30.01 })
+    expect(r.lines.map((line) => line.allocatedSaleCostsEuro)).toEqual([20.01, 10])
+    expect(r.lines.map((line) => line.gainAfterAdvanceOffsetEuro)).toEqual([439.99, 129.99])
+    expect(r.lines.reduce((sum, line) => sum + line.allocatedSaleCostsEuro, 0)).toBeCloseTo(30.01)
+    expect(r.lines.reduce((sum, line) => sum + line.gainAfterAdvanceOffsetEuro, 0)).toBeCloseTo(r.gainBeforePartialExemptionEuro)
+  })
   it('keeps losses signed instead of treating them as taxable gains', () => {
     const r = calculateFifoSale({ ...base, salePricePerUnitEuro: 80 })
     expect(r.taxableGainEuro).toBeLessThan(0)
