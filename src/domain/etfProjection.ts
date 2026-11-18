@@ -63,10 +63,10 @@ export function projectAfterTaxETF(input: ETFProjectionInput): ETFProjectionRow[
   let cumulativeAdvanceTax = 0
   const rows: ETFProjectionRow[] = []
   for (let index = 0; index < input.years; index++) {
-    const annualReturn = input.annualReturns[index]
-    const distribution = input.annualDistributionsEuro[index]
-    const rate = input.annualBasisRates[index]
-    const allowance = input.annualRemainingAllowancesEuro[index]
+    const annualReturn = input.annualReturns[index]!
+    const distribution = input.annualDistributionsEuro[index]!
+    const rate = input.annualBasisRates[index]!
+    const allowance = input.annualRemainingAllowancesEuro[index]!
     if (!Number.isFinite(annualReturn) || annualReturn < -1 || annualReturn > 10) {
       throw new Error('Invalid annual ETF return')
     }
