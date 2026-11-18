@@ -11,7 +11,8 @@
  * allocates the *remaining* Sparer-Pauschbetrag across the whole taxpayer portfolio;
  * do not award the full allowance to each ETF or each taxable event.
  */
-export type FundCategory = 'equity' | 'mixed' | 'real-estate-domestic' | 'real-estate-foreign' | 'other'
+export type FundCategory =
+  'equity' | 'mixed' | 'real-estate-domestic' | 'real-estate-foreign' | 'other'
 
 export const FUND_EXEMPTION: Record<FundCategory, number> = {
   equity: 0.3,
@@ -94,12 +95,22 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
     ['End-of-year value', input.endOfYearValueEuro],
     ['Distributions', input.distributionsEuro],
     ['Unused allowance', input.remainingAllowanceEuro],
-  ] as const) nonnegative(label, amount)
-  if (!Number.isInteger(input.acquisitionMonth) || input.acquisitionMonth < 1 || input.acquisitionMonth > 12) {
+  ] as const)
+    nonnegative(label, amount)
+  if (
+    !Number.isInteger(input.acquisitionMonth) ||
+    input.acquisitionMonth < 1 ||
+    input.acquisitionMonth > 12
+  ) {
     throw new Error('Acquisition month must be 1–12')
   }
   const basisRate = input.annualBasisRate ?? BASIS_RATE_BY_YEAR[input.year]
-  if (basisRate === undefined || !Number.isFinite(basisRate) || basisRate < -0.1 || basisRate > 0.5) {
+  if (
+    basisRate === undefined ||
+    !Number.isFinite(basisRate) ||
+    basisRate < -0.1 ||
+    basisRate > 0.5
+  ) {
     throw new Error('Provide a verified annual basis rate for this tax year')
   }
   const rate = input.capitalGainsTaxRate ?? 0.25
@@ -109,16 +120,16 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
   // Base income = 70% × official basis rate × start value.
   // Statutory cap includes distributions: max(0, end value - start value + distributions).
   const baseReturnEuro = cents(Math.max(0, input.startOfYearValueEuro * basisRate * 0.7))
-  const cappedFundReturnEuro = cents(Math.max(
-    0, input.endOfYearValueEuro - input.startOfYearValueEuro + input.distributionsEuro,
-  ))
+  const cappedFundReturnEuro = cents(
+    Math.max(0, input.endOfYearValueEuro - input.startOfYearValueEuro + input.distributionsEuro),
+  )
   const cappedBase = Math.min(baseReturnEuro, cappedFundReturnEuro)
   const preAcquisitionMonths = input.acquisitionMonth - 1
   // First apply distribution reduction and then prorate the advance payment for
   // full months preceding acquisition. Caller must provide values on a consistent
   // basis; start-of-year market value is a proxy for new purchase lots.
   const unprorated = Math.max(0, cents(cappedBase - input.distributionsEuro))
-  const advancePaymentEuro = cents(unprorated * (12 - preAcquisitionMonths) / 12)
+  const advancePaymentEuro = cents((unprorated * (12 - preAcquisitionMonths)) / 12)
   const taxableAdvanceEuro = cents(advancePaymentEuro * (1 - exemptionFraction))
   const allowanceUsedEuro = cents(Math.min(input.remainingAllowanceEuro, taxableAdvanceEuro))
   const taxBaseEuro = cents(Math.max(0, taxableAdvanceEuro - allowanceUsedEuro))
@@ -127,8 +138,14 @@ export function calculateAdvanceTax(input: AdvanceTaxInput): AdvanceTaxResult {
     year: input.year,
     deemedReceiptYear: input.year + 1,
     deemedReceiptDate: input.year === 2026 ? '2027-01-04' : null,
-    baseReturnEuro, cappedFundReturnEuro, advancePaymentEuro,
-    taxableAdvanceEuro, allowanceUsedEuro, taxBaseEuro, estimatedTaxEuro, exemptionFraction,
+    baseReturnEuro,
+    cappedFundReturnEuro,
+    advancePaymentEuro,
+    taxableAdvanceEuro,
+    allowanceUsedEuro,
+    taxBaseEuro,
+    estimatedTaxEuro,
+    exemptionFraction,
   }
 }
 
@@ -161,7 +178,8 @@ export function calculateDisposalTax(input: ETFDisposalTaxInput): ETFDisposalTax
     ['Purchase cost', input.purchaseCostEuro],
     ['Previously assessed advances', input.historicalAssessedAdvanceEuro],
     ['Unused allowance', input.remainingAllowanceEuro],
-  ] as const) nonnegative(label, amount)
+  ] as const)
+    nonnegative(label, amount)
   const rate = input.capitalGainsTaxRate ?? 0.25
   const solidarity = input.solidarityRate ?? 0.055
   taxSettings(rate, solidarity)
@@ -172,7 +190,11 @@ export function calculateDisposalTax(input: ETFDisposalTaxInput): ETFDisposalTax
   const allowanceUsedEuro = cents(Math.min(taxableGainEuro, input.remainingAllowanceEuro))
   const taxBaseEuro = cents(taxableGainEuro - allowanceUsedEuro)
   return {
-    rawGainEuro, adjustedGainEuro, taxableGainEuro, allowanceUsedEuro, taxBaseEuro,
+    rawGainEuro,
+    adjustedGainEuro,
+    taxableGainEuro,
+    allowanceUsedEuro,
+    taxBaseEuro,
     estimatedTaxEuro: cents(taxBaseEuro * rate * (1 + solidarity)),
     lossForSeparateTreatmentEuro: cents(Math.max(0, -adjustedGainEuro)),
   }

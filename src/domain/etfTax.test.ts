@@ -28,12 +28,20 @@ describe('ETF-001: German investment-fund taxes for private investors', () => {
   })
 
   it('subtracts distributions without ever making an advance negative', () => {
-    expect(calculateAdvanceTax({
-      ...base, distributionsEuro: 100, endOfYearValueEuro: 10900,
-    }).advancePaymentEuro).toBe(124)
-    expect(calculateAdvanceTax({
-      ...base, distributionsEuro: 300, endOfYearValueEuro: 10700,
-    }).advancePaymentEuro).toBe(0)
+    expect(
+      calculateAdvanceTax({
+        ...base,
+        distributionsEuro: 100,
+        endOfYearValueEuro: 10900,
+      }).advancePaymentEuro,
+    ).toBe(124)
+    expect(
+      calculateAdvanceTax({
+        ...base,
+        distributionsEuro: 300,
+        endOfYearValueEuro: 10700,
+      }).advancePaymentEuro,
+    ).toBe(0)
   })
 
   it('prorates purchases and handles remaining allowance without reusing it', () => {
@@ -57,8 +65,11 @@ describe('ETF-001: German investment-fund taxes for private investors', () => {
 
   it('deducts historical assessed advances before exemption on sale', () => {
     const result = calculateDisposalTax({
-      category: 'equity', saleProceedsEuro: 15000, purchaseCostEuro: 10000,
-      historicalAssessedAdvanceEuro: 400, remainingAllowanceEuro: 1000,
+      category: 'equity',
+      saleProceedsEuro: 15000,
+      purchaseCostEuro: 10000,
+      historicalAssessedAdvanceEuro: 400,
+      remainingAllowanceEuro: 1000,
     })
     expect(result.adjustedGainEuro).toBe(4600)
     expect(result.taxableGainEuro).toBe(3220)
@@ -68,8 +79,11 @@ describe('ETF-001: German investment-fund taxes for private investors', () => {
 
   it('does not manufacture a refund for a loss or excess historical advances', () => {
     const result = calculateDisposalTax({
-      category: 'equity', saleProceedsEuro: 9000, purchaseCostEuro: 10000,
-      historicalAssessedAdvanceEuro: 300, remainingAllowanceEuro: 0,
+      category: 'equity',
+      saleProceedsEuro: 9000,
+      purchaseCostEuro: 10000,
+      historicalAssessedAdvanceEuro: 300,
+      remainingAllowanceEuro: 0,
     })
     expect(result.estimatedTaxEuro).toBe(0)
     expect(result.lossForSeparateTreatmentEuro).toBe(1300)
