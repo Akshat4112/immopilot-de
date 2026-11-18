@@ -1241,3 +1241,41 @@ test('UX-030 table and interactive waterfall bars support keyboard selection and
   await expect(point).toHaveClass(/selected/)
   await page.screenshot({ path: test.info().outputPath('ux030-rental-waterfall-mobile.png') })
 })
+
+test('ETF tax visualizer shows source-backed values and does not invent liquidation tax', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  await expect(panel).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+  await expect(panel).toHaveAttribute('data-tax-complete', 'false')
+  await expect(panel.locator('#etfTaxRows tr').first()).toContainText('Not modeled')
+  await panel.locator('#etfTaxYear').selectOption('0')
+  await expect(panel).toHaveAttribute('data-selected-year', '0')
+  // Projection horizon is in a collapsed advanced panel; update the input and
+  // dispatch its normal change event without relying on visibility.
+  await planner
+    .locator('#years')
+    .evaluate(
+      "(input) => { input.value = '25'; input.dispatchEvent(new Event('change', { bubbles: true })); }",
+    )
+  await expect(panel.locator('#etfTaxYear')).toHaveValue('0')
+  await expect(panel).toHaveAttribute('data-selected-year', '0')
+  await panel.locator('#etfTaxYear').selectOption('5')
+  await expect(panel).toHaveAttribute('data-selected-year', '5')
+  await panel.locator('#etfTaxDisplay').selectOption('table')
+  await expect(panel.locator('#etfTaxChartPane')).toBeHidden()
+  const years = Number(await planner.locator('#years').inputValue())
+  await expect(panel.locator('#etfTaxRows tr')).toHaveCount(years + 1)
+})
+
+test('ETF tax visualizer has an accessible mobile table fallback', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  await expect(panel).toBeVisible()
+  await expect(panel.locator('#etfTaxChartPane')).toBeHidden()
+  await expect(panel.getByRole('table')).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+})

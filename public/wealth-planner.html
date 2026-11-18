@@ -730,6 +730,26 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
 @media(max-width:590px){.rental-waterfall-controls{grid-template-columns:1fr}.rental-waterfall-toggle button{flex:1}.rental-waterfall-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.maincol svg.rental-waterfall-svg{min-width:950px!important}}
 @media print{.rental-waterfall-controls,#rentalWaterfallChartPane{display:none!important}#rentalWaterfallTablePane{display:block!important}.rental-waterfall-table-scroll{max-height:none}}
 
+
+/* UX-031: tax transparency panel, using only canonical ETF ledger values */
+.etf-tax-panel{border-color:#d6dce9}
+.etf-tax-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.etf-tax-controls label{font-size:.82rem;font-weight:700}
+.etf-tax-controls select{border:1px solid var(--border);border-radius:9px;background:var(--wash);color:var(--ink);padding:8px}
+.etf-tax-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
+.etf-tax-stats>div{background:var(--wash);border:1px solid var(--border);padding:12px;border-radius:11px;min-width:0}
+.etf-tax-stats small{display:block;color:var(--muted);line-height:1.35}
+.etf-tax-stats strong{display:block;margin-top:6px;font-size:1.08rem;overflow-wrap:anywhere}
+.etf-tax-graphic{overflow-x:auto;padding:6px 0}
+.etf-tax-graphic svg{min-width:500px;max-height:320px}
+.etf-tax-info{border-left:3px solid var(--gold);padding:10px 12px;background:var(--wash);font-size:.78rem;line-height:1.6}
+.etf-tax-table{width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap}
+.etf-tax-table th,.etf-tax-table td{padding:9px;text-align:right;border-bottom:1px solid var(--border)}
+.etf-tax-table th:first-child,.etf-tax-table td:first-child{text-align:left}
+.etf-tax-table th{background:var(--wash)}
+@media(max-width:650px){.etf-tax-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.etf-tax-graphic{display:none}}
+@media print{.etf-tax-graphic,.etf-tax-controls{display:none}}
+
 </style>
 </head>
 <body><main>
@@ -1148,7 +1168,28 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
   <div class="plot-stat-row" id="rentalBridgeStats"></div>
   <p class="rental-waterfall-footnote"><strong>Cash vs tax vs wealth:</strong> Tenant Nebenkosten advances are receipts, but recoverable operating costs are paid out. WEG reserves are cash outflows, not automatically tax deductible; mortgage principal uses cash and builds equity. AfA is a noncash deduction, so it is <em>not</em> subtracted from cash here. Estimated income tax follows the 2026 household model and may settle later, not monthly. A single property's tax estimate is standalone, not an additive share of the portfolio tax. Acquisition costs, renovations and purchase cash are excluded from recurring flow.</p>
  </div>
- <div class="plot-card wealth-timeline" id="wealthTimeline">
+ 
+<div class="plot-card etf-tax-panel" id="etfTaxPanel" aria-labelledby="etfTaxTitle">
+ <h3 id="etfTaxTitle">ETF growth &amp; German tax transparency</h3>
+ <p class="note">Explore modeled contributions, current market value, and cumulative tax on ETF withdrawals. Advance taxation and accurate sale proceeds require tax-lot data that this planner does not yet have.</p>
+ <div class="etf-tax-controls">
+  <label for="etfTaxYear">Projection year <select id="etfTaxYear"></select></label>
+  <label for="etfTaxDisplay">Display <select id="etfTaxDisplay"><option value="chart">Chart and table</option><option value="table">Table only</option></select></label>
+ </div>
+ <div class="etf-tax-stats">
+  <div><small>Contributions since opening</small><strong id="etfTaxDeposits">—</strong></div>
+  <div><small>Modeled ETF market value</small><strong id="etfTaxMarket">—</strong></div>
+  <div><small>Modeled withdrawal tax paid to date</small><strong id="etfTaxPaid">—</strong></div>
+  <div><small>After-tax full liquidation</small><strong id="etfTaxLiquidation">Not calculated</strong></div>
+ </div>
+ <div class="etf-tax-graphic" id="etfTaxChartPane" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
+ <div class="table-scroll" role="region" tabindex="0" aria-label="Annual ETF balances and tax evidence">
+ <table class="etf-tax-table"><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
+ <p class="etf-tax-info" id="etfTaxDisclosure" role="status" aria-live="polite"></p>
+ <p class="fine">German fund tax note (model assumptions, not a current-year tax assessment): 30% partial exemption for eligible equity funds; 25% capital-income tax plus solidarity surcharge is modeled for withdrawals, excluding church tax. The Sparer-Pauschbetrag may also be consumed by other capital income. No basis interest rate is assumed, and no Vorabpauschale or prior-tax offset is silently imputed. Source: German Investmentsteuergesetz §§ 16, 18, 20 and Einkommensteuergesetz § 20; verify the applicable tax year and BMF Basiszins independently.</p>
+</div>
+
+<div class="plot-card wealth-timeline" id="wealthTimeline">
   <h3>Lifetime wealth · assets, equity and debt</h3>
   <p class="note">Annual projections from the existing household, ETF, mortgage and rental models. The signed net-position line includes negative cash or equity.</p>
   <div class="wealth-timeline-controls">
@@ -3149,12 +3190,67 @@ function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
  }
 }
 
+
+/* UX-031: diagnostic projection, not a substitute for ETF tax-lot accounting.
+   Every number below comes from the existing simulate() rows. */
+function renderEtfTaxPanel(x,sim){
+ const root=$('etfTaxPanel');if(!root)return;
+ const yearSelect=$('etfTaxYear'),viewSelect=$('etfTaxDisplay');
+ const previous=yearSelect.value===''?x.years:Math.max(0,Math.min(x.years,Number(yearSelect.value)));
+ if(yearSelect.options.length!==x.years+1){
+  yearSelect.innerHTML=Array.from({length:x.years+1},(_,i)=>'<option value="'+i+'">Year '+i+'</option>').join('');
+  yearSelect.value=String(previous);
+ }
+ const rows=sim.rows;
+ let deposits=x.start,prevWithdraw=0,prevTax=0;
+ const values=rows.map((r,i)=>{
+  if(i)deposits+=r.newETF||0;
+  const item={year:i,deposits,market:r.portfolio,withdrawn:r.withdrawn||0,tax:r.tax||0};
+  item.newWithdraw=item.withdrawn-prevWithdraw;item.newTax=item.tax-prevTax;
+  prevWithdraw=item.withdrawn;prevTax=item.tax;return item;
+ });
+ const year=Math.max(0,Math.min(x.years,Number(yearSelect.value)||0));
+ const current=values[year]||values[0];
+ set('etfTaxDeposits',money(current.deposits));
+ set('etfTaxMarket',money(current.market));
+ set('etfTaxPaid',money(current.tax));
+ set('etfTaxLiquidation','Not calculated');
+ root.dataset.taxComplete='false';
+ root.dataset.selectedYear=String(year);
+ root.dataset.market=String(current.market);
+ root.dataset.deposits=String(current.deposits);
+ root.dataset.withdrawalTax=String(current.tax);
+ $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><td>'+r.year+'</td><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
+ const sales=x.drawMode!=='none'&&current.withdrawn>0;
+ $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
+  ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
+  ' The simulated withdrawal tax is cumulative and simplified; no Vorabpauschale cash tax, annual allowance use across all investments, historical fund distributions, FIFO lots or prior-tax offsets are accounted for. After-tax full-sale value and advance tax are intentionally unavailable until those calculations are validated.';
+ $('etfTaxChartPane').hidden=viewSelect.value==='table';
+ const visible=values.filter(r=>r.year<=year),scale=Math.max(1,...visible.flatMap(r=>[r.deposits,r.market]));
+ const width=690,height=214;
+ const px=i=>48+width*(visible.length===1?0:i/(visible.length-1));
+ const py=v=>247-Math.max(0,v)/scale*height;
+ const path=key=>visible.map((r,i)=>(i?'L':'M')+px(i).toFixed(1)+' '+py(r[key]).toFixed(1)).join(' ');
+ const yearDots=visible.map((r,i)=>'<circle cx="'+px(i).toFixed(1)+'" cy="'+py(r.market).toFixed(1)+'" r="3" fill="#176e62"><title>Year '+r.year+': ETF market '+money(r.market)+'</title></circle>').join('');
+ $('etfTaxSvg').innerHTML='<path d="M48 33V247H738" fill="none" stroke="currentColor" opacity=".35"/>'+
+   '<path d="'+path('deposits')+'" fill="none" stroke="#8b70b8" stroke-width="3" stroke-dasharray="7 5"/>'+
+   '<path d="'+path('market')+'" fill="none" stroke="#176e62" stroke-width="3"/>'+yearDots+
+   '<text x="51" y="18" font-size="12" fill="currentColor">ETF market (solid) · cumulative deposits (dashed), €</text>'+
+   '<text x="49" y="269" font-size="12" fill="currentColor">0</text>'+
+   '<text x="735" y="269" text-anchor="end" font-size="12" fill="currentColor">Year '+year+'</text>';
+ if(!root.dataset.etfBound){
+  root.dataset.etfBound='true';
+  yearSelect.addEventListener('change',()=>render());
+  viewSelect.addEventListener('change',()=>render());
+ }
+}
+
 function render(){
  syncStrategyUI();
  profileAllowances[$('profileMode').value]=Number($('allow').value)||0;
  const x=inputs(),firstReturn=Number(x.crash)<0?Number(x.crash):x.ret,e=expected(x,firstReturn),sim=simulate(x),payoff=mortgagePayoff(x),interest=x.loan*x.rate/1200,principal=Math.max(0,Math.min(x.emi,x.loan+interest)-interest),monthly=e.net/12,offsetTarget=x.homeNewPurchase?x.emi:(x.emi+x.owner),gap=offsetTarget-monthly,allCosts=x.emi+x.owner;
  const tax=householdTax(x),rent=rentalPortfolio(x,tax),c=familyMonthly(x,sim,tax,rent),projectedCash=householdCashProjection(x,tax,sim,rent);
- renderOverviewDashboard(x,sim,rent,c,projectedCash);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent,x,tax);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
+ renderOverviewDashboard(x,sim,rent,c,projectedCash);renderEtfTaxPanel(x,sim);window.ImmoPilotCashSankey?.render(x,c);renderRentalResults(x,tax,rent,c);renderRentalBridge(rent,x,tax);renderWealthComposition(x,sim,rent,projectedCash);renderLifeEventTimeline(x,tax,sim,rent,projectedCash);renderAnalytics(x,tax,rent);
  for(const [prefix,person,attributedTax,est,used] of [
    ['h',tax.h,tax.taxes*tax.shareH,tax.estimatedH,tax.useH],
    ['w',tax.w,tax.taxes*(1-tax.shareH),tax.estimatedW,tax.useW]
