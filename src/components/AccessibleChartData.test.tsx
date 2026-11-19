@@ -32,6 +32,27 @@ describe('AccessibleChartData', () => {
     expect(document.getElementById(controlledId!)?.hidden).toBe(true)
   })
 
+  it('renders canonical negative and unavailable values without inventing liquidation tax', () => {
+    render(
+      <AccessibleChartData
+        {...props}
+        rows={[
+          [2026, -125.5, null],
+          [2027, 1500.25, undefined],
+        ]}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Show data table' }))
+    const table = screen.getByRole('table', { name: 'ETF values' })
+    expect(within(table).getAllByRole('rowheader')).toHaveLength(2)
+    expect(within(table).getByRole('cell', { name: '-125.5' })).toBeTruthy()
+    expect(within(table).getByRole('cell', { name: '1500.25' })).toBeTruthy()
+    const rows = within(table).getAllByRole('row')
+    expect(rows).toHaveLength(3)
+    expect(within(rows[1]!).getAllByRole('cell')[1]?.textContent).toBe('')
+    expect(within(rows[2]!).getAllByRole('cell')[1]?.textContent).toBe('')
+  })
+
   it('labels CSV download and describes unavailable liquidation figures', () => {
     render(<AccessibleChartData {...props} />)
     expect(screen.getByRole('button', { name: 'Download ETF values as CSV' })).toBeTruthy()
