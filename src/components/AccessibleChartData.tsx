@@ -7,6 +7,7 @@ export interface AccessibleChartDataProps {
   headers: readonly string[]
   rows: readonly (readonly ChartCell[])[]
   filename: string
+  language?: 'en' | 'de'
 }
 
 /**
@@ -19,9 +20,13 @@ export function AccessibleChartData({
   headers,
   rows,
   filename,
+  language = 'en',
 }: AccessibleChartDataProps) {
   const [showTable, setShowTable] = useState(false)
   const tableId = useId()
+  const labels = language === 'de'
+    ? { show: 'Datentabelle anzeigen', hide: 'Datentabelle ausblenden', download: 'CSV herunterladen', asCsv: 'als CSV herunterladen' }
+    : { show: 'Show data table', hide: 'Hide data table', download: 'Download CSV', asCsv: 'as CSV' }
 
   function downloadCsv() {
     const csv = chartRowsToCsv(headers, rows)
@@ -48,10 +53,10 @@ export function AccessibleChartData({
         aria-controls={tableId}
         onClick={() => setShowTable(!showTable)}
       >
-        {showTable ? 'Hide data table' : 'Show data table'}
+        {showTable ? labels.hide : labels.show}
       </button>
-      <button type="button" onClick={downloadCsv} aria-label={`Download ${title} as CSV`}>
-        Download CSV
+      <button type="button" onClick={downloadCsv} aria-label={`${title} ${labels.asCsv}`}>
+        {labels.download}
       </button>
       <div id={tableId} hidden={!showTable} style={{ overflowX: 'auto' }}>
         <table>
