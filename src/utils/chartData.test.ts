@@ -10,16 +10,16 @@ describe('accessible chart CSV', () => {
     expect(escapeChartCell('  @SUM(A1)')).toBe("'  @SUM(A1)")
     expect(escapeChartCell(-42)).toBe('-42')
   })
-  it('protects header cells and whitespace-prefixed formulas', () => {
+  it('protects headers and whitespace-prefixed formulas', () => {
     const csv = chartRowsToCsv(['=HYPERLINK("https://example.invalid")', 'Label'], [
-      ['\\t+SUM(A1:A2)', 'café 😀'],
-      ['\\r-1+2', 'line one\\nline two'],
+      ['\t+SUM(A1:A2)', 'café 😀'],
+      ['\r-1+2', 'line one\nline two'],
     ])
-    expect(csv).toContain('"\\'=HYPERLINK(""https://example.invalid"")"')
-    expect(csv).toContain("'\\t+SUM(A1:A2)")
-    expect(csv).toContain('"\\'\\r-1+2"')
+    expect(csv).toContain(`"'=HYPERLINK(""https://example.invalid"")"`)
+    expect(csv).toContain("'\t+SUM(A1:A2)")
+    expect(csv).toContain(`"'\r-1+2"`)
     expect(csv).toContain('café 😀')
-    expect(csv).toContain('"line one\\nline two"')
+    expect(csv).toContain('"line one\nline two"')
   })
   it('rejects empty headers', () => {
     expect(() => chartRowsToCsv([], [])).toThrow('at least one column')
