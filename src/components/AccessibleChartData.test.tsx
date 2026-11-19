@@ -15,6 +15,9 @@ describe('AccessibleChartData', () => {
     render(<AccessibleChartData {...props} />)
     const toggle = screen.getByRole('button', { name: 'Show data table' })
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    const controlledId = toggle.getAttribute('aria-controls')
+    expect(controlledId).toBeTruthy()
+    expect(document.getElementById(controlledId!)?.hidden).toBe(true)
     expect(screen.queryByRole('table')).toBeNull()
     fireEvent.click(toggle)
     const hideToggle = screen.getByRole('button', { name: 'Hide data table' })
@@ -26,6 +29,7 @@ describe('AccessibleChartData', () => {
     expect(within(table).getAllByRole('cell')[1]?.textContent).toBe('')
     fireEvent.click(screen.getByRole('button', { name: 'Hide data table' }))
     expect(screen.queryByRole('table')).toBeNull()
+    expect(document.getElementById(controlledId!)?.hidden).toBe(true)
   })
 
   it('labels CSV download and describes unavailable liquidation figures', () => {
