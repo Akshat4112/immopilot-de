@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { chartRowsToCsv, type ChartCell } from '../utils/chartData'
 
 export interface AccessibleChartDataProps {
@@ -21,6 +21,7 @@ export function AccessibleChartData({
   filename,
 }: AccessibleChartDataProps) {
   const [showTable, setShowTable] = useState(false)
+  const tableId = useId()
 
   function downloadCsv() {
     const csv = chartRowsToCsv(headers, rows)
@@ -41,14 +42,19 @@ export function AccessibleChartData({
   return (
     <section aria-label={title}>
       <p>{description}</p>
-      <button type="button" aria-expanded={showTable} onClick={() => setShowTable(!showTable)}>
+      <button
+        type="button"
+        aria-expanded={showTable}
+        aria-controls={tableId}
+        onClick={() => setShowTable(!showTable)}
+      >
         {showTable ? 'Hide data table' : 'Show data table'}
       </button>
       <button type="button" onClick={downloadCsv} aria-label={`Download ${title} as CSV`}>
         Download CSV
       </button>
       {showTable && (
-        <div style={{ overflowX: 'auto' }}>
+        <div id={tableId} style={{ overflowX: 'auto' }}>
           <table>
             <caption>{title}</caption>
             <thead>
