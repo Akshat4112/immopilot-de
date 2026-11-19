@@ -17,9 +17,8 @@ describe('AccessibleChartData', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
     expect(screen.queryByRole('table')).toBeNull()
     fireEvent.click(toggle)
-    expect(screen.getByRole('button', { name: 'Hide data table' }).getAttribute('aria-expanded')).toBe(
-      'true',
-    )
+    const hideToggle = screen.getByRole('button', { name: 'Hide data table' })
+    expect(hideToggle.getAttribute('aria-expanded')).toBe('true')
     const table = screen.getByRole('table', { name: 'ETF values' })
     expect(within(table).getByRole('columnheader', { name: 'Liquidation EUR' })).toBeTruthy()
     expect(within(table).getByRole('rowheader', { name: '2026' })).toBeTruthy()
