@@ -11,10 +11,12 @@ describe('accessible chart CSV', () => {
     expect(escapeChartCell(-42)).toBe('-42')
   })
   it('protects headers and whitespace-prefixed formulas', () => {
-    const csv = chartRowsToCsv(['=HYPERLINK("https://example.invalid")', 'Label'], [
+    const headers = ['=HYPERLINK("https://example.invalid")', 'Label']
+    const rows = [
       ['\t+SUM(A1:A2)', 'café 😀'],
       ['\r-1+2', 'line one\nline two'],
-    ])
+    ]
+    const csv = chartRowsToCsv(headers, rows)
     expect(csv).toContain(`"'=HYPERLINK(""https://example.invalid"")"`)
     expect(csv).toContain("'\t+SUM(A1:A2)")
     expect(csv).toContain(`"'\r-1+2"`)
