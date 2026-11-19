@@ -35,6 +35,10 @@ describe('accessible chart CSV', () => {
     expect(() => chartRowsToCsv([''], [])).toThrow('non-empty')
     expect(() => chartRowsToCsv(['Year', '   '], [])).toThrow('non-empty')
   })
+  it('rejects duplicate column labels that would make financial exports ambiguous', () => {
+    expect(() => chartRowsToCsv(['Year', 'Year'], [[2026, 2027]])).toThrow('unique')
+    expect(() => chartRowsToCsv(['Year', ' year '], [[2026, 2027]])).toThrow('unique')
+  })
   it('validates shape and preserves null cells', () => {
     const csv = chartRowsToCsv(['Year', 'EUR'], [[2026, null]])
     expect(csv).toBe('\uFEFFYear,EUR\r\n2026,\r\n')
