@@ -22,3 +22,11 @@ The shared `chartRowsToCsv(headers, rows)` serializer is available in `src/utils
 4. Inspect manual keyboard focus, accessible names, screen-reader table summaries and dark/print modes. Keep the PR draft until integration and required reviews are complete.
 
 **Financial safety:** UX-031 deliberately leaves Vorabpauschale and after-tax ETF full-liquidation outputs unavailable. UX-032 must preserve that boundary. See `docs/ux-031-etf-tax-transparency.md` and issue #93.
+
+## Integration architecture decision (2026-11-19)
+
+The deployed wealth planner is `public/wealth-planner.html`, while `AccessibleChartData` is a React component under `src/components`. Passing React component tests does **not** make the toolkit available inside the standalone planner. Before claiming ETF/rental chart integration, choose and test one explicit bridge: (a) mount a bundled React island into a stable planner container with a documented build/deployment path, or (b) extract a framework-neutral chart-data adapter and render the semantic table and download controls using the planner's existing DOM lifecycle. Do not paste a TSX import into the standalone HTML or add a parallel financial calculation.
+
+For both integrations, capture the **same yearly ledger rows already used by the visible chart**; use that array for chart, table and CSV. Confirm that switching strategy, year, language or scenario invalidates and rebuilds all three together. In particular, preserve `null`/unavailable liquidation values and show the caveat in the accessible description. A unit test of the React component is insufficient: a Playwright test must visit the deployed planner route and operate the real controls.
+
+**Verified baseline:** head `2e91fe4d57997d972505e16f5014383cdf279ca2` passed CI run `44538406699` (Quality and build; Playwright smoke test). This is a baseline only; subsequent commits require their own exact-head CI verification. No reviews were recorded at this baseline.
