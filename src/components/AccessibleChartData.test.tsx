@@ -53,6 +53,16 @@ describe('AccessibleChartData', () => {
     expect(within(rows[2]!).getAllByRole('cell')[1]?.textContent).toBe('')
   })
 
+  it('localizes the table toggle and CSV accessible name in German', () => {
+    render(<AccessibleChartData {...props} language="de" />)
+    const toggle = screen.getByRole('button', { name: 'Datentabelle anzeigen' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(screen.getByRole('button', { name: 'ETF values als CSV herunterladen' })).toBeTruthy()
+    fireEvent.click(toggle)
+    expect(screen.getByRole('button', { name: 'Datentabelle ausblenden' })).toBeTruthy()
+    expect(screen.getByRole('table', { name: 'ETF values' })).toBeTruthy()
+  })
+
   it('labels CSV download and describes unavailable liquidation figures', () => {
     render(<AccessibleChartData {...props} />)
     expect(screen.getByRole('button', { name: 'Download ETF values as CSV' })).toBeTruthy()
