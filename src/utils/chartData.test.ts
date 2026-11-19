@@ -23,6 +23,11 @@ describe('accessible chart CSV', () => {
     expect(csv).toContain('café 😀')
     expect(csv).toContain('"line one\nline two"')
   })
+  it('rejects non-finite financial figures rather than exporting misleading values', () => {
+    expect(() => chartRowsToCsv(['EUR'], [[Number.NaN]])).toThrow('must be finite')
+    expect(() => chartRowsToCsv(['EUR'], [[Number.POSITIVE_INFINITY]])).toThrow('must be finite')
+    expect(escapeChartCell(-42.5)).toBe('-42.5')
+  })
   it('rejects empty headers', () => {
     expect(() => chartRowsToCsv([], [])).toThrow('at least one column')
   })
