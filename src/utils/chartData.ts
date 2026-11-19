@@ -20,6 +20,9 @@ export function chartRowsToCsv(
   rows: readonly (readonly ChartCell[])[],
 ): string {
   if (headers.length === 0) throw new Error('CSV requires at least one column')
+  if (headers.some((header) => header.trim().length === 0)) {
+    throw new Error('CSV headers must be non-empty')
+  }
   if (rows.some((row) => row.length !== headers.length)) {
     throw new Error('CSV row width mismatch')
   }
