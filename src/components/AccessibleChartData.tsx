@@ -66,7 +66,9 @@ export function AccessibleChartData({
       >
         {showTable ? labels.hide : labels.show}
       </button>
-      <button type="button" onClick={downloadCsv} aria-label={language === 'de' ? `${title} ${labels.asCsv}` : `Download ${title} as CSV`}>
+      <button type="button" onClick={downloadCsv} aria-label={
+          language === 'de' ? `${title} ${labels.asCsv}` : `Download ${title} as CSV`
+        }>
         {labels.download}
       </button>
       <div id={tableId} hidden={!showTable} style={{ overflowX: 'auto' }}>
