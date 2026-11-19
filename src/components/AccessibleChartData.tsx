@@ -24,9 +24,20 @@ export function AccessibleChartData({
 }: AccessibleChartDataProps) {
   const [showTable, setShowTable] = useState(false)
   const tableId = useId()
-  const labels = language === 'de'
-    ? { show: 'Datentabelle anzeigen', hide: 'Datentabelle ausblenden', download: 'CSV herunterladen', asCsv: 'als CSV herunterladen' }
-    : { show: 'Show data table', hide: 'Hide data table', download: 'Download CSV', asCsv: 'as CSV' }
+  const labels =
+    language === 'de'
+      ? {
+          show: 'Datentabelle anzeigen',
+          hide: 'Datentabelle ausblenden',
+          download: 'CSV herunterladen',
+          asCsv: 'als CSV herunterladen',
+        }
+      : {
+          show: 'Show data table',
+          hide: 'Hide data table',
+          download: 'Download CSV',
+          asCsv: 'as CSV',
+        }
 
   function downloadCsv() {
     const csv = chartRowsToCsv(headers, rows)
