@@ -53,8 +53,7 @@ export function AccessibleChartData({
       <button type="button" onClick={downloadCsv} aria-label={`Download ${title} as CSV`}>
         Download CSV
       </button>
-      {showTable && (
-        <div id={tableId} style={{ overflowX: 'auto' }}>
+      <div id={tableId} hidden={!showTable} style={{ overflowX: 'auto' }}>
           <table>
             <caption>{title}</caption>
             <thead>
@@ -82,8 +81,7 @@ export function AccessibleChartData({
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+      </div>
     </section>
   )
 }
