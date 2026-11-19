@@ -5,11 +5,10 @@ export type ChartCell = string | number | boolean | null | undefined;
 export function escapeChartCell(value: ChartCell): string {
   if (value === null || value === undefined) return '';
   const raw = String(value);
-  const safe =
-    /^[\s\uFEFF]*[=+@-]/u.test(raw) && typeof value === 'string'
-      ? "'" + raw
-      : raw;
-  return /[",\r\n]/u.test(safe) ? '"' + safe.replace(/"/gu, '""') + '"' : safe;
+  const isFormula = /^[\s\uFEFF]*[=+@-]/u.test(raw);
+  const safe = isFormula && typeof value === 'string' ? "'" + raw : raw;
+  if (!/[",\r\n]/u.test(safe)) return safe;
+  return '"' + safe.replace(/"/gu, '""') + '"';
 }
 
 /** Produce a UTF-8 BOM-prefixed CSV compatible with Excel and LibreOffice. */
@@ -18,11 +17,10 @@ export function chartRowsToCsv(
   rows: readonly (readonly ChartCell[])[],
 ): string {
   if (headers.length === 0) throw new Error('CSV requires at least one column');
-  if (rows.some((row) => row.length !== headers.length))
+  if (rows.some((row) => row.length !== headers.length)) {
     throw new Error('CSV row width mismatch');
-  return (
-    '\uFEFF' +
-    [headers, ...rows].map((row) => row.map(escapeChartCell).join(',')).join('\r\n') +
-    '\r\n'
-  );
+  }
+  const lines = [headers, ...rows];
+  const body = lines.map((row) => row.map(escapeChartCell).join(','));
+  return '\uFEFF' + body.join('\r\n') + '\r\n';
 }
