@@ -23,9 +23,9 @@ export function chartRowsToCsv(
   if (headers.some((header) => header.trim().length === 0)) {
     throw new Error('CSV headers must be non-empty')
   }
-  if (
-    new Set(headers.map((header) => header.trim().toLocaleLowerCase('en-US'))).size !== headers.length
-  ) {
+  const normalizedHeaders = headers.map((header) => header.trim().toLocaleLowerCase('en-US'))
+  const uniqueHeaders = new Set(normalizedHeaders)
+  if (uniqueHeaders.size !== headers.length) {
     throw new Error('CSV column labels must be unique')
   }
   if (rows.some((row) => row.length !== headers.length)) {
