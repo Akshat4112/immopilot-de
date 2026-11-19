@@ -22,7 +22,7 @@ describe('AccessibleChartData', () => {
     const table = screen.getByRole('table', { name: 'ETF values' })
     expect(within(table).getByRole('columnheader', { name: 'Liquidation EUR' })).toBeTruthy()
     expect(within(table).getByRole('rowheader', { name: '2026' })).toBeTruthy()
-    expect(within(table).getAllByRole('cell')[1].textContent).toBe('')
+    expect(within(table).getAllByRole('cell')[1]?.textContent).toBe('')
     fireEvent.click(screen.getByRole('button', { name: 'Hide data table' }))
     expect(screen.queryByRole('table')).toBeNull()
   })
