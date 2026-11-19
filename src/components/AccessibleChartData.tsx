@@ -54,33 +54,33 @@ export function AccessibleChartData({
         Download CSV
       </button>
       <div id={tableId} hidden={!showTable} style={{ overflowX: 'auto' }}>
-          <table>
-            <caption>{title}</caption>
-            <thead>
-              <tr>
-                {headers.map((header, index) => (
-                  <th scope="col" key={index}>
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, index) => (
-                <tr key={index}>
-                  {row.map((cell, column) =>
-                    column === 0 ? (
-                      <th scope="row" key={column}>
-                        {cell ?? ''}
-                      </th>
-                    ) : (
-                      <td key={column}>{cell ?? ''}</td>
-                    ),
-                  )}
-                </tr>
+        <table>
+          <caption>{title}</caption>
+          <thead>
+            <tr>
+              {headers.map((header, index) => (
+                <th scope="col" key={index}>
+                  {header}
+                </th>
               ))}
-            </tbody>
-          </table>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index}>
+                {row.map((cell, column) =>
+                  column === 0 ? (
+                    <th scope="row" key={column}>
+                      {cell ?? ''}
+                    </th>
+                  ) : (
+                    <td key={column}>{cell ?? ''}</td>
+                  ),
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   )
