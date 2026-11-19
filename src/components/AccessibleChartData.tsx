@@ -29,8 +29,13 @@ export function AccessibleChartData({
     const anchor = document.createElement('a')
     anchor.href = url
     anchor.download = filename.replace(/[^a-zA-Z0-9._-]/gu, '_')
-    anchor.click()
-    URL.revokeObjectURL(url)
+    document.body.appendChild(anchor)
+    try {
+      anchor.click()
+    } finally {
+      anchor.remove()
+      URL.revokeObjectURL(url)
+    }
   }
 
   return (
@@ -61,10 +66,10 @@ export function AccessibleChartData({
                   {row.map((cell, column) =>
                     column === 0 ? (
                       <th scope="row" key={column}>
-                        {cell ?? 'Not available'}
+                        {cell ?? ''}
                       </th>
                     ) : (
-                      <td key={column}>{cell ?? 'Not available'}</td>
+                      <td key={column}>{cell ?? ''}</td>
                     ),
                   )}
                 </tr>
