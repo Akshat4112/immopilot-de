@@ -31,6 +31,10 @@ describe('accessible chart CSV', () => {
   it('rejects empty headers', () => {
     expect(() => chartRowsToCsv([], [])).toThrow('at least one column')
   })
+  it('rejects blank or whitespace-only column labels for accessible exports', () => {
+    expect(() => chartRowsToCsv([''], [])).toThrow('non-empty')
+    expect(() => chartRowsToCsv(['Year', '   '], [])).toThrow('non-empty')
+  })
   it('validates shape and preserves null cells', () => {
     const csv = chartRowsToCsv(['Year', 'EUR'], [[2026, null]])
     expect(csv).toBe('\uFEFFYear,EUR\r\n2026,\r\n')
