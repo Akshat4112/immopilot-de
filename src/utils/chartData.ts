@@ -4,6 +4,9 @@ export type ChartCell = string | number | boolean | null | undefined
 /** Escape spreadsheet formula prefixes as text to prevent CSV injection. */
 export function escapeChartCell(value: ChartCell): string {
   if (value === null || value === undefined) return ''
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    throw new Error('CSV numeric cells must be finite')
+  }
   const raw = String(value)
   const isFormula = /^[\s\uFEFF]*[=+@-]/u.test(raw)
   const safe = isFormula && typeof value === 'string' ? "'" + raw : raw
