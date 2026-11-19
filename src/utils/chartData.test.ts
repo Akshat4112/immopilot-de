@@ -11,7 +11,11 @@ describe('accessible chart CSV', () => {
     expect(escapeChartCell(-42)).toBe('-42');
   });
   it('validates shape and preserves null cells', () => {
-    expect(chartRowsToCsv(['Year', 'EUR'], [[2026, null]])).toBe('\uFEFFYear,EUR\r\n2026,\r\n');
-    expect(() => chartRowsToCsv(['Year'], [[2026, 3]])).toThrow('width mismatch');
+    expect(chartRowsToCsv(['Year', 'EUR'], [[2026, null]])).toBe(
+      '\uFEFFYear,EUR\r\n2026,\r\n',
+    );
+    expect(() => chartRowsToCsv(['Year'], [[2026, 3]])).toThrow(
+      'width mismatch',
+    );
   });
 });
