@@ -1344,6 +1344,8 @@ test('UX-032 rental CSV export is keyboard accessible and reflects selected peri
   const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
   expect(download.suggestedFilename()).toBe('rental-cash-flow.csv')
   const csv = await readFile(await download.path(), 'utf8')
+  expect(csv).toContain('"Cash movement (EUR/month)"')
+  expect(csv).toContain('"Running cash (EUR/month)"')
   expect(csv).toContain('"Interest covered by mortgage payments"')
   expect(csv).toContain('"Mortgage principal paid"')
   const amounts = await Promise.all(
@@ -1361,4 +1363,21 @@ test('UX-032 rental CSV export is keyboard accessible and reflects selected peri
     expect(lines[index]).toContain(',' + values.join(',') + ',')
   })
   expect(csv).not.toContain('undefined')
+})
+
+test('UX-032 export controls remain keyboard reachable at narrow widths', async ({ page }) => {
+  for (const width of [320, 375]) {
+    await page.setViewportSize({ width, height: 812 })
+    await page.goto('./')
+    const planner = page.frameLocator(frameSelector)
+    const panel = planner.locator('#etfTaxPanel')
+    await panel.locator('#etfTaxDisplay').selectOption('table')
+    const button = panel.getByRole('button', { name: 'Download ETF annual evidence CSV' })
+    await expect(button).toBeVisible()
+    await button.focus()
+    await expect(button).toBeFocused()
+    const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+    expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
+    await expect(panel.getByRole('table')).toBeVisible()
+  }
 })
