@@ -1158,7 +1158,7 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
    <svg class="rental-waterfall-svg" id="rentalBridgeChart" viewBox="0 0 1100 420" role="group" aria-label="Signed rental waterfall: income, vacancy, expenses, debt and tax"></svg>
   </div>
   <div id="rentalWaterfallTablePane" class="rental-waterfall-table-scroll" role="region" tabindex="0" aria-label="Accessible rental cash-flow reconciliation table" hidden>
-   <table class="rental-waterfall-table">
+   <table class="rental-waterfall-table"><caption>Rental cash flow, selected period (EUR)</caption>
     <thead><tr><th scope="col">Step</th><th scope="col">Cash movement</th><th scope="col">Running cash</th><th scope="col">What it means</th></tr></thead>
     <tbody id="rentalWaterfallRows"></tbody>
    </table>
@@ -2311,11 +2311,11 @@ function renderRentalBridge(rent,x,tax){
   table.innerHTML=flow.map(z=>'<tr tabindex="0" data-waterfall-row="'+z.key+
    '" data-waterfall-value="'+fmt(z.value)+'" data-waterfall-running="'+fmt(z.to)+
    '" aria-selected="'+(state.chosen===z.key)+'"><th scope="row">'+safeText(z.name)+
-   '</th><td>'+signed(z.value)+'</td><td>'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
+   '</th><td data-csv-number="'+z.amount+'">'+signed(z.value)+'</td><td data-csv-number="'+z.closing+'">'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
    '<tr tabindex="0" data-waterfall-row="result" data-waterfall-value="'+fmt(data.after)+
    '" data-waterfall-running="'+fmt(data.after)+'" aria-selected="'+(state.chosen==='result')+
-   '"><th scope="row">After-tax recurring cash</th><td>'+signed(data.after)+'</td>'+
-   '<td>'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
+   '"><th scope="row">After-tax recurring cash</th><td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td>'+
+   '<td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
   $('rentalBridgeStats').innerHTML='<span>Collected '+amt(data.collected)+
    '</span><span>Pre-tax '+signed(data.before)+'</span><span>Tax effect '+signed(-data.deltaTax)+
    '</span><span>After estimated tax '+signed(data.after)+'</span>';
@@ -3220,7 +3220,7 @@ function renderEtfTaxPanel(x,sim){
  root.dataset.market=String(current.market);
  root.dataset.deposits=String(current.deposits);
  root.dataset.withdrawalTax=String(current.tax);
- $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
+ $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td data-csv-number="'+r.deposits+'">'+money(r.deposits)+'</td><td data-csv-number="'+r.market+'">'+money(r.market)+'</td><td data-csv-number="'+r.withdrawn+'">'+money(r.withdrawn)+'</td><td data-csv-number="'+r.tax+'">'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
  const sales=x.drawMode!=='none'&&current.withdrawn>0;
  $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
   ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
@@ -3824,6 +3824,10 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   if(!table)return;
   var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
    return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
+    if(cell.hasAttribute('data-csv-number')){
+     var number=Number(cell.dataset.csvNumber);
+     return Number.isFinite(number)?String(number):'';
+    }
     return safeCsvCell(cell.textContent.trim());
    }).join(',');
   });
