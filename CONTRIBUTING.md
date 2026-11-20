@@ -1,6 +1,6 @@
 # Contributing to ImmoPilot DE
 
-ImmoPilot DE is a client-side, bilingual (German/English) German property-finance calculator. **Version 1 is not released.** Contributions must preserve deterministic calculations, local-only user data, accessible workflows and explicit source provenance. This guide implements tracker task QA-019; it does **not** waive legal, security, accessibility or release approvals.
+ImmoPilot DE is a client-side household wealth planner for Germany, covering housing, ETFs, rental properties and household cash flow. **The public application is a development preview; a formal release is not yet approved.** Contributions must preserve deterministic calculations, local-only user data, accessible workflows and explicit source provenance. This guide implements tracker task QA-019; it does **not** waive legal, security, accessibility or release approvals.
 
 ## Prerequisites and local setup
 
@@ -13,17 +13,19 @@ npx playwright install chromium firefox webkit
 npm run dev
 ```
 
+Inspect the [current architecture](docs/architecture.md) before adding features: the deployed planner is the standalone HTML inside the React host, not the original route tree. Use the [documentation index](docs/README.md) and [security reporting policy](SECURITY.md). For screenshots, use the [visual evidence procedure](docs/screenshots/README.md) with fictional inputs.
+
 Never regenerate `package-lock.json` casually or install unreviewed dependencies. Do not commit `node_modules/`, `dist/`, generated reports, local scenario data or browser artifacts.
 
 ## Branches, commits and pull requests
 
 1. Start from the latest `main`. Use one branch per tracker task, e.g. `feat/pf-xxxx-short-description`, `fix/qa-xxxx-short-description`, or `docs/qa-019-contributing-guide`. Avoid mixing unrelated tasks.
-2. Read the canonical implementation tracker and linked product/financial specifications. Record the task ID, acceptance criteria, dependencies and release gates before editing. A blocked dependency is not permission to skip it.
+2. Read the [current roadmap](https://github.com/Akshat4112/immopilot-de/issues/93), canonical implementation tracker when available, and linked product/financial specifications. Record the task ID, acceptance criteria, dependencies and release gates before editing. A blocked dependency is not permission to skip it.
 3. Make the smallest coherent change. Include both German and English text for user-facing changes, including error, empty and accessibility states. Do not silently change financial assumptions or existing persisted-data schemas.
 4. Add or update unit/component and browser regression tests appropriate to the behavior. Document explicit unsupported cases and manual evidence still required.
 5. Open a PR against `main` with task ID, scope, acceptance-criteria mapping, risk/privacy assessment, test commands, evidence links, exact head SHA and outstanding gates. Use a draft PR while checks are pending.
 6. Review the final diff and required GitHub checks **on the latest head and merge candidate**. Merge only after formatting, lint, types, coverage, build, artifact verification, dependency audits and three-browser Playwright are green, the branch is mergeable and no blocking review remains. Recheck after pushing fixes; a green run for an older commit is insufficient.
-7. After merging, verify the merge SHA and update the **same canonical Library tracker** with exact status, PR, SHA and evidence. Never overwrite a newer workbook version. Record blockers honestly.
+7. After merging, verify the merge SHA and update the applicable GitHub roadmap/issue and the canonical tracker when accessible, with exact status, PR, SHA and evidence. Never overwrite a newer workbook version. Record blockers honestly.
 
 Do not auto-approve legal text, financial source changes, security exceptions, accessibility sign-off or release/deployment gates. Version 1 deployment requires the separately documented release-readiness contract.
 

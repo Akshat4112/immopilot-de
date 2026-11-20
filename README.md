@@ -1,259 +1,165 @@
+![ImmoPilot house logo](public/favicon.svg)
+
 # ImmoPilot DE
 
-[![CI](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml/badge.svg)](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml)
+**One household. Multiple investment strategies. A complete financial picture.**
 
-ImmoPilot DE is a client-side application for evaluating residential property purchases and financing decisions in the German market.
+[Launch the wealth planner](https://akshat4112.github.io/immopilot-de/) · [Documentation](docs/README.md) · [Roadmap](https://github.com/Akshat4112/immopilot-de/issues/93) · [Report an issue](https://github.com/Akshat4112/immopilot-de/issues)
 
-> Status: Version 1 release readiness in progress. The application is not yet released.
+[![CI](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml)
+[![Deployment](https://github.com/Akshat4112/immopilot-de/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/Akshat4112/immopilot-de/actions/workflows/deploy-pages.yml)
 
-## Version 1 scope
+ImmoPilot DE is a browser-based household wealth and financial planning application for Germany. It brings income, living expenses, homeownership, mortgage financing, rental properties and ETF investing together in one interactive workspace. Explore alternative decisions, understand the trade-offs and project how a household's finances could evolve over time.
 
-- German purchase-cost calculation
-- Mortgage and amortization schedule
-- Sondertilgung simulation
-- Refinancing stress testing
-- Rent-versus-buy comparison
-- Rental-investment analysis
-- Offer-price calculation
-- Side-by-side scenario comparison
-- German and English interfaces
-- Static deployment on GitHub Pages
+> **Status:** Public development preview. The application is available to try, but financial, accessibility and legal release gates remain open. It is an educational simulator, not a regulated advisory service or a tax filing tool.
 
-## Current interactive workflow
+## Why ImmoPilot?
 
-The application supports purchase costs, financing, single-property results, named saved scenarios
-and comparison of up to three properties.
-The homepage also offers two **explicitly fictional**, opt-in owner-occupier and rental-investment
-demos built from the canonical PD-010 examples. Loading a demo requires confirmation and changes
-only the current working inputs; saved scenarios are never overwritten. A persistent notice and
-workspace-only reset remain available across routes. These pages share one scenario workspace and always
-recalculate results through the domain engine.
+Buying a home, investing in ETFs or purchasing a rental property affects the same household budget. ImmoPilot connects these choices instead of treating each as an isolated calculation.
 
-Saved scenarios persist only versioned user inputs in browser storage. Users can rename, duplicate,
-delete and reset them, import or export validated JSON, and create local share links without a
-backend. PF-004 adds the Sondertilgung controls and connects the existing repayment engine to these
-workflows.
+- **One financial picture:** follow cash flow, investments, debt, property equity and modeled wealth together.
+- **Comparable decisions:** compare alternative strategies using clearly stated starting capital, budgets and horizons.
+- **German context:** model acquisition costs, financing, rental deductions and selected tax concepts with documented assumptions.
+- **Local-first planning:** no account or backend is required to use the planner.
 
-Every result area identifies the assumption-set version, its verification date and the calculation
-specification, while separating source-backed defaults from editable user assumptions. The footer
-links to the bilingual in-application privacy and financial notice from every route.
+## Explore the planner
 
-## Product principles
+The overview connects monthly free cash, invested assets, property equity and projected financial outcomes. Interactive graphs and tables help explain how the figures change.
 
-- **Deterministic calculations:** Financial outputs come from documented and tested formulas.
-- **Transparent assumptions:** Rates, fees, timing conventions and limitations remain visible and editable.
-- **Local processing:** Version 1 requires no account or backend. Calculation data remains in the browser.
-- **German-market context:** Defaults reflect German acquisition and mortgage concepts and include source dates.
-- **Accessible design:** Quick and advanced workflows must work on desktop and mobile in German and English.
+[View real desktop and mobile browser-test evidence and capture instructions](docs/screenshots/README.md).
 
-## Target users
+### Core capabilities
 
-1. **Owner-occupiers** comparing rent, purchase costs, monthly financing and refinancing risk.
-2. **Rental investors** evaluating yield, cash flow, debt reduction, long-term outcomes and offer limits.
+- **Household finances:** income for one or two people, living expenses, current housing, savings capacity, cash reserves and a separate 2026 German payroll withholding checker.
+- **Homeownership and mortgages:** purchase costs, down payment, repayment, interest, amortization, remaining debt, Sondertilgung, refinancing and property equity.
+- **Rental properties:** multiple properties, rental income, vacancy, costs, estimated tax effects, AfA, renovation treatment and long-term cash flow.
+- **ETF investing:** contributions, portfolio growth, planned withdrawals, sensitivity to market returns and transparent reporting of modeled tax evidence.
+- **Wealth projections:** yearly assets, liabilities and equity, lifetime wealth timeline and modeled life events.
+- **Decision studio:** compare rent versus buy, buying a rental versus investing equivalent cash in ETFs, and mortgage or return assumptions.
+- **Interactive explanations:** cash-flow Sankey, wealth timeline, mortgage explorer, rental waterfall and annual ETF evidence.
+- **Scenario workspace:** save, duplicate, rename and compare up to three saved plans; export and restore validated JSON backups; undo the last scenario load.
 
-## Product documentation
+### Seven investment strategies
 
-- [Product definition](docs/product-definition.md): approved scope, users and workflows
-- [German–English terminology standard](docs/terminology.md): canonical interface terms, definitions and locale formatting
-- [Grunderwerbsteuer rates](docs/grunderwerbsteuer-rates.md): verified rates, effective dates, legal basis and sources for all 16 Bundesländer
-- [Acquisition-cost assumptions](docs/acquisition-cost-assumptions.md): editable defaults, legal rules, source dates and limitations for notary, land-register, broker, renovation and setup costs
-- [Calculation specification](docs/calculation-specification.md): normative formulas, timing, precision, validation rules and golden test vectors
-- [Versioned assumptions schema](docs/assumptions-schema.md): stable data types, defaults, provenance, migrations, examples and validation fixtures
-- [Financial disclaimer and privacy statement](docs/legal-and-privacy.md): bilingual user notices and privacy requirements for local processing, sharing, export and GitHub Pages
-- [Representative German property examples](docs/demo-scenarios.md): schema-valid owner-occupier and rental-investment demos with deterministic expected results
-- [Selectable fictional demos](docs/pf-0071-demos.md): canonical input mapping, explicit consent, no saved-data writes and workspace-only reset for PF-007.1
-- [First-use and reset controls](docs/pf-0072-onboarding-reset.md): bilingual onboarding, confirmation for each reset scope, explicit saved-data deletion boundaries
-- [Dark theme and print contract](docs/pf-0075-dark-mode.md): system/light/dark controls, session-only overrides, semantic contrast tokens and print-light verification
-- [In-app calculation methodology](https://akshat4112.github.io/immopilot-de/#/methodology): bilingual financial formulas, yield denominators, projection limits and bundled source/verification dates (PF-007.3)
-- [Application architecture](docs/architecture.md): source folders, dependency direction, public module APIs and testing conventions
-- [Design tokens and global styling](docs/design-tokens.md): visual tokens, stylesheet layers, responsive behavior and accessibility rules
-- [Responsive application shell](docs/application-shell.md): routes, reusable shell components, viewport behavior and accessibility contract
-- [Calculation-engine conventions](docs/calculation-engine-conventions.md): cent-exact money, decimal rates, rounding boundaries and validation errors
-- [Sondertilgung product contract](docs/sondertilgung-product-contract.md): approved inputs, timing, comparisons, migration and downstream-calculation behavior for PF-004
-- [Amortization explorer interaction](docs/amortization-explorer-interaction.md): proposed controls, horizons, annual/monthly detail, chart handoff and mobile behavior for the original tracker PF-005.1
-- [Report content and privacy contract](docs/report-content-and-privacy-contract.md): single-property and comparison report sections, recalculation/provenance, privacy controls and browser print/PDF delivery for PF-006.1
-- [Recalculated report snapshot](src/features/reports/README.md): validated, immutable in-memory captures, locale handling, migration and version metadata for PF-006.2
-- [Report methodology and provenance audit](docs/pf-0065-methodology-audit.md): verified report labeling of source dates, fixed-versus-projected horizons and pre-tax calculation boundaries for PF-006.5
-- [Authorized browser print](docs/pf-0066-authorized-print.md): snapshot-scoped privacy acknowledgement and user-controlled Print / Save as PDF without remote processing for PF-006.6
-- [Report print/PDF browser validation](docs/pf-0067-pdf-browser-validation.md): actual Chromium PDF evidence, print-layout verification and explicit Firefox/WebKit PDF API limitations for PF-006.7
-- [Version 1 release-readiness contract](docs/version-1-release-contract.md): release gates, evidence rules, finding severity and ordered PF-005 launch tasks
-- [Version 1 release audit](docs/version-1-release-audit.md): deployed-app evidence, gate scorecard, findings and assigned remediation tasks
-- [PF-005.5 content and provenance audit](docs/pf-0055-content-provenance-audit.md): closure evidence for result provenance, legal/privacy content, metadata and landing copy
-- [PF-005.6 candidate verification](docs/pf-0056-release-candidate-verification.md): exact-commit checks, canonical demos, deployment identity, gate decisions and remaining release blockers
+1. ETF investing only.
+2. Homeownership only.
+3. Rental investing only.
+4. ETFs + homeownership.
+5. ETFs + rental investing.
+6. Homeownership + rental investing.
+7. ETFs + homeownership + rental investing.
 
-## Planned technology
+Every strategy retains relevant household income, current housing and expenditure. ETF-only planning does not require a property purchase.
 
-- React
-- TypeScript
-- Vite
-- Client-side financial calculation engine
-- Vitest and Playwright
-- GitHub Actions
-- GitHub Pages
+### Example questions
 
-## Approved application dependencies
+- How would buying an apartment change our monthly savings and long-term wealth compared with renting and investing?
+- How do mortgage interest, repayment and refinancing affect the risk of homeownership?
+- Can rental income cover operating costs, debt service and estimated taxes?
+- What happens if we invest in ETFs, own a home and hold a rental portfolio at the same time?
+- How do a salary change, a move or a change in investment contributions affect the modeled outcome?
 
-FND-002 establishes the approved Version 1 dependency set. Versions are pinned
-exactly in `package.json` and the complete reproducible graph is recorded in
-`package-lock.json`.
+Start with illustrative figures and replace them with your own assumptions. Projections are scenarios, not forecasts or guaranteed outcomes.
 
-| Area                     | Packages                                                         | Purpose                                                                |
-| ------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Forms and validation     | `react-hook-form`, `@hookform/resolvers`, `zod`                  | Typed form state, validation and schema integration                    |
-| Financial arithmetic     | `decimal.js`                                                     | Deterministic decimal calculations without binary floating-point drift |
-| Routing                  | `react-router-dom`                                               | Client-side navigation compatible with static hosting                  |
-| Internationalisation     | `i18next`, `react-i18next`                                       | German and English interface resources and React bindings              |
-| Charts                   | `recharts`                                                       | Responsive financial charts built on React and SVG                     |
-| Client state             | `zustand`                                                        | Small local scenario and interface state stores                        |
-| Unit and component tests | `vitest`, `@vitest/coverage-v8`, Testing Library, `jsdom`        | Calculation, hook and accessible component tests with coverage         |
-| Browser tests            | `@playwright/test`                                               | End-to-end checks for critical workflows and GitHub Pages behavior     |
-| Code quality             | ESLint, TypeScript ESLint, React Hooks/Refresh plugins, Prettier | Static analysis and consistent formatting                              |
+## Financial methodology and trust
 
-The interface will use semantic HTML and project-owned CSS, so no component or
-CSS framework is approved at this stage. This keeps the initial bundle and design
-surface small while the application shell and design tokens are still being
-defined.
+ImmoPilot distinguishes estimates from verified inputs and market value from liquid or after-tax wealth. The repository contains documented calculation specifications, deterministic TypeScript financial modules, reference vectors and regression tests. The standalone planner also retains simulation logic that is being consolidated into shared modules; not every model uses the same engine yet.
 
-TypeScript is pinned to 5.9.3 because it is within the stable support range of
-the approved TypeScript ESLint release. Node type definitions stay on major 24
-to match the documented runtime. Configuration and npm scripts for linting,
-testing, routing and internationalisation are introduced by their respective
-follow-up tasks; FND-002 only approves and installs the shared packages.
+- **Property costs and financing:** [Calculation specification](docs/calculation-specification.md) · [Acquisition cost assumptions](docs/acquisition-cost-assumptions.md).
+- **German property transfer tax:** [State rates, sources and effective dates](docs/grunderwerbsteuer-rates.md).
+- **ETF taxation:** [ETF tax assumptions](docs/etf-tax-2026.md) · [Projection limitations](docs/etf-002-projection-limitations.md).
+- **Investment comparisons:** [Matched-budget rent/buy/ETF methodology](docs/ux-028-rent-buy-etf-explorer.md).
+- **Reference scenarios:** [Fictional examples and golden vectors](docs/demo-scenarios.md).
 
-## Local development
+**Important limits:** The live ETF visualizer deliberately leaves Vorabpauschale tax and full after-tax liquidation values unavailable. The separate annual projection module is not integrated into the production planner and must not be interpreted as a tax-grade ledger. Withdrawal tax is simplified. Source-backed assumptions are dated, not live market feeds. Notary and similar fees can be planning proxies rather than binding quotes. See [ETF transparency](docs/ux-031-etf-tax-transparency.md) and the [financial disclaimer](docs/legal-and-privacy.md).
 
-The foundation uses Node.js 24.19.0 and npm 11.9.0. With `nvm` installed, select the
-documented runtime and install the exact dependency graph from the lockfile:
+## Privacy, security and accessibility
+
+- Financial inputs and calculations remain in the browser in the intended local-first workflow. Saved plans use browser storage; JSON backups contain private financial data and should be handled accordingly.
+- The static app requires no login or cloud account. GitHub Pages hosting may process standard request metadata such as IP addresses. See the [privacy documentation](docs/legal-and-privacy.md).
+- The project uses dependency audits, validated inputs and release artifact verification. Please follow the [security reporting policy](SECURITY.md) for suspected vulnerabilities.
+- The design targets usable desktop and mobile layouts, keyboard access and chart/table alternatives. German and English are supported across the project, but complete localization and accessibility conformance are not asserted.
+
+## Architecture
+
+The deployed planner uses a hybrid architecture. A React/TypeScript host loads the same-origin standalone HTML planner and supplies selected tested financial modules through a bridge. The payroll checker is an additive React component, not a replacement for the planning simulation.
+
+```text
+Browser
+  └── React host (src/main.tsx)
+        ├── Standalone wealth planner (public/wealth-planner.html)
+        │     ├── Household, mortgage, ETF and rental simulations
+        │     ├── Charts, scenarios and local storage
+        │     └── Bridge to shared rental tax modules
+        └── React payroll withholding checker
+Shared TypeScript domain modules (src/domain/)
+  └── Deterministic financial primitives and reference tests
+```
+
+The original React property calculator features remain in the repository; they are not all current entry-point routes. See the [architecture guide](docs/architecture.md) for actual runtime boundaries and migration principles.
+
+### Technology stack
+
+- React 19, TypeScript 5.9 and Vite 8
+- Semantic HTML, CSS and JavaScript for the standalone planner
+- Decimal.js for shared financial arithmetic; Zod for schema validation
+- Vitest, Testing Library and Playwright
+- GitHub Actions and GitHub Pages
+
+Exact dependency versions are pinned in [package.json](package.json) and [package-lock.json](package-lock.json).
+
+## Getting started
+
+Use Node.js 24 and npm 11, with the exact Node runtime selected from [`.nvmrc`](.nvmrc).
 
 ```bash
+git clone https://github.com/Akshat4112/immopilot-de.git
+cd immopilot-de
 nvm use
 npm ci
-npx playwright install chromium
 npm run dev
 ```
 
-Available foundation commands:
+Open the local Vite URL printed in the terminal. No backend or credentials are required.
+
+### Testing and quality assurance
 
 ```bash
-npm run lint
-npm run lint:fix
-npm run format
 npm run format:check
-npm test
-npm run test:watch
-npm run test:coverage
-npm run test:e2e
-npm run test:e2e:ui
-npm run test:e2e:report
+npm run lint
 npm run typecheck
+npm run test:coverage
 npm run build
-npm run preview
+npx playwright install chromium firefox webkit
+npm run test:e2e
 ```
 
-`npm run build` performs strict TypeScript project compilation before creating the
-static `dist/` output. `npm run lint` applies the approved type-aware TypeScript,
-React Hooks and React Refresh rules with zero warnings allowed. `npm run format:check`
-checks the application and configuration files against the shared Prettier rules.
-Normative financial specifications, versioned data fixtures and the npm-generated
-lockfile are intentionally excluded from automatic formatting.
+Unit and component suites cover financial models, validation and UI behavior. Playwright runs the production planner on Chromium and selected cross-browser checks on Firefox and WebKit. CI also checks dependency advisories and verifies production artifact digests. Passing tests does not by itself establish financial or legal correctness.
 
-Vitest runs unit and component tests in `jsdom`. React Testing Library suites are
-colocated with production code and use the shared setup and render utility in
-`src/test/`. `npm run test:coverage` creates text, HTML and LCOV reports and enforces
-an 80% baseline for statements, branches, functions and lines. Generated coverage
-reports are excluded from version control and formatting.
+### Deployment
 
-Playwright runs browser tests against the production build using Chromium. `npm run
-test:e2e` builds the application, starts an isolated Vite preview server and executes
-the smoke suite at `/immopilot-de/`. The suite verifies that the application renders
-under its router basename and that generated JavaScript and stylesheet URLs remain
-under the repository path. Use `npm run test:e2e:ui` for the interactive runner and
-`npm run test:e2e:report` to reopen the most recent HTML report. Traces, screenshots
-and video are retained only according to the failure and retry policy in
-`playwright.config.ts`.
+GitHub Actions publishes `dist/` to GitHub Pages after successful CI on `main`. The build emits `release.json` with the source commit and SHA-256 inventory.
 
-The `CI` GitHub Actions workflow runs on every pull request and push to `main`. Its
-quality job installs the locked dependency graph on the `.nvmrc` Node.js version,
-then checks formatting, linting, strict types, unit coverage, the production build
-and dependency audits. After those checks pass, a separate job installs Chromium and
-runs the Playwright smoke test against the managed production preview. Browser
-reports, traces, screenshots and videos are retained as short-lived artifacts when
-the Playwright job fails.
+To verify a known deployed commit:
 
-## GitHub Pages deployment
+```bash
+npm run release:verify -- EXACT_MAIN_SHA https://akshat4112.github.io/immopilot-de/
+```
 
-The `Deploy GitHub Pages` workflow publishes the production `dist/` directory after
-the `CI` workflow succeeds for a commit on `main`, preventing failed checks from
-reaching production. Manual starts from `Run workflow` also require a successful push CI run on
-`main` for the exact checked-out commit. The build uses the pinned Node.js runtime
-and lockfile, configures Pages, uploads a one-day Pages artifact, and deploys it
-through the protected `github-pages` environment.
+See [CI](.github/workflows/ci.yml), [Pages deployment](.github/workflows/deploy-pages.yml) and the [release contract](docs/version-1-release-contract.md). Artifact verification is not a substitute for a release audit.
 
-Production builds emit `release.json` with the source commit and SHA-256 digests of all shipped
-static files. CI and Pages verify that inventory before upload. After deployment, run
-`npm run release:verify -- EXACT_MAIN_SHA https://akshat4112.github.io/immopilot-de/` to confirm the
-public bytes against the expected commit. This proves artifact identity alongside CI/deployment
-evidence; it does not approve the remaining release gates or declare Version 1 released.
+## Documentation and roadmap
 
-The workflow grants read-only repository access by default. Only the deployment job
-receives `pages: write` and `id-token: write`; it also receives `actions: read` to
-retrieve the uploaded artifact. Deployment concurrency is shared under the `pages`
-group, and an in-progress production deployment is never cancelled.
+- [Documentation index](docs/README.md) — product guides, financial methodology, architecture and quality requirements.
+- [UX roadmap](https://github.com/Akshat4112/immopilot-de/issues/93) — ongoing chart accessibility, actionable insights, performance and release testing.
+- [Changelog](CHANGELOG.md) — important product changes and known limitations.
+- [Contributing](CONTRIBUTING.md) — development and validation standards.
+- [Security](SECURITY.md) — responsible reporting.
 
-The published environment URL is populated from the Pages deployment output and the
-target site is:
+## License and disclaimer
 
-`https://akshat4112.github.io/immopilot-de/`
+A project-wide license has not yet been selected. Public repository visibility does not itself grant permission to reuse or redistribute the code. Third-party components retain their respective licenses.
 
-Repository administrators must select **GitHub Actions** as the Pages source under
-**Settings → Pages**. Production builds use `/immopilot-de/` as the Vite base path. React Router
-uses hash routes such as `#/purchase-costs`, keeping direct navigation and refreshes compatible
-with static GitHub Pages hosting. Local development remains available at `/`, while production
-preview and Playwright use `/immopilot-de/` to match the deployed project site.
+ImmoPilot is intended for educational financial planning. It does not provide investment, financial, mortgage, legal or tax advice, financing approval or a guarantee of returns. Verify any material decision independently with qualified professionals.
 
-## Localization
-
-The interface uses `i18next` and `react-i18next`, defaults to German, and can be switched to
-English from the header. Translation resources use stable, language-neutral keys in
-`src/i18n/resources.ts`; financial labels follow the canonical mapping in
-`docs/terminology.md`. Locale formatters render integer-cent euro amounts, decimal percentage
-rates and numbers according to the active language without changing calculation inputs.
-
-When interface terminology changes, update the German and English resources, the terminology
-standard and the relevant unit and Playwright tests in the same pull request.
-
-## Styling foundations
-
-Project-owned styles are split into three ordered layers under `src/styles/`: design tokens,
-global document and accessibility rules, and application composition. Components consume semantic
-color, typography, spacing, shape, depth and motion tokens rather than hard-coded palette values.
-The normative token contract and extension rules are documented in
-[`docs/design-tokens.md`](docs/design-tokens.md).
-
-## Application shell
-
-The shared shell provides the responsive header, primary navigation, German–English switcher,
-route content container, skip link and approved disclaimer footer. Desktop navigation is inline;
-tablet and mobile layouts use an accessible menu button. The production browser suite verifies all
-three viewport classes. Shell behavior and extension rules are documented in
-[`docs/application-shell.md`](docs/application-shell.md).
-
-## Calculation engine
-
-Shared framework-free primitives under `src/domain/shared/` provide branded integer-cent money,
-40-digit decimal rates, PD-007 round-half-up boundaries, safe arithmetic and stable validation
-errors. Calculator modules must import the public shared API and follow
-[`docs/calculation-engine-conventions.md`](docs/calculation-engine-conventions.md).
-
-## Deployment target
-
-`https://akshat4112.github.io/immopilot-de/`
-
-## Version 1 non-goals
-
-- AI-generated advice
-- Listing scraping
-- Live mortgage-rate feeds
-- User accounts or cloud storage
-- Bank offers or financing approval
-- Legal, tax or investment advice
+[Full financial and privacy notice](docs/legal-and-privacy.md).
