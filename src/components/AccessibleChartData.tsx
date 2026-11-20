@@ -39,6 +39,9 @@ export function AccessibleChartData({
           asCsv: 'as CSV',
         }
 
+  let csvLabel = `Download ${title} as CSV`
+  if (language === 'de') csvLabel = `${title} ${labels.asCsv}`
+
   function downloadCsv() {
     const csv = chartRowsToCsv(headers, rows)
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
@@ -69,9 +72,7 @@ export function AccessibleChartData({
       <button
         type="button"
         onClick={downloadCsv}
-        aria-label={
-          language === 'de' ? `${title} ${labels.asCsv}` : `Download ${title} as CSV`
-        }
+        aria-label={csvLabel}
       >
         {labels.download}
       </button>
