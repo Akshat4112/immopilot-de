@@ -1396,3 +1396,16 @@ test('UX-032 chart data panels pass scoped accessibility checks', async ({ page 
   expect(results.passes.length).toBeGreaterThan(0)
   expect(results.violations).toEqual([])
 })
+
+test('UX-032 rental evidence table passes scoped accessibility checks on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#rentalWaterfallTablePane')).toBeVisible()
+  const results = await new AxeBuilder({ page })
+    .include([frameSelector, '#rentalWaterfallPanel'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
+  expect(results.passes.length).toBeGreaterThan(0)
+  expect(results.violations).toEqual([])
+})
