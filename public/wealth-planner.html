@@ -697,6 +697,8 @@ body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mort
 .rental-waterfall-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
 .rental-waterfall-kpis>div{padding:12px;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);background:var(--ux-surface-soft,#f4f9f5);min-width:0}
 .rental-waterfall-kpis small{color:var(--muted);font-size:.7rem;line-height:1.5;display:block}
+body:not([data-theme="dark"]) .rental-waterfall-kpis small{color:#526966}
+body:not([data-theme="dark"]) .rental-waterfall-heading>.fine{color:#526474}
 .rental-waterfall-kpis strong{color:var(--ink);font-size:1.04rem;font-variant-numeric:tabular-nums;display:block;margin-top:6px}
 .rental-waterfall-kpis strong.negative{color:#b54454}
 .rental-waterfall-warning{color:#a94852;font-size:.77rem;line-height:1.6;font-weight:650;margin:9px 0}
