@@ -1317,6 +1317,18 @@ test('UX-032 ETF CSV download mirrors visible evidence and keeps liquidation una
   expect(csv.charCodeAt(0)).toBe(0xfeff)
   expect(csv).toContain('Not modeled')
   expect(csv).toContain(`"${firstYear.trim()}"`)
+  const rows = await panel.locator('.etf-tax-table tbody tr').evaluateAll((items) =>
+    items.map((row) =>
+      Array.from(row.querySelectorAll('[data-csv-number]')).map((cell) =>
+        cell.getAttribute('data-csv-number'),
+      ),
+    ),
+  )
+  const lines = csv.trimEnd().split('\r\n').slice(1)
+  expect(lines).toHaveLength(rows.length)
+  rows.forEach((values, index) => {
+    expect(lines[index]?.split(',').slice(1, 5)).toEqual(values)
+  })
   expect(csv).not.toContain('undefined')
 })
 
@@ -1332,5 +1344,17 @@ test('UX-032 rental CSV export is keyboard accessible and reflects selected peri
   const csv = await readFile(await download.path(), 'utf8')
   expect(csv).toContain('"Interest covered by mortgage payments"')
   expect(csv).toContain('"Mortgage principal paid"')
+  const amounts = await planner.locator('#rentalWaterfallRows tr').evaluateAll((items) =>
+    items.map((row) =>
+      Array.from(row.querySelectorAll('[data-csv-number]')).map((cell) =>
+        cell.getAttribute('data-csv-number'),
+      ),
+    ),
+  )
+  const lines = csv.trimEnd().split('\r\n').slice(1)
+  expect(lines).toHaveLength(amounts.length)
+  amounts.forEach((values, index) => {
+    expect(lines[index]).toContain(',' + values.join(',') + ',')
+  })
   expect(csv).not.toContain('undefined')
 })
