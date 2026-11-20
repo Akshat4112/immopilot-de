@@ -2214,6 +2214,11 @@ function renderRentalBridge(rent,x,tax){
  const data=rentalWaterfallLedger(rent,x,tax,state.scope,state.year);
  state.data=data;
  const chart=$('rentalBridgeChart'),table=$('rentalWaterfallRows'),warn=$('rentalWaterfallWarning');
+ const periodLabel=state.period==='month'?'EUR/month':'EUR/year';
+ const rentalTable=table.closest('table');
+ rentalTable.caption.textContent='Rental cash flow, year '+state.year+' ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[1].textContent='Cash movement ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[2].textContent='Running cash ('+periodLabel+')';
  if(!data){
   panel.dataset.waterfallBalanced='true';
   panel.dataset.waterfallStatus='empty';
@@ -3822,10 +3827,15 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  function exportEvidence(tableId,filename){
   var table=document.querySelector(tableId);
   if(!table)return;
-  var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
+  var width=table.tHead.rows[0].cells.length;
+  var rows=Array.from(table.querySelectorAll('tr')).filter(function(tr){
+   return tr.cells.length===width;
+  }).map(function(tr){
    return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
     if(cell.hasAttribute('data-csv-number')){
-     var number=Number(cell.dataset.csvNumber);
+     var raw=cell.dataset.csvNumber;
+     if(!raw||!raw.trim())return '';
+     var number=Number(raw);
      return Number.isFinite(number)?String(number):'';
     }
     return safeCsvCell(cell.textContent.trim());
