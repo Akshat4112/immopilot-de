@@ -1279,3 +1279,24 @@ test('ETF tax visualizer has an accessible mobile table fallback', async ({ page
   await expect(panel.getByRole('table')).toBeVisible()
   await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
 })
+
+test('UX-032 ETF annual evidence has a caption and scoped headers after projection changes', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  const table = panel.getByRole('table')
+  await expect(table.locator('caption')).toContainText('full-sale taxes are unavailable')
+  await expect(table.locator('thead th[scope="col"]')).toHaveCount(7)
+  await expect(table.locator('tbody th[scope="row"]')).toHaveCount(
+    Number(await planner.locator('#years').inputValue()) + 1,
+  )
+  await panel.locator('#etfTaxYear').selectOption('5')
+  await expect(panel).toHaveAttribute('data-selected-year', '5')
+  await expect(table.locator('tbody tr').nth(5).locator('th[scope="row"]')).toHaveText('5')
+  await expect(table.locator('tbody tr').nth(5).locator('td').nth(5)).toHaveText('Not modeled')
+  await panel.locator('#etfTaxDisplay').selectOption('table')
+  await expect(table).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+})
