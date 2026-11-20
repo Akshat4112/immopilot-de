@@ -1184,7 +1184,7 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
  </div>
  <div class="etf-tax-graphic" id="etfTaxChartPane" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
  <div class="table-scroll" role="region" tabindex="0" aria-label="Annual ETF balances and tax evidence">
- <table class="etf-tax-table"><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
+ <table class="etf-tax-table"><caption>Annual ETF contributions, market values and modeled withdrawals; advance and full-sale taxes are unavailable</caption><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
  <p class="etf-tax-info" id="etfTaxDisclosure" role="status" aria-live="polite"></p>
  <p class="fine">German fund tax note (model assumptions, not a current-year tax assessment): 30% partial exemption for eligible equity funds; 25% capital-income tax plus solidarity surcharge is modeled for withdrawals, excluding church tax. The Sparer-Pauschbetrag may also be consumed by other capital income. No basis interest rate is assumed, and no Vorabpauschale or prior-tax offset is silently imputed. Source: German Investmentsteuergesetz §§ 16, 18, 20 and Einkommensteuergesetz § 20; verify the applicable tax year and BMF Basiszins independently.</p>
 </div>
@@ -3220,7 +3220,7 @@ function renderEtfTaxPanel(x,sim){
  root.dataset.market=String(current.market);
  root.dataset.deposits=String(current.deposits);
  root.dataset.withdrawalTax=String(current.tax);
- $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><td>'+r.year+'</td><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
+ $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
  const sales=x.drawMode!=='none'&&current.withdrawn>0;
  $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
   ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
