@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
@@ -1380,4 +1381,18 @@ test('UX-032 export controls remain keyboard reachable at narrow widths', async 
     expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
     await expect(panel.getByRole('table')).toBeVisible()
   }
+})
+
+
+test('UX-032 chart data panels pass scoped accessibility checks', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#etfTaxDisplay').selectOption('table')
+  await expect(planner.locator('#etfTaxPanel').getByRole('table')).toBeVisible()
+  const results = await new AxeBuilder({ page })
+    .include([frameSelector, '#etfTaxPanel'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
+  expect(results.passes.length).toBeGreaterThan(0)
+  expect(results.violations).toEqual([])
 })
