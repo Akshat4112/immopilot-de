@@ -1307,19 +1307,16 @@ test('UX-032 ETF CSV download mirrors visible evidence and keeps liquidation una
   const planner = page.frameLocator(frameSelector)
   const panel = planner.locator('#etfTaxPanel')
   await expect(panel).toBeVisible()
-  const firstRow = await panel.locator('.etf-tax-table tbody tr').first().innerText()
+  const firstYear = await panel.locator('.etf-tax-table tbody th').first().innerText()
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click(),
   ])
   expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
-  const stream = await download.createReadStream()
-  const chunks: Buffer[] = []
-  for await (const chunk of stream) chunks.push(Buffer.from(chunk))
-  const csv = Buffer.concat(chunks).toString('utf8')
+  const csv = await readFile(await download.path(), 'utf8')
   expect(csv.charCodeAt(0)).toBe(0xfeff)
   expect(csv).toContain('Not modeled')
-  expect(csv).toContain(firstRow.split('\\n')[0].trim())
+  expect(csv).toContain(`"${firstYear.trim()}"`)
   expect(csv).not.toContain('undefined')
 })
 
@@ -1332,10 +1329,7 @@ test('UX-032 rental CSV export is keyboard accessible and reflects selected peri
   await expect(button).toBeFocused()
   const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
   expect(download.suggestedFilename()).toBe('rental-cash-flow.csv')
-  const stream = await download.createReadStream()
-  const chunks: Buffer[] = []
-  for await (const chunk of stream) chunks.push(Buffer.from(chunk))
-  const csv = Buffer.concat(chunks).toString('utf8')
+  const csv = await readFile(await download.path(), 'utf8')
   expect(csv).toContain('Interest')
   expect(csv).toContain('Principal')
   expect(csv).not.toContain('undefined')
