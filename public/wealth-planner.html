@@ -3810,4 +3810,49 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
 })();
 </script>
 
+<script>
+/* UX-032: export the visible, canonical evidence tables without recalculating tax. */
+(function(){
+ function safeCsvCell(value){
+  var text=String(value==null?'':value);
+  // Prevent spreadsheet formula execution even when leading whitespace precedes a formula.
+  if(/^\s*[=+\-@]/.test(text))text="'"+text;
+  return '"'+text.replace(/"/g,'""')+'"';
+ }
+ function exportEvidence(tableId,filename){
+  var table=document.querySelector(tableId);
+  if(!table)return;
+  var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
+   return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
+    return safeCsvCell(cell.textContent.trim());
+   }).join(',');
+  });
+  var blob=new Blob(['\ufeff'+rows.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var anchor=document.createElement('a');
+  anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);
+  anchor.click();anchor.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+ }
+ [
+  {panel:'etfTaxPanel',selector:'.etf-tax-table',name:'etf-annual-evidence.csv',label:'Download ETF annual evidence CSV'},
+  {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'}
+ ].forEach(function(config){
+  var panel=document.getElementById(config.panel);
+  if(!panel)return;
+  var button=document.createElement('button');
+  button.type='button';button.className='btn';button.textContent='Download CSV';
+  button.setAttribute('aria-label',config.label);
+  button.addEventListener('click',function(){exportEvidence(config.selector,config.name)});
+  // Keep the download reachable when the chart/table alternative is collapsed.
+  if(config.panel==='rentalWaterfallTablePane'){
+   panel.parentNode.insertBefore(button,panel);
+  }else{
+   var controls=panel.querySelector('.etf-tax-controls');
+   if(controls)controls.appendChild(button);
+  }
+ });
+})();
+</script>
+
 </body></html>
