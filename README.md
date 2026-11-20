@@ -1,17 +1,10 @@
-<p align="center">
-  <img src="public/favicon.svg" alt="ImmoPilot house logo" width="76" height="76" />
-</p>
+![ImmoPilot house logo](public/favicon.svg)
 
-<h1 align="center">ImmoPilot DE</h1>
+# ImmoPilot DE
 
-<p align="center"><strong>One household. Multiple investment strategies. A complete financial picture.</strong></p>
+**One household. Multiple investment strategies. A complete financial picture.**
 
-<p align="center">
-  <a href="https://akshat4112.github.io/immopilot-de/"><strong>Launch the wealth planner</strong></a> ·
-  <a href="docs/README.md">Documentation</a> ·
-  <a href="https://github.com/Akshat4112/immopilot-de/issues/93">Roadmap</a> ·
-  <a href="https://github.com/Akshat4112/immopilot-de/issues">Report an issue</a>
-</p>
+[Launch the wealth planner](https://akshat4112.github.io/immopilot-de/) · [Documentation](docs/README.md) · [Roadmap](https://github.com/Akshat4112/immopilot-de/issues/93) · [Report an issue](https://github.com/Akshat4112/immopilot-de/issues)
 
 [![CI](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Akshat4112/immopilot-de/actions/workflows/ci.yml)
 [![Deployment](https://github.com/Akshat4112/immopilot-de/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/Akshat4112/immopilot-de/actions/workflows/deploy-pages.yml)
@@ -48,15 +41,13 @@ The overview connects monthly free cash, invested assets, property equity and pr
 
 ### Seven investment strategies
 
-| Strategy                | ETFs  | Own home | Rental |
-| ----------------------- | :---: | :------: | :----: |
-| ETF investing           |  Yes  |    —     |   —    |
-| Homeownership           |   —   |   Yes    |   —    |
-| Rental investing        |   —   |    —     |  Yes   |
-| ETFs + homeownership    |  Yes  |   Yes    |   —    |
-| ETFs + rental investing |  Yes  |    —     |  Yes   |
-| Homeownership + rental  |   —   |   Yes    |  Yes   |
-| All three               |  Yes  |   Yes    |  Yes   |
+1. ETF investing only.
+2. Homeownership only.
+3. Rental investing only.
+4. ETFs + homeownership.
+5. ETFs + rental investing.
+6. Homeownership + rental investing.
+7. ETFs + homeownership + rental investing.
 
 Every strategy retains relevant household income, current housing and expenditure. ETF-only planning does not require a property purchase.
 
@@ -74,13 +65,11 @@ Start with illustrative figures and replace them with your own assumptions. Proj
 
 ImmoPilot distinguishes estimates from verified inputs and market value from liquid or after-tax wealth. The repository contains documented calculation specifications, deterministic TypeScript financial modules, reference vectors and regression tests. The standalone planner also retains simulation logic that is being consolidated into shared modules; not every model uses the same engine yet.
 
-| Topic                        | Documentation                                                                                                                         |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Property costs and financing | [Calculation specification](docs/calculation-specification.md) · [Acquisition cost assumptions](docs/acquisition-cost-assumptions.md) |
-| German property transfer tax | [State rates, sources and effective dates](docs/grunderwerbsteuer-rates.md)                                                           |
-| ETF taxation                 | [ETF tax assumptions](docs/etf-tax-2026.md) · [Projection limitations](docs/etf-002-projection-limitations.md)                        |
-| Investment comparisons       | [Matched-budget rent/buy/ETF methodology](docs/ux-028-rent-buy-etf-explorer.md)                                                       |
-| Reference scenarios          | [Fictional examples and golden vectors](docs/demo-scenarios.md)                                                                       |
+- **Property costs and financing:** [Calculation specification](docs/calculation-specification.md) · [Acquisition cost assumptions](docs/acquisition-cost-assumptions.md).
+- **German property transfer tax:** [State rates, sources and effective dates](docs/grunderwerbsteuer-rates.md).
+- **ETF taxation:** [ETF tax assumptions](docs/etf-tax-2026.md) · [Projection limitations](docs/etf-002-projection-limitations.md).
+- **Investment comparisons:** [Matched-budget rent/buy/ETF methodology](docs/ux-028-rent-buy-etf-explorer.md).
+- **Reference scenarios:** [Fictional examples and golden vectors](docs/demo-scenarios.md).
 
 **Important limits:** The live ETF visualizer deliberately leaves Vorabpauschale tax and full after-tax liquidation values unavailable. The separate annual projection module is not integrated into the production planner and must not be interpreted as a tax-grade ledger. Withdrawal tax is simplified. Source-backed assumptions are dated, not live market feeds. Notary and similar fees can be planning proxies rather than binding quotes. See [ETF transparency](docs/ux-031-etf-tax-transparency.md) and the [financial disclaimer](docs/legal-and-privacy.md).
 
