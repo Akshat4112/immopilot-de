@@ -2,7 +2,7 @@
 
 ## Current implementation
 
-The shared `chartRowsToCsv(headers, rows)` serializer is available in `src/utils/chartData.ts` with Vitest coverage. It is **not yet wired to the rendered financial charts**. Do not describe UX-032 as released on the basis of passing serializer tests alone.
+The shared `chartRowsToCsv(headers, rows)` serializer is available in `src/utils/chartData.ts` with Vitest coverage. The standalone planner now exposes ETF annual evidence and rental cash-flow CSV downloads through its DOM lifecycle. The React component uses the shared TypeScript serializer; the standalone HTML currently uses a separate adapter with equivalent quoting and formula-prefix protection. This is partial integration, not a claim of toolkit-wide accessibility compliance.
 
 ## Integration contract
 
@@ -25,8 +25,12 @@ The shared `chartRowsToCsv(headers, rows)` serializer is available in `src/utils
 
 ## Integration architecture decision (2026-11-19)
 
-The deployed wealth planner is `public/wealth-planner.html`, while `AccessibleChartData` is a React component under `src/components`. Passing React component tests does **not** make the toolkit available inside the standalone planner. Before claiming ETF/rental chart integration, choose and test one explicit bridge: (a) mount a bundled React island into a stable planner container with a documented build/deployment path, or (b) extract a framework-neutral chart-data adapter and render the semantic table and download controls using the planner's existing DOM lifecycle. Do not paste a TSX import into the standalone HTML or add a parallel financial calculation.
+The deployed wealth planner is `public/wealth-planner.html`, while `AccessibleChartData` is a React component under `src/components`. Passing React component tests does **not** make the toolkit available inside the standalone planner. The implemented bridge is (b) below; the serializer remains duplicated. The original options were: (a) mount a bundled React island into a stable planner container with a documented build/deployment path, or (b) extract a framework-neutral chart-data adapter and render the semantic table and download controls using the planner's existing DOM lifecycle. Do not paste a TSX import into the standalone HTML or add a parallel financial calculation.
 
 For both integrations, capture the **same yearly ledger rows already used by the visible chart**; use that array for chart, table and CSV. Confirm that switching strategy, year, language or scenario invalidates and rebuilds all three together. In particular, preserve `null`/unavailable liquidation values and show the caveat in the accessible description. A unit test of the React component is insufficient: a Playwright test must visit the deployed planner route and operate the real controls.
 
 **Verified baseline:** head `2e91fe4d57997d972505e16f5014383cdf279ca2` passed CI run `44538406699` (Quality and build; Playwright smoke test). This is a baseline only; subsequent commits require their own exact-head CI verification. No reviews were recorded at this baseline.
+
+## Verification update (2026-11-20)
+
+Head `fc1756d5e826861695d91f2887868bab756937fa` passed CI run `44759313657`: 554 unit tests and 70 browser tests, including keyboard downloads at 320 and 375 px. Production audit found zero vulnerabilities; nine moderate development findings remain. No reviews or unresolved review threads were returned. Automated axe and manual dark/print checks remain outstanding; this is not a WCAG conformance claim.
