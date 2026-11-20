@@ -1300,3 +1300,43 @@ test('UX-032 ETF annual evidence has a caption and scoped headers after projecti
   await expect(table).toBeVisible()
   await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
 })
+
+
+test('UX-032 ETF CSV download mirrors visible evidence and keeps liquidation unavailable', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  await expect(panel).toBeVisible()
+  const firstRow = await panel.locator('.etf-tax-table tbody tr').first().innerText()
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click(),
+  ])
+  expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
+  const stream = await download.createReadStream()
+  const chunks: Buffer[] = []
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk))
+  const csv = Buffer.concat(chunks).toString('utf8')
+  expect(csv.charCodeAt(0)).toBe(0xfeff)
+  expect(csv).toContain('Not modeled')
+  expect(csv).toContain(firstRow.split('\\n')[0].trim())
+  expect(csv).not.toContain('undefined')
+})
+
+test('UX-032 rental CSV export is keyboard accessible and reflects selected period', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('[data-waterfall-period="month"]').click()
+  const button = planner.getByRole('button', { name: 'Download rental cash-flow CSV' })
+  await button.focus()
+  await expect(button).toBeFocused()
+  const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+  expect(download.suggestedFilename()).toBe('rental-cash-flow.csv')
+  const stream = await download.createReadStream()
+  const chunks: Buffer[] = []
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk))
+  const csv = Buffer.concat(chunks).toString('utf8')
+  expect(csv).toContain('Interest')
+  expect(csv).toContain('Principal')
+  expect(csv).not.toContain('undefined')
+})
