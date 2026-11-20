@@ -739,6 +739,8 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
 .etf-tax-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .etf-tax-stats>div{background:var(--wash);border:1px solid var(--border);padding:12px;border-radius:11px;min-width:0}
 .etf-tax-stats small{display:block;color:var(--muted);line-height:1.35}
+body:not([data-theme="dark"]) .etf-tax-stats small{color:#526966}
+body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
 .etf-tax-stats strong{display:block;margin-top:6px;font-size:1.08rem;overflow-wrap:anywhere}
 .etf-tax-graphic{overflow-x:auto;padding:6px 0}
 .etf-tax-graphic svg{min-width:500px;max-height:320px}
