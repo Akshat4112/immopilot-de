@@ -1,8 +1,37 @@
 # Application architecture
 
-Status: normative for the Version 1 source layout  
-Architecture version: 1.0.0  
-Established by: FND-003
+Status: current runtime overview with retained Version 1 module contracts  
+Updated: 20 November 2026  
+Original module contract: FND-003 / architecture 1.0.0
+
+## Current deployed entry point
+
+The production entry point is [src/main.tsx](../src/main.tsx), which mounts a minimal React host containing a same-origin iframe for [public/wealth-planner.html](../public/wealth-planner.html) and the additive [2026 payroll checker](../src/components/Payroll2026Panel.tsx).
+
+```mermaid
+flowchart TD
+    Browser --> Host["React / TypeScript host"]
+    Host --> Frame["Same-origin standalone wealth planner"]
+    Host --> Payroll["Payroll checker"]
+    Host --> Bridge["Rental module bridge"]
+    Bridge --> Domain["AfA, rental expenses, renovation rules"]
+    Frame --> Bridge
+    Frame --> Simulation["Household and investment simulation"]
+    Frame --> Local["Browser storage and scenario backups"]
+    Payroll --> PAP["Versioned 2026 PAP module"]
+```
+
+- The standalone file owns the active planning UI, simulation, visualizations and scenario storage. It is copied as a static asset by the build.
+- The host registers `window.__immopilotRentalV2` before mounting the iframe; the bridge exposes shared TypeScript AfA, expense and renovation classification functions.
+- The 2026 payroll checker is an additive component, not a replacement for the standalone household simulation.
+- The shared ETF primitives and annual projection modules exist under `src/domain/`, but the annual projection is not wired to the production planner. Preserve the [ETF release constraints](etf-002-projection-limitations.md).
+- The original React feature tree and hash routes remain source assets, but the old application shell is not the active production entry point.
+
+The existing TypeScript domain boundaries below remain the target contract for incremental migration. Do not assume the standalone simulations already share every domain function. For migration, identify the live calculation path, establish independent golden vectors and browser parity tests, then replace duplicated rules behind explicit interfaces rather than introducing parallel models. Do not change persisted scenario schemas silently.
+
+## Original module contracts
+
+The remaining sections record the original feature-oriented architecture and continue to guide shared modules. References to the old application shell are historical, not a claim that the current host renders that router.
 
 ## Purpose
 
@@ -35,8 +64,7 @@ src/
 
 The styles directory separates the FND-012 token contract and global accessibility rules from the
 FND-013 shell and overview-page composition. The app directory owns hash-based routing and reusable
-shell components; feature routes render through its outlet. Domain folders contain documentation
-only until their owning implementation tasks add code.
+shell components; feature routes render through its outlet. Domain folders contain their implemented models, validation and tests; consult the current source tree.
 
 ## Dependency direction
 
