@@ -13,7 +13,7 @@ This log summarizes meaningful product changes from merged work. It is not a dec
 - Added ETF contributions and market-value evidence, with unsupported advance tax and full liquidation tax explicitly unavailable.
 - Introduced and tested separate ETF tax/projection modules; the illustrative annual projection remains excluded from the deployed planner.
 
-**Evidence:** [Planner entry point](https://github.com/Akshat4112/immopilot-de/pull/86) · [ETF tax primitives](https://github.com/Akshat4112/immopilot-de/pull/91) · [ETF projection](https://github.com/Akshat4112/immopilot-de/pull/92) · [UX roadmap](https://github.com/Akshat4112/immopilot-de/issues/93) · [ETF visualizer](https://github.com/Akshat4112/immopilot-de/pull/105).
+**Evidence:** [Planner entry point](https://github.com/Akshat4112/immopilot-de/pull/85) · [ETF tax primitives](https://github.com/Akshat4112/immopilot-de/pull/91) · [ETF projection](https://github.com/Akshat4112/immopilot-de/pull/92) · [UX roadmap](https://github.com/Akshat4112/immopilot-de/issues/93) · [ETF visualizer](https://github.com/Akshat4112/immopilot-de/pull/105).
 
 ### Earlier foundation
 
