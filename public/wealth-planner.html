@@ -839,7 +839,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <div id="sankeyChart">Calculating cash flows…</div>
  </div>
  <div id="sankeyTableWrap" class="sankey-table-scroll" hidden role="region" aria-label="Cash-flow detail table" tabindex="0">
-  <table class="sankey-table">
+  <table class="sankey-table"><caption>Household cash-flow sources and allocations; selected period</caption>
    <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col" id="sankeyAmountHeader">Amount (EUR/month)</th><th scope="col">Explanation</th></tr></thead>
    <tbody id="sankeyTableRows"></tbody><tfoot id="sankeyTableFoot"></tfoot>
   </table>
@@ -1211,7 +1211,8 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
    <svg id="wealthCompositionChart" class="wealth-chart" viewBox="0 0 960 450" role="group" aria-label="Annual stacked wealth, mortgage debt and signed net position"></svg>
   </div>
   <div id="wealthTimelineTablePane" class="wealth-timeline-table-wrap" role="region" aria-label="Year-by-year asset and liability table" tabindex="0" hidden>
-   <table class="wealth-timeline-table"><thead><tr><th>Year</th><th>Home equity</th><th>Rental equity</th><th>ETFs</th><th>Cash</th><th>Home value</th><th>Rental value</th><th>Home loan</th><th>Rental debt</th><th>Net position</th></tr></thead><tbody id="wealthTimelineRows"></tbody></table>
+   <table class="wealth-timeline-table"><caption>Projected annual assets, liabilities and signed net position (EUR; ETF market value, not after-tax liquidation)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Home equity (EUR)</th><th scope="col">Rental equity (EUR)</th><th scope="col">ETFs (EUR)</th><th scope="col">Cash (EUR)</th><th scope="col">Home value (EUR)</th><th scope="col">Rental value (EUR)</th><th scope="col">Home loan (EUR)</th><th scope="col">Rental debt (EUR)</th><th scope="col">Net position (EUR)</th></tr></thead><tbody id="wealthTimelineRows"></tbody></table>
   </div>
   <div class="wealth-timeline-legend" id="wealthTimelineLegend"></div>
   <p class="wealth-timeline-detail" id="wealthTimelineDetail" role="status" aria-live="polite">Select a year for details.</p>
@@ -1287,8 +1288,8 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <svg class="rb-svg" id="rbChart" viewBox="0 0 920 380" role="group" aria-label="Annual comparison of buy-home, rent-and-ETF, and rent-and-cash scenarios"></svg>
  </div>
  <div id="rbTablePane" class="rb-table-scroll" role="region" tabindex="0" aria-label="Year-by-year rent buy ETF comparison" hidden>
-  <table class="rb-table">
-   <thead><tr><th scope="col">Year</th><th scope="col">Buy wealth</th><th scope="col">Rent + ETF wealth</th><th scope="col">Rent + cash wealth</th><th scope="col">Home equity</th><th scope="col">Buy housing cash paid</th><th scope="col">Rent cash paid</th><th scope="col">Buy nonrecoverable costs</th><th scope="col">Rent nonrecoverable costs</th><th scope="col">Matched annual budget</th></tr></thead>
+  <table class="rb-table"><caption>Matched-budget housing alternatives (EUR; before eventual ETF sale tax and property selling costs)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Buy wealth (EUR)</th><th scope="col">Rent + ETF wealth (EUR)</th><th scope="col">Rent + cash wealth (EUR)</th><th scope="col">Home equity (EUR)</th><th scope="col">Buy housing cash paid (EUR)</th><th scope="col">Rent cash paid (EUR)</th><th scope="col">Buy nonrecoverable costs (EUR)</th><th scope="col">Rent nonrecoverable costs (EUR)</th><th scope="col">Matched annual budget (EUR)</th></tr></thead>
    <tbody id="rbRows"></tbody>
   </table>
  </div>
@@ -1350,8 +1351,8 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
    <svg id="amortChart" class="plot-chart mortgage-chart-svg" viewBox="0 0 920 380" role="group" aria-label="Interactive annual mortgage debt and property equity comparison"></svg>
   </div>
   <div id="amortTablePane" class="mortgage-explorer-table-scroll" role="region" tabindex="0" aria-label="Complete annual mortgage schedule and alternative repayment table" hidden>
-   <table class="mortgage-explorer-table">
-    <thead><tr><th scope="col">Year</th><th scope="col">Property value</th><th scope="col">Opening debt</th><th scope="col">Accrued interest</th><th scope="col">Scheduled paid</th><th scope="col">Regular extra paid</th><th scope="col">Unpaid interest</th><th scope="col">Net debt reduction</th><th scope="col">Closing debt</th><th scope="col">Home equity</th><th scope="col">What-if debt</th><th scope="col">What-if equity</th><th scope="col">Extra what-if paid</th><th scope="col">Cumulative interest saved</th></tr></thead>
+   <table class="mortgage-explorer-table"><caption>Annual mortgage schedule and additional repayment illustration (EUR)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Property value (EUR)</th><th scope="col">Opening debt (EUR)</th><th scope="col">Accrued interest (EUR)</th><th scope="col">Scheduled paid (EUR)</th><th scope="col">Regular extra paid (EUR)</th><th scope="col">Unpaid interest (EUR)</th><th scope="col">Net debt reduction (EUR)</th><th scope="col">Closing debt (EUR)</th><th scope="col">Home equity (EUR)</th><th scope="col">What-if debt (EUR)</th><th scope="col">What-if equity (EUR)</th><th scope="col">Extra what-if paid (EUR)</th><th scope="col">Cumulative interest saved (EUR)</th></tr></thead>
     <tbody id="amortRows"></tbody>
    </table>
   </div>
