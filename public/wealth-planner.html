@@ -3831,7 +3831,11 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  function exportEvidence(tableId,filename){
   var table=document.querySelector(tableId);
   if(!table)return;
-  var width=table.tHead.rows[0].cells.length;
+  var headers=Array.from(table.tHead.rows[0].cells,function(cell){return cell.textContent.trim().toLowerCase()});
+  var width=headers.length;
+  if(!width||headers.some(function(label){return !label})||new Set(headers).size!==width){
+   throw new Error('CSV column labels must be non-empty and unique');
+  }
   var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
    if(tr.cells.length!==width){
     // The empty-state row spans all columns and is not financial evidence.
