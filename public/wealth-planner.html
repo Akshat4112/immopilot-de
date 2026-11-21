@@ -697,6 +697,8 @@ body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mort
 .rental-waterfall-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
 .rental-waterfall-kpis>div{padding:12px;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);background:var(--ux-surface-soft,#f4f9f5);min-width:0}
 .rental-waterfall-kpis small{color:var(--muted);font-size:.7rem;line-height:1.5;display:block}
+body:not([data-theme="dark"]) .rental-waterfall-kpis small{color:#526966}
+body:not([data-theme="dark"]) .rental-waterfall-heading>.fine{color:#526474}
 .rental-waterfall-kpis strong{color:var(--ink);font-size:1.04rem;font-variant-numeric:tabular-nums;display:block;margin-top:6px}
 .rental-waterfall-kpis strong.negative{color:#b54454}
 .rental-waterfall-warning{color:#a94852;font-size:.77rem;line-height:1.6;font-weight:650;margin:9px 0}
@@ -739,6 +741,8 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
 .etf-tax-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .etf-tax-stats>div{background:var(--wash);border:1px solid var(--border);padding:12px;border-radius:11px;min-width:0}
 .etf-tax-stats small{display:block;color:var(--muted);line-height:1.35}
+body:not([data-theme="dark"]) .etf-tax-stats small{color:#526966}
+body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
 .etf-tax-stats strong{display:block;margin-top:6px;font-size:1.08rem;overflow-wrap:anywhere}
 .etf-tax-graphic{overflow-x:auto;padding:6px 0}
 .etf-tax-graphic svg{min-width:500px;max-height:320px}
@@ -1158,7 +1162,7 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
    <svg class="rental-waterfall-svg" id="rentalBridgeChart" viewBox="0 0 1100 420" role="group" aria-label="Signed rental waterfall: income, vacancy, expenses, debt and tax"></svg>
   </div>
   <div id="rentalWaterfallTablePane" class="rental-waterfall-table-scroll" role="region" tabindex="0" aria-label="Accessible rental cash-flow reconciliation table" hidden>
-   <table class="rental-waterfall-table">
+   <table class="rental-waterfall-table"><caption>Rental cash flow, selected period (EUR)</caption>
     <thead><tr><th scope="col">Step</th><th scope="col">Cash movement</th><th scope="col">Running cash</th><th scope="col">What it means</th></tr></thead>
     <tbody id="rentalWaterfallRows"></tbody>
    </table>
@@ -1184,7 +1188,7 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
  </div>
  <div class="etf-tax-graphic" id="etfTaxChartPane" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
  <div class="table-scroll" role="region" tabindex="0" aria-label="Annual ETF balances and tax evidence">
- <table class="etf-tax-table"><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
+ <table class="etf-tax-table"><caption>Annual ETF contributions, market values and modeled withdrawals; advance and full-sale taxes are unavailable</caption><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
  <p class="etf-tax-info" id="etfTaxDisclosure" role="status" aria-live="polite"></p>
  <p class="fine">German fund tax note (model assumptions, not a current-year tax assessment): 30% partial exemption for eligible equity funds; 25% capital-income tax plus solidarity surcharge is modeled for withdrawals, excluding church tax. The Sparer-Pauschbetrag may also be consumed by other capital income. No basis interest rate is assumed, and no Vorabpauschale or prior-tax offset is silently imputed. Source: German Investmentsteuergesetz §§ 16, 18, 20 and Einkommensteuergesetz § 20; verify the applicable tax year and BMF Basiszins independently.</p>
 </div>
@@ -2214,6 +2218,11 @@ function renderRentalBridge(rent,x,tax){
  const data=rentalWaterfallLedger(rent,x,tax,state.scope,state.year);
  state.data=data;
  const chart=$('rentalBridgeChart'),table=$('rentalWaterfallRows'),warn=$('rentalWaterfallWarning');
+ const periodLabel=state.period==='month'?'EUR/month':'EUR/year';
+ const rentalTable=table.closest('table');
+ rentalTable.caption.textContent='Rental cash flow, year '+state.year+' ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[1].textContent='Cash movement ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[2].textContent='Running cash ('+periodLabel+')';
  if(!data){
   panel.dataset.waterfallBalanced='true';
   panel.dataset.waterfallStatus='empty';
@@ -2311,11 +2320,11 @@ function renderRentalBridge(rent,x,tax){
   table.innerHTML=flow.map(z=>'<tr tabindex="0" data-waterfall-row="'+z.key+
    '" data-waterfall-value="'+fmt(z.value)+'" data-waterfall-running="'+fmt(z.to)+
    '" aria-selected="'+(state.chosen===z.key)+'"><th scope="row">'+safeText(z.name)+
-   '</th><td>'+signed(z.value)+'</td><td>'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
+   '</th><td data-csv-number="'+z.amount+'">'+signed(z.value)+'</td><td data-csv-number="'+z.closing+'">'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
    '<tr tabindex="0" data-waterfall-row="result" data-waterfall-value="'+fmt(data.after)+
    '" data-waterfall-running="'+fmt(data.after)+'" aria-selected="'+(state.chosen==='result')+
-   '"><th scope="row">After-tax recurring cash</th><td>'+signed(data.after)+'</td>'+
-   '<td>'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
+   '"><th scope="row">After-tax recurring cash</th><td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td>'+
+   '<td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
   $('rentalBridgeStats').innerHTML='<span>Collected '+amt(data.collected)+
    '</span><span>Pre-tax '+signed(data.before)+'</span><span>Tax effect '+signed(-data.deltaTax)+
    '</span><span>After estimated tax '+signed(data.after)+'</span>';
@@ -2438,7 +2447,7 @@ function renderWealthComposition(x,sim,rent,houseCash){
   const vals=[p.year,p.homeEq,p.rentalEq,p.etf,p.cash,p.homeVal,p.rentalVal,p.homeDebt,p.rentalDebt,p.net];
   return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" data-home-equity="'+round(p.homeEq)+'" data-rental-equity="'+round(p.rentalEq)+'" data-etf="'+round(p.etf)+'" data-cash="'+round(p.cash)+'" data-home-loan="'+round(p.homeDebt)+'" data-rental-loan="'+round(p.rentalDebt)+'" aria-selected="'+(p.year===state.year)+'">'+
    vals.map((v,i)=>i===0?'<th scope="row">Year '+v+'</th>':
-    '<td'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
+    '<td data-csv-number="'+v+'"'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
  }).join('');
  const show=()=>{
   const p=pts.find(z=>z.year===state.year)||pts.at(-1);
@@ -2632,7 +2641,7 @@ function renderRentBuyExplorer(x){
    '" data-rb-rent-contribution="'+fmt(p.rentContribution)+'" data-rb-buy-annual="'+fmt(p.buyPaid-(model.rows[p.year-1]?.buyPaid||0))+
    '" data-rb-rent-annual="'+fmt(p.rentPaid-(model.rows[p.year-1]?.rentPaid||0))+
    '" aria-selected="'+(p.year===s.year)+'"><th scope="row">Year '+p.year+'</th>'+
-   nums.map(n=>'<td'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
  }).join('');
  function focusYear(year){
   const p=rows.find(z=>z.year===year);if(!p)return;
@@ -2823,7 +2832,7 @@ function amortizationPlot(x,rent){
    '" data-amort-equity="'+r.equity.toFixed(2)+'" data-amort-alt-equity="'+r.altEquity.toFixed(2)+
    '" data-amort-unpaid="'+r.unpaid.toFixed(2)+'" data-amort-interest-saved="'+r.interestSaved.toFixed(2)+
    '"><th scope="row">Year '+r.year+'</th>'+
-   nums.map(n=>'<td'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
  }).join('');
  const mode=state.mode;
  const lineSpecs=mode==='equity'?
@@ -3220,7 +3229,7 @@ function renderEtfTaxPanel(x,sim){
  root.dataset.market=String(current.market);
  root.dataset.deposits=String(current.deposits);
  root.dataset.withdrawalTax=String(current.tax);
- $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><td>'+r.year+'</td><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
+ $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td data-csv-number="'+r.deposits+'">'+money(r.deposits)+'</td><td data-csv-number="'+r.market+'">'+money(r.market)+'</td><td data-csv-number="'+r.withdrawn+'">'+money(r.withdrawn)+'</td><td data-csv-number="'+r.tax+'">'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
  const sales=x.drawMode!=='none'&&current.withdrawn>0;
  $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
   ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
@@ -3807,6 +3816,79 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  document.querySelectorAll('.app-tabs [data-view],[data-strategy],[data-switch-home],[data-switch-profile]')
   .forEach(button=>button.addEventListener('click',()=>queueMicrotask(updateContext)));
  applyMode('essential');
+})();
+</script>
+
+<script>
+/* UX-032: export the visible, canonical evidence tables without recalculating tax. */
+(function(){
+ function safeCsvCell(value){
+  var text=String(value==null?'':value);
+  // Prevent spreadsheet formula execution even when leading whitespace precedes a formula.
+  if(/^\s*[=+\-@]/.test(text))text="'"+text;
+  return '"'+text.replace(/"/g,'""')+'"';
+ }
+ function exportEvidence(tableId,filename){
+  var table=document.querySelector(tableId);
+  if(!table)return;
+  var headers=Array.from(table.tHead.rows[0].cells,function(cell){return cell.textContent.trim().toLowerCase()});
+  var width=headers.length;
+  if(!width||headers.some(function(label){return !label})||new Set(headers).size!==width){
+   throw new Error('CSV column labels must be non-empty and unique');
+  }
+  var rows=Array.from(table.querySelectorAll('thead tr, tbody tr')).map(function(tr){
+   if(tr.cells.length!==width){
+    // The empty-state row spans all columns and is not financial evidence.
+    if(tr.cells.length===1&&tr.cells[0].colSpan===width)return null;
+    throw new Error('CSV row width mismatch');
+   }
+   return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
+    if(cell.hasAttribute('data-csv-number')){
+     var raw=cell.dataset.csvNumber;
+     if(!raw||!raw.trim())throw new Error('CSV numeric evidence must not be blank');
+     var number=Number(raw);
+     if(!Number.isFinite(number))throw new Error('CSV numeric cells must be finite');
+     return String(number);
+    }
+    return safeCsvCell(cell.textContent.trim());
+   }).join(',');
+  }).filter(function(row){return row!==null});
+  var blob=new Blob(['\ufeff'+rows.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var anchor=document.createElement('a');
+  anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);
+  anchor.click();anchor.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+ }
+ [
+  {panel:'etfTaxPanel',selector:'.etf-tax-table',name:'etf-annual-evidence.csv',label:'Download ETF annual evidence CSV'},
+  {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'},
+   {panel:'wealthTimelineTablePane',selector:'.wealth-timeline-table',name:'net-worth-timeline.csv',label:'Download net worth timeline CSV'},
+   {panel:'rbTablePane',selector:'.rb-table',name:'rent-buy-comparison.csv',label:'Download rent buy comparison CSV'},
+   {panel:'amortTablePane',selector:'.mortgage-explorer-table',name:'mortgage-schedule.csv',label:'Download mortgage schedule CSV'}
+ ].forEach(function(config){
+  var panel=document.getElementById(config.panel);
+  if(!panel)return;
+  var button=document.createElement('button');
+  button.type='button';button.className='btn';button.textContent='Download CSV';
+  button.setAttribute('aria-label',config.label);
+  var status=document.createElement('span');
+  status.setAttribute('role','status');status.className='fine';
+  button.addEventListener('click',function(){
+   status.textContent='';
+   try{exportEvidence(config.selector,config.name)}catch(error){
+    status.textContent='CSV export unavailable: invalid chart data. / CSV-Export nicht verfügbar: ungültige Diagrammdaten.';
+   }
+  });
+  // Keep the download reachable when the chart/table alternative is collapsed.
+  if(config.panel!=='etfTaxPanel'){
+   panel.parentNode.insertBefore(button,panel);
+   panel.parentNode.insertBefore(status,panel);
+  }else{
+   var controls=panel.querySelector('.etf-tax-controls');
+   if(controls){controls.appendChild(button);controls.appendChild(status)}
+  }
+ });
 })();
 </script>
 

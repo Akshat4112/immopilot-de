@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
@@ -1278,4 +1279,186 @@ test('ETF tax visualizer has an accessible mobile table fallback', async ({ page
   await expect(panel.locator('#etfTaxChartPane')).toBeHidden()
   await expect(panel.getByRole('table')).toBeVisible()
   await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+})
+
+test('UX-032 ETF annual evidence has a caption and scoped headers after projection changes', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  const table = panel.getByRole('table')
+  await expect(table.locator('caption')).toContainText('full-sale taxes are unavailable')
+  await expect(table.locator('thead th[scope="col"]')).toHaveCount(7)
+  await expect(table.locator('tbody th[scope="row"]')).toHaveCount(
+    Number(await planner.locator('#years').inputValue()) + 1,
+  )
+  await panel.locator('#etfTaxYear').selectOption('5')
+  await expect(panel).toHaveAttribute('data-selected-year', '5')
+  await expect(table.locator('tbody tr').nth(5).locator('th[scope="row"]')).toHaveText('5')
+  await expect(table.locator('tbody tr').nth(5).locator('td').nth(5)).toHaveText('Not modeled')
+  await panel.locator('#etfTaxDisplay').selectOption('table')
+  await expect(table).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+})
+
+
+test('UX-032 ETF CSV download mirrors visible evidence and keeps liquidation unavailable', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  await expect(panel).toBeVisible()
+  const firstYear = await panel.locator('.etf-tax-table tbody th').first().innerText()
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click(),
+  ])
+  expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
+  const csv = await readFile(await download.path(), 'utf8')
+  expect(csv.charCodeAt(0)).toBe(0xfeff)
+  expect(csv).toContain('Not modeled')
+  expect(csv).toContain(`"${firstYear.trim()}"`)
+  const rows = await Promise.all(
+    (await panel.locator('.etf-tax-table tbody tr').all()).map(async (row) =>
+      Promise.all(
+        (await row.locator('[data-csv-number]').all()).map((cell) =>
+          cell.getAttribute('data-csv-number'),
+        ),
+      ),
+    ),
+  )
+  const lines = csv.trimEnd().split('\r\n').slice(1)
+  expect(lines).toHaveLength(rows.length)
+  rows.forEach((values, index) => {
+    expect(lines[index]?.split(',').slice(1, 5)).toEqual(values)
+  })
+  expect(csv).not.toContain('undefined')
+})
+
+test('UX-032 rental CSV export is keyboard accessible and reflects selected period', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('[data-waterfall-period="month"]').click()
+  const button = planner.getByRole('button', { name: 'Download rental cash-flow CSV' })
+  await button.focus()
+  await expect(button).toBeFocused()
+  const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+  expect(download.suggestedFilename()).toBe('rental-cash-flow.csv')
+  const csv = await readFile(await download.path(), 'utf8')
+  expect(csv).toContain('"Cash movement (EUR/month)"')
+  expect(csv).toContain('"Running cash (EUR/month)"')
+  expect(csv).toContain('"Interest covered by mortgage payments"')
+  expect(csv).toContain('"Mortgage principal paid"')
+  const amounts = await Promise.all(
+    (await planner.locator('#rentalWaterfallRows tr').all()).map(async (row) =>
+      Promise.all(
+        (await row.locator('[data-csv-number]').all()).map((cell) =>
+          cell.getAttribute('data-csv-number'),
+        ),
+      ),
+    ),
+  )
+  const lines = csv.trimEnd().split('\r\n').slice(1)
+  expect(lines).toHaveLength(amounts.length)
+  amounts.forEach((values, index) => {
+    expect(lines[index]).toContain(',' + values.join(',') + ',')
+  })
+  expect(csv).not.toContain('undefined')
+})
+
+test('UX-032 export controls remain keyboard reachable at narrow widths', async ({ page }) => {
+  for (const width of [320, 375]) {
+    await page.setViewportSize({ width, height: 812 })
+    await page.goto('./')
+    const planner = page.frameLocator(frameSelector)
+    const panel = planner.locator('#etfTaxPanel')
+    await panel.locator('#etfTaxDisplay').selectOption('table')
+    const button = panel.getByRole('button', { name: 'Download ETF annual evidence CSV' })
+    await expect(button).toBeVisible()
+    await button.focus()
+    await expect(button).toBeFocused()
+    const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+    expect(download.suggestedFilename()).toBe('etf-annual-evidence.csv')
+    await expect(panel.getByRole('table')).toBeVisible()
+  }
+})
+
+
+test('UX-032 chart data panels pass scoped accessibility checks', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#etfTaxDisplay').selectOption('table')
+  await expect(planner.locator('#etfTaxPanel').getByRole('table')).toBeVisible()
+  const results = await new AxeBuilder({ page })
+    .include([frameSelector, '#etfTaxPanel'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
+  expect(results.passes.length).toBeGreaterThan(0)
+  expect(results.violations).toEqual([])
+})
+
+test('UX-032 rental evidence table passes scoped accessibility checks on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('#rentalWaterfallTablePane')).toBeVisible()
+  const results = await new AxeBuilder({ page })
+    .include([frameSelector, '#rentalWaterfallPanel'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
+  expect(results.passes.length).toBeGreaterThan(0)
+  expect(results.violations).toEqual([])
+})
+
+test('UX-032 rejects invalid numeric evidence instead of downloading incomplete CSV', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  const cell = panel.locator('[data-csv-number]').first()
+  const downloads: string[] = []
+  page.on('download', (download) => downloads.push(download.suggestedFilename()))
+  for (const invalid of ['Infinity', '', '   ']) {
+    await cell.evaluate((element, value) => {
+      element.setAttribute('data-csv-number', value)
+    }, invalid)
+    await panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click()
+    await expect(panel.getByText('CSV export unavailable:', { exact: false })).toBeVisible()
+    expect(downloads).toEqual([])
+  }
+})
+
+test('UX-032 rejects ambiguous evidence column labels', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  const headers = panel.locator('thead th')
+  const firstLabel = await headers.first().innerText()
+  const downloads: string[] = []
+  page.on('download', (download) => downloads.push(download.suggestedFilename()))
+  for (const label of ['   ', firstLabel.toUpperCase()]) {
+    await headers.nth(1).evaluate((cell, value) => {
+      cell.textContent = value
+    }, label)
+    await panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click()
+    await expect(panel.getByText('CSV export unavailable:', { exact: false })).toBeVisible()
+    expect(downloads).toEqual([])
+  }
+})
+
+test('UX-032 dark theme preserves keyboard access and printable report', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('body')).toHaveAttribute('data-theme', 'dark')
+  const panel = planner.locator('#etfTaxPanel')
+  await panel.locator('#etfTaxDisplay').selectOption('table')
+  const button = panel.getByRole('button', { name: 'Download ETF annual evidence CSV' })
+  await button.focus()
+  await expect(button).toBeFocused()
+  await expect(panel.getByRole('table')).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+  await page.emulateMedia({ media: 'print' })
+  await expect(planner.locator('#printableReport')).toBeVisible()
+  await expect(planner.locator('#reportSummary')).not.toBeEmpty()
+  await expect(button).toBeHidden()
 })
