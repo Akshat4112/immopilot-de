@@ -2447,7 +2447,7 @@ function renderWealthComposition(x,sim,rent,houseCash){
   const vals=[p.year,p.homeEq,p.rentalEq,p.etf,p.cash,p.homeVal,p.rentalVal,p.homeDebt,p.rentalDebt,p.net];
   return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" data-home-equity="'+round(p.homeEq)+'" data-rental-equity="'+round(p.rentalEq)+'" data-etf="'+round(p.etf)+'" data-cash="'+round(p.cash)+'" data-home-loan="'+round(p.homeDebt)+'" data-rental-loan="'+round(p.rentalDebt)+'" aria-selected="'+(p.year===state.year)+'">'+
    vals.map((v,i)=>i===0?'<th scope="row">Year '+v+'</th>':
-    '<td'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
+    '<td data-csv-number="'+v+'"'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
  }).join('');
  const show=()=>{
   const p=pts.find(z=>z.year===state.year)||pts.at(-1);
@@ -2641,7 +2641,7 @@ function renderRentBuyExplorer(x){
    '" data-rb-rent-contribution="'+fmt(p.rentContribution)+'" data-rb-buy-annual="'+fmt(p.buyPaid-(model.rows[p.year-1]?.buyPaid||0))+
    '" data-rb-rent-annual="'+fmt(p.rentPaid-(model.rows[p.year-1]?.rentPaid||0))+
    '" aria-selected="'+(p.year===s.year)+'"><th scope="row">Year '+p.year+'</th>'+
-   nums.map(n=>'<td'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
  }).join('');
  function focusYear(year){
   const p=rows.find(z=>z.year===year);if(!p)return;
@@ -2832,7 +2832,7 @@ function amortizationPlot(x,rent){
    '" data-amort-equity="'+r.equity.toFixed(2)+'" data-amort-alt-equity="'+r.altEquity.toFixed(2)+
    '" data-amort-unpaid="'+r.unpaid.toFixed(2)+'" data-amort-interest-saved="'+r.interestSaved.toFixed(2)+
    '"><th scope="row">Year '+r.year+'</th>'+
-   nums.map(n=>'<td'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
  }).join('');
  const mode=state.mode;
  const lineSpecs=mode==='equity'?
@@ -3836,7 +3836,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   if(!width||headers.some(function(label){return !label})||new Set(headers).size!==width){
    throw new Error('CSV column labels must be non-empty and unique');
   }
-  var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
+  var rows=Array.from(table.querySelectorAll('thead tr, tbody tr')).map(function(tr){
    if(tr.cells.length!==width){
     // The empty-state row spans all columns and is not financial evidence.
     if(tr.cells.length===1&&tr.cells[0].colSpan===width)return null;
@@ -3862,7 +3862,10 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  }
  [
   {panel:'etfTaxPanel',selector:'.etf-tax-table',name:'etf-annual-evidence.csv',label:'Download ETF annual evidence CSV'},
-  {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'}
+  {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'},
+   {panel:'wealthTimelineTablePane',selector:'.wealth-timeline-table',name:'net-worth-timeline.csv',label:'Download net worth timeline CSV'},
+   {panel:'rbTablePane',selector:'.rb-table',name:'rent-buy-comparison.csv',label:'Download rent buy comparison CSV'},
+   {panel:'amortTablePane',selector:'.mortgage-explorer-table',name:'mortgage-schedule.csv',label:'Download mortgage schedule CSV'}
  ].forEach(function(config){
   var panel=document.getElementById(config.panel);
   if(!panel)return;
@@ -3878,7 +3881,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
    }
   });
   // Keep the download reachable when the chart/table alternative is collapsed.
-  if(config.panel==='rentalWaterfallTablePane'){
+  if(config.panel!=='etfTaxPanel'){
    panel.parentNode.insertBefore(button,panel);
    panel.parentNode.insertBefore(status,panel);
   }else{
