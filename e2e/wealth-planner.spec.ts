@@ -1462,3 +1462,38 @@ test('UX-032 dark theme preserves keyboard access and printable report', async (
   await expect(planner.locator('#reportSummary')).not.toBeEmpty()
   await expect(button).toBeHidden()
 })
+
+test('UX-032 household and wealth CSVs retain period labels and canonical numbers', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('[data-sankey-period="year"]').click()
+  await planner.locator('#wealthRange').selectOption('5')
+  for (const config of [
+    {
+      button: 'Download household cash-flow CSV',
+      table: '.sankey-table',
+      header: 'Amount (EUR/year run-rate)',
+    },
+    {
+      button: 'Download net worth timeline CSV',
+      table: '.wealth-timeline-table',
+      header: 'Net position (EUR)',
+    },
+  ]) {
+    const button = planner.getByRole('button', { name: config.button })
+    const table = planner.locator(config.table)
+    const [download] = await Promise.all([page.waitForEvent('download'), button.click()])
+    const csv = await readFile(await download.path(), 'utf8')
+    const lines = csv.trimEnd().split('\r\n')
+    expect(lines[0]).toContain('"' + config.header + '"')
+    const rows = await table.locator('tbody tr').all()
+    expect(lines).toHaveLength(rows.length + 1)
+    for (const [index, row] of rows.entries()) {
+      for (const cell of await row.locator('[data-csv-number]').all()) {
+        const raw = await cell.getAttribute('data-csv-number')
+        expect(raw).not.toBeNull()
+        expect(lines[index + 1]?.split(',')).toContain(String(Number(raw)))
+      }
+    }
+  }
+})
