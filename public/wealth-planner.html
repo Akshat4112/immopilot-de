@@ -3832,19 +3832,23 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   var table=document.querySelector(tableId);
   if(!table)return;
   var width=table.tHead.rows[0].cells.length;
-  var rows=Array.from(table.querySelectorAll('tr')).filter(function(tr){
-   return tr.cells.length===width;
-  }).map(function(tr){
+  var rows=Array.from(table.querySelectorAll('tr')).map(function(tr){
+   if(tr.cells.length!==width){
+    // The empty-state row spans all columns and is not financial evidence.
+    if(tr.cells.length===1&&tr.cells[0].colSpan===width)return null;
+    throw new Error('CSV row width mismatch');
+   }
    return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
     if(cell.hasAttribute('data-csv-number')){
      var raw=cell.dataset.csvNumber;
      if(!raw||!raw.trim())return '';
      var number=Number(raw);
-     return Number.isFinite(number)?String(number):'';
+     if(!Number.isFinite(number))throw new Error('CSV numeric cells must be finite');
+     return String(number);
     }
     return safeCsvCell(cell.textContent.trim());
    }).join(',');
-  });
+  }).filter(function(row){return row!==null});
   var blob=new Blob(['\ufeff'+rows.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var anchor=document.createElement('a');
@@ -3861,13 +3865,21 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   var button=document.createElement('button');
   button.type='button';button.className='btn';button.textContent='Download CSV';
   button.setAttribute('aria-label',config.label);
-  button.addEventListener('click',function(){exportEvidence(config.selector,config.name)});
+  var status=document.createElement('span');
+  status.setAttribute('role','status');status.className='fine';
+  button.addEventListener('click',function(){
+   status.textContent='';
+   try{exportEvidence(config.selector,config.name)}catch(error){
+    status.textContent='CSV export unavailable: invalid chart data. / CSV-Export nicht verfügbar: ungültige Diagrammdaten.';
+   }
+  });
   // Keep the download reachable when the chart/table alternative is collapsed.
   if(config.panel==='rentalWaterfallTablePane'){
    panel.parentNode.insertBefore(button,panel);
+   panel.parentNode.insertBefore(status,panel);
   }else{
    var controls=panel.querySelector('.etf-tax-controls');
-   if(controls)controls.appendChild(button);
+   if(controls){controls.appendChild(button);controls.appendChild(status)}
   }
  });
 })();
