@@ -3833,9 +3833,9 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  function exportEvidence(tableId,filename){
   var table=document.querySelector(tableId);
   if(!table)return;
-  var headers=Array.from(table.tHead.rows[0].cells,function(cell){return cell.textContent.trim().toLowerCase()});
+  var headers=Array.from(table.tHead.rows[0].cells,function(cell){return cell.textContent.trim()});
   var width=headers.length;
-  if(!width||headers.some(function(label){return !label})||new Set(headers).size!==width){
+  if(!width||headers.some(function(label){return !label})||new Set(headers.map(function(label){return label.toLowerCase()})).size!==width){
    throw new Error('CSV column labels must be non-empty and unique');
   }
   var rows=Array.from(table.querySelectorAll('thead tr, tbody tr')).map(function(tr){
