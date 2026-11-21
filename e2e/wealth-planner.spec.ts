@@ -1497,3 +1497,44 @@ test('UX-032 household and wealth CSVs retain period labels and canonical number
     }
   }
 })
+
+test('UX-032 comparison and mortgage CSVs preserve every canonical evidence column', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.getByRole('tab', { name: /Compare/i }).click()
+  await planner.locator('#rbYears').selectOption('5')
+  for (const config of [
+    {
+      button: 'Download rent buy comparison CSV',
+      table: '.rb-table',
+      filename: 'rent-buy-comparison.csv',
+      header: 'Matched annual budget (EUR)',
+    },
+    {
+      button: 'Download mortgage schedule CSV',
+      table: '.mortgage-explorer-table',
+      filename: 'mortgage-schedule.csv',
+      header: 'Closing debt (EUR)',
+    },
+  ]) {
+    const button = planner.getByRole('button', { name: config.button })
+    const table = planner.locator(config.table)
+    await button.focus()
+    await expect(button).toBeFocused()
+    const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+    expect(download.suggestedFilename()).toBe(config.filename)
+    const csv = await readFile(await download.path(), 'utf8')
+    const lines = csv.trimEnd().split('\r\n')
+    expect(lines[0]).toContain('"' + config.header + '"')
+    const rows = await table.locator('tbody tr').all()
+    expect(rows.length).toBeGreaterThan(0)
+    expect(lines).toHaveLength(rows.length + 1)
+    for (const [index, row] of rows.entries()) {
+      const year = await row.locator('th').innerText()
+      const values = await row.locator('[data-csv-number]').evaluateAll((cells) =>
+        cells.map((cell) => String(Number(cell.getAttribute('data-csv-number')))),
+      )
+      expect(lines[index + 1]?.split(',')).toEqual(['"' + year + '"', ...values])
+    }
+  }
+})
