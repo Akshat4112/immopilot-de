@@ -1244,8 +1244,8 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <svg id="lifeEventsChart" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
  </div>
  <p id="lifeEventsDetail" class="life-events-detail" role="status" aria-live="polite">Select a year to see the difference.</p>
- <div class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
-  <table class="life-events-table"><thead><tr><th scope="col">Year</th><th scope="col">Baseline net</th><th scope="col">With events</th><th scope="col">Difference</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
+ <div id="lifeEventsTablePane" class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
+  <table class="life-events-table"><caption>Projected annual wealth before liquidation taxes and costs</caption><thead><tr><th scope="col">Year</th><th scope="col">Baseline net (EUR)</th><th scope="col">With events (EUR)</th><th scope="col">Difference (EUR)</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
  </div>
  <p class="life-events-note"><strong>Scope:</strong> Effective from the start of a modeled year; one-time expenses happen within that year. ETF contribution changes affect the first person's fund purchases and the cash budget. Mortgage-rate events affect only the own-home loan; its scheduled payment stays unchanged. Property milestones are annotations: use the Properties tab to model purchases at the starting date. Future gross pay taxes, delayed property acquisition and changed rental tax are not recalculated. The chart is before liquidation costs and taxes; projected negative cash is a funding shortfall.</p>
 </div>
@@ -3088,8 +3088,8 @@ function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
    (e.type==='milestone'?' (annotation)':'')).join(' · ');
   return '<tr data-life-row="'+r.year+'" data-life-baseline="'+r.base.toFixed(2)+
    '" data-life-projected="'+r.next.toFixed(2)+'" data-life-diff="'+r.diff.toFixed(2)+
-   '"><th scope="row">Year '+r.year+'</th><td>'+number(r.base)+'</td><td>'+number(r.next)+
-   '</td><td class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
+   '"><th scope="row">Year '+r.year+'</th><td data-csv-number="'+r.base+'">'+number(r.base)+'</td><td data-csv-number="'+r.next+'">'+number(r.next)+
+   '</td><td data-csv-number="'+r.diff+'" class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
    (r.diff>=0?'+':'')+number(r.diff)+'</td><td>'+(labels||'—')+'</td></tr>';
  }).join('');
  const W=920,H=370,L=85,R=20,T=22,B=49,h=H-T-B,w=W-L-R;
@@ -3868,7 +3868,8 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'},
    {panel:'wealthTimelineTablePane',selector:'.wealth-timeline-table',name:'net-worth-timeline.csv',label:'Download net worth timeline CSV'},
    {panel:'rbTablePane',selector:'.rb-table',name:'rent-buy-comparison.csv',label:'Download rent buy comparison CSV'},
-   {panel:'amortTablePane',selector:'.mortgage-explorer-table',name:'mortgage-schedule.csv',label:'Download mortgage schedule CSV'}
+   {panel:'amortTablePane',selector:'.mortgage-explorer-table',name:'mortgage-schedule.csv',label:'Download mortgage schedule CSV'},
+   {panel:'lifeEventsTablePane',selector:'.life-events-table',name:'life-event-comparison.csv',label:'Download life event comparison CSV'}
  ].forEach(function(config){
   var panel=document.getElementById(config.panel);
   if(!panel)return;
