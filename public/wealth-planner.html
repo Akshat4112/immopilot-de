@@ -3876,6 +3876,22 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   var button=document.createElement('button');
   button.type='button';button.className='btn';button.textContent='Download CSV';
   button.setAttribute('aria-label',config.label);
+  // The standalone planner is English; offer explicitly marked German help
+  // without claiming that the financial tables themselves are translated.
+  var help=document.createElement('span');
+  help.lang='de';help.className='fine';
+  var germanLabels={
+   'household-cash-flow.csv':'Haushaltscashflow',
+   'etf-annual-evidence.csv':'ETF-Jahresdaten',
+   'rental-cash-flow.csv':'Mietcashflow',
+   'net-worth-timeline.csv':'Vermögensentwicklung',
+   'rent-buy-comparison.csv':'Mieten-Kaufen-Vergleich',
+   'mortgage-schedule.csv':'Tilgungsplan',
+   'life-event-comparison.csv':'Lebensereignisvergleich'
+  };
+  help.textContent=germanLabels[config.name]+' als CSV herunterladen';
+  help.id='csv-help-'+config.panel;
+  button.setAttribute('aria-describedby',help.id);
   var status=document.createElement('span');
   status.setAttribute('role','status');status.className='fine';
   button.addEventListener('click',function(){
@@ -3887,10 +3903,11 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   // Keep the download reachable when the chart/table alternative is collapsed.
   if(config.panel!=='etfTaxPanel'){
    panel.parentNode.insertBefore(button,panel);
+   panel.parentNode.insertBefore(help,panel);
    panel.parentNode.insertBefore(status,panel);
   }else{
    var controls=panel.querySelector('.etf-tax-controls');
-   if(controls){controls.appendChild(button);controls.appendChild(status)}
+   if(controls){controls.appendChild(button);controls.appendChild(help);controls.appendChild(status)}
   }
  });
 })();
