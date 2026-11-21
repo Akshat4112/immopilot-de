@@ -1409,3 +1409,17 @@ test('UX-032 rental evidence table passes scoped accessibility checks on mobile'
   expect(results.passes.length).toBeGreaterThan(0)
   expect(results.violations).toEqual([])
 })
+
+test('UX-032 rejects non-finite evidence instead of downloading incomplete CSV', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  await panel.locator('[data-csv-number]').first().evaluate((cell) => {
+    cell.setAttribute('data-csv-number', 'Infinity')
+  })
+  const downloads: string[] = []
+  page.on('download', (download) => downloads.push(download.suggestedFilename()))
+  await panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click()
+  await expect(panel.getByText('CSV export unavailable:', { exact: false })).toBeVisible()
+  expect(downloads).toEqual([])
+})
