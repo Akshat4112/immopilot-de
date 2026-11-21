@@ -840,7 +840,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
  </div>
  <div id="sankeyTableWrap" class="sankey-table-scroll" hidden role="region" aria-label="Cash-flow detail table" tabindex="0">
   <table class="sankey-table">
-   <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Explanation</th></tr></thead>
+   <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col" id="sankeyAmountHeader">Amount (EUR/month)</th><th scope="col">Explanation</th></tr></thead>
    <tbody id="sankeyTableRows"></tbody><tfoot id="sankeyTableFoot"></tfoot>
   </table>
  </div>
@@ -1578,11 +1578,12 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
     warning.hidden=data.free>=0;
     warning.textContent=data.free<0?
       'Funding gap: '+money(-data.free*factor)+'. This is not income. Adjust expenses, repayments or contributions.':'';
+    document.getElementById('sankeyAmountHeader').textContent=factor===12?'Amount (EUR/year run-rate)':'Amount (EUR/month)';
     var rows=data.income.concat(data.use);
     document.getElementById('sankeyTableRows').innerHTML=rows.map(function (f) {
       return '<tr data-sankey-row="'+safe(f.id)+'" data-sankey-kind="'+f.kind+
         '" data-month-value="'+f.value.toFixed(5)+'"><td>'+safe(f.kind==='source'?'Source':'Allocation')+
-        '</td><th scope="row">'+safe(f.name)+'</th><td class="numeric">'+safe(money(f.value*factor))+
+        '</td><th scope="row">'+safe(f.name)+'</th><td class="numeric" data-csv-number="'+(f.value*factor)+'">'+safe(money(f.value*factor))+
         '</td><td>'+safe(f.detail)+'</td></tr>';
     }).join('');
     document.getElementById('sankeyTableFoot').innerHTML='<tr><th scope="row" colspan="2">Sources / allocations</th><td class="numeric">'+
@@ -3861,6 +3862,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   setTimeout(function(){URL.revokeObjectURL(url)},1000);
  }
  [
+  {panel:'sankeyTableWrap',selector:'.sankey-table',name:'household-cash-flow.csv',label:'Download household cash-flow CSV'},
   {panel:'etfTaxPanel',selector:'.etf-tax-table',name:'etf-annual-evidence.csv',label:'Download ETF annual evidence CSV'},
   {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'},
    {panel:'wealthTimelineTablePane',selector:'.wealth-timeline-table',name:'net-worth-timeline.csv',label:'Download net worth timeline CSV'},
