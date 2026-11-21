@@ -1538,3 +1538,33 @@ test('UX-032 comparison and mortgage CSVs preserve every canonical evidence colu
     }
   }
 })
+
+test('UX-032 life-event evidence exports signed projections and escapes event labels', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await planner.locator('#lifeEventType').selectOption('salary')
+  await planner.locator('#lifeEventYear').fill('3')
+  await planner.locator('#lifeEventAmount').fill('-500')
+  await planner.locator('#lifeEventName').fill('=1+1')
+  await planner.locator('#lifeEventAdd').click()
+  const button = planner.getByRole('button', { name: 'Download life event comparison CSV' })
+  await button.focus()
+  await expect(button).toBeFocused()
+  const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
+  expect(download.suggestedFilename()).toBe('life-event-comparison.csv')
+  const csv = await readFile(await download.path(), 'utf8')
+  const lines = csv.trimEnd().split('\r\n')
+  expect(lines[0]).toContain('"Difference (EUR)"')
+  const rows = await planner.locator('#lifeEventsRows tr').all()
+  expect(lines).toHaveLength(rows.length + 1)
+  for (const [index, row] of rows.entries()) {
+    const values = await row.locator('[data-csv-number]').evaluateAll((cells) =>
+      cells.map((cell) => String(Number(cell.getAttribute('data-csv-number')))),
+    )
+    expect(lines[index + 1]?.split(',').slice(1, 4)).toEqual(values)
+  }
+  expect(lines[4]).toContain('"\'=1+1"')
+  expect(
+    Number(await planner.locator('[data-life-row="3"]').getAttribute('data-life-diff')),
+  ).toBeLessThan(0)
+})
