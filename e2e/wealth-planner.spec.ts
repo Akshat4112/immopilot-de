@@ -1423,3 +1423,39 @@ test('UX-032 rejects non-finite evidence instead of downloading incomplete CSV',
   await expect(panel.getByText('CSV export unavailable:', { exact: false })).toBeVisible()
   expect(downloads).toEqual([])
 })
+
+test('UX-032 rejects ambiguous evidence column labels', async ({ page }) => {
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  const panel = planner.locator('#etfTaxPanel')
+  const headers = panel.locator('thead th')
+  const firstLabel = await headers.first().innerText()
+  const downloads: string[] = []
+  page.on('download', (download) => downloads.push(download.suggestedFilename()))
+  for (const label of ['   ', firstLabel.toUpperCase()]) {
+    await headers.nth(1).evaluate((cell, value) => {
+      cell.textContent = value
+    }, label)
+    await panel.getByRole('button', { name: 'Download ETF annual evidence CSV' }).click()
+    await expect(panel.getByText('CSV export unavailable:', { exact: false })).toBeVisible()
+    expect(downloads).toEqual([])
+  }
+})
+
+test('UX-032 dark theme preserves keyboard access and printable report', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.goto('./')
+  const planner = page.frameLocator(frameSelector)
+  await expect(planner.locator('body')).toHaveAttribute('data-theme', 'dark')
+  const panel = planner.locator('#etfTaxPanel')
+  await panel.locator('#etfTaxDisplay').selectOption('table')
+  const button = panel.getByRole('button', { name: 'Download ETF annual evidence CSV' })
+  await button.focus()
+  await expect(button).toBeFocused()
+  await expect(panel.getByRole('table')).toBeVisible()
+  await expect(panel.locator('#etfTaxLiquidation')).toHaveText('Not calculated')
+  await page.emulateMedia({ media: 'print' })
+  await expect(planner.locator('#printableReport')).toBeVisible()
+  await expect(planner.locator('#reportSummary')).not.toBeEmpty()
+  await expect(button).toBeHidden()
+})
