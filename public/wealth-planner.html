@@ -3879,7 +3879,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   // The standalone planner is English; offer explicitly marked German help
   // without claiming that the financial tables themselves are translated.
   var help=document.createElement('span');
-  help.lang='de';help.className='fine';
+  help.lang='de';help.className='fine';help.style.color='var(--ink)';
   var germanLabels={
    'household-cash-flow.csv':'Haushaltscashflow',
    'etf-annual-evidence.csv':'ETF-Jahresdaten',
@@ -3893,7 +3893,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
   help.id='csv-help-'+config.panel;
   button.setAttribute('aria-describedby',help.id);
   var status=document.createElement('span');
-  status.setAttribute('role','status');status.className='fine';
+  status.setAttribute('role','status');status.className='fine';status.style.color='var(--ink)';
   button.addEventListener('click',function(){
    status.textContent='';
    try{exportEvidence(config.selector,config.name)}catch(error){
