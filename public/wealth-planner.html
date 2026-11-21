@@ -3845,7 +3845,7 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
    return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
     if(cell.hasAttribute('data-csv-number')){
      var raw=cell.dataset.csvNumber;
-     if(!raw||!raw.trim())return '';
+     if(!raw||!raw.trim())throw new Error('CSV numeric evidence must not be blank');
      var number=Number(raw);
      if(!Number.isFinite(number))throw new Error('CSV numeric cells must be finite');
      return String(number);
