@@ -835,7 +835,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
    <button type="button" data-sankey-view="table" aria-pressed="false">Table</button>
   </div>
  </div>
- <div id="sankeyChartScroll" class="sankey-scroll" role="region" aria-label="Interactive household cash-flow diagram (horizontally scrollable)" tabindex="0">
+ <div id="sankeyChartScroll" aria-describedby="sankeyDetail sankeyAccounting" class="sankey-scroll" role="region" aria-label="Interactive household cash-flow diagram (horizontally scrollable)" tabindex="0">
   <div id="sankeyChart">Calculating cash flows…</div>
  </div>
  <div id="sankeyTableWrap" class="sankey-table-scroll" hidden role="region" aria-label="Cash-flow detail table" tabindex="0">
@@ -1158,7 +1158,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
    <div><small>Cash after estimated income tax</small><strong id="rentalWaterfallAfter">—</strong></div>
   </div>
   <p class="rental-waterfall-warning" id="rentalWaterfallWarning" role="status" aria-live="polite"></p>
-  <div id="rentalWaterfallChartPane" class="rental-waterfall-graph" role="region" tabindex="0" aria-label="Interactive rental cash-flow waterfall, horizontally scrollable">
+  <div id="rentalWaterfallChartPane" aria-describedby="rentalWaterfallDetail rentalWaterfallWarning" class="rental-waterfall-graph" role="region" tabindex="0" aria-label="Interactive rental cash-flow waterfall, horizontally scrollable">
    <svg class="rental-waterfall-svg" id="rentalBridgeChart" viewBox="0 0 1100 420" role="group" aria-label="Signed rental waterfall: income, vacancy, expenses, debt and tax"></svg>
   </div>
   <div id="rentalWaterfallTablePane" class="rental-waterfall-table-scroll" role="region" tabindex="0" aria-label="Accessible rental cash-flow reconciliation table" hidden>
@@ -1186,9 +1186,9 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <div><small>Modeled withdrawal tax paid to date</small><strong id="etfTaxPaid">—</strong></div>
   <div><small>After-tax full liquidation</small><strong id="etfTaxLiquidation">Not calculated</strong></div>
  </div>
- <div class="etf-tax-graphic" id="etfTaxChartPane" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
+ <div class="etf-tax-graphic" id="etfTaxChartPane" aria-describedby="etfTaxDisclosure" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
  <div class="table-scroll" role="region" tabindex="0" aria-label="Annual ETF balances and tax evidence">
- <table class="etf-tax-table"><caption>Annual ETF contributions, market values and modeled withdrawals; advance and full-sale taxes are unavailable</caption><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
+ <table class="etf-tax-table"><caption>Annual ETF contributions, market values and modeled withdrawals; advance and full-sale taxes are unavailable</caption><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits (EUR)</th><th scope="col">ETF market value (EUR)</th><th scope="col">Withdrawals (net, cumulative) (EUR)</th><th scope="col">Withdrawal tax (cumulative) (EUR)</th><th scope="col">Vorabpauschale tax (EUR)</th><th scope="col">Full-sale tax (EUR)</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
  <p class="etf-tax-info" id="etfTaxDisclosure" role="status" aria-live="polite"></p>
  <p class="fine">German fund tax note (model assumptions, not a current-year tax assessment): 30% partial exemption for eligible equity funds; 25% capital-income tax plus solidarity surcharge is modeled for withdrawals, excluding church tax. The Sparer-Pauschbetrag may also be consumed by other capital income. No basis interest rate is assumed, and no Vorabpauschale or prior-tax offset is silently imputed. Source: German Investmentsteuergesetz §§ 16, 18, 20 and Einkommensteuergesetz § 20; verify the applicable tax year and BMF Basiszins independently.</p>
 </div>
@@ -1207,7 +1207,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
     <button type="button" data-wealth-view="table" aria-pressed="false">Yearly table</button>
    </div>
   </div>
-  <div id="wealthTimelineChartPane" class="wealth-timeline-graph" role="region" aria-label="Interactive wealth timeline; scroll horizontally on narrow screens" tabindex="0">
+  <div id="wealthTimelineChartPane" aria-describedby="wealthTimelineDetail" class="wealth-timeline-graph" role="region" aria-label="Interactive wealth timeline; scroll horizontally on narrow screens" tabindex="0">
    <svg id="wealthCompositionChart" class="wealth-chart" viewBox="0 0 960 450" role="group" aria-label="Annual stacked wealth, mortgage debt and signed net position"></svg>
   </div>
   <div id="wealthTimelineTablePane" class="wealth-timeline-table-wrap" role="region" aria-label="Year-by-year asset and liability table" tabindex="0" hidden>
@@ -1241,7 +1241,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <span>With life events: <strong id="lifeEventsTotal">—</strong></span>
   <span>Difference: <strong id="lifeEventsDifference">—</strong></span></div>
  <div class="life-events-graph" role="region" tabindex="0" aria-label="Baseline wealth versus event-adjusted wealth; horizontally scrollable">
-  <svg id="lifeEventsChart" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
+  <svg id="lifeEventsChart" aria-describedby="lifeEventsDetail" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
  </div>
  <p id="lifeEventsDetail" class="life-events-detail" role="status" aria-live="polite">Select a year to see the difference.</p>
  <div id="lifeEventsTablePane" class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
@@ -1284,7 +1284,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
   <div class="rb-stat"><small>Rent + cash · final net wealth</small><strong id="rbCashValue">—</strong><span>Starting acquisition cash and unused housing budget held without interest</span></div>
  </div>
  <p class="rb-alert" id="rbWarnings" role="status" aria-live="polite"></p>
- <div id="rbChartPane" class="rb-graph" role="region" tabindex="0" aria-label="Interactive matched-budget rent buy and ETF projection">
+ <div id="rbChartPane" aria-describedby="rbDetail rbWarnings" class="rb-graph" role="region" tabindex="0" aria-label="Interactive matched-budget rent buy and ETF projection">
   <svg class="rb-svg" id="rbChart" viewBox="0 0 920 380" role="group" aria-label="Annual comparison of buy-home, rent-and-ETF, and rent-and-cash scenarios"></svg>
  </div>
  <div id="rbTablePane" class="rb-table-scroll" role="region" tabindex="0" aria-label="Year-by-year rent buy ETF comparison" hidden>
@@ -1347,7 +1347,7 @@ body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
    <div><small>Estimated mortgage payoff</small><strong id="amortPayoff">—</strong></div>
   </div>
   <p id="amortWarning" class="mortgage-explorer-warning" role="status" aria-live="polite"></p>
-  <div id="amortChartPane" class="mortgage-explorer-graph chart-scroll" role="region" aria-label="Mortgage interest, repayment and property equity chart" tabindex="0">
+  <div id="amortChartPane" aria-describedby="amortDetail amortWarning" class="mortgage-explorer-graph chart-scroll" role="region" aria-label="Mortgage interest, repayment and property equity chart" tabindex="0">
    <svg id="amortChart" class="plot-chart mortgage-chart-svg" viewBox="0 0 920 380" role="group" aria-label="Interactive annual mortgage debt and property equity comparison"></svg>
   </div>
   <div id="amortTablePane" class="mortgage-explorer-table-scroll" role="region" tabindex="0" aria-label="Complete annual mortgage schedule and alternative repayment table" hidden>
