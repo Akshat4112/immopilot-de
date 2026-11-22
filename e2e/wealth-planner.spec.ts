@@ -1482,7 +1482,9 @@ test('UX-032 household and wealth CSVs retain period labels and canonical number
   ]) {
     const button = planner.getByRole('button', { name: config.button })
     const table = planner.locator(config.table)
-    const [download] = await Promise.all([page.waitForEvent('download'), button.click()])
+    await button.focus()
+    await expect(button).toBeFocused()
+    const [download] = await Promise.all([page.waitForEvent('download'), button.press('Enter')])
     const csv = await readFile(await download.path(), 'utf8')
     const lines = csv.trimEnd().split('\r\n')
     expect(lines[0]).toContain('"' + config.header + '"')
