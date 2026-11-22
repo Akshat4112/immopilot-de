@@ -3233,7 +3233,7 @@ function renderEtfTaxPanel(x,sim){
  root.dataset.withdrawalTax=String(current.tax);
  $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td data-csv-number="'+r.deposits+'">'+money(r.deposits)+'</td><td data-csv-number="'+r.market+'">'+money(r.market)+'</td><td data-csv-number="'+r.withdrawn+'">'+money(r.withdrawn)+'</td><td data-csv-number="'+r.tax+'">'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
  const sales=x.drawMode!=='none'&&current.withdrawn>0;
- $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
+ $('etfTaxDisclosure').textContent='Year '+year+': projected ETF market value '+money(current.market)+'; cumulative gross deposits '+money(current.deposits)+'; modeled cumulative withdrawal tax '+money(current.tax)+'. Deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
   ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
   ' The simulated withdrawal tax is cumulative and simplified; no Vorabpauschale cash tax, annual allowance use across all investments, historical fund distributions, FIFO lots or prior-tax offsets are accounted for. After-tax full-sale value and advance tax are intentionally unavailable until those calculations are validated.';
  $('etfTaxChartPane').hidden=viewSelect.value==='table';
