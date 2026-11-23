@@ -2604,6 +2604,7 @@ function renderRentBuyExplorer(x){
   s.metric==='paid'?['Buy · cumulative housing cash paid','Rent · cumulative housing cash paid']:
    ['Buy · fees + interest + operating costs','Rent · cumulative warm rent'];
  const colors=s.metric==='wealth'?['#167f70','#7d64b4','#c09553']:['#167f70','#7d64b4'];
+ const lineStyles=[['','solid'],['8,4','dashed'],['2,4','dotted']];
  const W=920,H=380,L=91,R=25,T=33,B=53,ww=W-L-R,hh=H-T-B;
  const minRaw=Math.min(0,...rows.flatMap(p=>keys.map(k=>p[k])));
  const maxRaw=Math.max(1000,...rows.flatMap(p=>keys.map(k=>p[k])));
@@ -2623,7 +2624,7 @@ function renderRentBuyExplorer(x){
  for(let k=0;k<keys.length;k++){
   const path=rows.map(p=>fmt(X(p.year))+','+fmt(Y(p[keys[k]]))).join(' ');
   svg+='<polyline points="'+path+'" fill="none" stroke="'+colors[k]+
-   '" stroke-width="3.1" stroke-linejoin="round"'+(k===2?' stroke-dasharray="6,5"':'')+'><title>'+labels[k]+'</title></polyline>';
+   '" stroke-width="3.1" stroke-linejoin="round"'+(lineStyles[k][0]?' stroke-dasharray="'+lineStyles[k][0]+'"':'')+'><title>'+labels[k]+'</title></polyline>';
  }
  for(const p of rows){
   svg+='<g data-rb-year="'+p.year+'" role="button" tabindex="0" aria-label="Year '+p.year+
@@ -2634,7 +2635,7 @@ function renderRentBuyExplorer(x){
  $('rbChart').innerHTML=svg;
  $('rbChart').setAttribute('aria-label',labels.join(', ')+' through year '+maxYear);
  $('rbLegend').innerHTML=labels.map((label,i)=>'<span><i style="background:'+colors[i]+
-  '"></i>'+label+'</span>').join('');
+  '"></i>'+label+' ('+lineStyles[i][1]+')</span>').join('');
  $('rbRows').innerHTML=rows.map(p=>{
   const nums=[p.buy,p.etf,p.cash,p.homeEquity,p.buyPaid,p.rentPaid,p.buyCost,p.rentCost,p.budget];
   return '<tr tabindex="0" data-rb-year-row="'+p.year+'" data-rb-buy="'+fmt(p.buy)+
