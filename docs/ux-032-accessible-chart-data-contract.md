@@ -40,3 +40,21 @@ Head `fc1756d5e826861695d91f2887868bab756937fa` passed CI run `44759313657`: 554
 Head `33997d8ef75d29372096a58156f876efcd336ffc` passed [CI run 44932959291](https://github.com/Akshat4112/immopilot-de/actions/runs/44932959291), including scoped axe, automated keyboard, mobile, dark and print regressions. The standalone adapter reads explicit numeric attributes from current semantic tables; unsupported ETF tax cells remain textual (Not modeled). It does not recompute financial results. German download help is present, but the standalone interface is not fully localized.
 
 Inspected the nine screenshots in [visual evidence artifact 14718507846](https://github.com/Akshat4112/immopilot-de/actions/runs/44932959291/artifacts/14718507846): one desktop overview and eight mobile views covering UX-022 through UX-029. The floating payroll-check button overlaps the mobile sticky financial summary in these images. Track this as a responsive UX-034 defect; do not describe the mobile layout as overlap-free. The artifact does not show all seven CSV controls or dark/print states. Manual keyboard and assistive-technology testing remain unverified. Automated checks are not a WCAG conformance certification.
+
+## Current seven-panel summary inventory (2026-11-23)
+
+Source review at head `297aefa941008cf519096eb92c58dc658ee0d272`: every chart region references an existing textual detail through `aria-describedby`. The table-based download controls cover the following datasets.
+
+| Dataset | Referenced detail | Selection context |
+| --- | --- | --- |
+| Household cash flow | sankeyDetail, sankeyAccounting | Selected flow |
+| Net-worth timeline | wealthTimelineDetail | Selected year |
+| Rent/buy comparison | rbDetail, rbWarnings | Selected year |
+| Mortgage schedule | amortDetail, amortWarning | Selected year |
+| Life-event comparison | lifeEventsDetail | Selected year |
+| Rental cash flow | rentalWaterfallDetail, rentalWaterfallWarning | Selected step |
+| ETF annual evidence | etfTaxDisclosure | Selected year and tax limitations |
+
+The ETF selected-year disclosure has regression assertions against the visible market value, deposits and modeled withdrawal tax, including the deliberately unavailable figures. The seven export buttons have automated sequential focus and activation coverage. [CI 45064338251](https://github.com/Akshat4112/immopilot-de/actions/runs/45064338251) passed both jobs for the reviewed head, including formatting, lint, type checking, unit/coverage, build, artifact identity, audits and Playwright.
+
+This inventory establishes source-level association, not assistive-technology behavior or complete non-color-only encoding. The existing planner is primarily English; German download help does not establish full German localization. Manual keyboard/mobile verification is still outstanding: no interactive browser context was available for this review. Do not mark UX-032 complete until its remaining acceptance criteria are met or explicitly re-scoped. Avoid adding more serializer micro-tests in lieu of these checks.
