@@ -697,6 +697,8 @@ body[data-theme="dark"] .mortgage-explorer-warning,body[data-theme="dark"] .mort
 .rental-waterfall-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
 .rental-waterfall-kpis>div{padding:12px;border-radius:12px;border:1px solid var(--ux-line,#d9e7de);background:var(--ux-surface-soft,#f4f9f5);min-width:0}
 .rental-waterfall-kpis small{color:var(--muted);font-size:.7rem;line-height:1.5;display:block}
+body:not([data-theme="dark"]) .rental-waterfall-kpis small{color:#526966}
+body:not([data-theme="dark"]) .rental-waterfall-heading>.fine{color:#526474}
 .rental-waterfall-kpis strong{color:var(--ink);font-size:1.04rem;font-variant-numeric:tabular-nums;display:block;margin-top:6px}
 .rental-waterfall-kpis strong.negative{color:#b54454}
 .rental-waterfall-warning{color:#a94852;font-size:.77rem;line-height:1.6;font-weight:650;margin:9px 0}
@@ -739,6 +741,8 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
 .etf-tax-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .etf-tax-stats>div{background:var(--wash);border:1px solid var(--border);padding:12px;border-radius:11px;min-width:0}
 .etf-tax-stats small{display:block;color:var(--muted);line-height:1.35}
+body:not([data-theme="dark"]) .etf-tax-stats small{color:#526966}
+body:not([data-theme="dark"]) .etf-tax-panel .fine{color:#526474}
 .etf-tax-stats strong{display:block;margin-top:6px;font-size:1.08rem;overflow-wrap:anywhere}
 .etf-tax-graphic{overflow-x:auto;padding:6px 0}
 .etf-tax-graphic svg{min-width:500px;max-height:320px}
@@ -831,12 +835,12 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
    <button type="button" data-sankey-view="table" aria-pressed="false">Table</button>
   </div>
  </div>
- <div id="sankeyChartScroll" class="sankey-scroll" role="region" aria-label="Interactive household cash-flow diagram (horizontally scrollable)" tabindex="0">
+ <div id="sankeyChartScroll" aria-describedby="sankeyDetail sankeyAccounting" class="sankey-scroll" role="region" aria-label="Interactive household cash-flow diagram (horizontally scrollable)" tabindex="0">
   <div id="sankeyChart">Calculating cash flows…</div>
  </div>
  <div id="sankeyTableWrap" class="sankey-table-scroll" hidden role="region" aria-label="Cash-flow detail table" tabindex="0">
-  <table class="sankey-table">
-   <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Explanation</th></tr></thead>
+  <table class="sankey-table"><caption>Household cash-flow sources and allocations; selected period</caption>
+   <thead><tr><th scope="col">Flow type</th><th scope="col">Category</th><th scope="col" id="sankeyAmountHeader">Amount (EUR/month)</th><th scope="col">Explanation</th></tr></thead>
    <tbody id="sankeyTableRows"></tbody><tfoot id="sankeyTableFoot"></tfoot>
   </table>
  </div>
@@ -1154,11 +1158,11 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
    <div><small>Cash after estimated income tax</small><strong id="rentalWaterfallAfter">—</strong></div>
   </div>
   <p class="rental-waterfall-warning" id="rentalWaterfallWarning" role="status" aria-live="polite"></p>
-  <div id="rentalWaterfallChartPane" class="rental-waterfall-graph" role="region" tabindex="0" aria-label="Interactive rental cash-flow waterfall, horizontally scrollable">
+  <div id="rentalWaterfallChartPane" aria-describedby="rentalWaterfallDetail rentalWaterfallWarning" class="rental-waterfall-graph" role="region" tabindex="0" aria-label="Interactive rental cash-flow waterfall, horizontally scrollable">
    <svg class="rental-waterfall-svg" id="rentalBridgeChart" viewBox="0 0 1100 420" role="group" aria-label="Signed rental waterfall: income, vacancy, expenses, debt and tax"></svg>
   </div>
   <div id="rentalWaterfallTablePane" class="rental-waterfall-table-scroll" role="region" tabindex="0" aria-label="Accessible rental cash-flow reconciliation table" hidden>
-   <table class="rental-waterfall-table">
+   <table class="rental-waterfall-table"><caption>Rental cash flow, selected period (EUR)</caption>
     <thead><tr><th scope="col">Step</th><th scope="col">Cash movement</th><th scope="col">Running cash</th><th scope="col">What it means</th></tr></thead>
     <tbody id="rentalWaterfallRows"></tbody>
    </table>
@@ -1182,9 +1186,9 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
   <div><small>Modeled withdrawal tax paid to date</small><strong id="etfTaxPaid">—</strong></div>
   <div><small>After-tax full liquidation</small><strong id="etfTaxLiquidation">Not calculated</strong></div>
  </div>
- <div class="etf-tax-graphic" id="etfTaxChartPane" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
+ <div class="etf-tax-graphic" id="etfTaxChartPane" aria-describedby="etfTaxDisclosure" role="region" aria-label="ETF deposit and market-value comparison" tabindex="0"><svg id="etfTaxSvg" viewBox="0 0 760 300" role="img" aria-label="Annual ETF deposits and market values"></svg></div>
  <div class="table-scroll" role="region" tabindex="0" aria-label="Annual ETF balances and tax evidence">
- <table class="etf-tax-table"><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits</th><th scope="col">ETF market value</th><th scope="col">Withdrawals (net, cumulative)</th><th scope="col">Withdrawal tax (cumulative)</th><th scope="col">Vorabpauschale tax</th><th scope="col">Full-sale tax</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
+ <table class="etf-tax-table"><caption>Annual ETF contributions, market values and modeled withdrawals; advance and full-sale taxes are unavailable</caption><thead><tr><th scope="col">Year</th><th scope="col">Cumulative deposits (EUR)</th><th scope="col">ETF market value (EUR)</th><th scope="col">Withdrawals (net, cumulative) (EUR)</th><th scope="col">Withdrawal tax (cumulative) (EUR)</th><th scope="col">Vorabpauschale tax (EUR)</th><th scope="col">Full-sale tax (EUR)</th></tr></thead><tbody id="etfTaxRows"></tbody></table></div>
  <p class="etf-tax-info" id="etfTaxDisclosure" role="status" aria-live="polite"></p>
  <p class="fine">German fund tax note (model assumptions, not a current-year tax assessment): 30% partial exemption for eligible equity funds; 25% capital-income tax plus solidarity surcharge is modeled for withdrawals, excluding church tax. The Sparer-Pauschbetrag may also be consumed by other capital income. No basis interest rate is assumed, and no Vorabpauschale or prior-tax offset is silently imputed. Source: German Investmentsteuergesetz §§ 16, 18, 20 and Einkommensteuergesetz § 20; verify the applicable tax year and BMF Basiszins independently.</p>
 </div>
@@ -1203,11 +1207,12 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
     <button type="button" data-wealth-view="table" aria-pressed="false">Yearly table</button>
    </div>
   </div>
-  <div id="wealthTimelineChartPane" class="wealth-timeline-graph" role="region" aria-label="Interactive wealth timeline; scroll horizontally on narrow screens" tabindex="0">
+  <div id="wealthTimelineChartPane" aria-describedby="wealthTimelineDetail" class="wealth-timeline-graph" role="region" aria-label="Interactive wealth timeline; scroll horizontally on narrow screens" tabindex="0">
    <svg id="wealthCompositionChart" class="wealth-chart" viewBox="0 0 960 450" role="group" aria-label="Annual stacked wealth, mortgage debt and signed net position"></svg>
   </div>
   <div id="wealthTimelineTablePane" class="wealth-timeline-table-wrap" role="region" aria-label="Year-by-year asset and liability table" tabindex="0" hidden>
-   <table class="wealth-timeline-table"><thead><tr><th>Year</th><th>Home equity</th><th>Rental equity</th><th>ETFs</th><th>Cash</th><th>Home value</th><th>Rental value</th><th>Home loan</th><th>Rental debt</th><th>Net position</th></tr></thead><tbody id="wealthTimelineRows"></tbody></table>
+   <table class="wealth-timeline-table"><caption>Projected annual assets, liabilities and signed net position (EUR; ETF market value, not after-tax liquidation)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Home equity (EUR)</th><th scope="col">Rental equity (EUR)</th><th scope="col">ETFs (EUR)</th><th scope="col">Cash (EUR)</th><th scope="col">Home value (EUR)</th><th scope="col">Rental value (EUR)</th><th scope="col">Home loan (EUR)</th><th scope="col">Rental debt (EUR)</th><th scope="col">Net position (EUR)</th></tr></thead><tbody id="wealthTimelineRows"></tbody></table>
   </div>
   <div class="wealth-timeline-legend" id="wealthTimelineLegend"></div>
   <p class="wealth-timeline-detail" id="wealthTimelineDetail" role="status" aria-live="polite">Select a year for details.</p>
@@ -1236,11 +1241,11 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
   <span>With life events: <strong id="lifeEventsTotal">—</strong></span>
   <span>Difference: <strong id="lifeEventsDifference">—</strong></span></div>
  <div class="life-events-graph" role="region" tabindex="0" aria-label="Baseline wealth versus event-adjusted wealth; horizontally scrollable">
-  <svg id="lifeEventsChart" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
+  <svg id="lifeEventsChart" aria-describedby="lifeEventsDetail" class="life-events-svg" viewBox="0 0 920 370" role="group" aria-label="Yearly before-tax modeled wealth baseline and events comparison"></svg>
  </div>
  <p id="lifeEventsDetail" class="life-events-detail" role="status" aria-live="polite">Select a year to see the difference.</p>
- <div class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
-  <table class="life-events-table"><thead><tr><th scope="col">Year</th><th scope="col">Baseline net</th><th scope="col">With events</th><th scope="col">Difference</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
+ <div id="lifeEventsTablePane" class="life-events-table-scroll" role="region" tabindex="0" aria-label="Annual baseline and life-event wealth comparison table">
+  <table class="life-events-table"><caption>Projected annual wealth before liquidation taxes and costs</caption><thead><tr><th scope="col">Year</th><th scope="col">Baseline net (EUR)</th><th scope="col">With events (EUR)</th><th scope="col">Difference (EUR)</th><th scope="col">Events</th></tr></thead><tbody id="lifeEventsRows"></tbody></table>
  </div>
  <p class="life-events-note"><strong>Scope:</strong> Effective from the start of a modeled year; one-time expenses happen within that year. ETF contribution changes affect the first person's fund purchases and the cash budget. Mortgage-rate events affect only the own-home loan; its scheduled payment stays unchanged. Property milestones are annotations: use the Properties tab to model purchases at the starting date. Future gross pay taxes, delayed property acquisition and changed rental tax are not recalculated. The chart is before liquidation costs and taxes; projected negative cash is a funding shortfall.</p>
 </div>
@@ -1279,12 +1284,12 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
   <div class="rb-stat"><small>Rent + cash · final net wealth</small><strong id="rbCashValue">—</strong><span>Starting acquisition cash and unused housing budget held without interest</span></div>
  </div>
  <p class="rb-alert" id="rbWarnings" role="status" aria-live="polite"></p>
- <div id="rbChartPane" class="rb-graph" role="region" tabindex="0" aria-label="Interactive matched-budget rent buy and ETF projection">
+ <div id="rbChartPane" aria-describedby="rbDetail rbWarnings" class="rb-graph" role="region" tabindex="0" aria-label="Interactive matched-budget rent buy and ETF projection">
   <svg class="rb-svg" id="rbChart" viewBox="0 0 920 380" role="group" aria-label="Annual comparison of buy-home, rent-and-ETF, and rent-and-cash scenarios"></svg>
  </div>
  <div id="rbTablePane" class="rb-table-scroll" role="region" tabindex="0" aria-label="Year-by-year rent buy ETF comparison" hidden>
-  <table class="rb-table">
-   <thead><tr><th scope="col">Year</th><th scope="col">Buy wealth</th><th scope="col">Rent + ETF wealth</th><th scope="col">Rent + cash wealth</th><th scope="col">Home equity</th><th scope="col">Buy housing cash paid</th><th scope="col">Rent cash paid</th><th scope="col">Buy nonrecoverable costs</th><th scope="col">Rent nonrecoverable costs</th><th scope="col">Matched annual budget</th></tr></thead>
+  <table class="rb-table"><caption>Matched-budget housing alternatives (EUR; before eventual ETF sale tax and property selling costs)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Buy wealth (EUR)</th><th scope="col">Rent + ETF wealth (EUR)</th><th scope="col">Rent + cash wealth (EUR)</th><th scope="col">Home equity (EUR)</th><th scope="col">Buy housing cash paid (EUR)</th><th scope="col">Rent cash paid (EUR)</th><th scope="col">Buy nonrecoverable costs (EUR)</th><th scope="col">Rent nonrecoverable costs (EUR)</th><th scope="col">Matched annual budget (EUR)</th></tr></thead>
    <tbody id="rbRows"></tbody>
   </table>
  </div>
@@ -1342,12 +1347,12 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
    <div><small>Estimated mortgage payoff</small><strong id="amortPayoff">—</strong></div>
   </div>
   <p id="amortWarning" class="mortgage-explorer-warning" role="status" aria-live="polite"></p>
-  <div id="amortChartPane" class="mortgage-explorer-graph chart-scroll" role="region" aria-label="Mortgage interest, repayment and property equity chart" tabindex="0">
+  <div id="amortChartPane" aria-describedby="amortDetail amortWarning" class="mortgage-explorer-graph chart-scroll" role="region" aria-label="Mortgage interest, repayment and property equity chart" tabindex="0">
    <svg id="amortChart" class="plot-chart mortgage-chart-svg" viewBox="0 0 920 380" role="group" aria-label="Interactive annual mortgage debt and property equity comparison"></svg>
   </div>
   <div id="amortTablePane" class="mortgage-explorer-table-scroll" role="region" tabindex="0" aria-label="Complete annual mortgage schedule and alternative repayment table" hidden>
-   <table class="mortgage-explorer-table">
-    <thead><tr><th scope="col">Year</th><th scope="col">Property value</th><th scope="col">Opening debt</th><th scope="col">Accrued interest</th><th scope="col">Scheduled paid</th><th scope="col">Regular extra paid</th><th scope="col">Unpaid interest</th><th scope="col">Net debt reduction</th><th scope="col">Closing debt</th><th scope="col">Home equity</th><th scope="col">What-if debt</th><th scope="col">What-if equity</th><th scope="col">Extra what-if paid</th><th scope="col">Cumulative interest saved</th></tr></thead>
+   <table class="mortgage-explorer-table"><caption>Annual mortgage schedule and additional repayment illustration (EUR)</caption>
+    <thead><tr><th scope="col">Year</th><th scope="col">Property value (EUR)</th><th scope="col">Opening debt (EUR)</th><th scope="col">Accrued interest (EUR)</th><th scope="col">Scheduled paid (EUR)</th><th scope="col">Regular extra paid (EUR)</th><th scope="col">Unpaid interest (EUR)</th><th scope="col">Net debt reduction (EUR)</th><th scope="col">Closing debt (EUR)</th><th scope="col">Home equity (EUR)</th><th scope="col">What-if debt (EUR)</th><th scope="col">What-if equity (EUR)</th><th scope="col">Extra what-if paid (EUR)</th><th scope="col">Cumulative interest saved (EUR)</th></tr></thead>
     <tbody id="amortRows"></tbody>
    </table>
   </div>
@@ -1574,11 +1579,12 @@ body[data-theme="dark"] .rental-waterfall-warning,body[data-theme="dark"] .renta
     warning.hidden=data.free>=0;
     warning.textContent=data.free<0?
       'Funding gap: '+money(-data.free*factor)+'. This is not income. Adjust expenses, repayments or contributions.':'';
+    document.getElementById('sankeyAmountHeader').textContent=factor===12?'Amount (EUR/year run-rate)':'Amount (EUR/month)';
     var rows=data.income.concat(data.use);
     document.getElementById('sankeyTableRows').innerHTML=rows.map(function (f) {
       return '<tr data-sankey-row="'+safe(f.id)+'" data-sankey-kind="'+f.kind+
         '" data-month-value="'+f.value.toFixed(5)+'"><td>'+safe(f.kind==='source'?'Source':'Allocation')+
-        '</td><th scope="row">'+safe(f.name)+'</th><td class="numeric">'+safe(money(f.value*factor))+
+        '</td><th scope="row">'+safe(f.name)+'</th><td class="numeric" data-csv-number="'+(f.value*factor)+'">'+safe(money(f.value*factor))+
         '</td><td>'+safe(f.detail)+'</td></tr>';
     }).join('');
     document.getElementById('sankeyTableFoot').innerHTML='<tr><th scope="row" colspan="2">Sources / allocations</th><td class="numeric">'+
@@ -2214,6 +2220,11 @@ function renderRentalBridge(rent,x,tax){
  const data=rentalWaterfallLedger(rent,x,tax,state.scope,state.year);
  state.data=data;
  const chart=$('rentalBridgeChart'),table=$('rentalWaterfallRows'),warn=$('rentalWaterfallWarning');
+ const periodLabel=state.period==='month'?'EUR/month':'EUR/year';
+ const rentalTable=table.closest('table');
+ rentalTable.caption.textContent='Rental cash flow, year '+state.year+' ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[1].textContent='Cash movement ('+periodLabel+')';
+ rentalTable.tHead.rows[0].cells[2].textContent='Running cash ('+periodLabel+')';
  if(!data){
   panel.dataset.waterfallBalanced='true';
   panel.dataset.waterfallStatus='empty';
@@ -2311,11 +2322,11 @@ function renderRentalBridge(rent,x,tax){
   table.innerHTML=flow.map(z=>'<tr tabindex="0" data-waterfall-row="'+z.key+
    '" data-waterfall-value="'+fmt(z.value)+'" data-waterfall-running="'+fmt(z.to)+
    '" aria-selected="'+(state.chosen===z.key)+'"><th scope="row">'+safeText(z.name)+
-   '</th><td>'+signed(z.value)+'</td><td>'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
+   '</th><td data-csv-number="'+z.amount+'">'+signed(z.value)+'</td><td data-csv-number="'+z.closing+'">'+signed(z.to)+'</td><td>'+safeText(z.detail)+'</td></tr>').join('')+
    '<tr tabindex="0" data-waterfall-row="result" data-waterfall-value="'+fmt(data.after)+
    '" data-waterfall-running="'+fmt(data.after)+'" aria-selected="'+(state.chosen==='result')+
-   '"><th scope="row">After-tax recurring cash</th><td>'+signed(data.after)+'</td>'+
-   '<td>'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
+   '"><th scope="row">After-tax recurring cash</th><td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td>'+
+   '<td data-csv-number="'+(data.after*factor)+'">'+signed(data.after)+'</td><td>Final economic cash after estimated tax; may not coincide with monthly settlement.</td></tr>';
   $('rentalBridgeStats').innerHTML='<span>Collected '+amt(data.collected)+
    '</span><span>Pre-tax '+signed(data.before)+'</span><span>Tax effect '+signed(-data.deltaTax)+
    '</span><span>After estimated tax '+signed(data.after)+'</span>';
@@ -2438,7 +2449,7 @@ function renderWealthComposition(x,sim,rent,houseCash){
   const vals=[p.year,p.homeEq,p.rentalEq,p.etf,p.cash,p.homeVal,p.rentalVal,p.homeDebt,p.rentalDebt,p.net];
   return '<tr tabindex="0" data-wealth-row="'+p.year+'" data-net="'+round(p.net)+'" data-home-equity="'+round(p.homeEq)+'" data-rental-equity="'+round(p.rentalEq)+'" data-etf="'+round(p.etf)+'" data-cash="'+round(p.cash)+'" data-home-loan="'+round(p.homeDebt)+'" data-rental-loan="'+round(p.rentalDebt)+'" aria-selected="'+(p.year===state.year)+'">'+
    vals.map((v,i)=>i===0?'<th scope="row">Year '+v+'</th>':
-    '<td'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
+    '<td data-csv-number="'+v+'"'+(v<0?' class="wealth-negative"':'')+'>'+moneyV(v)+'</td>').join('')+'</tr>';
  }).join('');
  const show=()=>{
   const p=pts.find(z=>z.year===state.year)||pts.at(-1);
@@ -2593,6 +2604,7 @@ function renderRentBuyExplorer(x){
   s.metric==='paid'?['Buy · cumulative housing cash paid','Rent · cumulative housing cash paid']:
    ['Buy · fees + interest + operating costs','Rent · cumulative warm rent'];
  const colors=s.metric==='wealth'?['#167f70','#7d64b4','#c09553']:['#167f70','#7d64b4'];
+ const lineStyles=[['','solid'],['8,4','dashed'],['2,4','dotted']];
  const W=920,H=380,L=91,R=25,T=33,B=53,ww=W-L-R,hh=H-T-B;
  const minRaw=Math.min(0,...rows.flatMap(p=>keys.map(k=>p[k])));
  const maxRaw=Math.max(1000,...rows.flatMap(p=>keys.map(k=>p[k])));
@@ -2612,7 +2624,7 @@ function renderRentBuyExplorer(x){
  for(let k=0;k<keys.length;k++){
   const path=rows.map(p=>fmt(X(p.year))+','+fmt(Y(p[keys[k]]))).join(' ');
   svg+='<polyline points="'+path+'" fill="none" stroke="'+colors[k]+
-   '" stroke-width="3.1" stroke-linejoin="round"'+(k===2?' stroke-dasharray="6,5"':'')+'><title>'+labels[k]+'</title></polyline>';
+   '" stroke-width="3.1" stroke-linejoin="round"'+(lineStyles[k][0]?' stroke-dasharray="'+lineStyles[k][0]+'"':'')+'><title>'+labels[k]+'</title></polyline>';
  }
  for(const p of rows){
   svg+='<g data-rb-year="'+p.year+'" role="button" tabindex="0" aria-label="Year '+p.year+
@@ -2623,7 +2635,7 @@ function renderRentBuyExplorer(x){
  $('rbChart').innerHTML=svg;
  $('rbChart').setAttribute('aria-label',labels.join(', ')+' through year '+maxYear);
  $('rbLegend').innerHTML=labels.map((label,i)=>'<span><i style="background:'+colors[i]+
-  '"></i>'+label+'</span>').join('');
+  '"></i>'+label+' ('+lineStyles[i][1]+')</span>').join('');
  $('rbRows').innerHTML=rows.map(p=>{
   const nums=[p.buy,p.etf,p.cash,p.homeEquity,p.buyPaid,p.rentPaid,p.buyCost,p.rentCost,p.budget];
   return '<tr tabindex="0" data-rb-year-row="'+p.year+'" data-rb-buy="'+fmt(p.buy)+
@@ -2632,7 +2644,7 @@ function renderRentBuyExplorer(x){
    '" data-rb-rent-contribution="'+fmt(p.rentContribution)+'" data-rb-buy-annual="'+fmt(p.buyPaid-(model.rows[p.year-1]?.buyPaid||0))+
    '" data-rb-rent-annual="'+fmt(p.rentPaid-(model.rows[p.year-1]?.rentPaid||0))+
    '" aria-selected="'+(p.year===s.year)+'"><th scope="row">Year '+p.year+'</th>'+
-   nums.map(n=>'<td'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<0?' class="rb-negative"':'')+'>'+euro(n)+'</td>').join('')+'</tr>';
  }).join('');
  function focusYear(year){
   const p=rows.find(z=>z.year===year);if(!p)return;
@@ -2823,7 +2835,7 @@ function amortizationPlot(x,rent){
    '" data-amort-equity="'+r.equity.toFixed(2)+'" data-amort-alt-equity="'+r.altEquity.toFixed(2)+
    '" data-amort-unpaid="'+r.unpaid.toFixed(2)+'" data-amort-interest-saved="'+r.interestSaved.toFixed(2)+
    '"><th scope="row">Year '+r.year+'</th>'+
-   nums.map(n=>'<td'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
+   nums.map(n=>'<td data-csv-number="'+n+'"'+(n<-.005?' class="negative"':'')+'>'+money(n)+'</td>').join('')+'</tr>';
  }).join('');
  const mode=state.mode;
  const lineSpecs=mode==='equity'?
@@ -2863,11 +2875,13 @@ function amortizationPlot(x,rent){
    }
   }
  }else{
-  legend=lineSpecs.map(q=>[q[1],q[2]]);
+  const patterns=mode==='equity'?['','8,4','2,4','12,4,2,4','5,3,1,3']:['','8,4','2,4'];
+  const patternNames=mode==='equity'?['solid','dashed','dotted','dash-dot','short dash-dot']:['solid','dashed','dotted'];
+  legend=lineSpecs.map((q,i)=>[q[1]+' ('+patternNames[i]+')',q[2]]);
   for(const [index,[propKey,name,color]] of lineSpecs.entries()){
    const pts=rows.map(r=>fmt(X(r.year))+','+fmt(Y(r[propKey]))).join(' ');
    svg+='<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="'+(index>=3?'3.1':'2.5')+
-    '" stroke-linejoin="round"'+(propKey==='altDebt'||propKey==='altEquity'?' stroke-dasharray="7,4"':'')+
+    '" stroke-linejoin="round"'+(patterns[index]?' stroke-dasharray="'+patterns[index]+'"':'')+
     '><title>'+name+'</title></polyline>';
   }
  }
@@ -3077,8 +3091,8 @@ function renderLifeEventTimeline(x,tax,baseSim,rent,baseCash){
    (e.type==='milestone'?' (annotation)':'')).join(' · ');
   return '<tr data-life-row="'+r.year+'" data-life-baseline="'+r.base.toFixed(2)+
    '" data-life-projected="'+r.next.toFixed(2)+'" data-life-diff="'+r.diff.toFixed(2)+
-   '"><th scope="row">Year '+r.year+'</th><td>'+number(r.base)+'</td><td>'+number(r.next)+
-   '</td><td class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
+   '"><th scope="row">Year '+r.year+'</th><td data-csv-number="'+r.base+'">'+number(r.base)+'</td><td data-csv-number="'+r.next+'">'+number(r.next)+
+   '</td><td data-csv-number="'+r.diff+'" class="'+(r.diff<-.001?'event-negative':r.diff>.001?'event-positive':'')+'">'+
    (r.diff>=0?'+':'')+number(r.diff)+'</td><td>'+(labels||'—')+'</td></tr>';
  }).join('');
  const W=920,H=370,L=85,R=20,T=22,B=49,h=H-T-B,w=W-L-R;
@@ -3220,9 +3234,9 @@ function renderEtfTaxPanel(x,sim){
  root.dataset.market=String(current.market);
  root.dataset.deposits=String(current.deposits);
  root.dataset.withdrawalTax=String(current.tax);
- $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><td>'+r.year+'</td><td>'+money(r.deposits)+'</td><td>'+money(r.market)+'</td><td>'+money(r.withdrawn)+'</td><td>'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
+ $('etfTaxRows').innerHTML=values.map(r=>'<tr data-etf-tax-year="'+r.year+'" data-etf-tax-market="'+r.market+'" data-etf-tax-deposits="'+r.deposits+'" data-etf-tax-paid="'+r.tax+'"><th scope="row">'+r.year+'</th><td data-csv-number="'+r.deposits+'">'+money(r.deposits)+'</td><td data-csv-number="'+r.market+'">'+money(r.market)+'</td><td data-csv-number="'+r.withdrawn+'">'+money(r.withdrawn)+'</td><td data-csv-number="'+r.tax+'">'+money(r.tax)+'</td><td>Not modeled</td><td>Not modeled</td></tr>').join('');
  const sales=x.drawMode!=='none'&&current.withdrawn>0;
- $('etfTaxDisclosure').textContent='Year '+year+': deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
+ $('etfTaxDisclosure').textContent='Year '+year+': projected ETF market value '+money(current.market)+'; cumulative gross deposits '+money(current.deposits)+'; modeled cumulative withdrawal tax '+money(current.tax)+'. Deposits are all gross contributions since the opening position'+(sales?', not the remaining cost basis after units have been sold.':' (not a tax-lot ledger).')+
   ' Differences between deposits and current value are NOT necessarily taxable gains'+(sales?' because withdrawals already occurred.':'.')+
   ' The simulated withdrawal tax is cumulative and simplified; no Vorabpauschale cash tax, annual allowance use across all investments, historical fund distributions, FIFO lots or prior-tax offsets are accounted for. After-tax full-sale value and advance tax are intentionally unavailable until those calculations are validated.';
  $('etfTaxChartPane').hidden=viewSelect.value==='table';
@@ -3807,6 +3821,98 @@ const obs=new MutationObserver(()=>{if(!window.currentSummary)return;update()});
  document.querySelectorAll('.app-tabs [data-view],[data-strategy],[data-switch-home],[data-switch-profile]')
   .forEach(button=>button.addEventListener('click',()=>queueMicrotask(updateContext)));
  applyMode('essential');
+})();
+</script>
+
+<script>
+/* UX-032: export the visible, canonical evidence tables without recalculating tax. */
+(function(){
+ function safeCsvCell(value){
+  var text=String(value==null?'':value);
+  // Prevent spreadsheet formula execution even when leading whitespace precedes a formula.
+  if(/^\s*[=+\-@]/.test(text))text="'"+text;
+  return '"'+text.replace(/"/g,'""')+'"';
+ }
+ function exportEvidence(tableId,filename){
+  var table=document.querySelector(tableId);
+  if(!table)return;
+  var headers=Array.from(table.tHead.rows[0].cells,function(cell){return cell.textContent.trim()});
+  var width=headers.length;
+  if(!width||headers.some(function(label){return !label})||new Set(headers.map(function(label){return label.toLowerCase()})).size!==width){
+   throw new Error('CSV column labels must be non-empty and unique');
+  }
+  var rows=Array.from(table.querySelectorAll('thead tr, tbody tr')).map(function(tr){
+   if(tr.cells.length!==width){
+    // The empty-state row spans all columns and is not financial evidence.
+    if(tr.cells.length===1&&tr.cells[0].colSpan===width)return null;
+    throw new Error('CSV row width mismatch');
+   }
+   return Array.from(tr.querySelectorAll('th,td')).map(function(cell){
+    if(cell.hasAttribute('data-csv-number')){
+     var raw=cell.dataset.csvNumber;
+     if(!raw||!raw.trim())throw new Error('CSV numeric evidence must not be blank');
+     var number=Number(raw);
+     if(!Number.isFinite(number))throw new Error('CSV numeric cells must be finite');
+     return String(number);
+    }
+    return safeCsvCell(cell.textContent.trim());
+   }).join(',');
+  }).filter(function(row){return row!==null});
+  var blob=new Blob(['\ufeff'+rows.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var anchor=document.createElement('a');
+  anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);
+  anchor.click();anchor.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+ }
+ [
+  {panel:'sankeyTableWrap',selector:'.sankey-table',name:'household-cash-flow.csv',label:'Download household cash-flow CSV'},
+  {panel:'etfTaxPanel',selector:'.etf-tax-table',name:'etf-annual-evidence.csv',label:'Download ETF annual evidence CSV'},
+  {panel:'rentalWaterfallTablePane',selector:'.rental-waterfall-table',name:'rental-cash-flow.csv',label:'Download rental cash-flow CSV'},
+   {panel:'wealthTimelineTablePane',selector:'.wealth-timeline-table',name:'net-worth-timeline.csv',label:'Download net worth timeline CSV'},
+   {panel:'rbTablePane',selector:'.rb-table',name:'rent-buy-comparison.csv',label:'Download rent buy comparison CSV'},
+   {panel:'amortTablePane',selector:'.mortgage-explorer-table',name:'mortgage-schedule.csv',label:'Download mortgage schedule CSV'},
+   {panel:'lifeEventsTablePane',selector:'.life-events-table',name:'life-event-comparison.csv',label:'Download life event comparison CSV'}
+ ].forEach(function(config){
+  var panel=document.getElementById(config.panel);
+  if(!panel)return;
+  var button=document.createElement('button');
+  button.type='button';button.className='btn';button.textContent='Download CSV';
+  button.setAttribute('aria-label',config.label);
+  // The standalone planner is English; offer explicitly marked German help
+  // without claiming that the financial tables themselves are translated.
+  var help=document.createElement('span');
+  help.lang='de';help.className='fine';help.style.color='var(--ink)';
+  var germanLabels={
+   'household-cash-flow.csv':'Haushaltscashflow',
+   'etf-annual-evidence.csv':'ETF-Jahresdaten',
+   'rental-cash-flow.csv':'Mietcashflow',
+   'net-worth-timeline.csv':'Vermögensentwicklung',
+   'rent-buy-comparison.csv':'Mieten-Kaufen-Vergleich',
+   'mortgage-schedule.csv':'Tilgungsplan',
+   'life-event-comparison.csv':'Lebensereignisvergleich'
+  };
+  help.textContent=germanLabels[config.name]+' als CSV herunterladen';
+  help.id='csv-help-'+config.panel;
+  button.setAttribute('aria-describedby',help.id);
+  var status=document.createElement('span');
+  status.setAttribute('role','status');status.className='fine';status.style.color='var(--ink)';
+  button.addEventListener('click',function(){
+   status.textContent='';
+   try{exportEvidence(config.selector,config.name)}catch(error){
+    status.textContent='CSV export unavailable: invalid chart data. / CSV-Export nicht verfügbar: ungültige Diagrammdaten.';
+   }
+  });
+  // Keep the download reachable when the chart/table alternative is collapsed.
+  if(config.panel!=='etfTaxPanel'){
+   panel.parentNode.insertBefore(button,panel);
+   panel.parentNode.insertBefore(help,panel);
+   panel.parentNode.insertBefore(status,panel);
+  }else{
+   var controls=panel.querySelector('.etf-tax-controls');
+   if(controls){controls.appendChild(button);controls.appendChild(help);controls.appendChild(status)}
+  }
+ });
 })();
 </script>
 
