@@ -894,6 +894,11 @@ test('UX-028 shows negative property equity and isolates hypothetical buying in 
   const yearOne = planner.locator('#rbRows [data-rb-year-row="1"]')
   expect(Number(await yearOne.getAttribute('data-rb-buy'))).toBeLessThan(0)
   await expect(planner.locator('#rbChart polyline')).toHaveCount(3)
+  await expect(planner.locator('#rbChart polyline').nth(1)).toHaveAttribute('stroke-dasharray', '8,4')
+  await expect(planner.locator('#rbChart polyline').nth(2)).toHaveAttribute('stroke-dasharray', '2,4')
+  await expect(planner.locator('#rbLegend')).toContainText('(solid)')
+  await expect(planner.locator('#rbLegend')).toContainText('(dashed)')
+  await expect(planner.locator('#rbLegend')).toContainText('(dotted)')
 })
 
 test('UX-028 chart/table controls and planning range do not change the projection horizon', async ({
